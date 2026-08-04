@@ -15,14 +15,8 @@
             </div>
             <div class="toggle-sidebar"><i data-feather="menu" class="status_toggle middle sidebar-toggle"></i></div>
         </div>
-        <form class="form-inline search-full" action="{{ route('admin.products.index') }}" method="get">
-            <div class="form-group w-100"><div class="Typeahead Typeahead--twitterUsers">
-                <div class="u-posRelative"><input class="demo-input Typeahead-input form-control-plaintext w-100" type="search" name="search" placeholder="Search products..."><i class="ri-close-line close-search"></i></div>
-            </div></div>
-        </form>
         <div class="nav-right col-6 pull-right right-header p-0">
             <ul class="nav-menus">
-                <li><span class="header-search"><i data-feather="search"></i></span></li>
                 <li class="onhover-dropdown admin-language-switcher">
                     <div class="language-top-box"><i data-feather="globe"></i><span>{{ $adminCurrentLanguage->name ?? 'English' }}</span></div>
                     <ul class="language-dropdown onhover-show-div">

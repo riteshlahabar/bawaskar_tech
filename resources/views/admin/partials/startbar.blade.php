@@ -21,10 +21,17 @@
     <div id="sidebarEffect"></div>
     <div>
         <div class="logo-wrapper logo-wrapper-center">
-            <a href="{{ route('admin.dashboard') }}" class="bawaskar-sidebar-brand"><span class="brand-mark brand-mark-light">B</span><span>Bawaskar ERP</span></a>
+            <a href="{{ route('admin.dashboard') }}" class="bawaskar-sidebar-brand">
+    <img src="{{ asset('logo/logo.png') }}" alt="Dr Bawasakar Technology" style="width:32px;height:32px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;">
+    <span style="font-size:14px;line-height:1.2;">Dr Bawasakar Technology</span>
+</a>
             <div class="back-btn"><i class="fa fa-angle-left"></i></div><div class="toggle-sidebar"><i data-feather="menu" class="status_toggle middle sidebar-toggle"></i></div>
         </div>
-        <div class="logo-icon-wrapper"><a href="{{ route('admin.dashboard') }}"><span class="brand-mark brand-mark-light">B</span></a></div>
+       <div class="logo-icon-wrapper">
+    <a href="{{ route('admin.dashboard') }}">
+        <img src="{{ asset('logo/logo.png') }}" alt="Dr Bawasakar Technology" style="width:32px;height:32px;object-fit:contain;display:block;margin:12px auto;background:#fff;border-radius:6px;padding:2px;">
+    </a>
+</div>
         <nav class="sidebar-main">
             <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
             <div id="sidebar-menu"><ul class="sidebar-links" id="simple-bar"><li class="back-btn"></li>
@@ -35,19 +42,20 @@
                         });
                     @endphp
                     @if(!isset($group['id']))
-                        <li class="sidebar-main-title"><div><h6>{{ $group['label'] }}</h6></div></li>
+                        @if(strtolower($group['label']) !== 'navigation')
+    <li class="sidebar-main-title"><div><h6>{{ $group['label'] }}</h6></div></li>
+@endif
                         @foreach($group['items'] as $item)
                             @if(!empty($item['children']))
                                 @php $open=collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
-                                <li class="sidebar-list"><a class="sidebar-link sidebar-title {{ $open?'active':'' }}" href="javascript:void(0)"><i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span></a>
+                                <li class="sidebar-list"><a class="sidebar-link sidebar-title {{ $open?'active':'' }}" href="javascript:void(0)"><i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">›</span></a>
                                     <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="{{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">{{ $child['label'] }}</a></li>@endforeach</ul>
                                 </li>
                             @else
                                 <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav {{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}"><i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span>@isset($item['badge'])<span class="badge badge-light-primary ms-auto">{{ $item['badge'] }}</span>@endisset</a></li>
                             @endif
                         @endforeach
-                    @else
-                        <li class="sidebar-list"><a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)"><i data-feather="{{ ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','systemMenu'=>'settings'][$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span></a>
+                    @else<li class="sidebar-list"><a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)"><i data-feather="{{ ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','systemMenu'=>'settings'][$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">›</span></a><li class="sidebar-list"><a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)"><i data-feather="{{ ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','systemMenu'=>'settings'][$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span></a>
                             <ul class="sidebar-submenu" style="display:{{ $groupOpen?'block':'none' }}">
                                 @foreach($group['items'] as $item)
                                     @if(!empty($item['children']))

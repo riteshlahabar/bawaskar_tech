@@ -103,20 +103,3 @@
     color: var(--theme-color);
 }
 
-/* Force admin language button text/icon white */
-.admin-language-switcher .language-top-box,
-.admin-language-switcher .language-top-box span,
-.admin-language-switcher .language-top-box i,
-.admin-language-switcher .language-top-box svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
-}
-
-/* Show language dropdown on click */
-.admin-language-switcher .language-dropdown.active {
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: block !important;
-    transform: translateY(0) !important;
-    z-index: 99999 !important;
-}

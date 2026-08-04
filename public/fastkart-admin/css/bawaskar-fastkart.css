@@ -574,3 +574,17 @@
 .iconoir-print::before { content: "\f02f" !important; }
 
 .iconoir-nav-arrow-right::before { content: "\f105" !important; }
+
+/* Professional smaller table header text */
+.page-wrapper table thead th,
+.page-wrapper .table thead th,
+.page-wrapper .dataTables_wrapper table.dataTable thead th {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    letter-spacing: 0.2px !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+}

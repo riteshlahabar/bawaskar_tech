@@ -451,3 +451,44 @@
     height: 28px;
     stroke-width: 2;
 }
+.admin-header-actions .nav-menus {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.page-header .header-wrapper .nav-right > ul > li.admin-header-notification,
+.page-header .header-wrapper .nav-right > ul > li.admin-profile-actions {
+    padding: 6px 0 !important;
+}
+
+.admin-profile-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 18px;
+}
+
+.admin-profile-media {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 170px;
+}
+
+.admin-header-logout-form {
+    margin: 0;
+}
+
+.admin-header-logout {
+    min-height: 38px;
+    padding: 8px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.admin-header-logout svg {
+    width: 16px;
+    height: 16px;
+}

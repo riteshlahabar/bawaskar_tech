@@ -319,13 +319,21 @@
                                 <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                     <div class="container-fluid-lg">
                                         <div>
-                                            <h6 class="ls-expanded theme-color text-uppercase">{{ $cmsField($heroBanner, 'subtitle', 'Weekend Special offer') }}</h6>
-                                            <h1 class="heding-2">{{ $cmsField($heroBanner, 'title', 'Premium Quality Dry Fruits') }}</h1>
-                                            <h2 class="content-2">Dryfruits shopping made Easy</h2>
-                                            <h5 class="text-content">{{ $cmsField($heroBanner, 'description', 'Fresh & Top Quality Dry Fruits are available here!') }}</h5>
+                                            @if(!empty(data_get($heroBanner, 'subtitle')))
+                                                <h6 class="ls-expanded theme-color text-uppercase">{{ data_get($heroBanner, 'subtitle') }}</h6>
+                                            @endif
+
+                                            @if(!empty(data_get($heroBanner, 'title')))
+                                                <h1 class="heding-2">{{ data_get($heroBanner, 'title') }}</h1>
+                                            @endif
+
+                                            @if(!empty(data_get($heroBanner, 'description')))
+                                                <h5 class="text-content">{{ data_get($heroBanner, 'description') }}</h5>
+                                            @endif
+
                                             <button
                                                 class="btn theme-bg-color btn-md text-white fw-bold mt-md-4 mt-2 mend-auto"
-                                                onclick="location.href = '{{ $cmsField($heroBanner, 'button_url', route('store.page', ['page'=>'shop-left-sidebar'])) }}';">{{ $cmsField($heroBanner, 'button_text', 'Shop Now') }} <i class="fa-solid fa-arrow-right icon"></i></button>
+                                                onclick="location.href = '{{ data_get($heroBanner, 'button_url') ?: route('store.page', ['page'=>'shop-left-sidebar']) }}';">{{ data_get($heroBanner, 'button_text') ?: 'Shop Now' }} <i class="fa-solid fa-arrow-right icon"></i></button>
                                         </div>
                                     </div>
                                 </div>

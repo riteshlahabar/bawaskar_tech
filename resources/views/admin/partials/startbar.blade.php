@@ -12,11 +12,12 @@
         'dashboard-erp'=>'home','dashboard-hrms'=>'activity','dealers'=>'shopping-bag','customers'=>'users','salesmen'=>'user-check','couriers'=>'truck',
         'customer-sales'=>'user','dealer-sales'=>'briefcase','customer-orders'=>'shopping-cart','dealer-orders'=>'shopping-cart','customer-proforma-invoices'=>'file-text','dealer-proforma-invoices'=>'file-text','customer-invoices'=>'file','dealer-invoices'=>'file','customer-dispatches'=>'truck','dealer-dispatches'=>'truck','customer-returns'=>'rotate-ccw','dealer-returns'=>'rotate-ccw',
         'products'=>'box','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar',
+        'storefront-banners'=>'image','storefront-sections'=>'grid','storefront-section-products'=>'shopping-cart','storefront-service-blocks'=>'truck','storefront-footer-links'=>'link',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
         'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor',
         'notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
     ];
-    $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','systemMenu'=>'settings'];
+    $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','systemMenu'=>'settings'];
 @endphp
 
 <div class="sidebar-wrapper">
@@ -64,7 +65,7 @@
                                             <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">›</span>
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
-                                            @foreach($item['children'] as $child)<li><a class="{{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">{{ $child['label'] }}</a></li>@endforeach
+                                            @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}"><i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i><span>{{ $child['label'] }}</span></a></li>@endforeach
                                         </ul>
                                     </li>
                                 @else
@@ -80,9 +81,9 @@
                                     @foreach($group['items'] as $item)
                                         @if(!empty($item['children']))
                                             @php $open = collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
-                                            <li><a class="submenu-title {{ $open?'active':'' }}" href="javascript:void(0)">{{ $item['label'] }}<span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="{{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">{{ $child['label'] }}</a></li>@endforeach</ul></li>
+                                            <li><a class="submenu-title admin-sidebar-submenu-link {{ $open?'active':'' }}" href="javascript:void(0)"><i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}"><i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i><span>{{ $child['label'] }}</span></a></li>@endforeach</ul></li>
                                         @else
-                                            <li><a class="{{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}">{{ $item['label'] }}</a></li>
+                                            <li><a class="admin-sidebar-submenu-link {{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}"><i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span></a></li>
                                         @endif
                                     @endforeach
                                 </ul>

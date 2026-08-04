@@ -23,11 +23,11 @@
     <div id="sidebarEffect"></div>
     <div>
         <div class="logo-wrapper logo-wrapper-center">
-            <a href="{{ route('admin.dashboard') }}" class="bawaskar-sidebar-brand">
+            <a href="{{ route('admin.dashboard') }}" class="bawaskar-sidebar-brand" style="display:flex;align-items:center;gap:8px;">
                 <img src="{{ asset('logo/logo.png') }}" alt="Dr Bawasakar Technology" style="width:32px;height:32px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;">
-                <span style="font-size:14px;line-height:1.1;color:#fff;">
+                <span style="font-size:14px;line-height:1.1;color:#fff;display:flex;flex-direction:column;justify-content:center;">
                     <strong style="display:block;white-space:nowrap;">Dr Bawasakar</strong>
-                    <small style="display:block;font-size:11px;color:#fff;">technology</small>
+                    <small style="display:block;font-size:11px;color:#fff;">Technology</small>
                 </span>
             </a>
             <div class="back-btn"><i class="fa fa-angle-left"></i></div>

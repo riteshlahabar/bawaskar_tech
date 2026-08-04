@@ -45,8 +45,8 @@ return [
     'brand' => ['name' => 'Bawaskar ERP', 'short_name' => 'BERP'],
     'groups' => [
         ['label'=>'Navigation','items'=>[
-            ['key'=>'dashboard-erp','label'=>'Dashboard','route'=>'admin.dashboard','icon'=>'iconoir-report-columns','badge'=>'ERP'],
-            ['key'=>'dashboard-hrms','label'=>'Dashboard','route'=>'admin.dashboard.hrms','icon'=>'iconoir-community','badge'=>'HRMS'],
+            ['key'=>'dashboard-erp','label'=>'Dashboard ERP','route'=>'admin.dashboard','icon'=>'iconoir-report-columns'],
+            ['key'=>'dashboard-hrms','label'=>'Dashboard HRMS','route'=>'admin.dashboard.hrms','icon'=>'iconoir-community'],
         ]],
         ['label'=>'People','id'=>'peopleMenu','icon'=>'iconoir-community','items'=>[
             ['key'=>'dealers','label'=>'Dealers','route'=>'admin.dealers.index','icon'=>'iconoir-shop'],['key'=>'customers','label'=>'Customers','route'=>'admin.customers.index','icon'=>'iconoir-user-love'],['key'=>'salesmen','label'=>'Salesmen','route'=>'admin.salesmen.index','icon'=>'iconoir-user-badge-check'],['key'=>'couriers','label'=>'Courier','route'=>'admin.couriers.index','icon'=>'iconoir-delivery-truck'],]],

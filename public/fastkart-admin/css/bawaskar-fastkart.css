@@ -513,3 +513,64 @@
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
+
+/* Replace iconoir dot with real button icons using FontAwesome */
+[class^="iconoir-"]::before,
+[class*=" iconoir-"]::before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    display: inline-block;
+    width: 1em;
+    text-align: center;
+}
+
+.iconoir-plus::before,
+.iconoir-plus-circle::before { content: "\f055" !important; }
+
+.iconoir-edit-pencil::before,
+.iconoir-edit::before { content: "\f044" !important; }
+
+.iconoir-trash::before { content: "\f1f8" !important; }
+
+.iconoir-eye::before { content: "\f06e" !important; }
+
+.iconoir-search::before { content: "\f002" !important; }
+
+.iconoir-check-circle::before { content: "\f058" !important; }
+
+.iconoir-xmark-circle::before { content: "\f057" !important; }
+
+.iconoir-cart::before { content: "\f07a" !important; }
+
+.iconoir-shop::before { content: "\f54e" !important; }
+
+.iconoir-box::before,
+.iconoir-box-iso::before { content: "\f466" !important; }
+
+.iconoir-receive-dollars::before,
+.iconoir-dollar-circle::before { content: "\f155" !important; }
+
+.iconoir-calendar-minus::before { content: "\f272" !important; }
+
+.iconoir-wallet::before { content: "\f555" !important; }
+
+.iconoir-view-grid::before { content: "\f00a" !important; }
+
+.iconoir-user::before { content: "\f007" !important; }
+
+.iconoir-route::before { content: "\f4d7" !important; }
+
+.iconoir-refresh::before { content: "\f021" !important; }
+
+.iconoir-receipt::before { content: "\f543" !important; }
+
+.iconoir-page::before { content: "\f15b" !important; }
+
+.iconoir-community::before { content: "\f0c0" !important; }
+
+.iconoir-download::before { content: "\f019" !important; }
+
+.iconoir-print::before { content: "\f02f" !important; }
+
+.iconoir-nav-arrow-right::before { content: "\f105" !important; }

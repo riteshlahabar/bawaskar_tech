@@ -493,9 +493,10 @@
     height: 16px;
 }
 
+
 /* Reduce space between admin header and page heading */
 .page-wrapper.compact-wrapper .page-body-wrapper .page-body {
-    padding-top: 8px !important;
+    padding-top: 16px !important;
 }
 
 .page-wrapper .page-body-wrapper .page-body .container-fluid {
@@ -503,8 +504,8 @@
 }
 
 .page-wrapper .page-title {
-    padding-top: 6px !important;
-    padding-bottom: 8px !important;
+    padding-top: 12px !important;
+    padding-bottom: 10px !important;
     margin-bottom: 0 !important;
 }
 

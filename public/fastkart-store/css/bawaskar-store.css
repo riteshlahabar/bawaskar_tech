@@ -118,3 +118,21 @@
         font-size: 13px;
     }
 }
+
+/* Keep hero main banner height same even when title/subtitle/description are blank */
+.home-section-2 .home-contain {
+    height: calc(100vw * 637 / 1920) !important;
+    min-height: 360px !important;
+    max-height: 637px !important;
+}
+
+.home-section-2 .home-contain > img,
+.home-section-2 .home-contain .bg-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.home-section-2 .home-contain .home-detail {
+    height: 100% !important;
+}

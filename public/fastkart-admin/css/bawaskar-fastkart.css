@@ -62,7 +62,7 @@
     padding: 0 12px;
     border-radius: 7px;
     background: #f7f8fa;
-    color: #2b2b2b;
+    color: #ffffff !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -72,10 +72,8 @@
 }
 
 .admin-language-switcher .language-top-box svg {
-    width: 17px;
-    height: 17px;
-    color: var(--theme-color);
-    stroke: var(--theme-color);
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 .admin-language-switcher .language-dropdown {

@@ -3,7 +3,7 @@
         $section = $homeProductSection['section'];
         $sectionProducts = collect($homeProductSection['products']);
     @endphp
-    <section class="product-section-3">
+    <section class="product-section-3" id="home-section-{{ $section->section_key }}">
         <div class="container-fluid-lg">
             <div class="title">
                 <h2>{{ $section->title }}</h2>

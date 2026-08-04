@@ -14,7 +14,7 @@
         'products'=>'box','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
         'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor',
-        'notifications'=>'bell','translations'=>'globe','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
+        'notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
     ];
 @endphp
 <div class="sidebar-wrapper">

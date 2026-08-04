@@ -354,7 +354,7 @@ abstract class AdminModuleController extends Controller
 
     protected function bumpCacheVersionForModule(): void
     {
-        if (! in_array($this->moduleKey, ['products', 'pricing', 'categories', 'brands', 'units', 'translations'], true)) {
+        if (! in_array($this->moduleKey, ['products', 'pricing', 'categories', 'brands', 'units', 'languages', 'translations'], true)) {
             return;
         }
 

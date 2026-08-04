@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\Communication\Language;
 use App\Models\Storefront\StorefrontBanner;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontSection;
@@ -13,6 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class StorefrontController extends Controller
 {
@@ -60,6 +62,13 @@ class StorefrontController extends Controller
         ]);
     }
 
+    public function switchLanguage(Request $request, string $locale)
+    {
+        $language = Language::query()->active()->where('code', $locale)->firstOrFail();
+        $request->session()->put('store_locale', $language->code);
+
+        return back();
+    }
     public function invoicePreview(string $template): View
     {
         abort_unless(in_array($template, config('storefront.invoice_templates', []), true), 404);
@@ -82,26 +91,177 @@ class StorefrontController extends Controller
                 ->limit(18)
                 ->get();
 
-            $products = $data['products'] ?? $this->storefrontProductQuery()
-                ->storefrontOrder()
-                ->limit(24)
-                ->get();
+            $products = $data['products'] ?? ($page === 'shop-left-sidebar'
+                ? $this->shopProductQuery($request)->paginate(24)->withQueryString()
+                : $this->storefrontProductQuery()->storefrontOrder()->limit(24)->get());
 
             $homeContent = $this->homeContent();
+            $storefrontNavigation = $this->navigationData();
+            [$storeLanguages, $currentStoreLanguage] = $this->languageData($request);
         } catch (\Throwable) {
             $categories = collect();
             $products = collect();
             $homeContent = $this->emptyHomeContent();
+            $storefrontNavigation = $this->emptyNavigationData();
+            [$storeLanguages, $currentStoreLanguage] = $this->emptyLanguageData();
         }
 
         return view('store.pages.'.$page, array_merge([
             'categories' => $categories,
             'products' => $products,
             'homeContent' => $homeContent,
+            'storefrontNavigation' => $storefrontNavigation,
+            'storeLanguages' => $storeLanguages,
+            'currentStoreLanguage' => $currentStoreLanguage,
             'selectedCategory' => null,
+            'selectedProductType' => $request->query('product_type'),
+            'searchQuery' => $request->query('search'),
             'storeProduct' => null,
             'relatedProducts' => collect(),
         ], $data));
+    }
+
+    private function languageData(Request $request): array
+    {
+        $languages = Language::query()->active()->ordered()->get();
+
+        if ($languages->isEmpty()) {
+            return $this->emptyLanguageData();
+        }
+
+        $requestedLocale = (string) $request->session()->get('store_locale', '');
+        $currentLanguage = $languages->firstWhere('code', $requestedLocale)
+            ?: $languages->firstWhere('is_default', true)
+            ?: $languages->firstWhere('code', 'en')
+            ?: $languages->first();
+
+        app()->setLocale($currentLanguage->code);
+
+        return [$languages, $currentLanguage];
+    }
+
+    private function emptyLanguageData(): array
+    {
+        $language = new Language([
+            'code' => 'en',
+            'name' => 'English',
+            'native_name' => 'English',
+            'is_default' => true,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        return [collect([$language]), $language];
+    }
+    private function shopProductQuery(Request $request): Builder
+    {
+        $query = $this->storefrontProductQuery();
+
+        if ($request->filled('product_type')) {
+            $query->where('product_type', $request->query('product_type'));
+        }
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->query('search'));
+            $query->where(function (Builder $subQuery) use ($search): void {
+                $subQuery->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->storefrontOrder();
+    }
+
+    private function navigationData(): array
+    {
+        $productTypeLabels = $this->productTypeLabels();
+
+        $categories = Category::query()
+            ->with([
+                'children' => fn (Builder $query) => $query
+                    ->where('is_active', true)
+                    ->withCount(['products' => fn (Builder $productQuery) => $productQuery->visibleFor('customer')])
+                    ->orderBy('sort_order')
+                    ->limit(8),
+            ])
+            ->withCount(['products' => fn (Builder $query) => $query->visibleFor('customer')])
+            ->where('is_active', true)
+            ->whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->limit(12)
+            ->get();
+
+        $productTypes = Product::query()
+            ->visibleFor('customer')
+            ->whereNotNull('product_type')
+            ->where('product_type', '<>', '')
+            ->select('product_type', DB::raw('count(*) as products_count'))
+            ->groupBy('product_type')
+            ->orderBy('product_type')
+            ->get()
+            ->map(fn (Product $product): array => [
+                'slug' => $product->product_type,
+                'name' => $productTypeLabels[$product->product_type] ?? $this->formatProductType($product->product_type),
+                'products_count' => (int) $product->products_count,
+            ]);
+
+        if ($productTypes->isEmpty()) {
+            $productTypes = collect($productTypeLabels)->map(fn (string $name, string $slug): array => [
+                'slug' => $slug,
+                'name' => $name,
+                'products_count' => 0,
+            ])->values();
+        }
+
+        $featuredProducts = $this->storefrontProductQuery()
+            ->where('is_featured', true)
+            ->storefrontOrder()
+            ->limit(6)
+            ->get();
+
+        if ($featuredProducts->isEmpty()) {
+            $featuredProducts = $this->storefrontProductQuery()->storefrontOrder()->limit(6)->get();
+        }
+
+        return [
+            'categories' => $categories,
+            'productTypes' => $productTypes,
+            'productTypeLabels' => $productTypeLabels,
+            'featuredProducts' => $featuredProducts,
+        ];
+    }
+
+    private function emptyNavigationData(): array
+    {
+        return [
+            'categories' => collect(),
+            'productTypes' => collect($this->productTypeLabels())->map(fn (string $name, string $slug): array => [
+                'slug' => $slug,
+                'name' => $name,
+                'products_count' => 0,
+            ])->values(),
+            'productTypeLabels' => $this->productTypeLabels(),
+            'featuredProducts' => collect(),
+        ];
+    }
+
+    private function productTypeLabels(): array
+    {
+        return [
+            'medicine' => 'Medicine',
+            'fertilizer' => 'Fertilizer',
+            'seed' => 'Seeds',
+            'seeds' => 'Seeds',
+            'veterinary' => 'Veterinary Products',
+            'veterinary_products' => 'Veterinary Products',
+            'equipment' => 'Equipment',
+            'other' => 'Other',
+        ];
+    }
+
+    private function formatProductType(string $productType): string
+    {
+        return str($productType)->replace(['_', '-'], ' ')->headline()->toString();
     }
 
     private function homeContent(): array

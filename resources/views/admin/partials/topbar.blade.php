@@ -1,3 +1,10 @@
+@php
+    $adminLanguages = \App\Models\Communication\Language::query()->active()->ordered()->get();
+    if ($adminLanguages->isEmpty()) {
+        $adminLanguages = collect([(object) ['code' => 'en', 'name' => 'English', 'native_name' => 'English']]);
+    }
+    $adminCurrentLanguage = $adminLanguages->firstWhere('code', session('store_locale', 'en')) ?: $adminLanguages->firstWhere('code', 'en') ?: $adminLanguages->first();
+@endphp
 <div class="page-header">
     <div class="header-wrapper m-0">
         <div class="header-logo-wrapper p-0">
@@ -16,6 +23,14 @@
         <div class="nav-right col-6 pull-right right-header p-0">
             <ul class="nav-menus">
                 <li><span class="header-search"><i data-feather="search"></i></span></li>
+                <li class="onhover-dropdown admin-language-switcher">
+                    <div class="language-top-box"><i data-feather="globe"></i><span>{{ $adminCurrentLanguage->name ?? 'English' }}</span></div>
+                    <ul class="language-dropdown onhover-show-div">
+                        @foreach($adminLanguages as $language)
+                            <li><a class="{{ ($adminCurrentLanguage->code ?? 'en') === $language->code ? 'active' : '' }}" href="{{ route('store.language', ['locale' => $language->code]) }}"><span>{{ $language->name }}</span>@if(!empty($language->native_name) && $language->native_name !== $language->name)<small>{{ $language->native_name }}</small>@endif</a></li>
+                        @endforeach
+                    </ul>
+                </li>
                 <li class="onhover-dropdown"><div class="notification-box"><i data-feather="bell"></i></div>
                     <ul class="notification-dropdown onhover-show-div"><li><i data-feather="bell"></i><h6 class="f-18 mb-0">Notifications</h6></li><li><a class="btn btn-primary w-100" href="{{ route('admin.notifications.index') }}">Open Notification Centre</a></li></ul>
                 </li>

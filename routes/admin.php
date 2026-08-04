@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ExpenseSubcategories\ExpenseSubcategoryController
 use App\Http\Controllers\Admin\ExpenseCategories\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Inventory\InventoryController;
 use App\Http\Controllers\Admin\Invoices\InvoiceController;
+use App\Http\Controllers\Admin\Languages\LanguageController;
 use App\Http\Controllers\Admin\Leaves\LeaveController;
 use App\Http\Controllers\Admin\Notifications\NotificationController;
 use App\Http\Controllers\Admin\Orders\OrderController;
@@ -67,7 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'attendance'=>AttendanceController::class,'dealer-visits'=>DealerVisitController::class,'tour-plans'=>TourPlanController::class,
             'expenses'=>ExpenseController::class,'leaves'=>LeaveController::class,'salary'=>SalaryController::class,'targets'=>TargetController::class,'assets'=>AssetController::class,
             'storefront-banners'=>StorefrontBannerController::class,'storefront-sections'=>StorefrontSectionController::class,'storefront-section-products'=>StorefrontSectionProductController::class,'storefront-service-blocks'=>StorefrontServiceBlockController::class,'storefront-footer-links'=>StorefrontFooterLinkController::class,
-            'notifications'=>NotificationController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
+            'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');
         Route::post('attendance/bulk', [AttendanceController::class, 'bulkStore'])->name('attendance.bulk.store');

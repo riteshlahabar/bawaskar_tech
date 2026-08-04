@@ -446,3 +446,8 @@
     color: #ffffff !important;
     stroke: #ffffff !important;
 }
+.admin-dashboard-card-icon {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2;
+}

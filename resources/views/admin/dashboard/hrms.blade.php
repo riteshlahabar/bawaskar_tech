@@ -1,6 +1,18 @@
 @extends('admin.layouts.app')
 @section('title', 'Dashboard HRMS')
 @section('content')
+@php
+    $dashboardCardIcons = [
+        'iconoir-shop' => 'shopping-bag',
+        'iconoir-user' => 'user',
+        'iconoir-box-iso' => 'box',
+        'iconoir-cart' => 'shopping-cart',
+        'iconoir-community' => 'users',
+        'iconoir-check-circle' => 'check-circle',
+        'iconoir-calendar-minus' => 'calendar',
+        'iconoir-receive-dollars' => 'dollar-sign',
+    ];
+@endphp
 <div class="row">
     @foreach($stats as $stat)
         <div class="col-md-6 col-xl-3">
@@ -8,7 +20,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 bg-{{ $stat['color'] }}-subtle text-{{ $stat['color'] }} thumb-xl rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="{{ $stat['icon'] }} fs-2"></i>
+                            <i class="admin-dashboard-card-icon" data-feather="{{ $dashboardCardIcons[$stat['icon']] ?? 'circle' }}"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <p class="text-muted mb-1">{{ $stat['label'] }}</p>

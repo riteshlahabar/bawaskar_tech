@@ -613,3 +613,12 @@
     padding: 8px 14px !important;
     font-weight: 600 !important;
 }
+
+/* Fix select arrow overlap in search/filter section */
+.page-wrapper .card .card-body select,
+.page-wrapper .card .card-body .form-select {
+    padding-right: 36px !important;
+    background-position: right 12px center !important;
+    background-size: 14px 10px !important;
+    text-overflow: ellipsis !important;
+}

@@ -588,3 +588,28 @@
     text-transform: none !important;
     white-space: nowrap !important;
 }
+
+/* Professional font for common search/filter section */
+.page-wrapper .card .card-body label,
+.page-wrapper .card .card-body .form-label,
+.page-wrapper .card .card-body input,
+.page-wrapper .card .card-body select,
+.page-wrapper .card .card-body textarea,
+.page-wrapper .card .card-body .form-control,
+.page-wrapper .card .card-body .form-select,
+.page-wrapper .card .card-body .btn {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.35 !important;
+}
+
+.page-wrapper .card .card-body .form-control,
+.page-wrapper .card .card-body .form-select {
+    height: 38px !important;
+    padding: 7px 12px !important;
+}
+
+.page-wrapper .card .card-body .btn {
+    padding: 8px 14px !important;
+    font-weight: 600 !important;
+}

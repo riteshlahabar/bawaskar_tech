@@ -400,3 +400,24 @@
 .page-wrapper .sidebar-main-title h6 {
     color: #ffffff !important;
 }
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact {
+    margin: 6px 0 2px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact > div {
+    margin: 0 !important;
+    padding: 0 20px 0 24px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact h6 {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2;
+}

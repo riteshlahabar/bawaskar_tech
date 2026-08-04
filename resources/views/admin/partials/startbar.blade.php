@@ -53,7 +53,7 @@
 
                         @if(!isset($group['id']))
                             @if(strtolower($group['label'] ?? '') !== 'navigation')
-                                <li class="sidebar-main-title"><div><h6>{{ $group['label'] }}</h6></div></li>
+                                <li class="sidebar-main-title {{ strtolower($group['label'] ?? '') === 'hrms' ? 'sidebar-main-title-compact' : '' }}"><div><h6>{{ $group['label'] }}</h6></div></li>
                             @endif
 
                             @foreach($group['items'] as $item)

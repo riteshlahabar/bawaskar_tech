@@ -16,6 +16,8 @@ class Product extends Model
         'product_type_id',
         'unit_id',
         'sku',
+        'batch_no',
+        'expiry_date',
         'name',
         'product_type',
         'storefront_row',

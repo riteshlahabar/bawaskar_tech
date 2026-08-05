@@ -20,7 +20,6 @@ use App\Models\Field\SalesmanAsset;
 use App\Models\Field\SalesmanTarget;
 use App\Models\Field\TourPlan;
 use App\Models\Finance\Payment;
-use App\Models\Inventory\InventoryBatch;
 use App\Models\InternalExpense;
 use App\Models\InternalExpenseCategory;
 use App\Models\InternalExpenseSubcategory;
@@ -68,7 +67,7 @@ return [
                 ['key'=>'dealer-returns','label'=>'Returns & Cancellation','route'=>'admin.returns.index','params'=>['type'=>'dealer'],'icon'=>'iconoir-undo-action'],
             ]],
         ]],        ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
-            ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],['key'=>'brands','label'=>'Brand','route'=>'admin.brands.index','icon'=>'iconoir-medal'],['key'=>'units','label'=>'Unit','route'=>'admin.units.index','icon'=>'iconoir-ruler'],['key'=>'inventory','label'=>'Stock','route'=>'admin.inventory.index','icon'=>'iconoir-package'],['key'=>'warehouses','label'=>'Warehouse','route'=>'admin.warehouses.index','icon'=>'iconoir-home-alt'],['key'=>'batches','label'=>'Batch & Expiry','route'=>'admin.batches.index','icon'=>'iconoir-calendar'],]],
+            ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],['key'=>'brands','label'=>'Brand','route'=>'admin.brands.index','icon'=>'iconoir-medal'],['key'=>'units','label'=>'Unit','route'=>'admin.units.index','icon'=>'iconoir-ruler'],['key'=>'inventory','label'=>'Stock','route'=>'admin.inventory.index','icon'=>'iconoir-package'],['key'=>'warehouses','label'=>'Warehouse','route'=>'admin.warehouses.index','icon'=>'iconoir-home-alt'],]],
         ['label'=>'Storefront','id'=>'storefrontMenu','icon'=>'iconoir-www','items'=>[
             ['key'=>'sf-bank-wallet-offers','label'=>'Row 5 - Bank & Wallet Offers','route'=>'admin.storefront-banners.index','params'=>['placement'=>'bank_offer','row_title'=>'Bank & Wallet Offers'],'icon'=>'iconoir-media-image'],
             ['key'=>'sf-strip-banner','label'=>'Row 7 - Small Strip Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'strip_banner','row_title'=>'Small Strip Banner'],'icon'=>'iconoir-media-image'],
@@ -185,11 +184,7 @@ return [
             'columns'=>[['key'=>'code','label'=>'Code'],['key'=>'name','label'=>'Warehouse'],['key'=>'city','label'=>'City'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[['name'=>'name','label'=>'Warehouse Name','rules'=>['required','string','max:255']],['name'=>'code','label'=>'Code','rules'=>['required','string','max:50','unique:warehouses,code,{id}']],['name'=>'city','label'=>'City','rules'=>['nullable','string','max:255']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
         ],
-        'batches'=>[
-            'label'=>'Batch & Expiry','group'=>'Inventory','singular'=>'Inventory Batch','model'=>InventoryBatch::class,'with'=>['product','warehouse'],'search'=>['batch_no'],'sort'=>['expiry_date','asc'],
-            'columns'=>[['key'=>'batch_no','label'=>'Batch No.'],['key'=>'product.name','label'=>'Product'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'quantity','label'=>'Available Qty'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date'],['key'=>'purchase_price','label'=>'Purchase Price','type'=>'money']],
-            'fields'=>[['name'=>'warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_where'=>['is_active'=>true],'rules'=>['required','exists:warehouses,id']],['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_where'=>['is_active'=>true],'rules'=>['required','exists:products,id']],['name'=>'batch_no','label'=>'Batch Number','rules'=>['required','string','max:100']],['name'=>'manufacturing_date','label'=>'Manufacturing Date','type'=>'date','rules'=>['nullable','date']],['name'=>'expiry_date','label'=>'Expiry Date','type'=>'date','rules'=>['nullable','date','after_or_equal:manufacturing_date']],['name'=>'purchase_price','label'=>'Purchase Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'quantity','label'=>'Quantity','type'=>'number','step'=>'0.001','rules'=>['required','numeric','min:0']],['name'=>'reserved_quantity','label'=>'Reserved Quantity','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0']],['name'=>'low_stock_alert','label'=>'Low Stock Alert','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0']]],
-        ],
+        
         'inventory'=>[
             'label'=>'Stock','group'=>'Inventory','singular'=>'Stock Record','model'=>InventoryBatch::class,'with'=>['product','warehouse'],'search'=>['batch_no'],'can_create'=>false,'can_delete'=>false,
             'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'batch_no','label'=>'Batch'],['key'=>'quantity','label'=>'Quantity'],['key'=>'reserved_quantity','label'=>'Reserved'],['key'=>'low_stock_alert','label'=>'Low Stock Level'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date']],

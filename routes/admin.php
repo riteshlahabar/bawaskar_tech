@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\Assets\AssetController;
 use App\Http\Controllers\Admin\Attendance\AttendanceController;
 use App\Http\Controllers\Admin\Auth\LoginController;
-use App\Http\Controllers\Admin\Batches\BatchController;
 use App\Http\Controllers\Admin\Brands\BrandController;
 use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Collections\CollectionController;
@@ -46,7 +45,6 @@ use App\Http\Controllers\Admin\StorefrontFooterLinks\StorefrontFooterLinkControl
 use App\Http\Controllers\Admin\StorefrontSectionProducts\StorefrontSectionProductController;
 use App\Http\Controllers\Admin\StorefrontSections\StorefrontSectionController;
 use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockController;
-use App\Http\Controllers\Admin\StorefrontRows\StorefrontRowController;
 use App\Http\Controllers\Admin\Imports\CommonImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,12 +60,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('common-import/{module}', [CommonImportController::class, 'store'])->name('common-import.store');
         Route::get('/', [DashboardController::class, 'erp'])->name('dashboard');
         Route::get('dashboard/hrms', [DashboardController::class, 'hrms'])->name('dashboard.hrms');
-        Route::get('storefront-rows/{row}', [StorefrontRowController::class, 'show'])->name('storefront-rows.show');
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
             'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,
-            'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'batches'=>BatchController::class,
+            'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,
             'internal-expenses'=>InternalExpenseController::class,'expense-categories'=>ExpenseCategoryController::class,'expense-subcategories'=>ExpenseSubcategoryController::class,

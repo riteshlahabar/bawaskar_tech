@@ -77,6 +77,48 @@
                     <i class="fa-solid fa-file-import"></i><span class="d-none d-xl-inline ms-1">Import</span>
                 </button>
             </form>
+            <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#importModal{{ $module['key'] }}" title="Import Excel/CSV" aria-label="Import Excel/CSV">
+                <i class="fa-solid fa-file-import"></i><span class="d-none d-xl-inline ms-1">Import</span>
+            </button>
+
+            <div class="modal fade" id="importModal{{ $module['key'] }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Import {{ $module['label'] ?? $pageTitle }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data">
+                            @csrf
+
+                            <div class="modal-body">
+                                <div class="alert alert-info small mb-3">
+                                    Download sample file, fill data, then upload here. This import affects only current submenu: <strong>{{ $module['label'] ?? $pageTitle }}</strong>.
+                                </div>
+
+                                <a href="{{ route('admin.common-import.sample', ['module' => $module['key']]) }}" class="btn btn-outline-success w-100 mb-3">
+                                    <i class="fa-solid fa-download me-1"></i> Download Sample Excel / CSV
+                                </a>
+
+                                <label class="form-label">Select Excel / CSV File</label>
+                                <input type="file" name="import_file" accept=".csv,.txt,.xlsx" class="form-control" required>
+
+                                <div class="form-text">
+                                    You can import one placement or all placements. Rows not included in file will not be changed.
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-file-import me-1"></i> Import
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="dropdown">
                 <button class="btn btn-outline-secondary admin-toolbar-icon dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="iconoir-view-grid"></i></button>
                 <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">

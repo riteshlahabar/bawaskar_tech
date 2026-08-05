@@ -490,4 +490,99 @@ class CommonImportController extends Controller
 
         return trim((string) $header, '_');
     }
+
+    public function sample(string $module)
+    {
+        abort_unless(in_array($module, $this->allowedModules, true), 404);
+
+        $moduleConfig = config('admin.modules.'.$module);
+        abort_unless($moduleConfig, 404);
+
+        $headers = $this->sampleHeaders($module, $moduleConfig);
+        $row = $this->sampleRow($module, $headers);
+
+        $fileName = str_replace('-', '_', $module).'_sample.csv';
+
+        return response()->streamDownload(function () use ($headers, $row) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, $headers);
+            fputcsv($handle, $row);
+            fclose($handle);
+        }, $fileName, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
+
+    private function sampleHeaders(string $module, array $moduleConfig): array
+    {
+        $fields = collect($moduleConfig['fields'] ?? [])
+            ->pluck('name')
+            ->filter()
+            ->values()
+            ->all();
+
+        $extra = match ($module) {
+            'products' => ['category_name', 'brand_name', 'unit_short_name'],
+            'categories' => ['parent_name'],
+            'inventory', 'batches' => ['product_sku', 'warehouse_code'],
+            'storefront-banners' => ['product_sku'],
+            'storefront-sections' => ['category_name'],
+            'storefront-section-products' => ['section_key', 'product_sku'],
+            default => [],
+        };
+
+        return array_values(array_unique(array_merge($extra, $fields)));
+    }
+
+    private function sampleRow(string $module, array $headers): array
+    {
+        $examples = [
+            'placement' => 'hero_main',
+            'title' => 'Premium Pesticides & Fertilizers',
+            'subtitle' => 'Farmer Special Offer',
+            'description' => 'Better crop protection and growth',
+            'button_text' => 'Shop Now',
+            'button_url' => '',
+            'product_sku' => 'PES001',
+            'image_path' => 'uploads/storefront/banners/banner1.jpg',
+            'sort_order' => '1',
+            'is_active' => '1',
+
+            'category_name' => 'Pesticides',
+            'brand_name' => 'Bawasakar',
+            'unit_short_name' => 'ltr',
+            'sku' => 'PES001',
+            'name' => 'Premium Pesticide',
+            'product_type' => 'fertilizer',
+            'hsn_code' => '3808',
+            'gst_percent' => '18',
+            'mrp' => '500',
+            'dealer_price' => '420',
+            'customer_price' => '480',
+            'primary_image' => 'uploads/products/pesticide.jpg',
+            'is_featured' => '1',
+            'is_visible_to_dealers' => '1',
+            'is_visible_to_customers' => '1',
+
+            'short_name' => 'ltr',
+            'unit_type' => 'volume',
+            'decimal_precision' => '2',
+
+            'warehouse_code' => 'WH001',
+            'code' => 'WH001',
+            'batch_no' => 'BATCH001',
+            'quantity' => '100',
+            'reserved_quantity' => '0',
+            'low_stock_alert' => '10',
+            'expiry_date' => date('Y-m-d', strtotime('+1 year')),
+
+            'section_key' => 'featured_products',
+            'section_type' => 'product',
+            'source_type' => 'manual',
+            'product_limit' => '10',
+        ];
+
+        return array_map(fn ($header) => $examples[$header] ?? '', $headers);
+    }
+
 }

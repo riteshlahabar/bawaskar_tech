@@ -56,6 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
     Route::middleware(['auth', 'admin'])->group(function (): void {
         Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
+        Route::get('common-import/{module}/sample', [CommonImportController::class, 'sample'])->name('common-import.sample');
         Route::post('common-import/{module}', [CommonImportController::class, 'store'])->name('common-import.store');
         Route::get('/', [DashboardController::class, 'erp'])->name('dashboard');
         Route::get('dashboard/hrms', [DashboardController::class, 'hrms'])->name('dashboard.hrms');

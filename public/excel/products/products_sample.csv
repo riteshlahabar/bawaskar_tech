@@ -1,0 +1,2 @@
+category_name,brand_name,unit_short_name,category_id,brand_id,unit_id,sku,name,product_type,hsn_code,gst_percent,mrp,dealer_price,customer_price,description,primary_image,sort_order,is_featured,is_visible_to_dealers,is_visible_to_customers,is_active
+Pesticides,Bawasakar,ltr,,,,PES001,"Sample Name",pesticide,3808,18,500,420,480,"Sample product description",uploads/products/pesticide.jpg,1,1,1,1,1

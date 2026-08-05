@@ -498,6 +498,14 @@ class CommonImportController extends Controller
         $moduleConfig = config('admin.modules.'.$module);
         abort_unless($moduleConfig, 404);
 
+        $sampleFile = public_path('excel/'.$module.'/'.$module.'_sample.csv');
+
+        if (is_file($sampleFile)) {
+            return response()->download($sampleFile, str_replace('-', '_', $module).'_sample.csv', [
+                'Content-Type' => 'text/csv',
+            ]);
+        }
+
         $headers = $this->sampleHeaders($module, $moduleConfig);
         $row = $this->sampleRow($module, $headers);
 

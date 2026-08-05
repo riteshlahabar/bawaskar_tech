@@ -51,6 +51,10 @@
     $promoBanner1 = $cmsBanner('promo_small', 1);
     $promoBanner2 = $cmsBanner('promo_small', 2);
     $promoBanner3 = $cmsBanner('promo_small', 3);
+    $middlePromo0 = $cmsBanner('middle_promo', 0);
+    $middlePromo1 = $cmsBanner('middle_promo', 1);
+    $footerPromo0 = $cmsBanner('footer_promo', 0);
+    $footerPromo1 = $cmsBanner('footer_promo', 1);
 @endphp
 
     <!-- Loader Start -->
@@ -3296,7 +3300,7 @@
                 <div class="col-lg-6">
                     <div class="banner-contain-3 hover-effect">
                         <div>
-                            <img src="{{ asset('fastkart-store/images/grocery/banner/6.jpg') }}" class="bg-img blur-up lazyload" alt="">
+                            <img src="{{ $cmsAsset($cmsField($middlePromo0, 'image_path'), 'fastkart-store/images/grocery/banner/6.jpg') }}" class="bg-img blur-up lazyload" alt="">
                             <div
                                 class="banner-detail banner-detail-2 text-dark p-center-left w-75 banner-p-sm position-relative mend-auto">
                                 <div>
@@ -3314,7 +3318,7 @@
 
                 <div class="col-lg-6">
                     <div class="banner-contain-3 hover-effect">
-                        <img src="{{ asset('fastkart-store/images/grocery/banner/7.jpg') }}" class="bg-img blur-up lazyload" alt="">
+                        <img src="{{ $cmsAsset($cmsField($middlePromo1, 'image_path'), 'fastkart-store/images/grocery/banner/7.jpg') }}" class="bg-img blur-up lazyload" alt="">
                         <div
                             class="banner-detail banner-detail-2 text-dark p-center-left w-75 banner-p-sm position-relative mend-auto">
                             <div>
@@ -4521,7 +4525,7 @@
             <div class="row gy-lg-0 gy-3">
                 <div class="col-lg-8">
                     <div class="banner-contain-3 h-100 pt-sm-5 hover-effect">
-                        <img src="{{ asset('fastkart-store/images/grocery/banner/8.png') }}" class="bg-img blur-up lazyload" alt="">
+                        <img src="{{ $cmsAsset($cmsField($footerPromo0, 'image_path'), 'fastkart-store/images/grocery/banner/8.png') }}" class="bg-img blur-up lazyload" alt="">
                         <div
                             class="banner-detail banner-p-sm p-center-right position-relative banner-minus-position banner-detail-deliver">
                             <div>
@@ -4563,7 +4567,7 @@
                 <div class="col-lg-4">
                     <div class="banner-contain-3 pt-lg-4 h-100 hover-effect">
                         <a href="javascript:void(0)">
-                            <img src="{{ asset('fastkart-store/images/grocery/banner/9.jpg') }}"
+                            <img src="{{ $cmsAsset($cmsField($footerPromo1, 'image_path'), 'fastkart-store/images/grocery/banner/9.jpg') }}"
                                 class="img-fluid social-image blur-up lazyload w-100" alt="">
                         </a>
                     </div>

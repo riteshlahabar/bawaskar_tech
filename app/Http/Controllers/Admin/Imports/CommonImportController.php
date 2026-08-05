@@ -47,8 +47,6 @@ class CommonImportController extends Controller
             'images_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
         ]);
 
-        $this->extractOptionalImages($request, $module);
-
         $rows = $this->readRows(
             $request->file('import_file')->getRealPath(),
             $request->file('import_file')->getClientOriginalExtension()
@@ -121,6 +119,102 @@ class CommonImportController extends Controller
         return back()->with('success', $message);
     }
 
+
+    private function extractImagesByExcelPaths(Request $request, array $headers, array $rows, string $module): void
+    {
+        if (! $request->hasFile('images_zip')) {
+            return;
+        }
+
+        if (! class_exists(ZipArchive::class)) {
+            throw new \RuntimeException('ZipArchive extension is required for image ZIP upload.');
+        }
+
+        $zipPath = $request->file('images_zip')->getRealPath();
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipPath) !== true) {
+            throw new \RuntimeException('Unable to open image ZIP file.');
+        }
+
+        $imageColumns = ['image_path', 'primary_image', 'product_image', 'icon_path'];
+        $wantedImages = [];
+
+        foreach ($rows as $values) {
+            $values = array_pad($values, count($headers), null);
+            $row = array_combine($headers, array_slice($values, 0, count($headers)));
+
+            if (! $row) {
+                continue;
+            }
+
+            foreach ($imageColumns as $column) {
+                if (empty($row[$column])) {
+                    continue;
+                }
+
+                $targetPath = $this->normalizeImportImagePath((string) $row[$column], $module);
+
+                if ($targetPath) {
+                    $wantedImages[basename($targetPath)] = $targetPath;
+                }
+            }
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $entry = str_replace('\\', '/', $zip->getNameIndex($i));
+            $entry = trim($entry, '/');
+
+            if ($entry === '' || str_ends_with($entry, '/') || str_contains($entry, '..')) {
+                continue;
+            }
+
+            $fileName = basename($entry);
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            if (! in_array($extension, $allowedExtensions, true)) {
+                continue;
+            }
+
+            if (! isset($wantedImages[$fileName])) {
+                continue;
+            }
+
+            $targetRelativePath = $wantedImages[$fileName];
+            $targetFullPath = public_path($targetRelativePath);
+            $targetDir = dirname($targetFullPath);
+
+            if (! is_dir($targetDir)) {
+                mkdir($targetDir, 0775, true);
+            }
+
+            copy('zip://'.$zipPath.'#'.$entry, $targetFullPath);
+        }
+
+        $zip->close();
+    }
+
+    private function normalizeImportImagePath(string $path, string $module): string
+    {
+        $path = trim(str_replace('\\', '/', $path));
+        $path = ltrim($path, '/');
+
+        if ($path === '' || str_contains($path, '..') || preg_match('/^https?:\/\//i', $path)) {
+            return '';
+        }
+
+        if (str_starts_with($path, 'uploads/')) {
+            return $path;
+        }
+
+        return match ($module) {
+            'storefront-banners' => 'uploads/storefront/banners/home-import/'.basename($path),
+            'products' => 'uploads/products/import/'.basename($path),
+            default => 'uploads/imports/'.$module.'/'.basename($path),
+        };
+    }
     private function buildData(array $row, array $fields, string $module): array
     {
         $data = [];
@@ -139,6 +233,12 @@ class CommonImportController extends Controller
             }
 
             $data[$field] = $this->castValue($field, $value);
+        }
+
+        foreach (['image_path', 'primary_image', 'product_image', 'icon_path'] as $imageField) {
+            if (! empty($data[$imageField])) {
+                $data[$imageField] = $this->normalizeImportImagePath((string) $data[$imageField], $module);
+            }
         }
 
         if (empty($data['slug']) && ! empty($data['name']) && $module === 'categories') {

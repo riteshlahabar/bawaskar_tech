@@ -131,7 +131,7 @@ return [
 
         'products'=>[
             'label'=>'Products','group'=>'Catalog','description'=>'Product master with homepage display control.','model'=>Product::class,'with'=>['category','brand','productType','unit','images'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'storefront_row','label'=>'Homepage Row'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
+            'columns'=>[['key'=>'images.0.path','label'=>'Product Image','type'=>'image'],['key'=>'storefront_banner_image','label'=>'Banner','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'storefront_row','label'=>'Homepage Row'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
                 ['name'=>'name','label'=>'Product Name','rules'=>['required','string','max:255']],
                 ['name'=>'storefront_row','label'=>'Storefront Row','type'=>'select','options'=>[

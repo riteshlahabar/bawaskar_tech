@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\Payments\PaymentController;
 use App\Http\Controllers\Admin\Pricing\PricingController;
 use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
 use App\Http\Controllers\Admin\Products\ProductController;
+use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
 use App\Http\Controllers\Admin\Reports\ReportController;
 use App\Http\Controllers\Admin\Returns\ReturnController;
 use App\Http\Controllers\Admin\Salary\SalaryController;

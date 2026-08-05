@@ -267,7 +267,7 @@ class StorefrontController extends Controller
     private function homeContent(): array
     {
         $sections = StorefrontSection::query()
-            ->with(['category', 'sectionProducts.product.images', 'sectionProducts.product.category', 'sectionProducts.product.brand', 'sectionProducts.product.unit', 'sectionProducts.product.inventoryBatches'])
+            ->with(['category', 'sectionProducts.product.images', 'sectionProducts.product.category', 'sectionProducts.product.brand', 'sectionProducts.product.unit'])
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
@@ -276,6 +276,7 @@ class StorefrontController extends Controller
             'banners' => StorefrontBanner::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderByDesc('id')
                 ->get()
                 ->groupBy('placement'),
             'sections' => $sections->keyBy('section_key'),

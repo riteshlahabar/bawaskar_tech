@@ -18,7 +18,8 @@ jobs:
           key: ${{ secrets.CPANEL_SSH_KEY }}
           passphrase: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
           port: ${{ secrets.CPANEL_PORT }}
-          script: |
+          script: |    
             cd ${{ secrets.PROJECT_PATH }}
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             php artisan optimize:clear

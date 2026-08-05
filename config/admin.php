@@ -163,7 +163,7 @@ return [
                 ['name'=>'storefront_subtitle','label'=>'Storefront Banner Subtitle','rules'=>['nullable','string','max:255']],
                 ['name'=>'storefront_description','label'=>'Storefront Banner Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
                 ['name'=>'storefront_banner_image','label'=>'Storefront Banner Image','type'=>'image','upload_dir'=>'uploads/storefront/product-banners','rules'=>['nullable','image','max:5120']],
-                ['name'=>'sort_order','label'=>'Storefront Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],
+                ['name'=>'sort_order','label'=>'Storefront Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
                 ['name'=>'additional_info','label'=>'Additional Info','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
                 ['name'=>'care_instructions','label'=>'Care Instructions','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
                 ['name'=>'manufacturer_details','label'=>'Manufacturer Details','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],

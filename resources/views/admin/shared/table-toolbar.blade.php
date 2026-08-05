@@ -89,6 +89,11 @@
 
                         <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data">
                             @csrf
+                            @foreach(request()->only(['type','placement','section_key','row_title']) as $hiddenKey => $hiddenValue)
+                                @if($hiddenValue !== null && $hiddenValue !== '')
+                                    <input type="hidden" name="{{ $hiddenKey }}" value="{{ $hiddenValue }}">
+                                @endif
+                            @endforeach
 
                             <div class="modal-body">
                                 <div class="alert alert-info small mb-3">

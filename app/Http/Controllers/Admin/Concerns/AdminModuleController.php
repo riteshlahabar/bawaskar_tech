@@ -246,6 +246,19 @@ abstract class AdminModuleController extends Controller
             $query->whereHas('section', fn (Builder $builder) => $builder->where('section_key', $request->query('section_key')));
         }
 
+        // storefront row filters
+        if ($request->filled('placement') && ($module['key'] ?? '') === 'storefront-banners') {
+            $query->where('placement', $request->query('placement'));
+        }
+
+        if ($request->filled('section_key') && ($module['key'] ?? '') === 'storefront-sections') {
+            $query->where('section_key', $request->query('section_key'));
+        }
+
+        if ($request->filled('section_key') && ($module['key'] ?? '') === 'storefront-section-products') {
+            $query->whereHas('section', fn (Builder $builder) => $builder->where('section_key', $request->query('section_key')));
+        }
+
         foreach ($module['filters'] ?? [] as $filter) {
             if ($request->filled($filter['name'])) {
                 $column = $filter['column'] ?? $filter['name'];
@@ -401,6 +414,16 @@ abstract class AdminModuleController extends Controller
             $queryKey = $field['query_key'] ?? $name;
             if ($request->filled($queryKey)) {
                 $data[$name] = $request->input($queryKey);
+            }
+        }
+
+        if (($module['key'] ?? '') === 'storefront-section-products' && $request->filled('section_key')) {
+            $section = \App\Models\Storefront\StorefrontSection::query()
+                ->where('section_key', $request->query('section_key'))
+                ->first();
+
+            if ($section) {
+                $data['section_id'] = $section->id;
             }
         }
 

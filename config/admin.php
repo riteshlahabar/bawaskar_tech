@@ -69,59 +69,22 @@ return [
         ]],        ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
             ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],['key'=>'brands','label'=>'Brand','route'=>'admin.brands.index','icon'=>'iconoir-medal'],['key'=>'units','label'=>'Unit','route'=>'admin.units.index','icon'=>'iconoir-ruler'],['key'=>'inventory','label'=>'Stock','route'=>'admin.inventory.index','icon'=>'iconoir-package'],['key'=>'warehouses','label'=>'Warehouse','route'=>'admin.warehouses.index','icon'=>'iconoir-home-alt'],['key'=>'batches','label'=>'Batch & Expiry','route'=>'admin.batches.index','icon'=>'iconoir-calendar'],]],
         ['label'=>'Storefront','id'=>'storefrontMenu','icon'=>'iconoir-www','items'=>[
-            ['key'=>'sf-row-1-main-banner','label'=>'Row 1 - Main Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'hero_main','row_title'=>'Row 1 - Main Banner']],
-            ['key'=>'sf-row-2-small-banners','label'=>'Row 2 - Small Banners','route'=>'admin.storefront-banners.index','params'=>['placement'=>'promo_small','row_title'=>'Row 2 - Small Banners']],
-            ['key'=>'sf-row-3-shop-categories','label'=>'Row 3 - Shop By Categories','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'shop_by_categories','row_title'=>'Row 3 - Shop By Categories']],
-
-            ['key'=>'sf-row-4-product-section','label'=>'Row 4 - Product Section','children'=>[
-                ['key'=>'sf-row-4-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_4_product_section','row_title'=>'Row 4 - Product Section Heading']],
-                ['key'=>'sf-row-4-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_4_product_section','row_title'=>'Row 4 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-5-bank-offers','label'=>'Row 5 - Bank & Wallet Offers','route'=>'admin.storefront-banners.index','params'=>['placement'=>'bank_offer','row_title'=>'Row 5 - Bank & Wallet Offers']],
-
-            ['key'=>'sf-row-6-product-special','label'=>'Row 6 - Product + Special Offer','children'=>[
-                ['key'=>'sf-row-6-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_6_product_section','row_title'=>'Row 6 - Product Section Heading']],
-                ['key'=>'sf-row-6-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_6_product_section','row_title'=>'Row 6 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-7-strip-banner','label'=>'Row 7 - Strip Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'strip_banner','row_title'=>'Row 7 - Strip Banner']],
-
-            ['key'=>'sf-row-8-product-section','label'=>'Row 8 - Product Section','children'=>[
-                ['key'=>'sf-row-8-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_8_product_section','row_title'=>'Row 8 - Product Section Heading']],
-                ['key'=>'sf-row-8-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_8_product_section','row_title'=>'Row 8 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-9-product-section','label'=>'Row 9 - Product Section','children'=>[
-                ['key'=>'sf-row-9-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_9_product_section','row_title'=>'Row 9 - Product Section Heading']],
-                ['key'=>'sf-row-9-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_9_product_section','row_title'=>'Row 9 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-10-two-banners','label'=>'Row 10 - Two Banners','route'=>'admin.storefront-banners.index','params'=>['placement'=>'middle_promo','row_title'=>'Row 10 - Two Banners']],
-
-            ['key'=>'sf-row-11-product-section','label'=>'Row 11 - Product Section','children'=>[
-                ['key'=>'sf-row-11-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_11_product_section','row_title'=>'Row 11 - Product Section Heading']],
-                ['key'=>'sf-row-11-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_11_product_section','row_title'=>'Row 11 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-12-product-section','label'=>'Row 12 - Product Section','children'=>[
-                ['key'=>'sf-row-12-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_12_product_section','row_title'=>'Row 12 - Product Section Heading']],
-                ['key'=>'sf-row-12-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_12_product_section','row_title'=>'Row 12 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-13-delivery-banner','label'=>'Row 13 - Delivery Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'footer_promo','row_title'=>'Row 13 - Delivery Banner']],
-
-            ['key'=>'sf-row-14-product-section','label'=>'Row 14 - Product Section','children'=>[
-                ['key'=>'sf-row-14-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_14_product_section','row_title'=>'Row 14 - Product Section Heading']],
-                ['key'=>'sf-row-14-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_14_product_section','row_title'=>'Row 14 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-15-product-section','label'=>'Row 15 - Product Section','children'=>[
-                ['key'=>'sf-row-15-heading','label'=>'Heading','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_15_product_section','row_title'=>'Row 15 - Product Section Heading']],
-                ['key'=>'sf-row-15-products','label'=>'Products','route'=>'admin.storefront-section-products.index','params'=>['section_key'=>'row_15_product_section','row_title'=>'Row 15 - Product Section Products']],
-            ]],
-
-            ['key'=>'sf-row-16-blog','label'=>'Row 16 - Blog','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_16_blog','row_title'=>'Row 16 - Blog']],
+            ['key'=>'sf-row-1-main-banner','label'=>'Row 1 - Main Banner','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-1-main-banner']],
+            ['key'=>'sf-row-2-small-banners','label'=>'Row 2 - Small Banners','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-2-small-banners']],
+            ['key'=>'sf-row-3-shop-by-categories','label'=>'Row 3 - Shop By Categories','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-3-shop-by-categories']],
+            ['key'=>'sf-row-4-product-section','label'=>'Row 4 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-4-product-section']],
+            ['key'=>'sf-row-5-bank-wallet-offers','label'=>'Row 5 - Bank & Wallet Offers','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-5-bank-wallet-offers']],
+            ['key'=>'sf-row-6-top-selling-special','label'=>'Row 6 - Top Selling + Special','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-6-top-selling-special']],
+            ['key'=>'sf-row-7-strip-banner','label'=>'Row 7 - Small Strip Banner','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-7-strip-banner']],
+            ['key'=>'sf-row-8-breakfast-dairy','label'=>'Row 8 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-8-breakfast-dairy']],
+            ['key'=>'sf-row-9-chemist-store','label'=>'Row 9 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-9-chemist-store']],
+            ['key'=>'sf-row-10-two-banners','label'=>'Row 10 - Two Banners','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-10-two-banners']],
+            ['key'=>'sf-row-11-drinks','label'=>'Row 11 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-11-drinks']],
+            ['key'=>'sf-row-12-grocery-staples','label'=>'Row 12 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-12-grocery-staples']],
+            ['key'=>'sf-row-13-delivery-banner','label'=>'Row 13 - Delivery Banner','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-13-delivery-banner']],
+            ['key'=>'sf-row-14-personal-care','label'=>'Row 14 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-14-personal-care']],
+            ['key'=>'sf-row-15-kitchen-dining','label'=>'Row 15 - Product Section','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-15-kitchen-dining']],
+            ['key'=>'sf-row-16-blog','label'=>'Row 16 - Blog','route'=>'admin.storefront-rows.show','params'=>['row'=>'row-16-blog']],
         ]],        ['label'=>'Finance','id'=>'financeMenu','icon'=>'iconoir-dollar-circle','items'=>[
             ['key'=>'payments','label'=>'Payments','route'=>'admin.payments.index','icon'=>'iconoir-credit-card'],['key'=>'collections','label'=>'Collections','route'=>'admin.collections.index','icon'=>'iconoir-wallet'],['key'=>'outstanding','label'=>'Outstanding','route'=>'admin.outstanding.index','icon'=>'iconoir-graph-up'],]],
         ['label'=>'Expense','id'=>'companyExpenseMenu','icon'=>'iconoir-receive-dollars','items'=>[

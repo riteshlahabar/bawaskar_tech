@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\StorefrontFooterLinks\StorefrontFooterLinkControl
 use App\Http\Controllers\Admin\StorefrontSectionProducts\StorefrontSectionProductController;
 use App\Http\Controllers\Admin\StorefrontSections\StorefrontSectionController;
 use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockController;
+use App\Http\Controllers\Admin\StorefrontRows\StorefrontRowController;
 use App\Http\Controllers\Admin\Imports\CommonImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('common-import/{module}', [CommonImportController::class, 'store'])->name('common-import.store');
         Route::get('/', [DashboardController::class, 'erp'])->name('dashboard');
         Route::get('dashboard/hrms', [DashboardController::class, 'hrms'])->name('dashboard.hrms');
+        Route::get('storefront-rows/{row}', [StorefrontRowController::class, 'show'])->name('storefront-rows.show');
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,

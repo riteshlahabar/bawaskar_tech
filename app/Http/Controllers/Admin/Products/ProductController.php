@@ -135,4 +135,15 @@ class ProductController extends AdminModuleController
             );
         }
     }
+
+    protected function mutateValidatedDataBeforeSave(array $data): array
+    {
+        $data['sort_order'] = $data['sort_order'] ?? 0;
+
+        if ($data['sort_order'] === '') {
+            $data['sort_order'] = 0;
+        }
+
+        return $data;
+    }
 }

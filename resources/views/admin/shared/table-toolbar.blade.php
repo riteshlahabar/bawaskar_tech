@@ -1,7 +1,7 @@
 @php
     $query = request()->query();
     $exportQuery = request()->except(['page']);
-    $resetQuery = request()->only(['type']);
+    $resetQuery = request()->only(['type','placement','section_key','row_title']);
     $searchColumns = $module['search'] ?? [];
     $columnLabels = collect($module['columns'] ?? [])->keyBy('key');
     $hasTypeFilter = collect($module['filters'] ?? [])->contains(fn ($filter) => ($filter['name'] ?? '') === 'type');
@@ -9,9 +9,11 @@
 <div class="admin-table-toolbar mb-3">
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2">
         <form class="d-flex flex-wrap align-items-end gap-2 flex-grow-1" method="GET">
-            @if(request()->filled('type'))
-                <input type="hidden" name="type" value="{{ request('type') }}">
-            @endif
+            @foreach(request()->only(['type','placement','section_key','row_title']) as $hiddenKey => $hiddenValue)
+                @if($hiddenValue !== null && $hiddenValue !== '')
+                    <input type="hidden" name="{{ $hiddenKey }}" value="{{ $hiddenValue }}">
+                @endif
+            @endforeach
 
             <div class="admin-toolbar-search">
                 <label class="form-label small text-muted mb-1">Search</label>

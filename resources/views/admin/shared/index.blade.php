@@ -8,7 +8,7 @@
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#salaryModal"><i class="iconoir-dollar-circle me-1"></i>Generate Salary</button>
             @endif
             @if($module['can_create'] ?? true)
-                <a href="{{ route($module['route'].'.create', request()->only(['type'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $module['singular'] }}</a>
+                <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $module['singular'] }}</a>
             @endif
         </div>
         @include('admin.shared.table-toolbar')

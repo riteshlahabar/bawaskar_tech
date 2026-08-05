@@ -77,6 +77,14 @@ class CommonImportController extends Controller
             }
 
             try {
+                if ($request->filled('placement') && $module === 'storefront-banners') {
+                    $row['placement'] = $request->query('placement');
+                }
+
+                if ($request->filled('section_key') && in_array($module, ['storefront-sections', 'storefront-section-products'], true)) {
+                    $row['section_key'] = $request->query('section_key');
+                }
+
                 $data = $this->buildData($row, $fields, $module);
                 $data = $this->resolveRelations($data, $row, $module);
                 $this->applyStorefrontBannerProductLink($data, $row, $module);

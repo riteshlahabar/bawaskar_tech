@@ -100,8 +100,11 @@
                                 <label class="form-label">Select Excel / CSV File</label>
                                 <input type="file" name="import_file" accept=".csv,.txt,.xlsx" class="form-control" required>
 
+                                <label class="form-label mt-3">Select Images ZIP File <span class="text-muted">(Optional)</span></label>
+                                <input type="file" name="images_zip" accept=".zip" class="form-control">
+
                                 <div class="form-text">
-                                    You can import one placement or all placements. Rows not included in file will not be changed.
+                                    Excel/CSV is required. Images ZIP is optional. If uploaded, images will be extracted automatically. Rows not included in file will not be changed.
                                 </div>
                             </div>
 

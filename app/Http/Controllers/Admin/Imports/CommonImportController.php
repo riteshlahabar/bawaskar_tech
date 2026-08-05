@@ -44,7 +44,10 @@ class CommonImportController extends Controller
 
         $request->validate([
             'import_file' => ['required', 'file', 'mimes:csv,txt,xlsx', 'max:10240'],
+            'images_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
         ]);
+
+        $this->extractOptionalImages($request, $module);
 
         $rows = $this->readRows(
             $request->file('import_file')->getRealPath(),

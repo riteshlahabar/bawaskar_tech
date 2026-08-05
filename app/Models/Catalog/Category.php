@@ -3,6 +3,7 @@
 namespace App\Models\Catalog;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Category extends Model
 {
@@ -21,5 +22,31 @@ class Category extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(CategoryTranslation::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Category $category): void {
+            if (blank($category->slug) && filled($category->name)) {
+                $category->slug = static::generateUniqueSlug($category->name, $category->id);
+            }
+        });
+    }
+
+    protected static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($name);
+        $slug = $baseSlug;
+        $count = 1;
+
+        while (static::query()
+            ->where('slug', $slug)
+            ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+            ->exists()) {
+            $slug = $baseSlug.'-'.$count;
+            $count++;
+        }
+
+        return $slug;
     }
 }

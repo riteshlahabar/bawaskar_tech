@@ -106,7 +106,7 @@ return [
         'categories'=>[
             'label'=>'Categories','group'=>'Catalog','model'=>Category::class,'search'=>['name','slug'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'name','label'=>'Name'],['key'=>'slug','label'=>'Slug'],['key'=>'sort_order','label'=>'Sale Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'name','label'=>'Category Name','rules'=>['required','string','max:255']],['name'=>'slug','label'=>'Slug','rules'=>['nullable','string','max:255','unique:categories,slug,{id}'],'help'=>'Leave blank to generate from the name.'],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
+            'fields'=>[['name'=>'name','label'=>'Category Name','rules'=>['required','string','max:255']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
         ],
         'brands'=>[
             'label'=>'Brands','group'=>'Catalog','model'=>Brand::class,'search'=>['name'],'status_column'=>'is_active','status_options'=>$active,
@@ -122,7 +122,7 @@ return [
             'columns'=>[['key'=>'name','label'=>'Product Type'],['key'=>'slug','label'=>'Slug'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
                 ['name'=>'name','label'=>'Product Type Name','rules'=>['required','string','max:255']],
-                ['name'=>'slug','label'=>'Slug','rules'=>['nullable','string','max:255','unique:product_types,slug,{id}']],
+                
                 ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
                 ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],

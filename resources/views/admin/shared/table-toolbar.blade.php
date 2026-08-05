@@ -70,6 +70,13 @@
                 <span class="badge bg-primary-subtle text-primary align-self-center px-3 py-2">{{ str(request('type'))->title() }} View</span>
             @endif
 
+            <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data" class="d-inline admin-import-form">
+                @csrf
+                <input type="file" name="import_file" accept=".csv,.txt,.xlsx" class="d-none" id="import-file-{{ $module['key'] }}" onchange="if(this.files.length){this.form.submit();}">
+                <button class="btn btn-outline-primary admin-toolbar-icon" type="button" onclick="document.getElementById('import-file-{{ $module['key'] }}').click();" title="Import Excel/CSV" aria-label="Import Excel/CSV">
+                    <i class="fa-solid fa-file-import"></i><span class="d-none d-xl-inline ms-1">Import</span>
+                </button>
+            </form>
             <div class="dropdown">
                 <button class="btn btn-outline-secondary admin-toolbar-icon dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="iconoir-view-grid"></i></button>
                 <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">

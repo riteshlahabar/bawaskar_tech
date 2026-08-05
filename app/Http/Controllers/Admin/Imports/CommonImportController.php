@@ -57,6 +57,8 @@ class CommonImportController extends Controller
         }
 
         $headers = array_map(fn ($header) => $this->normalizeHeader((string) $header), array_shift($rows));
+
+        $this->extractImagesByExcelPaths($request, $headers, $rows, $module);
         $model = $moduleConfig['model'];
         $fields = collect($moduleConfig['fields'] ?? [])->pluck('name')->filter()->values()->all();
 

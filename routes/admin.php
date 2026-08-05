@@ -66,7 +66,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,
+            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,
             'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'batches'=>BatchController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,

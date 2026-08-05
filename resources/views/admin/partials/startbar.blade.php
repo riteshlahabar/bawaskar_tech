@@ -99,7 +99,7 @@
                                         @if(!empty($item['children']))
                                             @php $open = collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
                                             <li><a class="submenu-title admin-sidebar-submenu-link {{ $open?'active':'' }}" href="javascript:void(0)">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
-    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>
+    @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
 <span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
     <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i>
@@ -107,7 +107,7 @@
 <span>{{ $child['label'] }}</span></a></li>@endforeach</ul></li>
                                         @else
                                             <li><a class="admin-sidebar-submenu-link {{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
-    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>
+    @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
 <span>{{ $item['label'] }}</span></a></li>
                                         @endif

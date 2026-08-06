@@ -1041,6 +1041,8 @@
         </div>
     </section>
     <!-- Product Fruit & Vegetables Section End -->
+
+    
     <!-- Row 5 Bank Wallet Offers Start -->
     <section class="bank-section overflow-hidden">
         <div class="container-fluid-lg">
@@ -1082,8 +1084,7 @@
         </div>
     </section>
     <!-- Row 5 Bank Wallet Offers End -->
-
-    <!-- Deal Section Start -->
+<!-- Deal Section Start -->
     <section class="product-section product-section-3">
         <div class="container-fluid-lg">
             <div class="title">

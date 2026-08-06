@@ -186,7 +186,7 @@ class StorefrontController extends Controller
             ])
             ->withCount(['products' => fn (Builder $query) => $query->visibleFor('customer')])
             ->where('is_active', true)
-            ->whereNull('parent_id')
+            
             ->orderBy('sort_order')
             ->limit(12)
             ->get();

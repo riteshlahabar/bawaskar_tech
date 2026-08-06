@@ -695,9 +695,14 @@ class CommonImportController extends Controller
 
     private function syncProductImage(Product $product, string $path): void
     {
+        $path = $this->normalizeImportImagePath($path, 'products');
+
         ProductImage::query()->updateOrCreate(
             ['product_id' => $product->id, 'is_primary' => true],
-            ['path' => trim($path, '/'), 'sort_order' => 1]
+            [
+                'path' => trim($path, '/'),
+                'sort_order' => 1,
+            ]
         );
     }
 

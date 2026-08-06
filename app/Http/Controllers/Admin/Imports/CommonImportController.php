@@ -88,6 +88,10 @@ class CommonImportController extends Controller
                     $row['section_key'] = $request->query('section_key');
                 }
 
+                if ($module === 'products') {
+                    $this->ensureProductImportMasters($row);
+                }
+
                 $data = $this->buildData($row, $fields, $module);
                 $data = $this->resolveRelations($data, $row, $module);
                 $this->applyStorefrontBannerProductLink($data, $row, $module);

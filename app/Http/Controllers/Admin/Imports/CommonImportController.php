@@ -7,6 +7,7 @@ use App\Models\Catalog\Brand;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductImage;
+use App\Models\Catalog\ProductType;
 use App\Models\Catalog\Unit;
 use App\Models\Inventory\Warehouse;
 use App\Models\Storefront\StorefrontSection;
@@ -90,7 +91,8 @@ class CommonImportController extends Controller
                 $this->applyStorefrontBannerProductLink($data, $row, $module);
 
                 $productImagePath = $this->firstFilled($row, ['primary_image', 'image_path', 'product_image']);
-                unset($data['primary_image']);
+                $productGalleryPaths = $this->galleryImagePaths($this->firstFilled($row, ['gallery_images', 'gallery_image', 'product_gallery']));
+                unset($data['primary_image'], $data['gallery_images']);
 
                 $where = $this->uniqueWhere($data, $module);
 
@@ -109,8 +111,14 @@ class CommonImportController extends Controller
                     }
                 }
 
-                if ($module === 'products' && $record instanceof Product && $productImagePath) {
-                    $this->syncProductImage($record, $productImagePath);
+                if ($module === 'products' && $record instanceof Product) {
+                    if ($productImagePath) {
+                        $this->syncProductImage($record, $productImagePath);
+                    }
+
+                    if ($productGalleryPaths !== []) {
+                        $this->syncProductGalleryImages($record, $productGalleryPaths);
+                    }
                 }
             } catch (\Throwable $e) {
                 $failed++;
@@ -147,7 +155,7 @@ class CommonImportController extends Controller
             throw new \RuntimeException('Unable to open image ZIP file.');
         }
 
-        $imageColumns = ['image_path', 'primary_image', 'product_image', 'icon_path'];
+        $imageColumns = ['image_path', 'primary_image', 'product_image', 'gallery_images', 'icon_path'];
         $wantedImages = [];
 
         foreach ($rows as $values) {
@@ -163,10 +171,16 @@ class CommonImportController extends Controller
                     continue;
                 }
 
-                $targetPath = $this->normalizeImportImagePath((string) $row[$column], $module);
+                $imageValues = $column === 'gallery_images'
+                    ? (preg_split('/[|;]/', (string) $row[$column]) ?: [])
+                    : [(string) $row[$column]];
 
-                if ($targetPath) {
-                    $wantedImages[basename($targetPath)] = $targetPath;
+                foreach ($imageValues as $imageValue) {
+                    $targetPath = $this->normalizeImportImagePath((string) $imageValue, $module);
+
+                    if ($targetPath) {
+                        $wantedImages[basename($targetPath)] = $targetPath;
+                    }
                 }
             }
         }
@@ -273,6 +287,11 @@ class CommonImportController extends Controller
         $unit = $this->findUnit($row);
         if ($unit && $module === 'products') {
             $data['unit_id'] = $unit->id;
+        }
+
+         $productType = $this->findByName(ProductType::class, $this->firstFilled($row, ['product_type', 'product_type_name']));
+        if ($productType && $module === 'products') {
+            $data['product_type_id'] = $productType->id;
         }
 
         $warehouse = $this->findWarehouse($row);
@@ -589,6 +608,45 @@ class CommonImportController extends Controller
         );
     }
 
+        private function galleryImagePaths(?string $value): array
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return [];
+        }
+
+        $items = preg_split('/[|;]/', $value) ?: [];
+
+        return collect($items)
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->map(fn ($path) => $this->normalizeImportImagePath($path, 'products'))
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function syncProductGalleryImages(Product $product, array $paths): void
+    {
+        $startOrder = (int) ProductImage::query()
+            ->where('product_id', $product->id)
+            ->max('sort_order');
+
+        foreach ($paths as $index => $path) {
+            ProductImage::query()->updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'path' => trim($path, '/'),
+                ],
+                [
+                    'is_primary' => false,
+                    'sort_order' => $startOrder + $index + 1,
+                ]
+            );
+        }
+    }
+
     private function bumpCacheVersion(string $module): void
     {
         if (in_array($module, ['products', 'categories', 'brands', 'units', 'inventory', 'batches'], true)) {
@@ -643,7 +701,7 @@ class CommonImportController extends Controller
             ->all();
 
         $extra = match ($module) {
-            'products' => ['category_name', 'brand_name', 'unit_short_name'],
+            'products' => ['product_type', 'category_name', 'brand_name', 'unit_short_name', 'gallery_images'],
             'categories' => ['parent_name'],
             'inventory', 'batches' => ['product_sku', 'warehouse_code'],
             'storefront-banners' => ['product_sku'],
@@ -680,7 +738,8 @@ class CommonImportController extends Controller
             'mrp' => '500',
             'dealer_price' => '420',
             'customer_price' => '480',
-            'primary_image' => 'uploads/products/pesticide.jpg',
+            'primary_image' => 'calcium-main.jpg',
+            'gallery_images' => 'calcium-1.jpg|calcium-2.jpg|calcium-3.jpg',
             'is_featured' => '1',
             'is_visible_to_dealers' => '1',
             'is_visible_to_customers' => '1',

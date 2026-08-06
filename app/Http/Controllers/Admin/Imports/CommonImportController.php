@@ -56,7 +56,7 @@ class CommonImportController extends Controller
         );
 
         if (count($rows) < 2) {
-            return back()->with('error', 'Import file is empty or headers are missing.');
+            return back()->with('error', 'Import file is empty or headers are missing. File: '.$request->file('import_file')->getClientOriginalName().', Extension: '.$request->file('import_file')->getClientOriginalExtension().', Size: '.$request->file('import_file')->getSize().' bytes, Rows found: '.count($rows));
         }
 
         $headers = array_map(fn ($header) => $this->normalizeHeader((string) $header), array_shift($rows));
@@ -382,20 +382,46 @@ class CommonImportController extends Controller
             return $this->readXlsx($path);
         }
 
-        $rows = [];
-        $handle = fopen($path, 'r');
-
-        if (! $handle) {
+        if (! is_file($path) || filesize($path) <= 0) {
             return [];
         }
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $rows[] = $row;
+        $content = file_get_contents($path);
+
+        if ($content === false || trim($content) === '') {
+            return [];
         }
 
-        fclose($handle);
+        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content);
 
-        return $rows;
+        if (str_starts_with($content, "\xFF\xFE") || str_starts_with($content, "\xFE\xFF")) {
+            $content = mb_convert_encoding($content, 'UTF-8', 'UTF-16');
+        }
+
+        $tmp = tmpfile();
+
+        if (! $tmp) {
+            return [];
+        }
+
+        fwrite($tmp, $content);
+        rewind($tmp);
+
+        $rows = [];
+
+        while (($row = fgetcsv($tmp, 0, ',')) !== false) {
+            if ($row === [null] || $row === false) {
+                continue;
+            }
+
+            $rows[] = array_map(fn ($value) => is_string($value) ? trim($value) : $value, $row);
+        }
+
+        fclose($tmp);
+
+        return array_values(array_filter($rows, function (array $row) {
+            return collect($row)->filter(fn ($value) => trim((string) $value) !== '')->isNotEmpty();
+        }));
     }
 
     private function readXlsx(string $path): array

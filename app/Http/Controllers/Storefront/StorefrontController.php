@@ -177,13 +177,7 @@ class StorefrontController extends Controller
         $productTypeLabels = $this->productTypeLabels();
 
         $categories = Category::query()
-            ->with([
-                'children' => fn (Builder $query) => $query
-                    ->where('is_active', true)
-                    ->withCount(['products' => fn (Builder $productQuery) => $productQuery->visibleFor('customer')])
-                    ->orderBy('sort_order')
-                    ->limit(8),
-            ])
+
             ->withCount(['products' => fn (Builder $query) => $query->visibleFor('customer')])
             ->where('is_active', true)
             

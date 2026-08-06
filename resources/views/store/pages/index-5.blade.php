@@ -4442,33 +4442,71 @@
 
 
     @endif
-    <!-- Row 16 Bottom Blog Start -->
+    <!-- Blog Section Start -->
     <section class="blog-section">
         <div class="container-fluid-lg">
-            <div class="title title-4">
-                <h2>{{ data_get($bottomBlogSection, 'title') ?: 'Bottom Blog' }}</h2>
+            <div class="title">
+                <h2>Featured Blog</h2>
             </div>
 
-            @if($bottomBlogSection && data_get($bottomBlogSection, 'image_path'))
-                <a href="{{ route('store.home') }}" class="d-block">
-                    <img
-                        src="{{ $cmsAsset(data_get($bottomBlogSection, 'image_path'), 'fastkart-store/images/grocery/blog/1.jpg') }}"
-                        class="img-fluid w-100 rounded-3 blur-up lazyload"
-                        style="max-height: 320px; object-fit: cover;"
-                        alt="{{ data_get($bottomBlogSection, 'title') ?: 'Bottom Blog' }}">
-                </a>
+            <div class="slider-3-blog arrow-slider slick-height">
+                <div>
+                    <div class="blog-box ratio_50">
+                        <div class="blog-box-image">
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <img src="{{ asset('fastkart-store/images/grocery/blog/1.jpg') }}"
+                                    class="img-fluid bg-img blur-up lazyload" alt="">
+                            </a>
+                        </div>
 
-                @if(data_get($bottomBlogSection, 'subtitle'))
-                    <h5 class="text-center text-content mt-3">{{ data_get($bottomBlogSection, 'subtitle') }}</h5>
-                @endif
-            @else
-                <div class="offer-box hover-effect">
-                    <h2><span>Bottom Blog</span> Add active bottom blog section from admin.</h2>
+                        <div class="blog-detail">
+                            <label>Farm Care</label>
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <h2>Helpful tips for better farm productivity</h2>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            @endif
+
+                <div>
+                    <div class="blog-box ratio_50">
+                        <div class="blog-box-image">
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <img src="{{ asset('fastkart-store/images/grocery/blog/2.jpg') }}"
+                                    class="img-fluid bg-img blur-up lazyload" alt="">
+                            </a>
+                        </div>
+
+                        <div class="blog-detail">
+                            <label>Animal Health</label>
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <h2>How to choose trusted farm care products</h2>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="blog-box ratio_50">
+                        <div class="blog-box-image">
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <img src="{{ asset('fastkart-store/images/grocery/blog/3.jpg') }}"
+                                    class="img-fluid bg-img blur-up lazyload" alt="">
+                            </a>
+                        </div>
+
+                        <div class="blog-detail">
+                            <label>Farmer Guide</label>
+                            <a href="{{ route('store.page', ['page'=>'blog-detail']) }}">
+                                <h2>Best practices for healthy animals and better yield</h2>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
-    <!-- Row 16 Bottom Blog End -->
+    <!-- Blog Section End -->
 
     <!-- Service Section Start -->
     <section class="service-section section-b-space">

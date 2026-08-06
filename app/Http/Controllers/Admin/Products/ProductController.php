@@ -26,6 +26,18 @@ class ProductController extends AdminModuleController
             unset($data['primary_image']);
         }
 
+        unset($data['gallery_images']);
+
+        if ($request->hasFile('gallery_images')) {
+            foreach ((array) $request->file('gallery_images') as $file) {
+                if ($file && $file->isValid()) {
+                    $this->galleryImagePaths[] = $this->storePublicUpload($file, $module, [
+                        'upload_dir' => 'uploads/products/gallery',
+                    ]);
+                }
+            }
+        }
+
         return $data;
     }
 
@@ -44,6 +56,21 @@ class ProductController extends AdminModuleController
                 'is_primary' => true,
                 'sort_order' => 0,
             ]);
+        }
+
+        if ($this->galleryImagePaths !== []) {
+            $startOrder = (int) ProductImage::query()
+                ->where('product_id', $product->getKey())
+                ->max('sort_order');
+
+            foreach ($this->galleryImagePaths as $index => $path) {
+                ProductImage::query()->create([
+                    'product_id' => $product->getKey(),
+                    'path' => $path,
+                    'is_primary' => false,
+                    'sort_order' => $startOrder + $index + 1,
+                ]);
+            }
         }
 
         $product = $product->fresh(['category', 'brand', 'unit', 'images']);

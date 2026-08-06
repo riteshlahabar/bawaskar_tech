@@ -2,7 +2,7 @@
 @section('title', $pageTitle)
 @section('content')
 @php
-    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image'], true));
+    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple'], true));
 @endphp
 <div class="row admin-form-row">
     <div class="col-12">
@@ -54,6 +54,17 @@
                                         </select>
                                     @elseif($type === 'textarea')
                                         <textarea rows="{{ $field['rows'] ?? 4 }}" class="form-control @error($name)is-invalid @enderror" name="{{ $name }}">{{ $value }}</textarea>
+                                    @elseif($type === 'image_multiple')
+                                        <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple>
+                                        @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
+                                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                                @foreach($record->images as $img)
+                                                    <a href="{{ asset($img->path) }}" target="_blank">
+                                                        <img src="{{ asset($img->path) }}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     @elseif(in_array($type, ['file', 'image'], true))
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}">
                                         @if($value)

@@ -158,6 +158,7 @@ return [
                 ['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'primary_image','label'=>'Product Main Image','type'=>'image','upload_dir'=>'uploads/products','rules'=>['nullable','image','max:5120']],
+                ['name'=>'gallery_images','label'=>'Product Gallery Images','type'=>'image_multiple','upload_dir'=>'uploads/products/gallery','rules'=>['nullable','array'],'help'=>'You can select multiple images for product detail page.'],
                 ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
                 ['name'=>'storefront_title','label'=>'Storefront Banner Title','rules'=>['nullable','string','max:255']],
                 ['name'=>'storefront_subtitle','label'=>'Storefront Banner Subtitle','rules'=>['nullable','string','max:255']],

@@ -1,6 +1,14 @@
 @extends('admin.layouts.app')
 @section('title', $pageTitle)
 @section('content')
+@php
+    $submenuTitle = request()->query('row_title');
+    $submenuSingular = $module['singular'];
+
+    if (is_string($submenuTitle) && $submenuTitle !== '') {
+        $submenuSingular = preg_replace('/^Row\s+\d+\s*-\s*/i', '', $submenuTitle);
+    }
+@endphp
 <div class="card admin-table-card" data-table-key="{{ $module['key'] }}">
     <div class="card-body pt-3">
         <div class="d-flex justify-content-end gap-2 mb-3">
@@ -8,7 +16,7 @@
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#salaryModal"><i class="iconoir-dollar-circle me-1"></i>Generate Salary</button>
             @endif
             @if($module['can_create'] ?? true)
-                <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $module['singular'] }}</a>
+                <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $submenuSingular }}</a>
             @endif
         </div>
         @include('admin.shared.table-toolbar')

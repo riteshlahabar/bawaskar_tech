@@ -41,7 +41,7 @@ abstract class AdminModuleController extends Controller
         abort_unless(($module['can_create'] ?? true), 403);
         return view($this->viewName('create'), [
             'module' => $module,
-            'pageTitle' => 'Add '.$module['singular'],
+            'pageTitle' => $this->actionTitle($module, $request, 'Add'),
             'breadcrumbs' => ['Admin', $module['label'], 'Add'],
             'record' => null,
             'formData' => $this->createFormData($request, $module),
@@ -185,6 +185,18 @@ abstract class AdminModuleController extends Controller
         $module = config('admin.modules.'.$this->moduleKey);
         abort_if(! $module, 404);
         return array_merge(['key' => $this->moduleKey, 'singular' => Str::singular($module['label']), 'route' => 'admin.'.$this->moduleKey], $module);
+    }
+
+    protected function actionTitle(array $module, Request $request, string $action): string
+    {
+        $label = (string) ($module['singular'] ?? $module['label'] ?? 'Record');
+
+        if ($request->filled('row_title')) {
+            $rowTitle = (string) $request->query('row_title');
+            $label = preg_replace('/^Row\s+\d+\s*-\s*/i', '', $rowTitle) ?: $rowTitle;
+        }
+
+        return trim($action.' '.$label);
     }
 
     protected function pageTitle(array $module, Request $request): string

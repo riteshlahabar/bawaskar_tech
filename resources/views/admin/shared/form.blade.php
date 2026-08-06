@@ -22,7 +22,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ $record ? route($module['route'].'.update', $record->getKey()) : route($module['route'].'.store') }}" @if($hasUpload) enctype="multipart/form-data" @endif>
+                <form method="POST" action="{{ $record ? route($module['route'].'.update', array_merge([$record->getKey()], request()->only($submenuQueryKeys))) : route($module['route'].'.store', request()->only($submenuQueryKeys)) }}" @if($hasUpload) enctype="multipart/form-data" @endif>
                     @csrf
                     @if($record) @method('PUT') @endif
 

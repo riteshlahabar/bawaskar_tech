@@ -102,9 +102,9 @@
                                             <i class="fa-solid fa-ellipsis-vertical"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end admin-row-action-menu">
-                                            <a class="dropdown-item" href="{{ route($module['route'].'.show', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-eye"></i><span>View</span></a>
+                                            <a class="dropdown-item" href="{{ route($module['route'].'.show', $record->getKey()) }}"><i class="iconoir-eye"></i><span>View</span></a>
                                             @if($module['can_edit'] ?? true)
-                                                <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
+                                                <a class="dropdown-item" href="{{ route($module['route'].'.edit', $record->getKey()) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
                                             @endif
 
                                             @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
@@ -157,7 +157,7 @@
 
         @foreach($records as $record)
             @if($module['can_delete'] ?? true)
-                <form id="deleteForm{{ $module['key'] }}{{ $record->id }}" method="POST" action="{{ route($module['route'].'.destroy', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}" class="d-none">@csrf @method('DELETE')</form>
+                <form id="deleteForm{{ $module['key'] }}{{ $record->id }}" method="POST" action="{{ route($module['route'].'.destroy', $record->getKey()) }}" class="d-none">@csrf @method('DELETE')</form>
             @endif
             @if(in_array($module['key'], ['expenses','leaves']) && $record->status === 'pending')
                 <form id="decisionForm{{ $module['key'] }}{{ $record->id }}" method="POST" action="{{ route('admin.'.$module['key'].'.decision', $record->id) }}" class="d-none">@csrf</form>

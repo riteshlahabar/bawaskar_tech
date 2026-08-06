@@ -3,8 +3,6 @@
 @section('content')
 @php
     $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple'], true));
-    $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
-    $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
 @endphp
 <div class="row admin-form-row">
     <div class="col-12">
@@ -26,24 +24,12 @@
                     @csrf
                     @if($record) @method('PUT') @endif
 
-                    @foreach(request()->only($submenuQueryKeys) as $queryKey => $queryValue)
-                        @if(is_scalar($queryValue) && ! in_array($queryKey, $fieldNames, true))
-                            <input type="hidden" name="{{ $queryKey }}" value="{{ $queryValue }}">
-                        @endif
-                    @endforeach
-
                     <div class="row g-3">
                         @foreach($module['fields'] as $field)
                             @continue($field['display_only'] ?? false)
                             @php($name = $field['name'])
                             @php($type = $field['type'] ?? 'text')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
-                            @php($lockedBySubmenu = in_array($module['key'] ?? '', ['storefront-banners', 'storefront-sections'], true) && in_array($name, ['placement', 'section_key'], true) && request()->filled($name))
-
-                            @if($lockedBySubmenu)
-                                <input type="hidden" name="{{ $name }}" value="{{ $value }}">
-                                @continue
-                            @endif
 
                             <div class="{{ $field['col'] ?? 'col-md-6' }}">
                                 @if($type === 'checkbox')

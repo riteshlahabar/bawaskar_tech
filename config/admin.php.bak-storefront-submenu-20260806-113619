@@ -69,13 +69,11 @@ return [
         ]],        ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
             ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],['key'=>'brands','label'=>'Brand','route'=>'admin.brands.index','icon'=>'iconoir-medal'],['key'=>'units','label'=>'Unit','route'=>'admin.units.index','icon'=>'iconoir-ruler'],['key'=>'inventory','label'=>'Stock','route'=>'admin.inventory.index','icon'=>'iconoir-package'],['key'=>'warehouses','label'=>'Warehouse','route'=>'admin.warehouses.index','icon'=>'iconoir-home-alt'],]],
         ['label'=>'Storefront','id'=>'storefrontMenu','icon'=>'iconoir-www','items'=>[
-            ['key'=>'sf-row-5-bank-offers','label'=>'Row 5 - Bank & Wallet Offers','route'=>'admin.storefront-banners.index','params'=>['placement'=>'bank_offer','row_title'=>'Row 5 - Bank & Wallet Offers'],'icon'=>'iconoir-media-image'],
-            ['key'=>'sf-row-7-strip-banner','label'=>'Row 7 - Small Strip Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'strip_banner','row_title'=>'Row 7 - Small Strip Banner'],'icon'=>'iconoir-media-image'],
-            ['key'=>'sf-row-13-personal-care-banner','label'=>'Row 13 - Banner Above Personal Care','route'=>'admin.storefront-banners.index','params'=>['placement'=>'footer_promo','row_title'=>'Row 13 - Banner Above Personal Care'],'icon'=>'iconoir-media-image'],
-            ['key'=>'sf-row-16-blog','label'=>'Row 16 - Bottom Blog','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_16_blog','row_title'=>'Row 16 - Bottom Blog'],'icon'=>'iconoir-page'],
-        ]],
-
-        ['label'=>'Finance','id'=>'financeMenu','icon'=>'iconoir-dollar-circle','items'=>[
+            ['key'=>'sf-bank-wallet-offers','label'=>'Row 5 - Bank & Wallet Offers','route'=>'admin.storefront-banners.index','params'=>['placement'=>'bank_offer','row_title'=>'Bank & Wallet Offers'],'icon'=>'iconoir-media-image'],
+            ['key'=>'sf-strip-banner','label'=>'Row 7 - Small Strip Banner','route'=>'admin.storefront-banners.index','params'=>['placement'=>'strip_banner','row_title'=>'Small Strip Banner'],'icon'=>'iconoir-media-image'],
+            ['key'=>'sf-personal-care-banner','label'=>'Row 13 - Banner Above Personal Care','route'=>'admin.storefront-banners.index','params'=>['placement'=>'footer_promo','row_title'=>'Banner Above Personal Care'],'icon'=>'iconoir-media-image'],
+            ['key'=>'sf-bottom-blog','label'=>'Row 16 - Bottom Blog','route'=>'admin.storefront-sections.index','params'=>['section_key'=>'row_16_blog','row_title'=>'Bottom Blog'],'icon'=>'iconoir-page'],
+        ]],        ['label'=>'Finance','id'=>'financeMenu','icon'=>'iconoir-dollar-circle','items'=>[
             ['key'=>'payments','label'=>'Payments','route'=>'admin.payments.index','icon'=>'iconoir-credit-card'],['key'=>'collections','label'=>'Collections','route'=>'admin.collections.index','icon'=>'iconoir-wallet'],['key'=>'outstanding','label'=>'Outstanding','route'=>'admin.outstanding.index','icon'=>'iconoir-graph-up'],]],
         ['label'=>'Expense','id'=>'companyExpenseMenu','icon'=>'iconoir-receive-dollars','items'=>[
             ['key'=>'internal-expenses','label'=>'Expense List','route'=>'admin.internal-expenses.index','icon'=>'iconoir-notes'],['key'=>'expense-categories','label'=>'Category List','route'=>'admin.expense-categories.index','icon'=>'iconoir-list-select'],['key'=>'expense-subcategories','label'=>'Subcategory List','route'=>'admin.expense-subcategories.index','icon'=>'iconoir-list'],]],
@@ -249,35 +247,9 @@ return [
             'fields'=>[['name'=>'expense_no','label'=>'Expense No.','rules'=>['nullable','string','max:80','unique:internal_expenses,expense_no,{id}'],'help'=>'Leave blank to auto-generate.'],['name'=>'expense_date','label'=>'Expense Date','type'=>'date','rules'=>['required','date']],['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>InternalExpenseCategory::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:internal_expense_categories,id']],['name'=>'subcategory_id','label'=>'Subcategory','type'=>'select','option_model'=>InternalExpenseSubcategory::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:internal_expense_subcategories,id']],['name'=>'title','label'=>'Expense Title','rules'=>['required','string','max:255']],['name'=>'vendor_name','label'=>'Vendor / Party Name','rules'=>['nullable','string','max:255']],['name'=>'payment_mode','label'=>'Payment Mode','type'=>'select','options'=>['cash'=>'Cash','upi'=>'UPI','bank_transfer'=>'Bank Transfer','card'=>'Card','cheque'=>'Cheque','other'=>'Other'],'rules'=>['required','string','max:40']],['name'=>'taxable_amount','label'=>'Taxable Amount','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],['name'=>'gst_amount','label'=>'GST Amount','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],['name'=>'total_amount','label'=>'Total Amount','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'paid_by','label'=>'Paid By','type'=>'select','option_model'=>User::class,'rules'=>['nullable','exists:users,id']],['name'=>'status','label'=>'Status','type'=>'select','options'=>['draft'=>'Draft','approved'=>'Approved','paid'=>'Paid','cancelled'=>'Cancelled'],'rules'=>['required','string','max:40']],['name'=>'receipt_path','label'=>'Receipt Upload','type'=>'file','upload_dir'=>'uploads/internal-expenses','rules'=>['nullable','file','max:5120']],['name'=>'notes','label'=>'Notes','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']]],
         ],
         'storefront-banners'=>[
-            'label'=>'Home Banners','group'=>'Storefront','singular'=>'Home Banner','model'=>StorefrontBanner::class,'search'=>['placement','title','subtitle','button_text'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[
-                ['key'=>'image_path','label'=>'Image','type'=>'image'],
-                ['key'=>'placement','label'=>'Placement'],
-                ['key'=>'title','label'=>'Title'],
-                ['key'=>'subtitle','label'=>'Subtitle'],
-                ['key'=>'button_text','label'=>'Button'],
-                ['key'=>'button_url','label'=>'Button URL'],
-                ['key'=>'sort_order','label'=>'Sort Order'],
-                ['key'=>'is_active','label'=>'Status','type'=>'boolean']
-            ],
-            'fields'=>[
-                ['name'=>'placement','label'=>'Placement','type'=>'select','options'=>[
-                    'hero_main'=>'Hero Main - 1920 x 637',
-                    'promo_small'=>'Small Promo Banner - 375 x 243',
-                    'bank_offer'=>'Row 5 - Bank / Wallet Offer',
-                    'strip_banner'=>'Row 7 - Small Strip Banner',
-                    'middle_promo'=>'Row 10 - Two Promo Banners',
-                    'footer_promo'=>'Row 13 - Banner Above Personal Care'
-                ],'rules'=>['required','string','max:80']],
-                ['name'=>'title','label'=>'Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'button_text','label'=>'Button Text','rules'=>['nullable','string','max:255']],
-                ['name'=>'button_url','label'=>'Button URL','rules'=>['nullable','string','max:255']],
-                ['name'=>'image_path','label'=>'Banner Image','type'=>'image','upload_dir'=>'uploads/storefront/banners','rules'=>['nullable','image','max:5120']],
-                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]
-            ],
+            'label'=>'Home Banners','group'=>'Storefront','singular'=>'Home Banner','model'=>StorefrontBanner::class,'search'=>['placement','title','subtitle'],'status_column'=>'is_active','status_options'=>$active,
+            'columns'=>[['key'=>'image_path','label'=>'Image','type'=>'image'],['key'=>'placement','label'=>'Placement'],['key'=>'title','label'=>'Title'],['key'=>'subtitle','label'=>'Subtitle'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
+            'fields'=>[['name'=>'placement','label'=>'Placement','type'=>'select','options'=>['hero_main'=>'Hero Main - 1920 x 637','promo_small'=>'Small Promo Banner - 375 x 243','bank_offer'=>'Bank / Wallet Offer - 550 x 248','middle_promo'=>'Middle Promo Banner - 1383 x 375','footer_promo'=>'Footer Promo - 1383 x 520'],'rules'=>['required','string','max:80']],['name'=>'title','label'=>'Title','rules'=>['nullable','string','max:255']],['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],['name'=>'image_path','label'=>'Banner Image','type'=>'image','upload_dir'=>'uploads/storefront/banners','rules'=>['nullable','image','max:5120']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
         ],
         'storefront-sections'=>[
             'label'=>'Home Sections','group'=>'Storefront','singular'=>'Home Section','model'=>StorefrontSection::class,'with'=>['category'],'search'=>['section_key','title','section_type','source_type'],'status_column'=>'is_active','status_options'=>$active,

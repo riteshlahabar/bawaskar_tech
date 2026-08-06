@@ -55,7 +55,7 @@ abstract class AdminModuleController extends Controller
         abort_unless(($module['can_create'] ?? true), 403);
         $validated = $request->validate($this->rules($module));
         $record = $this->persist($this->prepareData($validated, $request, $module), null);
-        return redirect()->route($module['route'].'.edit', array_merge([$record->getKey()], $request->only(['type', 'placement', 'section_key', 'row_title'])))->with('success', $module['singular'].' created successfully.');
+        return redirect()->route($module['route'].'.edit', $record->getKey())->with('success', $module['singular'].' created successfully.');
     }
 
     public function show(int|string $id): View
@@ -101,7 +101,7 @@ abstract class AdminModuleController extends Controller
         abort_unless(($module['can_delete'] ?? true), 403);
         $record = $this->findRecord($id);
         $record->delete();
-        return redirect()->route($module['route'].'.index', request()->only(['type', 'placement', 'section_key', 'row_title']))->with('success', $module['singular'].' deleted successfully.');
+        return redirect()->route($module['route'].'.index')->with('success', $module['singular'].' deleted successfully.');
     }
 
     public function bulkDestroy(Request $request): RedirectResponse
@@ -383,7 +383,7 @@ abstract class AdminModuleController extends Controller
 
     protected function bumpCacheVersionForModule(): void
     {
-        if (! in_array($this->moduleKey, ['products', 'pricing', 'categories', 'brands', 'units', 'languages', 'translations', 'storefront-banners', 'storefront-sections', 'storefront-section-products', 'storefront-service-blocks', 'storefront-footer-links'], true)) {
+        if (! in_array($this->moduleKey, ['products', 'pricing', 'categories', 'brands', 'units', 'languages', 'translations'], true)) {
             return;
         }
 
@@ -435,15 +435,6 @@ abstract class AdminModuleController extends Controller
             if ($section) {
                 $data['section_id'] = $section->id;
             }
-        }
-
-        if (($module['key'] ?? '') === 'storefront-sections' && $request->query('section_key') === 'row_16_blog') {
-            $data['title'] = $data['title'] ?? (string) $request->query('row_title', 'Bottom Blog');
-            $data['section_type'] = $data['section_type'] ?? 'offer';
-            $data['source_type'] = $data['source_type'] ?? 'manual';
-            $data['product_limit'] = $data['product_limit'] ?? 3;
-            $data['sort_order'] = $data['sort_order'] ?? 16;
-            $data['is_active'] = $data['is_active'] ?? true;
         }
 
         return $data;

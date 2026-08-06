@@ -1042,7 +1042,6 @@
     </section>
     <!-- Product Fruit & Vegetables Section End -->
 
-    
     <!-- Row 5 Bank Wallet Offers Start -->
     <section class="bank-section overflow-hidden">
         <div class="container-fluid-lg">
@@ -1051,28 +1050,20 @@
             </div>
 
             @if($bankOfferBanners->isNotEmpty())
-                <div class="{{ $bankOfferBanners->count() > 1 ? 'slider-bank-3 arrow-slider slick-height' : 'row g-3' }}">
+                <div class="row g-3">
                     @foreach($bankOfferBanners as $bankOfferBanner)
                         @php
                             $bankOfferUrl = data_get($bankOfferBanner, 'button_url') ?: route('store.page', ['page' => 'shop-left-sidebar']);
                         @endphp
 
-                        <div class="{{ $bankOfferBanners->count() > 1 ? '' : 'col-12' }}">
+                        <div class="col-12">
                             <a href="{{ $bankOfferUrl }}" class="d-block">
                                 <img
                                     src="{{ $cmsAsset(data_get($bankOfferBanner, 'image_path'), 'fastkart-store/images/grocery/bank/price/1.svg') }}"
-                                    class="img-fluid w-100 rounded-3 blur-up lazyload"
+                                    class="img-fluid w-100 rounded-3"
                                     style="max-height: 280px; object-fit: cover;"
                                     alt="{{ data_get($bankOfferBanner, 'title') ?: 'Bank & Wallet Offers' }}">
                             </a>
-
-                            @if(data_get($bankOfferBanner, 'button_text'))
-                                <div class="text-center mt-3">
-                                    <a href="{{ $bankOfferUrl }}" class="btn theme-bg-color text-white fw-bold">
-                                        {{ data_get($bankOfferBanner, 'button_text') }}
-                                    </a>
-                                </div>
-                            @endif
                         </div>
                     @endforeach
                 </div>

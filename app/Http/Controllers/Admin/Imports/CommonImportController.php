@@ -276,6 +276,69 @@ class CommonImportController extends Controller
         return $data;
     }
 
+
+    private function ensureProductImportMasters(array $row): void
+    {
+        $categoryName = trim((string) $this->firstFilled($row, ['category_name', 'category']));
+        if ($categoryName !== '') {
+            Category::query()->firstOrCreate(
+                ['name' => $categoryName],
+                [
+                    'slug' => $this->uniqueImportSlug(Category::class, $categoryName),
+                    'is_active' => true,
+                    'sort_order' => 0,
+                ]
+            );
+        }
+
+        $brandName = trim((string) $this->firstFilled($row, ['brand_name', 'brand']));
+        if ($brandName !== '') {
+            Brand::query()->firstOrCreate(
+                ['name' => $brandName],
+                ['is_active' => true]
+            );
+        }
+
+        $productTypeName = trim((string) $this->firstFilled($row, ['product_type', 'product_type_name']));
+        if ($productTypeName !== '') {
+            ProductType::query()->firstOrCreate(
+                ['name' => $productTypeName],
+                [
+                    'slug' => $this->uniqueImportSlug(ProductType::class, $productTypeName),
+                    'description' => $productTypeName,
+                    'sort_order' => 0,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        $unitShortName = trim((string) $this->firstFilled($row, ['unit_short_name', 'unit', 'unit_name']));
+        if ($unitShortName !== '') {
+            Unit::query()->firstOrCreate(
+                ['short_name' => $unitShortName],
+                [
+                    'name' => strtoupper($unitShortName),
+                    'unit_type' => 'other',
+                    'decimal_precision' => 0,
+                    'is_active' => true,
+                ]
+            );
+        }
+    }
+
+    private function uniqueImportSlug(string $modelClass, string $name): string
+    {
+        $base = \Illuminate\Support\Str::slug($name) ?: 'import-item';
+        $slug = $base;
+        $counter = 1;
+
+        while ($modelClass::query()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
     private function resolveRelations(array $data, array $row, string $module): array
     {
         $category = $this->findCategory($row);

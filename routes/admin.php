@@ -28,6 +28,9 @@ use App\Http\Controllers\Admin\Payments\PaymentController;
 use App\Http\Controllers\Admin\Pricing\PricingController;
 use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
 use App\Http\Controllers\Admin\Products\ProductController;
+use App\Http\Controllers\Admin\ProductHomepageSections\ProductHomepageSectionController;
+use App\Http\Controllers\Admin\ProductHomepageSectionItems\ProductHomepageSectionItemController;
+use App\Http\Controllers\Admin\ProductHomepageSectionProducts\ProductHomepageSectionProductController;
 use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
 use App\Http\Controllers\Admin\Reports\ReportController;
 use App\Http\Controllers\Admin\Returns\ReturnController;
@@ -63,7 +66,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,
+            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'product-homepage-sections'=>ProductHomepageSectionController::class,'product-homepage-section-items'=>ProductHomepageSectionItemController::class,'product-homepage-section-products'=>ProductHomepageSectionProductController::class,
             'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,

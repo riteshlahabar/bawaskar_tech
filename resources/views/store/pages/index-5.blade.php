@@ -314,6 +314,9 @@
     </div>
     <!-- mobile fix menu end -->
 
+    @if(collect(data_get($homeContent ?? [], 'homepageRows', collect()))->isNotEmpty())
+        @include('store.partials.homepage-setting-sections')
+    @else
     <!-- Home Section Start -->
     <section class="home-section-2 home-section-bg pt-0 overflow-hidden">
         <div class="container-fluid p-0">
@@ -4563,6 +4566,8 @@
         </div>
     </section>
     <!-- Service Section End -->
+
+    @endif
 
     <!-- Footer Start -->
     <footer class="section-t-space footer-section-2 footer-color-2">

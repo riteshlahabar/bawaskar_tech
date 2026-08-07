@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Communication\Language;
 use App\Models\Storefront\StorefrontBanner;
 use App\Models\Storefront\StorefrontFooterLink;
@@ -260,6 +261,31 @@ class StorefrontController extends Controller
 
     private function homeContent(): array
     {
+        $homepageSections = ProductHomepageSection::query()
+            ->with(['category', 'items' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id')])
+            ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        if ($homepageSections->isNotEmpty()) {
+            return [
+                'homepageRows' => $this->resolveHomepageRows($homepageSections),
+                'homepageSettings' => $homepageSections,
+                'banners' => $this->homepageSettingBanners($homepageSections),
+                'sections' => $homepageSections->keyBy('section_key'),
+                'productSections' => $this->resolveHomeProductSections($homepageSections),
+                'services' => $this->homepageSettingItems($homepageSections, 'service_section'),
+                'topSellingProducts' => $this->topSellingProducts(),
+                'dealTimerProduct' => $this->dealTimerProduct(),
+                'footerLinks' => StorefrontFooterLink::query()
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->get()
+                    ->groupBy('link_group'),
+            ];
+        }
+
         $sections = StorefrontSection::query()
             ->with(['category', 'sectionProducts.product.images', 'sectionProducts.product.category', 'sectionProducts.product.brand', 'sectionProducts.product.unit'])
             ->where('is_active', true)
@@ -267,6 +293,8 @@ class StorefrontController extends Controller
             ->get();
 
         return [
+            'homepageRows' => collect(),
+            'homepageSettings' => collect(),
             'banners' => StorefrontBanner::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -290,10 +318,12 @@ class StorefrontController extends Controller
     private function resolveHomeProductSections(Collection $sections): Collection
     {
         return $sections
-            ->where('section_type', 'product')
-            ->map(function (StorefrontSection $section): array {
-                $limit = max(1, min(24, (int) $section->product_limit));
-                $products = $this->productsForSection($section, $limit);
+            ->filter(fn ($section): bool => in_array((string) $section->section_type, ['product', 'product_section'], true))
+            ->map(function ($section): array {
+                $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
+                $products = $section instanceof ProductHomepageSection
+                    ? $this->productsForHomepageSection($section, $limit)
+                    : $this->productsForSection($section, $limit);
 
                 return ['section' => $section, 'products' => $products];
             })
@@ -324,6 +354,95 @@ class StorefrontController extends Controller
         }
 
         return $query->storefrontOrder()->limit($limit)->get();
+    }
+
+    private function resolveHomepageRows(Collection $sections): Collection
+    {
+        return $sections->map(function (ProductHomepageSection $section): array {
+            $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
+
+            return [
+                'section' => $section,
+                'items' => $section->items->where('is_active', true)->sortBy('sort_order')->values(),
+                'products' => in_array($section->section_type, ['product_section', 'top_selling_section'], true)
+                    ? $this->productsForHomepageSection($section, $limit)
+                    : collect(),
+            ];
+        })->values();
+    }
+
+    private function homepageSettingItems(Collection $sections, string $sectionType): Collection
+    {
+        return $sections
+            ->where('section_type', $sectionType)
+            ->flatMap(fn (ProductHomepageSection $section) => $section->items->where('is_active', true))
+            ->sortBy('sort_order')
+            ->values();
+    }
+
+    private function homepageSettingBanners(Collection $sections): Collection
+    {
+        $groups = collect();
+
+        foreach ($sections as $section) {
+            $placement = match ($section->section_type) {
+                'hero_slider' => 'hero_main',
+                'top_small_banners' => 'promo_small',
+                'coupon_section' => 'bank_offer',
+                'strip_offer_banner' => 'strip_banner',
+                'offer_section' => $section->layout_type === 'big_small_banner' ? 'footer_promo' : 'middle_promo',
+                default => $section->section_key,
+            };
+
+            $items = $section->items->where('is_active', true)->sortBy('sort_order')->values();
+            if ($items->isEmpty()) {
+                continue;
+            }
+
+            $groups->put($placement, ($groups->get($placement, collect()))->merge($items));
+        }
+
+        return $groups;
+    }
+
+    private function productsForHomepageSection(ProductHomepageSection $section, int $limit): Collection
+    {
+        $query = $this->storefrontProductQuery()
+            ->where('show_on_homepage', true);
+
+        match ($section->source_type) {
+            'category_products' => $section->category_id ? $query->where('category_id', $section->category_id) : null,
+            'featured_products' => $query->where('is_featured', true),
+            'offer_products' => $query->where('is_offer_product', true),
+            'top_selling_products' => $query->where('is_top_selling', true),
+            'latest_products' => $query->latest('id'),
+            default => null,
+        };
+
+        if ($section->section_type === 'top_selling_section' && ! in_array($section->source_type, ['category_products', 'featured_products', 'offer_products', 'latest_products'], true)) {
+            $query->where('is_top_selling', true);
+        }
+
+        return $query->storefrontOrder()->limit($limit)->get();
+    }
+
+    private function topSellingProducts(): Collection
+    {
+        return $this->storefrontProductQuery()
+            ->where('show_on_homepage', true)
+            ->where('is_top_selling', true)
+            ->storefrontOrder()
+            ->limit(8)
+            ->get();
+    }
+
+    private function dealTimerProduct(): ?Product
+    {
+        return $this->storefrontProductQuery()
+            ->where('show_on_homepage', true)
+            ->where('is_deal_timer_product', true)
+            ->storefrontOrder()
+            ->first();
     }
 
     private function storefrontProductQuery(): Builder

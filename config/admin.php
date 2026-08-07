@@ -5,7 +5,6 @@ use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductHomepageSectionItem;
-use App\Models\Catalog\ProductHomepageSectionProduct;
 use App\Models\Catalog\ProductType;
 use App\Models\Catalog\Unit;
 use App\Models\Communication\AppTranslation;
@@ -32,11 +31,6 @@ use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
-use App\Models\Storefront\StorefrontBanner;
-use App\Models\Storefront\StorefrontFooterLink;
-use App\Models\Storefront\StorefrontSection;
-use App\Models\Storefront\StorefrontSectionProduct;
-use App\Models\Storefront\StorefrontServiceBlock;
 use App\Models\User;
 
 $active = ['1' => 'Active', '0' => 'Inactive'];
@@ -69,7 +63,8 @@ return [
                 ['key'=>'dealer-dispatches','label'=>'Dispatch & Delivery','route'=>'admin.dispatches.index','params'=>['type'=>'dealer'],'icon'=>'iconoir-delivery-truck'],
                 ['key'=>'dealer-returns','label'=>'Returns & Cancellation','route'=>'admin.returns.index','params'=>['type'=>'dealer'],'icon'=>'iconoir-undo-action'],
             ]],
-        ]],        ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
+        ]],
+        ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
             ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],
             ['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],
             ['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],
@@ -77,12 +72,8 @@ return [
             ['key'=>'units','label'=>'Unit','route'=>'admin.units.index','icon'=>'iconoir-ruler'],
             ['key'=>'inventory','label'=>'Stock','route'=>'admin.inventory.index','icon'=>'iconoir-package'],
             ['key'=>'warehouses','label'=>'Warehouse','route'=>'admin.warehouses.index','icon'=>'iconoir-home-alt'],
-            ['key'=>'product-homepage-sections','label'=>'Homepage Sections','route'=>'admin.product-homepage-sections.index','icon'=>'iconoir-view-grid'],
-            ['key'=>'product-homepage-section-items','label'=>'Section Items / Offers','route'=>'admin.product-homepage-section-items.index','icon'=>'iconoir-media-image'],
-            ['key'=>'product-homepage-section-products','label'=>'Section Products','route'=>'admin.product-homepage-section-products.index','icon'=>'iconoir-box-iso'],
-        ]],['label'=>'Finance','id'=>'financeMenu','icon'=>'iconoir-dollar-circle','items'=>[
-            ['key'=>'payments','label'=>'Payments','route'=>'admin.payments.index','icon'=>'iconoir-credit-card'],['key'=>'collections','label'=>'Collections','route'=>'admin.collections.index','icon'=>'iconoir-wallet'],['key'=>'outstanding','label'=>'Outstanding','route'=>'admin.outstanding.index','icon'=>'iconoir-graph-up'],]],
-        ['label'=>'Expense','id'=>'companyExpenseMenu','icon'=>'iconoir-receive-dollars','items'=>[
+            ['key'=>'homepage-settings','label'=>'Homepage Settings','route'=>'admin.homepage-settings.index','icon'=>'iconoir-www'],
+        ]],        ['label'=>'Expense','id'=>'companyExpenseMenu','icon'=>'iconoir-receive-dollars','items'=>[
             ['key'=>'internal-expenses','label'=>'Expense List','route'=>'admin.internal-expenses.index','icon'=>'iconoir-notes'],['key'=>'expense-categories','label'=>'Category List','route'=>'admin.expense-categories.index','icon'=>'iconoir-list-select'],['key'=>'expense-subcategories','label'=>'Subcategory List','route'=>'admin.expense-subcategories.index','icon'=>'iconoir-list'],]],
         ['label'=>'HRMS','items'=>[
             ['key'=>'timesheet','label'=>'Timesheet','id'=>'timesheetMenu','icon'=>'iconoir-calendar','children'=>[['key'=>'attendance','label'=>'Attendance','route'=>'admin.attendance.index','icon'=>'iconoir-check-circle'],['key'=>'leaves','label'=>'Leave','route'=>'admin.leaves.index','icon'=>'iconoir-calendar-minus'],['key'=>'bulk-attendance','label'=>'Bulk Attendance','route'=>'admin.attendance.bulk','icon'=>'iconoir-table-rows']]],['key'=>'dealer-visits','label'=>'Dealer Visits','route'=>'admin.dealer-visits.index','icon'=>'iconoir-map-pin'],['key'=>'tour-plans','label'=>'Tour Plans','route'=>'admin.tour-plans.index','icon'=>'iconoir-route'],['key'=>'expenses','label'=>'Expenses','route'=>'admin.expenses.index','icon'=>'iconoir-receive-dollars'],['key'=>'salary','label'=>'Salary & Payroll','route'=>'admin.salary.index','icon'=>'iconoir-coins'],['key'=>'targets','label'=>'Targets & Commission','route'=>'admin.targets.index','icon'=>'iconoir-target'],['key'=>'assets','label'=>'Salesman Assets','route'=>'admin.assets.index','icon'=>'iconoir-laptop'],]],
@@ -111,11 +102,22 @@ return [
             'fields'=>[['name'=>'courier_code','label'=>'Courier Code','rules'=>['nullable','string','max:50','unique:couriers,courier_code,{id}'],'help'=>'Leave blank to auto-generate.'],['name'=>'name','label'=>'Full Name','rules'=>['required','string','max:255']],['name'=>'mobile','label'=>'Mobile','rules'=>['required','string','max:20','unique:couriers,mobile,{id}']],['name'=>'alternate_mobile','label'=>'Alternate Mobile','rules'=>['nullable','string','max:20']],['name'=>'email','label'=>'Email','type'=>'email','rules'=>['nullable','email','max:255','unique:couriers,email,{id}']],['name'=>'company_name','label'=>'Courier Company','rules'=>['nullable','string','max:255']],['name'=>'vehicle_type','label'=>'Vehicle Type','type'=>'select','options'=>['bike'=>'Bike','scooter'=>'Scooter','car'=>'Car','van'=>'Van','tempo'=>'Tempo','truck'=>'Truck','other'=>'Other'],'rules'=>['nullable','string','max:40']],['name'=>'vehicle_number','label'=>'Vehicle Number','rules'=>['nullable','string','max:50']],['name'=>'license_number','label'=>'License Number','rules'=>['nullable','string','max:80']],['name'=>'service_area','label'=>'Service Area','rules'=>['nullable','string','max:255']],['name'=>'address','label'=>'Address','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],['name'=>'city','label'=>'City','rules'=>['nullable','string','max:255']],['name'=>'pincode','label'=>'Pincode','rules'=>['nullable','string','max:20']],['name'=>'id_proof_type','label'=>'ID Proof Type','type'=>'select','options'=>['aadhaar'=>'Aadhaar','pan'=>'PAN','driving_license'=>'Driving License','voter_id'=>'Voter ID','other'=>'Other'],'rules'=>['nullable','string','max:40']],['name'=>'id_proof_number','label'=>'ID Proof Number','rules'=>['nullable','string','max:80']],['name'=>'joining_date','label'=>'Joining Date','type'=>'date','rules'=>['nullable','date']],['name'=>'status','label'=>'Status','type'=>'select','options'=>['active'=>'Active','inactive'=>'Inactive','on_leave'=>'On Leave'],'rules'=>['required','in:active,inactive,on_leave']],['name'=>'notes','label'=>'Notes','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']]],
         ],
         'categories'=>[
-            'label'=>'Categories','group'=>'Catalog','model'=>Category::class,'search'=>['name','slug'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'name','label'=>'Name'],['key'=>'slug','label'=>'Slug'],['key'=>'sort_order','label'=>'Sale Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'name','label'=>'Category Name','rules'=>['required','string','max:255']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
-        ],
-        'brands'=>[
+            'label'=>'Categories','group'=>'Catalog','model'=>Category::class,'search'=>['name','slug','homepage_title'],'status_column'=>'is_active','status_options'=>$active,
+            'columns'=>[['key'=>'image_path','label'=>'Image','type'=>'image'],['key'=>'name','label'=>'Name'],['key'=>'slug','label'=>'Slug'],['key'=>'show_on_homepage','label'=>'Homepage','type'=>'boolean'],['key'=>'homepage_sort_order','label'=>'Home Sort'],['key'=>'homepage_product_limit','label'=>'Limit'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
+            'fields'=>[
+                ['type'=>'section_heading','label'=>'Basic Category'],
+                ['name'=>'name','label'=>'Category Name','rules'=>['required','string','max:255']],
+                ['name'=>'image_path','label'=>'Category Image - 130 x 130 px','type'=>'image','upload_dir'=>'uploads/categories','rules'=>['nullable','image','max:2048']],
+                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],
+                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
+                ['type'=>'section_heading','label'=>'Homepage Product Row Settings'],
+                ['name'=>'show_on_homepage','label'=>'Show this category on Homepage Category Slider','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'homepage_title','label'=>'Homepage Title','rules'=>['nullable','string','max:255'],'help'=>'Leave blank to use category name.'],
+                ['name'=>'homepage_layout','label'=>'Homepage Layout','type'=>'select','options'=>['product_slider'=>'Product Slider','product_grid'=>'Product Grid'],'rules'=>['nullable','string','max:80']],
+                ['name'=>'homepage_product_limit','label'=>'Homepage Product Limit','type'=>'number','default'=>8,'rules'=>['nullable','integer','min:1','max:50']],
+                ['name'=>'homepage_sort_order','label'=>'Homepage Sort Order / Row Number','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
+            ],
+        ],        'brands'=>[
             'label'=>'Brands','group'=>'Catalog','model'=>Brand::class,'search'=>['name'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'name','label'=>'Brand'],['key'=>'products_count','label'=>'Products'],['key'=>'is_active','label'=>'Status','type'=>'boolean'],['key'=>'created_at','label'=>'Created','type'=>'date']],
             'with_count'=>['products'],'fields'=>[['name'=>'name','label'=>'Brand Name','rules'=>['required','string','max:255','unique:brands,name,{id}']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
@@ -137,127 +139,76 @@ return [
         ],
 
         'products'=>[
-            'label'=>'Products','group'=>'Catalog','description'=>'Product master with homepage display control.','model'=>Product::class,'with'=>['category','brand','productType','unit','images'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'images.0.path','label'=>'Product Image','type'=>'image'],['key'=>'storefront_banner_image','label'=>'Banner','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'storefront_row','label'=>'Homepage Row'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
+            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','productType','unit','images'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
+            'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_top_selling','label'=>'Top Selling','type'=>'boolean'],['key'=>'is_deal_timer_product','label'=>'Timer Deal','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
+                ['type'=>'section_heading','label'=>'1. Basic Information'],
                 ['name'=>'name','label'=>'Product Name','rules'=>['required','string','max:255']],
-                ['name'=>'storefront_row','label'=>'Storefront Row','type'=>'select','options'=>[
-                    'row_1_main_banner'=>'Row 1 - Main Banner',
-                    'row_2_small_banners'=>'Row 2 - Small Banners',
-                    'row_4_fruits_vegetables'=>'Row 4 - Fruits & Vegetables',
-                    'row_6_top_selling_items'=>'Row 6 - Top Selling Items',
-                    'row_8_breakfast_dairy'=>'Row 8 - Breakfast & Dairy',
-                    'row_9_chemist_store'=>'Row 9 - Chemist Store',
-                    'row_10_two_banners'=>'Row 10 - Two Promo Banners',
-                    'row_11_drinks'=>'Row 11 - Drinks',
-                    'row_12_grocery_staples'=>'Row 12 - Grocery & Staples',
-                    'row_14_personal_care'=>'Row 14 - Personal Care',
-                    'row_15_kitchen_dining'=>'Row 15 - Kitchen & Dining Needs',
-                ],'rules'=>['nullable','string','max:100']],
                 ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>Category::class,'rules'=>['nullable','exists:categories,id']],
                 ['name'=>'brand_id','label'=>'Brand','type'=>'select','option_model'=>Brand::class,'rules'=>['nullable','exists:brands,id']],
                 ['name'=>'product_type_id','label'=>'Product Type','type'=>'select','option_model'=>ProductType::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:product_types,id']],
                 ['name'=>'unit_id','label'=>'Select Unit','type'=>'select','option_model'=>Unit::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:units,id']],
                 ['name'=>'sku','label'=>'SKU','rules'=>['required','string','max:80','unique:products,sku,{id}']],
                 ['name'=>'hsn_code','label'=>'HSN Code','rules'=>['nullable','string','max:40']],
+                ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rows'=>2,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'2. Pricing & Tax'],
                 ['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0','max:100']],
-                ['name'=>'mrp','label'=>'MRP','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
+                ['name'=>'mrp','label'=>'MRP / Old Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
-                ['name'=>'primary_image','label'=>'Product Main Image','type'=>'image','upload_dir'=>'uploads/products','rules'=>['nullable','image','max:5120']],
-                ['name'=>'gallery_images','label'=>'Product Gallery Images','type'=>'image_multiple','upload_dir'=>'uploads/products/gallery','rules'=>['nullable','array'],'help'=>'You can select multiple images for product detail page.'],
-                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'storefront_title','label'=>'Storefront Banner Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'storefront_subtitle','label'=>'Storefront Banner Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'storefront_description','label'=>'Storefront Banner Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'storefront_banner_image','label'=>'Storefront Banner Image','type'=>'image','upload_dir'=>'uploads/storefront/product-banners','rules'=>['nullable','image','max:5120']],
-                ['name'=>'sort_order','label'=>'Storefront Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
-                ['name'=>'additional_info','label'=>'Additional Info','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'care_instructions','label'=>'Care Instructions','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'manufacturer_details','label'=>'Manufacturer Details','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'offer_start_at','label'=>'Offer Start Date & Time','type'=>'datetime-local','rules'=>['nullable','date']],
-                ['name'=>'offer_end_at','label'=>'Offer End Date & Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:offer_start_at']],
-                ['name'=>'is_offer_active','label'=>'Offer Timer Active','type'=>'checkbox','rules'=>['boolean']],
-                ['name'=>'is_visible_to_dealers','label'=>'Visible to Dealers','type'=>'checkbox','rules'=>['boolean']],
-                ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','rules'=>['boolean']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
-            ],
-        ],        'product-homepage-sections'=>[
-            'label'=>'Homepage Sections','group'=>'Product & Inventory','singular'=>'Homepage Section','model'=>ProductHomepageSection::class,'with'=>['category'],'search'=>['section_key','title','section_type','layout_type','source_type'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'sort_order','label'=>'Row'],['key'=>'title','label'=>'Section Title'],['key'=>'section_type','label'=>'Section Type'],['key'=>'layout_type','label'=>'Layout'],['key'=>'source_type','label'=>'Source'],['key'=>'category.name','label'=>'Category'],['key'=>'product_limit','label'=>'Products'],['key'=>'item_limit','label'=>'Items'],['key'=>'image_size_note','label'=>'Image Size Note'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[
-                ['name'=>'section_key','label'=>'Section Key','rules'=>['required','string','max:120','unique:product_homepage_sections,section_key,{id}'],'help'=>'Stable unique key. Example: row_5_bank_wallet_offers'],
-                ['name'=>'title','label'=>'Section Title','rules'=>['required','string','max:255']],
-                ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'section_type','label'=>'Section Type','type'=>'select','options'=>['hero_slider'=>'Hero Banner Slider','top_small_banners'=>'Top Small Banners','category_section'=>'Category Section','product_section'=>'Product Section','coupon_section'=>'Coupon / Bank Offers','top_selling_section'=>'Top Selling With Special Offer','offer_section'=>'Offer Banner Section','strip_offer_banner'=>'Strip Offer Banner','service_section'=>'Service Section'],'rules'=>['required','string','max:60']],
-                ['name'=>'layout_type','label'=>'Layout Type','type'=>'select','options'=>['full_width_slider'=>'Hero Full Width Slider','four_banner_slider'=>'Four Small Banners','category_slider'=>'Category Slider','product_slider'=>'Product Slider','coupon_slider'=>'Coupon Card Slider','products_with_special_offer'=>'Products With Special Offer Timer','two_column_banner'=>'Two Column Banner','big_small_banner'=>'Big + Small Banner','full_width_banner'=>'Full Width Banner','text_strip'=>'Text Strip','service_icons'=>'Service Icons'],'rules'=>['nullable','string','max:80']],
-                ['name'=>'source_type','label'=>'Product Source','type'=>'select','options'=>['manual'=>'Manual Products','category'=>'Category Products','featured'=>'Featured Products','latest'=>'Latest Products','top_selling'=>'Top Selling Products','offer'=>'Offer Products'],'rules'=>['nullable','string','max:60']],
-                ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>Category::class,'rules'=>['nullable','exists:categories,id']],
-                ['name'=>'product_limit','label'=>'Product Limit','type'=>'number','default'=>8,'rules'=>['required','integer','min:0','max:100']],
-                ['name'=>'item_limit','label'=>'Item/Banner Limit','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0','max:20'],'help'=>'Use 0 for unlimited. For coupon usually 3/4, strip 1, services 5.'],
-                ['name'=>'image_size_note','label'=>'Image Size Note','rules'=>['nullable','string','max:255'],'help'=>'Example: Hero 1920 x 637, Product 500 x 500, Coupon Logo 290 x 90'],
-                ['name'=>'sort_order','label'=>'Row Number / Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
-                ['name'=>'start_at','label'=>'Start Date Time','type'=>'datetime-local','rules'=>['nullable','date']],
-                ['name'=>'end_at','label'=>'End Date Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:start_at']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
-            ],
-        ],
-        'product-homepage-section-items'=>[
-            'label'=>'Section Items / Offers','group'=>'Product & Inventory','singular'=>'Section Item','model'=>ProductHomepageSectionItem::class,'with'=>['section'],'search'=>['title','subtitle','coupon_code','slot'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'image_path','label'=>'Image','type'=>'image'],['key'=>'logo_image_path','label'=>'Logo','type'=>'image'],['key'=>'section.title','label'=>'Section'],['key'=>'slot','label'=>'Slot'],['key'=>'title','label'=>'Title'],['key'=>'coupon_code','label'=>'Coupon'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[
-                ['name'=>'section_id','label'=>'Homepage Section','type'=>'select','option_model'=>ProductHomepageSection::class,'option_label'=>'title','rules'=>['required','exists:product_homepage_sections,id']],
-                ['name'=>'slot','label'=>'Slot','type'=>'select','options'=>['main'=>'Main','mobile'=>'Mobile','side_offer'=>'Top Selling Special Offer','big'=>'Big Banner','small'=>'Small Banner','service'=>'Service Block'],'rules'=>['nullable','string','max:60']],
-                ['name'=>'title','label'=>'Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'highlight_text','label'=>'Highlight Text','rules'=>['nullable','string','max:255']],
-                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'logo_image_path','label'=>'Logo Image','type'=>'image','upload_dir'=>'uploads/product-homepage/logos','rules'=>['nullable','image','max:5120'],'help'=>'Coupon logo note: 290 x 90 px'],
-                ['name'=>'image_path','label'=>'Main Image','type'=>'image','upload_dir'=>'uploads/product-homepage/items','rules'=>['nullable','image','max:5120'],'help'=>'Hero 1920x637, Small 375x243, Coupon image 250x200, Special offer 328x276, Two column 781x406, Big 1051x349, Small 511x325'],
-                ['name'=>'mobile_image_path','label'=>'Mobile Image','type'=>'image','upload_dir'=>'uploads/product-homepage/mobile','rules'=>['nullable','image','max:5120']],
-                ['name'=>'coupon_code','label'=>'Coupon Code','rules'=>['nullable','string','max:80']],
-                ['name'=>'validity_text','label'=>'Validity Text','rules'=>['nullable','string','max:255']],
-                ['name'=>'button_text','label'=>'Button Text','rules'=>['nullable','string','max:80']],
-                ['name'=>'button_url','label'=>'Button URL','rules'=>['nullable','string','max:255']],
-                ['name'=>'icon_key','label'=>'Service Icon Key','rules'=>['nullable','string','max:255'],'help'=>'Example: shipping, service, pay, offer, return'],
-                ['name'=>'price','label'=>'Offer Price','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],
-                ['name'=>'old_price','label'=>'Old Price','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],
-                ['name'=>'sold_quantity','label'=>'Sold Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
-                ['name'=>'total_quantity','label'=>'Total Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
-                ['name'=>'timer_end_at','label'=>'Timer End Date Time','type'=>'datetime-local','rules'=>['nullable','date']],
-                ['name'=>'background_color','label'=>'Background Color','rules'=>['nullable','string','max:30']],
-                ['name'=>'text_color','label'=>'Text Color','rules'=>['nullable','string','max:30']],
-                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
-            ],
-        ],
-        'product-homepage-section-products'=>[
-            'label'=>'Section Products','group'=>'Product & Inventory','singular'=>'Section Product','model'=>ProductHomepageSectionProduct::class,'with'=>['section','product.images'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'product.images.0.path','label'=>'Image','type'=>'image'],['key'=>'section.title','label'=>'Section'],['key'=>'product.name','label'=>'Product'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[
-                ['name'=>'section_id','label'=>'Homepage Section','type'=>'select','option_model'=>ProductHomepageSection::class,'option_label'=>'title','rules'=>['required','exists:product_homepage_sections,id']],
-                ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
-                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
-                ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string'],'help'=>'Shown near product title on detail page.'],
-                ['name'=>'detail_banner_image','label'=>'Detail Middle Banner Image','type'=>'image','upload_dir'=>'uploads/products/detail-banners','rules'=>['nullable','image','max:5120'],'help'=>'Product detail middle banner: 1199 x 97 px'],
-                ['name'=>'detail_banner_url','label'=>'Detail Middle Banner URL','rules'=>['nullable','string','max:255']],
-                ['name'=>'detail_sidebar_banner_image','label'=>'Detail Sidebar Banner Image','type'=>'image','upload_dir'=>'uploads/products/detail-sidebar','rules'=>['nullable','image','max:5120'],'help'=>'Product detail sidebar banner: 375 x 586 px'],
-                ['name'=>'detail_sidebar_banner_url','label'=>'Detail Sidebar Banner URL','rules'=>['nullable','string','max:255']],
+
+                ['type'=>'section_heading','label'=>'3. Images & Gallery'],
+                ['name'=>'primary_image','label'=>'Main Product Image - 500 x 500 px for cards / 750 x 750 px for detail','type'=>'image','upload_dir'=>'uploads/products','rules'=>['nullable','image','max:5120']],
+                ['name'=>'gallery_images','label'=>'Product Gallery Images - 150 x 150 px thumbnails','type'=>'image_multiple','upload_dir'=>'uploads/products/gallery','rules'=>['nullable','array']],
+
+                ['type'=>'section_heading','label'=>'4. Product Detail Tabs'],
+                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rows'=>5,'rules'=>['nullable','string']],
+                ['name'=>'additional_info','label'=>'Additional Info','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+                ['name'=>'care_instructions','label'=>'Care Instructions','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+                ['name'=>'manufacturer_details','label'=>'Manufacturer Details','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'5. Detail Page Banners'],
+                ['name'=>'detail_banner_image','label'=>'Detail Middle Banner - 1199 x 97 px','type'=>'image','upload_dir'=>'uploads/products/detail-banners','rules'=>['nullable','image','max:5120']],
+                ['name'=>'detail_banner_url','label'=>'Detail Middle Banner Link','rules'=>['nullable','string','max:255']],
+                ['name'=>'detail_sidebar_banner_image','label'=>'Detail Sidebar Banner - 375 x 586 px','type'=>'image','upload_dir'=>'uploads/products/detail-sidebar-banners','rules'=>['nullable','image','max:5120']],
+                ['name'=>'detail_sidebar_banner_url','label'=>'Detail Sidebar Banner Link','rules'=>['nullable','string','max:255']],
+
+                ['type'=>'section_heading','label'=>'6. Seller / Manufacturer Info'],
                 ['name'=>'seller_name','label'=>'Seller / Company Name','rules'=>['nullable','string','max:255']],
                 ['name'=>'seller_logo','label'=>'Seller Logo','type'=>'image','upload_dir'=>'uploads/products/sellers','rules'=>['nullable','image','max:2048']],
-                ['name'=>'seller_description','label'=>'Seller Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
+                ['name'=>'seller_description','label'=>'Seller Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
                 ['name'=>'seller_address','label'=>'Seller Address','rules'=>['nullable','string','max:255']],
                 ['name'=>'seller_contact','label'=>'Seller Contact','rules'=>['nullable','string','max:80']],
                 ['name'=>'manufacturer_title','label'=>'Manufacturer Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'manufacturer_description','label'=>'Manufacturer Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'sale_badge_text','label'=>'Sale Badge Text','rules'=>['nullable','string','max:80'],'help'=>'Example: 30% Off'],
+                ['name'=>'manufacturer_description','label'=>'Manufacturer Description','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'7. Deal Timer / Stock Display'],
+                ['name'=>'sale_badge_text','label'=>'Sale Badge Text','rules'=>['nullable','string','max:80']],
                 ['name'=>'sold_quantity','label'=>'Sold Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
                 ['name'=>'total_quantity','label'=>'Total Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
-                ['name'=>'low_stock_text','label'=>'Low Stock Text','rules'=>['nullable','string','max:255'],'help'=>'Example: Please hurry! Only 5 left in stock'],
+                ['name'=>'low_stock_text','label'=>'Low Stock Text','rules'=>['nullable','string','max:255']],
+                ['name'=>'offer_start_at','label'=>'Offer Start Date & Time','type'=>'datetime-local','rules'=>['nullable','date']],
+                ['name'=>'offer_end_at','label'=>'Offer End Date & Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:offer_start_at']],
+                ['name'=>'is_offer_active','label'=>'Offer Timer Active','type'=>'checkbox','rules'=>['boolean']],
+
+                ['type'=>'section_heading','label'=>'8. Homepage / Display Flags'],
+                ['name'=>'show_on_homepage','label'=>'Allow product on homepage product rows','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'is_featured','label'=>'Featured Product','type'=>'checkbox','rules'=>['boolean']],
                 ['name'=>'is_top_selling','label'=>'Top Selling Product','type'=>'checkbox','rules'=>['boolean']],
                 ['name'=>'is_trending','label'=>'Trending Product','type'=>'checkbox','rules'=>['boolean']],
                 ['name'=>'is_new_arrival','label'=>'New Arrival Product','type'=>'checkbox','rules'=>['boolean']],
-                ['name'=>'is_deal_timer_product','label'=>'Deal Timer Product','type'=>'checkbox','rules'=>['boolean']],                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'is_offer_product','label'=>'Offer Product','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'is_deal_timer_product','label'=>'Deal Timer Product','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'sort_order','label'=>'Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
+                ['name'=>'is_visible_to_dealers','label'=>'Visible to Dealers','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
+
+                ['type'=>'section_heading','label'=>'9. SEO'],
+                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255']],
+                ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
+                ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255']],
             ],
         ],        'pricing'=>[
             'label'=>'Dealer & Customer Pricing','group'=>'Catalog','singular'=>'Product Price','model'=>Product::class,'with'=>['category'],'search'=>['name','sku'],'can_create'=>false,'can_delete'=>false,
@@ -330,57 +281,7 @@ return [
             'columns'=>[['key'=>'expense_no','label'=>'Expense No.'],['key'=>'expense_date','label'=>'Date','type'=>'date'],['key'=>'category.name','label'=>'Category'],['key'=>'subcategory.name','label'=>'Subcategory'],['key'=>'title','label'=>'Title'],['key'=>'vendor_name','label'=>'Vendor'],['key'=>'payment_mode','label'=>'Payment Mode'],['key'=>'total_amount','label'=>'Amount','type'=>'money'],['key'=>'status','label'=>'Status','type'=>'status']],
             'fields'=>[['name'=>'expense_no','label'=>'Expense No.','rules'=>['nullable','string','max:80','unique:internal_expenses,expense_no,{id}'],'help'=>'Leave blank to auto-generate.'],['name'=>'expense_date','label'=>'Expense Date','type'=>'date','rules'=>['required','date']],['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>InternalExpenseCategory::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:internal_expense_categories,id']],['name'=>'subcategory_id','label'=>'Subcategory','type'=>'select','option_model'=>InternalExpenseSubcategory::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:internal_expense_subcategories,id']],['name'=>'title','label'=>'Expense Title','rules'=>['required','string','max:255']],['name'=>'vendor_name','label'=>'Vendor / Party Name','rules'=>['nullable','string','max:255']],['name'=>'payment_mode','label'=>'Payment Mode','type'=>'select','options'=>['cash'=>'Cash','upi'=>'UPI','bank_transfer'=>'Bank Transfer','card'=>'Card','cheque'=>'Cheque','other'=>'Other'],'rules'=>['required','string','max:40']],['name'=>'taxable_amount','label'=>'Taxable Amount','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],['name'=>'gst_amount','label'=>'GST Amount','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],['name'=>'total_amount','label'=>'Total Amount','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'paid_by','label'=>'Paid By','type'=>'select','option_model'=>User::class,'rules'=>['nullable','exists:users,id']],['name'=>'status','label'=>'Status','type'=>'select','options'=>['draft'=>'Draft','approved'=>'Approved','paid'=>'Paid','cancelled'=>'Cancelled'],'rules'=>['required','string','max:40']],['name'=>'receipt_path','label'=>'Receipt Upload','type'=>'file','upload_dir'=>'uploads/internal-expenses','rules'=>['nullable','file','max:5120']],['name'=>'notes','label'=>'Notes','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']]],
         ],
-        'storefront-banners'=>[
-            'label'=>'Home Banners','group'=>'Storefront','singular'=>'Home Banner','model'=>StorefrontBanner::class,'search'=>['placement','title','subtitle','button_text'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[
-                ['key'=>'image_path','label'=>'Image','type'=>'image'],
-                ['key'=>'placement','label'=>'Placement'],
-                ['key'=>'title','label'=>'Title'],
-                ['key'=>'subtitle','label'=>'Subtitle'],
-                ['key'=>'button_text','label'=>'Button'],
-                ['key'=>'button_url','label'=>'Button URL'],
-                ['key'=>'sort_order','label'=>'Sort Order'],
-                ['key'=>'is_active','label'=>'Status','type'=>'boolean']
-            ],
-            'fields'=>[
-                ['name'=>'placement','label'=>'Placement','type'=>'select','options'=>[
-                    'hero_main'=>'Hero Main - 1920 x 637',
-                    'promo_small'=>'Small Promo Banner - 375 x 243',
-                    'bank_offer'=>'Row 5 - Bank / Wallet Offer',
-                    'strip_banner'=>'Row 7 - Small Strip Banner',
-                    'middle_promo'=>'Row 10 - Two Promo Banners',
-                    'footer_promo'=>'Row 13 - Banner Above Personal Care'
-                ],'rules'=>['required','string','max:80']],
-                ['name'=>'title','label'=>'Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rules'=>['nullable','string']],
-                ['name'=>'button_text','label'=>'Button Text','rules'=>['nullable','string','max:255']],
-                ['name'=>'button_url','label'=>'Button URL','rules'=>['nullable','string','max:255']],
-                ['name'=>'image_path','label'=>'Banner Image','type'=>'image','upload_dir'=>'uploads/storefront/banners','rules'=>['nullable','image','max:5120']],
-                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]
-            ],
-        ],
-        'storefront-sections'=>[
-            'label'=>'Home Sections','group'=>'Storefront','singular'=>'Home Section','model'=>StorefrontSection::class,'with'=>['category'],'search'=>['section_key','title','section_type','source_type'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'image_path','label'=>'Image','type'=>'image'],['key'=>'section_key','label'=>'Key'],['key'=>'title','label'=>'Title'],['key'=>'section_type','label'=>'Type'],['key'=>'source_type','label'=>'Source'],['key'=>'category.name','label'=>'Category'],['key'=>'product_limit','label'=>'Limit'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'section_key','label'=>'Section Key','rules'=>['required','string','max:120','unique:storefront_sections,section_key,{id}'],'help'=>'Stable key used by the homepage. Example: fruits_vegetables.'],['name'=>'title','label'=>'Title','rules'=>['required','string','max:255']],['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],['name'=>'image_path','label'=>'Section Image','type'=>'image','upload_dir'=>'uploads/storefront/sections','rules'=>['nullable','image','max:5120']],['name'=>'section_type','label'=>'Section Type','type'=>'select','options'=>['category'=>'Category','product'=>'Product','offer'=>'Offer','service'=>'Service','footer'=>'Footer'],'rules'=>['required','string','max:40']],['name'=>'source_type','label'=>'Product Source','type'=>'select','options'=>['manual'=>'Manual Selected Products','category'=>'Products From Category','latest'=>'Latest Products','top_selling'=>'Top Selling Products','featured'=>'Featured Products'],'rules'=>['required','string','max:40']],['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>Category::class,'rules'=>['nullable','exists:categories,id']],['name'=>'product_limit','label'=>'Product Limit','type'=>'number','rules'=>['required','integer','min:1','max:100']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
-        ],
-        'storefront-section-products'=>[
-            'label'=>'Section Products','group'=>'Storefront','singular'=>'Section Product','model'=>StorefrontSectionProduct::class,'with'=>['section','product.images'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'product.images.0.path','label'=>'Image','type'=>'image'],['key'=>'section.title','label'=>'Section'],['key'=>'product.name','label'=>'Product'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'section_id','label'=>'Home Section','type'=>'select','option_model'=>StorefrontSection::class,'option_label'=>'title','rules'=>['required','exists:storefront_sections,id']],['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
-        ],
-        'storefront-service-blocks'=>[
-            'label'=>'Service Blocks','group'=>'Storefront','singular'=>'Service Block','model'=>StorefrontServiceBlock::class,'search'=>['title','subtitle'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'icon_path','label'=>'Image','type'=>'image'],['key'=>'title','label'=>'Title'],['key'=>'subtitle','label'=>'Subtitle'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'title','label'=>'Title','rules'=>['required','string','max:255']],['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],['name'=>'icon_path','label'=>'Icon','type'=>'image','upload_dir'=>'uploads/storefront/services','rules'=>['nullable','image','max:2048']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
-        ],
-        'storefront-footer-links'=>[
-            'label'=>'Footer Links','group'=>'Storefront','singular'=>'Footer Link','model'=>StorefrontFooterLink::class,'search'=>['link_group','title','url'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'image_path','label'=>'Image','type'=>'image'],['key'=>'link_group','label'=>'Group'],['key'=>'title','label'=>'Title'],['key'=>'url','label'=>'URL'],['key'=>'sort_order','label'=>'Sort Order'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[['name'=>'link_group','label'=>'Link Group','type'=>'select','options'=>['about'=>'About','useful'=>'Useful Link','categories'=>'Categories','store'=>'Store Information'],'rules'=>['required','string','max:80']],['name'=>'title','label'=>'Title','rules'=>['required','string','max:255']],['name'=>'url','label'=>'URL','rules'=>['required','string','max:255']],['name'=>'image_path','label'=>'Link Image','type'=>'image','upload_dir'=>'uploads/storefront/footer-links','rules'=>['nullable','image','max:2048']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']]],
-        ],        'attendance'=>[
+'attendance'=>[
             'label'=>'Attendance','group'=>'Salesman HRMS','singular'=>'Attendance Record','model'=>AttendanceLog::class,'with'=>['salesman'],'status_column'=>'status','status_options'=>['present'=>'Present','absent'=>'Absent','half_day'=>'Half Day','late'=>'Late','leave'=>'Leave'],'can_delete'=>false,
             'columns'=>[['key'=>'salesman.name','label'=>'Salesman'],['key'=>'attendance_date','label'=>'Date','type'=>'date'],['key'=>'check_in_at','label'=>'Check In','type'=>'datetime'],['key'=>'check_out_at','label'=>'Check Out','type'=>'datetime'],['key'=>'working_minutes','label'=>'Minutes'],['key'=>'status','label'=>'Status','type'=>'status']],
             'fields'=>[['name'=>'salesman_id','label'=>'Salesman','type'=>'select','option_model'=>User::class,'option_where'=>['role'=>'salesman'],'rules'=>['required','exists:users,id']],['name'=>'attendance_date','label'=>'Attendance Date','type'=>'date','rules'=>['required','date']],['name'=>'check_in_at','label'=>'Check In','type'=>'datetime-local','rules'=>['nullable','date']],['name'=>'check_out_at','label'=>'Check Out','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:check_in_at']],['name'=>'working_minutes','label'=>'Working Minutes','type'=>'number','rules'=>['nullable','integer','min:0']],['name'=>'status','label'=>'Status','type'=>'select','options'=>['present'=>'Present','absent'=>'Absent','half_day'=>'Half Day','late'=>'Late','leave'=>'Leave'],'rules'=>['required','string','max:40']]],

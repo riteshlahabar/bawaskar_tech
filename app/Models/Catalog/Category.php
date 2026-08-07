@@ -8,7 +8,13 @@ use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'is_active', 'sort_order'];
+    protected $fillable = ['name', 'slug',        'image_path',        'homepage_title',        'homepage_layout',        'homepage_product_limit',        'homepage_sort_order',        'show_on_homepage',
+
+
+
+
+
+ 'is_active', 'sort_order'];
 
     protected function casts(): array
     {

@@ -34,10 +34,20 @@
 
                     <div class="row g-3">
                         @foreach($module['fields'] as $field)
+                            @if(($field['type'] ?? '') === 'section_heading')
+                                <div class="col-12">
+                                    <div class="admin-form-section-heading bg-light border rounded px-3 py-2 mt-2 fw-bold">{{ $field['label'] }}</div>
+                                </div>
+                                @continue
+                            @endif
                             @continue($field['display_only'] ?? false)
-                            @php($name = $field['name'])
+                            @php($name = $field['name'] ?? '')
                             @php($type = $field['type'] ?? 'text')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
+                            @if($type === 'hidden')
+                                <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                                @continue
+                            @endif
                             @php($lockedBySubmenu = in_array($module['key'] ?? '', ['storefront-banners', 'storefront-sections'], true) && in_array($name, ['placement', 'section_key'], true) && request()->filled($name))
 
                             @if($lockedBySubmenu)

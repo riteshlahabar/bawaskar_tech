@@ -60,7 +60,12 @@ class Product extends Model
         'is_visible_to_customers',
         'is_visible_to_dealers',
         'is_featured',
-        'sort_order',
+        'sort_order',        'is_offer_product',        'show_on_homepage',        'meta_title',        'meta_description',        'meta_keywords',
+
+
+
+
+
         'is_active',
     ];
 
@@ -82,7 +87,9 @@ class Product extends Model
             'is_top_selling' => 'boolean',
             'is_trending' => 'boolean',
             'is_new_arrival' => 'boolean',
-            'is_deal_timer_product' => 'boolean',
+            'is_deal_timer_product' => 'boolean',            'is_offer_product' => 'boolean',            'show_on_homepage' => 'boolean',
+
+
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
@@ -121,6 +128,16 @@ class Product extends Model
     public function inventoryBatches(): HasMany
     {
         return $this->hasMany(InventoryBatch::class);
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function relatedProductLinks(): HasMany
+    {
+        return $this->hasMany(ProductRelatedProduct::class);
     }
 
     public function scopeVisibleFor(Builder $query, string $audience): Builder

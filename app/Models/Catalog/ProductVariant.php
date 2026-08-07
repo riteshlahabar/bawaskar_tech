@@ -5,21 +5,19 @@ namespace App\Models\Catalog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProductHomepageSectionProduct extends Model
+class ProductVariant extends Model
 {
-    protected $fillable = ['section_id', 'product_id', 'sort_order', 'is_active'];
+    protected $fillable = ['product_id', 'group_name', 'value', 'price_difference', 'stock_quantity', 'is_default', 'sort_order', 'is_active'];
 
     protected function casts(): array
     {
         return [
+            'price_difference' => 'decimal:2',
+            'stock_quantity' => 'decimal:3',
+            'is_default' => 'boolean',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
-    }
-
-    public function section(): BelongsTo
-    {
-        return $this->belongsTo(ProductHomepageSection::class, 'section_id');
     }
 
     public function product(): BelongsTo

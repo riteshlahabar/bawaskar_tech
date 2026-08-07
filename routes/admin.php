@@ -30,7 +30,6 @@ use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Admin\ProductHomepageSections\ProductHomepageSectionController;
 use App\Http\Controllers\Admin\ProductHomepageSectionItems\ProductHomepageSectionItemController;
-use App\Http\Controllers\Admin\ProductHomepageSectionProducts\ProductHomepageSectionProductController;
 use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
 use App\Http\Controllers\Admin\Reports\ReportController;
 use App\Http\Controllers\Admin\Returns\ReturnController;
@@ -43,12 +42,9 @@ use App\Http\Controllers\Admin\TourPlans\TourPlanController;
 use App\Http\Controllers\Admin\Translations\TranslationController;
 use App\Http\Controllers\Admin\Units\UnitController;
 use App\Http\Controllers\Admin\Warehouses\WarehouseController;
-use App\Http\Controllers\Admin\StorefrontBanners\StorefrontBannerController;
-use App\Http\Controllers\Admin\StorefrontFooterLinks\StorefrontFooterLinkController;
-use App\Http\Controllers\Admin\StorefrontSectionProducts\StorefrontSectionProductController;
-use App\Http\Controllers\Admin\StorefrontSections\StorefrontSectionController;
-use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockController;
 use App\Http\Controllers\Admin\Imports\CommonImportController;
+use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
+use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -66,14 +62,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'product-homepage-sections'=>ProductHomepageSectionController::class,'product-homepage-section-items'=>ProductHomepageSectionItemController::class,'product-homepage-section-products'=>ProductHomepageSectionProductController::class,
-            'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,
+            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,
             'internal-expenses'=>InternalExpenseController::class,'expense-categories'=>ExpenseCategoryController::class,'expense-subcategories'=>ExpenseSubcategoryController::class,
             'attendance'=>AttendanceController::class,'dealer-visits'=>DealerVisitController::class,'tour-plans'=>TourPlanController::class,
             'expenses'=>ExpenseController::class,'leaves'=>LeaveController::class,'salary'=>SalaryController::class,'targets'=>TargetController::class,'assets'=>AssetController::class,
-            'storefront-banners'=>StorefrontBannerController::class,'storefront-sections'=>StorefrontSectionController::class,'storefront-section-products'=>StorefrontSectionProductController::class,'storefront-service-blocks'=>StorefrontServiceBlockController::class,'storefront-footer-links'=>StorefrontFooterLinkController::class,
             'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');

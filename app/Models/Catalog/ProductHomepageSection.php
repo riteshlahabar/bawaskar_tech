@@ -67,4 +67,13 @@ class ProductHomepageSection extends Model
         });
     }
 
+    public function getSectionTypeNameAttribute(): string
+    {
+        return trim(ucwords(str_replace('_', ' ', (string) $this->section_type)));
+    }
+
+    public function getLayoutTypeNameAttribute(): string
+    {
+        return trim(ucwords(str_replace('_', ' ', (string) $this->layout_type)));
+    }
 }

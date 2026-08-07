@@ -232,6 +232,7 @@ return [
             ],
         ],        'homepage-settings'=>[
             'label'=>'Homepage Settings',
+            'sort'=>['sort_order','asc'],
             'group'=>'Catalog',
             'description'=>'Create homepage rows/design only. Actual product/banner/text/offer content is managed from Products.',
             'model'=>\App\Models\Catalog\ProductHomepageSection::class,
@@ -241,10 +242,10 @@ return [
             'status_options'=>$active,
             'columns'=>[
                 ['key'=>'title','label'=>'Section Title'],
-                ['key'=>'section_type','label'=>'Section Type'],
-                ['key'=>'layout_type','label'=>'Layout Type'],
+                ['key'=>'section_type_name','label'=>'Section Type'],
+                ['key'=>'layout_type_name','label'=>'Layout Type'],
                 ['key'=>'category.name','label'=>'Category'],
-                ['key'=>'product_limit','label'=>'Limit'],
+                ['key'=>'product_limit','label'=>'Item Limit'],
                 ['key'=>'sort_order','label'=>'Sort Order'],
                 ['key'=>'is_active','label'=>'Active','type'=>'boolean'],
             ],
@@ -282,7 +283,7 @@ return [
 
                 ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>\App\Models\Catalog\Category::class,'rules'=>['nullable','exists:categories,id'],'help'=>'Use this only when Section Type is Product Section.'],
 
-                ['name'=>'product_limit','label'=>'Product / Item Limit','type'=>'number','default'=>8,'rules'=>['nullable','integer','min:1','max:50']],
+                ['name'=>'product_limit','label'=>'Item Limit','type'=>'number','default'=>8,'rules'=>['nullable','integer','min:1','max:50']],
 
                 ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
 

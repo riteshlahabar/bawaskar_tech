@@ -162,4 +162,11 @@ class Product extends Model
             ->filter(fn (InventoryBatch $batch): bool => ! $batch->expiry_date || $batch->expiry_date->endOfDay()->isFuture())
             ->sum(fn (InventoryBatch $batch): float => max(0, (float) $batch->quantity - (float) $batch->reserved_quantity));
     }
+    public function homepageSection()
+    {
+        return $this->hasOne(ProductHomepageSection::class, 'category_id', 'category_id')
+            ->where('section_type', 'product_section')
+            ->where('source_type', 'category_products');
+    }
+
 }

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Admin\ProductHomepageSettings;
 
@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 class ProductHomepageSettingController extends AdminModuleController
 {
     protected string $moduleKey = 'homepage-settings';
-
 
     protected function rules(array $module, $record = null): array
     {
@@ -52,7 +51,7 @@ class ProductHomepageSettingController extends AdminModuleController
             $data['product_limit'] = 8;
         }
 
-        if (empty($data['sort_order'])) {
+        if (! isset($data['sort_order']) || $data['sort_order'] === '') {
             $data['sort_order'] = 0;
         }
 

@@ -67,7 +67,26 @@ class Product extends Model
 
 
         'is_active',
-    ];
+            'homepage_section_id',
+        'homepage_title',
+        'homepage_subtitle',
+        'homepage_description',
+        'homepage_image_path',
+        'homepage_mobile_image_path',
+        'homepage_logo_image_path',
+        'homepage_offer_image_path',
+        'homepage_highlight_text',
+        'homepage_discount_text',
+        'homepage_validity_text',
+        'homepage_coupon_code',
+        'homepage_button_text',
+        'homepage_button_url',
+        'homepage_icon_key',
+        'homepage_slot',
+        'homepage_background_color',
+        'homepage_text_color',
+        'homepage_sort_order',
+];
 
     protected function casts(): array
     {
@@ -162,11 +181,15 @@ class Product extends Model
             ->filter(fn (InventoryBatch $batch): bool => ! $batch->expiry_date || $batch->expiry_date->endOfDay()->isFuture())
             ->sum(fn (InventoryBatch $batch): float => max(0, (float) $batch->quantity - (float) $batch->reserved_quantity));
     }
+
     public function homepageSection()
     {
-        return $this->hasOne(ProductHomepageSection::class, 'category_id', 'category_id')
-            ->where('section_type', 'product_section')
-            ->where('source_type', 'category_products');
+        return $this->belongsTo(ProductHomepageSection::class, 'homepage_section_id');
     }
+
+    protected $casts = [
+        'homepage_section_id' => 'integer',
+        'homepage_sort_order' => 'integer',
+    ];
 
 }

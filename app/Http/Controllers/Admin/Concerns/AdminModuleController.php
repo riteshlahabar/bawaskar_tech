@@ -53,7 +53,7 @@ abstract class AdminModuleController extends Controller
     {
         $module = $this->module();
         abort_unless(($module['can_create'] ?? true), 403);
-        $validated = $request->validate($this->rules($module));
+        $validated = $request->validate($this->rules($module), $this->validationMessages($module), $this->validationAttributes($module));
         $record = $this->persist($this->prepareData($validated, $request, $module), null);
         return redirect()->route($module['route'].'.edit', array_merge([$record->getKey()], $request->only(['type', 'placement', 'section_key', 'row_title'])))->with('success', $module['singular'].' created successfully.');
     }
@@ -90,7 +90,7 @@ abstract class AdminModuleController extends Controller
         $module = $this->module();
         abort_unless(($module['can_edit'] ?? true), 403);
         $record = $this->findRecord($id);
-        $validated = $request->validate($this->rules($module, $record));
+        $validated = $request->validate($this->rules($module, $record), $this->validationMessages($module), $this->validationAttributes($module));
         $record = $this->persist($this->prepareData($validated, $request, $module), $record);
         return back()->with('success', $module['singular'].' updated successfully.');
     }
@@ -180,6 +180,54 @@ abstract class AdminModuleController extends Controller
     }
 
 
+
+    protected function validationAttributes(array $module): array
+    {
+        $attributes = [];
+
+        foreach (($module['fields'] ?? []) as $field) {
+            if (empty($field['name'])) {
+                continue;
+            }
+
+            $attributes[$field['name']] = $field['label'] ?? Str::headline((string) $field['name']);
+        }
+
+        return $attributes;
+    }
+
+    protected function validationMessages(array $module): array
+    {
+        $messages = [];
+
+        foreach (($module['fields'] ?? []) as $field) {
+            if (empty($field['name'])) {
+                continue;
+            }
+
+            $name = (string) $field['name'];
+            $label = (string) ($field['label'] ?? Str::headline($name));
+
+            $messages[$name.'.required'] = 'Enter '.$label.'.';
+            $messages[$name.'.required_if'] = 'Enter '.$label.'.';
+            $messages[$name.'.required_with'] = 'Enter '.$label.'.';
+            $messages[$name.'.required_without'] = 'Enter '.$label.'.';
+            $messages[$name.'.email'] = 'Enter valid '.$label.'.';
+            $messages[$name.'.numeric'] = 'Enter valid number for '.$label.'.';
+            $messages[$name.'.integer'] = 'Enter valid number for '.$label.'.';
+            $messages[$name.'.date'] = 'Enter valid date for '.$label.'.';
+            $messages[$name.'.url'] = 'Enter valid URL for '.$label.'.';
+            $messages[$name.'.image'] = 'Upload valid image for '.$label.'.';
+            $messages[$name.'.file'] = 'Upload valid file for '.$label.'.';
+            $messages[$name.'.exists'] = 'Select valid '.$label.'.';
+            $messages[$name.'.unique'] = $label.' already exists.';
+            $messages[$name.'.min'] = 'Enter valid '.$label.'.';
+            $messages[$name.'.max'] = 'Enter valid '.$label.'.';
+            $messages[$name.'.in'] = 'Select valid '.$label.'.';
+        }
+
+        return $messages;
+    }
     protected function module(): array
     {
         $module = config('admin.modules.'.$this->moduleKey);

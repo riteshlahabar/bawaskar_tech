@@ -41,9 +41,18 @@
                                 @continue
                             @endif
                             @continue($field['display_only'] ?? false)
+                            @if(($field['type'] ?? '') === 'section_heading')
+                                <div class="{{ $field['col'] ?? 'col-12' }}">
+                                    <div class="admin-section-heading mt-2 mb-1 fw-semibold text-primary border-bottom pb-1">{{ $field['label'] ?? '' }}</div>
+                                </div>
+                                @continue
+                            @endif
+                            @continue(empty($field['name']))
                             @php($name = $field['name'] ?? '')
                             @php($type = $field['type'] ?? 'text')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
+                            @php($rulesText = implode('|', array_map('strval', (array) ($field['rules'] ?? []))))
+                            @php($isRequired = str_contains($rulesText, 'required') && ! str_contains($rulesText, 'nullable'))
                             @if($type === 'hidden')
                                 <input type="hidden" name="{{ $name }}" value="{{ $value }}">
                                 @continue
@@ -60,26 +69,27 @@
                                     <div class="form-check form-switch mt-4">
                                         <input type="checkbox" class="form-check-input" name="{{ $name }}" value="1" id="{{ $name }}" @checked((bool) $value)>
                                         <label class="form-check-label" for="{{ $name }}">{{ $field['label'] }}</label>
+                                        @error($name)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                     </div>
                                 @else
                                     <label class="form-label">
                                         {{ $field['label'] }}
-                                        @if(str_contains(implode('|', array_map('strval', (array) ($field['rules'] ?? []))), 'required'))
+                                        @if($isRequired)
                                             <span class="text-danger">*</span>
                                         @endif
                                     </label>
 
                                     @if($type === 'select')
-                                        <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" @required($field['required'] ?? false)>
+                                        <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" @required($isRequired)>
                                             <option value="">Select {{ $field['label'] }}</option>
                                             @foreach($options[$name] ?? [] as $key => $label)
                                                 <option value="{{ $key }}" @selected((string) $value === (string) $key)>{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     @elseif($type === 'textarea')
-                                        <textarea rows="{{ $field['rows'] ?? 4 }}" class="form-control @error($name)is-invalid @enderror" name="{{ $name }}">{{ $value }}</textarea>
+                                        <textarea rows="{{ $field['rows'] ?? 4 }}" class="form-control @error($name)is-invalid @enderror" name="{{ $name }}" @required($isRequired)>{{ $value }}</textarea>
                                     @elseif($type === 'image_multiple')
-                                        <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple>
+                                        <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple @required($isRequired && ! $record)>
                                         @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
                                             <div class="d-flex flex-wrap gap-2 mt-2">
                                                 @foreach($record->images as $img)
@@ -90,14 +100,14 @@
                                             </div>
                                         @endif
                                     @elseif(in_array($type, ['file', 'image'], true))
-                                        <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}">
+                                        <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}" @required($isRequired && ! $record)>
                                         @if($value)
                                             <small class="text-muted d-block mt-1">
                                                 Current file: <a href="{{ asset($value) }}" target="_blank">View</a>
                                             </small>
                                         @endif
                                     @else
-                                        <input class="form-control @error($name)is-invalid @enderror" type="{{ $type }}" name="{{ $name }}" value="{{ $type === 'password' ? '' : $value }}" step="{{ $field['step'] ?? null }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <input class="form-control @error($name)is-invalid @enderror" type="{{ $type }}" name="{{ $name }}" value="{{ $type === 'password' ? '' : $value }}" @required($isRequired) step="{{ $field['step'] ?? null }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                     @endif
 
                                     @error($name)<div class="invalid-feedback">{{ $message }}</div>@enderror

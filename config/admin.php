@@ -173,7 +173,7 @@ return [
                 ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rows'=>2,'rules'=>['nullable','string']],
 
                 ['type'=>'section_heading','label'=>'2. Pricing & Tax'],
-                ['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0','max:100']],
+                ['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0','max:100'],'help'=>'Enter GST percent. Use 0 if GST is not applicable.'],
                 ['name'=>'mrp','label'=>'MRP / Old Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
                 ['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
@@ -343,7 +343,7 @@ return [
         'pricing'=>[
             'label'=>'Dealer & Customer Pricing','group'=>'Catalog','singular'=>'Product Price','model'=>Product::class,'with'=>['category'],'search'=>['name','sku'],'can_create'=>false,'can_delete'=>false,
             'columns'=>[['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'mrp','label'=>'MRP','type'=>'money'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'gst_percent','label'=>'GST %']],
-            'fields'=>[['name'=>'mrp','label'=>'MRP','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0','max:100']]],
+            'fields'=>[['name'=>'mrp','label'=>'MRP','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0','max:100'],'help'=>'Enter GST percent. Use 0 if GST is not applicable.']],
         ],
         'warehouses'=>[
             'label'=>'Warehouses','group'=>'Inventory','model'=>Warehouse::class,'search'=>['name','code','city'],'status_column'=>'is_active','status_options'=>$active,

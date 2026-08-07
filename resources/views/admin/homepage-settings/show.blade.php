@@ -8,8 +8,7 @@
                 <h5 class="mb-3">{{ $record->title }}</h5>
                 <p class="mb-1"><strong>Type:</strong> {{ str($record->section_type)->replace('_', ' ')->title() }}</p>
                 <p class="mb-1"><strong>Layout:</strong> {{ $record->layout_type ?: '-' }}</p>
-                <p class="mb-1"><strong>Source:</strong> {{ $record->source_type ?: '-' }}</p>
-                <p class="mb-1"><strong>Category:</strong> {{ $record->category?->name ?: '-' }}</p>
+<p class="mb-1"><strong>Category:</strong> {{ $record->category?->name ?: '-' }}</p>
                 <p class="mb-1"><strong>Product Limit:</strong> {{ $record->product_limit }}</p>
                 <p class="mb-1"><strong>Item Limit:</strong> {{ $record->item_limit ?: '-' }}</p>
                 <p class="mb-1"><strong>Image Note:</strong> {{ $record->image_size_note ?: '-' }}</p>
@@ -30,7 +29,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h5 class="mb-1">Section Content</h5>
-                        <small class="text-muted">Use this only for banners, coupons, strip offers, hero slider, and service blocks. Product rows come automatically from Products and Category.</small>
+                        <small class="text-muted">Products are assigned from Product Add/Edit using Homepage Section Title. This page only defines homepage row/design.</small>
                     </div>
                     <a class="btn btn-success" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->id, 'row_title' => $record->title.' Content']) }}">
                         Add Content

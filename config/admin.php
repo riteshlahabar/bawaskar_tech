@@ -233,22 +233,26 @@ return [
         ],        'homepage-settings'=>[
             'label'=>'Homepage Settings',
             'group'=>'Catalog',
-            'description'=>'Manage homepage rows section-wise. Products are added only once in Products; homepage settings only control section layout, banners, coupons, offers and product sources.',
+            'description'=>'Create homepage rows/design only. Actual product/banner/text/offer content is managed from Products.',
             'model'=>\App\Models\Catalog\ProductHomepageSection::class,
-            'search'=>['title','section_type','layout_type','source_type'],
+            'with'=>['category'],
+            'search'=>['title','section_type','layout_type'],
             'status_column'=>'is_active',
             'status_options'=>$active,
             'columns'=>[
                 ['key'=>'title','label'=>'Section Title'],
                 ['key'=>'section_type','label'=>'Section Type'],
-                ['key'=>'layout_type','label'=>'Layout'],
-                ['key'=>'source_type','label'=>'Source'],
-                ['key'=>'sort_order','label'=>'Row / Sort Order'],
+                ['key'=>'layout_type','label'=>'Layout Type'],
+                ['key'=>'category.name','label'=>'Category'],
+                ['key'=>'product_limit','label'=>'Limit'],
+                ['key'=>'sort_order','label'=>'Sort Order'],
                 ['key'=>'is_active','label'=>'Active','type'=>'boolean'],
             ],
             'fields'=>[
-                ['type'=>'section_heading','label'=>'Homepage Section'],
+                ['type'=>'section_heading','label'=>'Homepage Row Settings'],
+
                 ['name'=>'title','label'=>'Section Title','rules'=>['required','string','max:255']],
+
                 ['name'=>'section_type','label'=>'Section Type','type'=>'select','options'=>[
                     'hero_slider'=>'Hero Slider',
                     'top_small_banners'=>'Top Small Banners',
@@ -260,6 +264,7 @@ return [
                     'strip_offer_banner'=>'Strip Offer Banner',
                     'service_section'=>'Service Section',
                 ],'rules'=>['required','string','max:80']],
+
                 ['name'=>'layout_type','label'=>'Layout Type','type'=>'select','options'=>[
                     'full_width_slider'=>'Full Width Slider',
                     'four_banner_slider'=>'Four Banner Slider',
@@ -274,33 +279,14 @@ return [
                     'text_strip'=>'Text Strip',
                     'service_icons'=>'Service Icons',
                 ],'rules'=>['nullable','string','max:80']],
-                ['name'=>'source_type','label'=>'Product Source / Section Source','type'=>'select','options'=>[
-                    'none'=>'None',
-                    'category_products'=>'Category Products',
-                    'featured_products'=>'Featured Products',
-                    'latest_products'=>'Latest Products',
-                    'offer_products'=>'Offer Products',
-                    'top_selling_products'=>'Top Selling Products',
-                    'deal_timer_product'=>'Deal Timer Product',
-                    'categories'=>'Categories',
-                    'banners'=>'Banners',
-                    'coupon_items'=>'Coupon Items',
-                    'services'=>'Services',
-                    'text'=>'Text',
-                ],'rules'=>['nullable','string','max:80']],
-                ['name'=>'category_id','label'=>'Category for Product Section','type'=>'select','option_model'=>\App\Models\Catalog\Category::class,'rules'=>['nullable','exists:categories,id']],
+
+                ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>\App\Models\Catalog\Category::class,'rules'=>['nullable','exists:categories,id'],'help'=>'Use this only when Section Type is Product Section.'],
+
                 ['name'=>'product_limit','label'=>'Product / Item Limit','type'=>'number','default'=>8,'rules'=>['nullable','integer','min:1','max:50']],
-                ['name'=>'sort_order','label'=>'Homepage Row / Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
+
+                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
+
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
-                ['type'=>'section_heading','label'=>'Text / Button'],
-                ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
-                ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
-                ['name'=>'button_text','label'=>'Button Text','rules'=>['nullable','string','max:80']],
-                ['name'=>'button_url','label'=>'Button Link','rules'=>['nullable','string','max:255']],
-                ['type'=>'section_heading','label'=>'Style / Extra Settings'],
-                ['name'=>'background_color','label'=>'Background Color','rules'=>['nullable','string','max:30']],
-                ['name'=>'text_color','label'=>'Text Color','rules'=>['nullable','string','max:30']],
-                ['name'=>'settings_json','label'=>'Extra Settings JSON','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
             ],
         ],
         'homepage-setting-items'=>[

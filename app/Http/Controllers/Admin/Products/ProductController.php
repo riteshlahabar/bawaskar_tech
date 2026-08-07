@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Admin\Products;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductImage;
-use App\Models\Storefront\StorefrontBanner;
-use App\Models\Storefront\StorefrontSection;
-use App\Models\Storefront\StorefrontSectionProduct;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -17,8 +14,13 @@ class ProductController extends AdminModuleController
 
     private ?string $primaryImagePath = null;
 
+    private array $galleryImagePaths = [];
+
     protected function prepareData(array $validated, Request $request, array $module): array
     {
+        $this->primaryImagePath = null;
+        $this->galleryImagePaths = [];
+
         $data = parent::prepareData($validated, $request, $module);
 
         if (array_key_exists('primary_image', $data)) {
@@ -73,95 +75,12 @@ class ProductController extends AdminModuleController
             }
         }
 
-        $product = $product->fresh(['category', 'brand', 'unit', 'images']);
+        $product = $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection']);
 
-        $this->syncHomepageDisplay($product);
-
-        return $product->fresh(['category', 'brand', 'unit', 'images']);
+        return $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection']);
     }
 
-    private function syncHomepageDisplay(Product $product): void
-    {
-        $rows = config('homepage_rows.product_rows', []);
-        $selectedRow = (string) ($product->storefront_row ?? '');
-        $productUrl = route('store.product', ['product' => $product->getKey()], false);
 
-        StorefrontBanner::query()
-            ->where('button_url', $productUrl)
-            ->delete();
-
-        $productSectionKeys = collect($rows)
-            ->where('type', 'product')
-            ->pluck('section_key')
-            ->filter()
-            ->values();
-
-        $sectionIds = StorefrontSection::query()
-            ->whereIn('section_key', $productSectionKeys)
-            ->pluck('id');
-
-        if ($sectionIds->isNotEmpty()) {
-            StorefrontSectionProduct::query()
-                ->whereIn('section_id', $sectionIds)
-                ->where('product_id', $product->getKey())
-                ->delete();
-        }
-
-        if ($selectedRow === '' || ! isset($rows[$selectedRow])) {
-            return;
-        }
-
-        $row = $rows[$selectedRow];
-
-        if (($row['type'] ?? '') === 'banner') {
-            $imagePath = $product->storefront_banner_image
-                ?: optional($product->images->first())->path;
-
-            if (! $imagePath) {
-                return;
-            }
-
-            StorefrontBanner::query()->create([
-                'placement' => $row['placement'],
-                'title' => $product->storefront_title ?: $product->name,
-                'subtitle' => $product->storefront_subtitle,
-                'description' => $product->storefront_description ?: $product->description,
-                'button_text' => 'Shop Now',
-                'button_url' => $productUrl,
-                'image_path' => $imagePath,
-                'sort_order' => (int) ($product->sort_order ?? 0),
-                'is_active' => (bool) $product->is_active,
-            ]);
-
-            return;
-        }
-
-        if (($row['type'] ?? '') === 'product') {
-            $section = StorefrontSection::query()->updateOrCreate(
-                ['section_key' => $row['section_key']],
-                [
-                    'title' => $row['title'],
-                    'section_type' => 'product',
-                    'source_type' => 'manual',
-                    'category_id' => null,
-                    'product_limit' => 24,
-                    'sort_order' => (int) ($row['sort_order'] ?? 0),
-                    'is_active' => true,
-                ]
-            );
-
-            StorefrontSectionProduct::query()->updateOrCreate(
-                [
-                    'section_id' => $section->getKey(),
-                    'product_id' => $product->getKey(),
-                ],
-                [
-                    'sort_order' => (int) ($product->sort_order ?? 0),
-                    'is_active' => (bool) $product->is_active,
-                ]
-            );
-        }
-    }
 
     protected function mutateValidatedDataBeforeSave(array $data): array
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,4 +48,23 @@ class ProductHomepageSection extends Model
                 $builder->whereNull('end_at')->orWhere('end_at', '>=', now());
             });
     }
+    protected static function booted(): void
+    {
+        static::creating(function (self $section): void {
+            if (blank($section->section_key)) {
+                $base = Str::slug((string) ($section->title ?: $section->section_type ?: 'section'));
+                $base = $base ?: 'section';
+                $section->section_key = $base.'-'.time().'-'.random_int(100, 999);
+            }
+        });
+
+        static::updating(function (self $section): void {
+            if (blank($section->section_key)) {
+                $base = Str::slug((string) ($section->title ?: $section->section_type ?: 'section'));
+                $base = $base ?: 'section';
+                $section->section_key = $base.'-'.time().'-'.random_int(100, 999);
+            }
+        });
+    }
+
 }

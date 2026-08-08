@@ -11,7 +11,7 @@
     $icons = [
         'dashboard-erp'=>'home','dashboard-hrms'=>'activity','dealers'=>'shopping-bag','customers'=>'users','salesmen'=>'user-check','couriers'=>'truck',
         'customer-sales'=>'user','dealer-sales'=>'briefcase','customer-orders'=>'shopping-cart','dealer-orders'=>'shopping-cart','customer-proforma-invoices'=>'file-text','dealer-proforma-invoices'=>'file-text','customer-invoices'=>'file','dealer-invoices'=>'file','customer-dispatches'=>'truck','dealer-dispatches'=>'truck','customer-returns'=>'rotate-ccw','dealer-returns'=>'rotate-ccw',
-        'products'=>'box','product-types'=>'tag','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar',
+        'products'=>'box','product-variants'=>'layers','product-related-products'=>'link-2','product-types'=>'tag','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar','homepage-settings'=>'layout',
         'storefront-banners'=>'image','storefront-sections'=>'grid','storefront-section-products'=>'shopping-cart','storefront-service-blocks'=>'truck','storefront-footer-links'=>'link',
         'sf-row-1-main-banner'=>'layout','sf-row-2-small-banners'=>'layout','sf-row-3-shop-categories'=>'layout',
         'sf-row-4-product-section'=>'layout','sf-row-4-heading'=>'type','sf-row-4-products'=>'shopping-cart',
@@ -76,7 +76,7 @@
                                     @php $open = collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
                                     <li class="sidebar-list">
                                         <a class="sidebar-link sidebar-title {{ $open?'active':'' }}" href="javascript:void(0)">
-                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">›</span>
+                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">â€º</span>
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
                                             @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
@@ -92,7 +92,7 @@
                         @else
                             <li class="sidebar-list">
                                 <a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)">
-                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">›</span>
+                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">â€º</span>
                                 </a>
                                 <ul class="sidebar-submenu" style="display:{{ $groupOpen?'block':'none' }}">
                                     @foreach($group['items'] as $item)

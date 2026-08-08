@@ -368,10 +368,15 @@
             var minutes = Math.floor((totalSeconds % 3600) / 60);
             var seconds = totalSeconds % 60;
 
-            timer.querySelector('.days h5').textContent = days;
-            timer.querySelector('.hours h5').textContent = hours;
-            timer.querySelector('.minutes h5').textContent = minutes;
-            timer.querySelector('.seconds h5').textContent = seconds;
+            var dayNode = timer.querySelector('.days h5, .days h6');
+            var hourNode = timer.querySelector('.hours h5, .hours h6');
+            var minuteNode = timer.querySelector('.minutes h5, .minutes h6');
+            var secondNode = timer.querySelector('.seconds h5, .seconds h6');
+
+            if (dayNode) dayNode.textContent = days;
+            if (hourNode) hourNode.textContent = hours;
+            if (minuteNode) minuteNode.textContent = minutes;
+            if (secondNode) secondNode.textContent = seconds;
         }
 
         render();

@@ -18,7 +18,7 @@
         $dealUrl = route('store.product', ['product' => $dealProduct->id]);
         $dealPrice = (float) ($audience === 'dealer' ? $dealProduct->dealer_price : $dealProduct->customer_price);
         $dealMrp = (float) $dealProduct->mrp;
-        $dealStock = max(0, (float) $dealProduct->available_stock);
+        $dealStock = max(0, (float) ($dealProduct->available_stock ?? 0));
         $progressWidth = min(100, max(16, (int) round(min($dealStock, 50) * 2)));
     }
 @endphp
@@ -50,60 +50,62 @@
                                     </div>
                                 </div>
 
-                                <div class="product-image">
-                                    <a href="{{ $dealUrl }}">
-                                        <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealProduct->name }}">
-                                    </a>
-
-                                    <ul class="option">
-                                        <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                <div class="top-selling-slider product-arrow">
+                                    <div>
+                                        <div class="product-image">
                                             <a href="{{ $dealUrl }}">
-                                                <i class="iconly-Show icli"></i>
+                                                <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealProduct->name }}">
                                             </a>
-                                        </li>
-                                    </ul>
-                                </div>
 
-                                <div class="product-detail text-center">
-                                    <ul class="rating justify-content-center">
-                                        <li><i data-feather="star" class="fill"></i></li>
-                                        <li><i data-feather="star" class="fill"></i></li>
-                                        <li><i data-feather="star" class="fill"></i></li>
-                                        <li><i data-feather="star" class="fill"></i></li>
-                                        <li><i data-feather="star"></i></li>
-                                    </ul>
-
-                                    <a href="{{ $dealUrl }}">
-                                        <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealProduct->name }}</h3>
-                                    </a>
-
-                                    <h3 class="price theme-color d-flex justify-content-center">
-                                        Rs. {{ number_format($dealPrice, 2) }}
-                                        @if($dealMrp > $dealPrice)
-                                            <del class="delete-price">Rs. {{ number_format($dealMrp, 2) }}</del>
-                                        @endif
-                                    </h3>
-
-                                    <div class="progress custom-progressbar">
-                                        <div class="progress-bar" style="width: {{ $progressWidth }}%" role="progressbar"></div>
-                                    </div>
-
-                                    <h5 class="text-content">
-                                        Stock : <span class="text-dark">{{ rtrim(rtrim(number_format($dealStock, 3, '.', ''), '0'), '.') ?: '0' }} items</span>
-                                        <span class="ms-auto text-content">Hurry up offer end in</span>
-                                    </h5>
-
-                                    @if($showDealTimer)
-                                        <div class="timer timer-2 ms-0 my-3 homepage-deal-timer" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
-                                            <ul class="d-flex justify-content-center">
-                                                <li><div class="counter"><div class="days"><h6>0</h6></div></div></li>
-                                                <li><div class="counter"><div class="hours"><h6>0</h6></div></div></li>
-                                                <li><div class="counter"><div class="minutes"><h6>0</h6></div></div></li>
-                                                <li><div class="counter"><div class="seconds"><h6>0</h6></div></div></li>
+                                            <ul class="option">
+                                                <li data-bs-toggle="tooltip" data-bs-placement="top" title="Quick View">
+                                                    <a href="{{ $dealUrl }}">
+                                                        <i class="iconly-Show icli"></i>
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </div>
-                                    @endif
-</div>
+
+                                        <div class="product-detail text-center">
+                                            <ul class="rating justify-content-center">
+                                                <li><i data-feather="star" class="fill"></i></li>
+                                                <li><i data-feather="star" class="fill"></i></li>
+                                                <li><i data-feather="star" class="fill"></i></li>
+                                                <li><i data-feather="star" class="fill"></i></li>
+                                                <li><i data-feather="star"></i></li>
+                                            </ul>
+
+                                            <a href="{{ $dealUrl }}">
+                                                <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealProduct->name }}</h3>
+                                            </a>
+
+                                            <h3 class="price theme-color d-flex justify-content-center">
+                                                Rs. {{ number_format($dealPrice, 2) }}
+                                                @if($dealMrp > $dealPrice)
+                                                    <del class="delete-price">Rs. {{ number_format($dealMrp, 2) }}</del>
+                                                @endif
+                                            </h3>
+
+                                            <div class="progress custom-progressbar">
+                                                <div class="progress-bar" style="width: {{ $progressWidth }}%" role="progressbar"></div>
+                                            </div>
+
+                                            <h5 class="text-content">Solid : <span class="text-dark">{{ rtrim(rtrim(number_format($dealStock, 3, '.', ''), '0'), '.') ?: '0' }} items</span>
+                                                <span class="ms-auto text-content">Hurry up offer end in</span></h5>
+
+                                            @if($showDealTimer)
+                                                <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
+                                                    <ul class="d-flex justify-content-center">
+                                                        <li><div class="counter"><div class="days"><h6>0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="hours"><h6>0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="minutes"><h6>0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="seconds"><h6>0</h6></div></div></li>
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -113,8 +115,11 @@
                     <div class="slider-5_2 img-slider">
                         @foreach($productColumns as $columnProducts)
                             <div>
-                                @foreach($columnProducts as $product)
-                                    @include('store.partials.product-card-4', ['product' => $product])
+                                @foreach($columnProducts as $productIndex => $product)
+                                    @include('store.partials.top-selling-product-card', [
+                                        'product' => $product,
+                                        'wowDelay' => $productIndex === 1 ? '0.05s' : '',
+                                    ])
                                 @endforeach
                             </div>
                         @endforeach

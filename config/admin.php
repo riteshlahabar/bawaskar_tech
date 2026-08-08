@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Models\Catalog\Brand;
 use App\Models\Catalog\Category;
@@ -230,10 +230,10 @@ return [
                 ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','rules'=>['boolean']],
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
 
-                ['type'=>'section_heading','label'=>'9. SEO'],
-                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
-                ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255']],
+                ['type'=>'section_heading','label'=>'9. SEO','display_only'=>true],
+                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
+                ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'display_only'=>true],
+                ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255'],'display_only'=>true],
             ],
         ],        'homepage-settings'=>[
             'label'=>'Homepage Settings',

@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 @section('title', $pageTitle)
 @section('content')
 @php
@@ -50,7 +50,7 @@
                                         data-visibility-layout-types="{{ implode(',', $visibilityLayoutTypes) }}"
                                         style="display:none;"
                                     @endif>
-                                    <div class="admin-form-section-heading bg-light border rounded px-3 py-2 mt-2 fw-bold">{{ $field['label'] }}</div>
+                                    <div class="admin-form-section-heading border rounded px-3 py-2 mt-2 fw-bold text-dark" style="background-color:#f3f6fb;border-color:#dbe3ef !important;color:#1f2937 !important;">{{ $field['label'] }}</div>
                                 </div>
                                 @continue
                             @endif

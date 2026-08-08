@@ -85,6 +85,7 @@
                                         <input type="checkbox" class="form-check-input" name="{{ $name }}" value="1" id="{{ $name }}" @checked((bool) $value)>
                                         <label class="form-check-label" for="{{ $name }}">{{ $field['label'] }}</label>
                                         @error($name)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                                        @if(! empty($field['help']))<small class="text-muted d-block mt-1">{{ $field['help'] }}</small>@endif
                                     </div>
                                 @else
                                     <label class="form-label">

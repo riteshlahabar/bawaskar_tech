@@ -76,7 +76,7 @@
                                     @php $open = collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
                                     <li class="sidebar-list">
                                         <a class="sidebar-link sidebar-title {{ $open?'active':'' }}" href="javascript:void(0)">
-                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">â€º</span>
+                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;"><i class="fa fa-angle-right"></i></span>
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
                                             @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
@@ -92,7 +92,7 @@
                         @else
                             <li class="sidebar-list">
                                 <a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)">
-                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;">â€º</span>
+                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;"><i class="fa fa-angle-right"></i></span>
                                 </a>
                                 <ul class="sidebar-submenu" style="display:{{ $groupOpen?'block':'none' }}">
                                     @foreach($group['items'] as $item)

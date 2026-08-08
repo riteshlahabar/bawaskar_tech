@@ -162,3 +162,46 @@
     left: auto !important;
     margin-top: 14px !important;
 }
+
+/* Tighten storefront product-card spacing to match Fastkart card rhythm */
+.product-box-4 .product-detail {
+    margin-top: 12px;
+}
+
+.product-box-4 .product-detail .rating {
+    margin-bottom: 4px;
+}
+
+.product-box-4 .product-detail a .name {
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+
+.product-box-4 .product-detail .price-box-4 {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 0;
+}
+
+.product-box-4 .product-detail .price-box-4 h6,
+.product-box-4 .product-detail .price-box-4 h5,
+.product-box-4 .product-detail .price-box-4 del {
+    margin: 0 !important;
+    line-height: 1.2;
+}
+
+.product-box-4 .product-detail .price-qty {
+    margin-top: 6px !important;
+    align-items: flex-start !important;
+}
+
+.product-box-4 .product-detail .price-qty > h5 {
+    margin-bottom: 0 !important;
+    line-height: 1.35;
+}
+
+.product-box-4 .product-detail .label-tag {
+    margin-top: 6px !important;
+}
+

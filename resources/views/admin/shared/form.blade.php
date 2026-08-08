@@ -58,8 +58,11 @@
                             @continue(empty($field['name']))
                             @php($name = $field['name'] ?? '')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
-                            @php($rulesText = implode('|', array_map('strval', (array) ($field['rules'] ?? []))))
-                            @php($isRequired = str_contains($rulesText, 'required') && ! str_contains($rulesText, 'nullable'))
+                            @php($rulesList = array_map('strval', (array) ($field['rules'] ?? [])))
+                            @php($hasRequiredRule = collect($rulesList)->contains(fn ($rule) => str_starts_with($rule, 'required')))
+                            @php($hasConditionalRequiredRule = collect($rulesList)->contains(fn ($rule) => str_starts_with($rule, 'required_with') || str_starts_with($rule, 'required_if') || str_starts_with($rule, 'required_without')))
+                            @php($isRequired = $hasRequiredRule)
+                            @php($requiredIndicator = $hasConditionalRequiredRule && ! $hasRequiredRule ? '*?' : '*')
 
                             @if($type === 'hidden')
                                 <input type="hidden" name="{{ $name }}" value="{{ $value }}">
@@ -91,7 +94,7 @@
                                     <label class="form-label">
                                         {{ $field['label'] }}
                                         @if($isRequired)
-                                            <span class="text-danger">*</span>
+                                            <span class="text-danger" title="Required field">{{ $requiredIndicator }}</span>
                                         @endif
                                     </label>
 

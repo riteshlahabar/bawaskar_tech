@@ -7,10 +7,13 @@ use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Communication\Language;
+use App\Models\Sales\Order as StoreOrder;
 use App\Models\Storefront\StorefrontBanner;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontSection;
 use App\Models\Storefront\StorefrontServiceBlock;
+use App\Models\User;
+use App\Services\StorefrontSessionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -27,16 +30,18 @@ class StorefrontController extends Controller
     public function page(Request $request, string $page): View
     {
         abort_unless(in_array($page, config('storefront.pages', []), true), 404);
+
         return $this->render($request, $page);
     }
 
     public function category(Request $request, Category $category): View
     {
         abort_unless($category->is_active, 404);
+        $audience = $this->storefrontAudience($request);
 
         return $this->render($request, 'shop-left-sidebar', [
             'selectedCategory' => $category,
-            'products' => $this->storefrontProductQuery()
+            'products' => $this->storefrontProductQuery($audience)
                 ->where('category_id', $category->getKey())
                 ->storefrontOrder()
                 ->paginate(24)
@@ -46,7 +51,11 @@ class StorefrontController extends Controller
 
     public function product(Request $request, Product $product): View
     {
-        abort_unless($product->is_active && $product->is_visible_to_customers, 404);
+        $audience = $this->storefrontAudience($request);
+        $visibleColumn = $audience === 'dealer' ? 'is_visible_to_dealers' : 'is_visible_to_customers';
+
+        abort_unless($product->is_active && (bool) $product->{$visibleColumn}, 404);
+
         $product->load([
             'category',
             'brand',
@@ -64,11 +73,13 @@ class StorefrontController extends Controller
         $relatedProducts = $product->relatedProductLinks
             ->sortBy('sort_order')
             ->pluck('relatedProduct')
-            ->filter(fn (?Product $relatedProduct): bool => $relatedProduct && $relatedProduct->is_active && $relatedProduct->is_visible_to_customers)
+            ->filter(function (?Product $relatedProduct) use ($visibleColumn): bool {
+                return $relatedProduct && $relatedProduct->is_active && (bool) $relatedProduct->{$visibleColumn};
+            })
             ->values();
 
         if ($relatedProducts->isEmpty()) {
-            $relatedProducts = $this->storefrontProductQuery()
+            $relatedProducts = $this->storefrontProductQuery($audience)
                 ->when($product->category_id, fn (Builder $query) => $query->where('category_id', $product->category_id))
                 ->whereKeyNot($product->getKey())
                 ->storefrontOrder()
@@ -89,34 +100,45 @@ class StorefrontController extends Controller
 
         return back();
     }
+
     public function invoicePreview(string $template): View
     {
         abort_unless(in_array($template, config('storefront.invoice_templates', []), true), 404);
+
         return view('invoices.fastkart-preview.'.$template);
     }
 
     public function emailPreview(string $template): View
     {
         abort_unless(in_array($template, config('storefront.email_templates', []), true), 404);
+
         return view('emails.fastkart.'.$template, $this->previewData());
     }
 
     private function render(Request $request, string $page, array $data = []): View
     {
+        $storefrontSession = app(StorefrontSessionService::class);
+        $storeUser = $storefrontSession->user($request);
+        $audience = $storefrontSession->audience($request);
+        $storeCart = $storefrontSession->cartSummary($request);
+        $storeOrders = $storeUser ? $this->storeOrders($storeUser) : collect();
+        $storePrimaryAddress = $storeUser?->addresses->firstWhere('is_default', true) ?: $storeUser?->addresses->first();
+        $storeLastOrder = $this->lastStoreOrder($request, $storeUser);
+
         try {
             $categories = $data['categories'] ?? Category::query()
-                ->withCount(['products' => fn (Builder $query) => $query->visibleFor('customer')])
+                ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->limit(18)
                 ->get();
 
             $products = $data['products'] ?? ($page === 'shop-left-sidebar'
-                ? $this->shopProductQuery($request)->paginate(24)->withQueryString()
-                : $this->storefrontProductQuery()->storefrontOrder()->limit(24)->get());
+                ? $this->shopProductQuery($request, $audience)->paginate(24)->withQueryString()
+                : $this->storefrontProductQuery($audience)->storefrontOrder()->limit(24)->get());
 
-            $homeContent = $this->homeContent();
-            $storefrontNavigation = $this->navigationData();
+            $homeContent = $this->homeContent($audience);
+            $storefrontNavigation = $this->navigationData($audience);
             [$storeLanguages, $currentStoreLanguage] = $this->languageData($request);
         } catch (\Throwable) {
             $categories = collect();
@@ -138,6 +160,13 @@ class StorefrontController extends Controller
             'searchQuery' => $request->query('search'),
             'storeProduct' => null,
             'relatedProducts' => collect(),
+            'storeUser' => $storeUser,
+            'storeAudience' => $audience,
+            'storeCart' => $storeCart,
+            'storeCartCount' => $storeCart['count'],
+            'storeOrders' => $storeOrders,
+            'storePrimaryAddress' => $storePrimaryAddress,
+            'storeLastOrder' => $storeLastOrder,
         ], $data));
     }
 
@@ -173,9 +202,10 @@ class StorefrontController extends Controller
 
         return [collect([$language]), $language];
     }
-    private function shopProductQuery(Request $request): Builder
+
+    private function shopProductQuery(Request $request, string $audience): Builder
     {
-        $query = $this->storefrontProductQuery();
+        $query = $this->storefrontProductQuery($audience);
 
         if ($request->filled('product_type')) {
             $query->where('product_type', $request->query('product_type'));
@@ -192,21 +222,19 @@ class StorefrontController extends Controller
         return $query->storefrontOrder();
     }
 
-    private function navigationData(): array
+    private function navigationData(string $audience): array
     {
         $productTypeLabels = $this->productTypeLabels();
 
         $categories = Category::query()
-
-            ->withCount(['products' => fn (Builder $query) => $query->visibleFor('customer')])
+            ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
             ->where('is_active', true)
-            
             ->orderBy('sort_order')
             ->limit(12)
             ->get();
 
         $productTypes = Product::query()
-            ->visibleFor('customer')
+            ->visibleFor($audience)
             ->whereNotNull('product_type')
             ->where('product_type', '<>', '')
             ->select('product_type', DB::raw('count(*) as products_count'))
@@ -227,14 +255,14 @@ class StorefrontController extends Controller
             ])->values();
         }
 
-        $featuredProducts = $this->storefrontProductQuery()
+        $featuredProducts = $this->storefrontProductQuery($audience)
             ->where('is_featured', true)
             ->storefrontOrder()
             ->limit(6)
             ->get();
 
         if ($featuredProducts->isEmpty()) {
-            $featuredProducts = $this->storefrontProductQuery()->storefrontOrder()->limit(6)->get();
+            $featuredProducts = $this->storefrontProductQuery($audience)->storefrontOrder()->limit(6)->get();
         }
 
         return [
@@ -278,7 +306,7 @@ class StorefrontController extends Controller
         return str($productType)->replace(['_', '-'], ' ')->headline()->toString();
     }
 
-    private function homeContent(): array
+    private function homeContent(string $audience): array
     {
         $homepageSections = ProductHomepageSection::query()
             ->with(['category', 'items' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id')])
@@ -289,14 +317,14 @@ class StorefrontController extends Controller
 
         if ($homepageSections->isNotEmpty()) {
             return [
-                'homepageRows' => $this->resolveHomepageRows($homepageSections),
+                'homepageRows' => $this->resolveHomepageRows($homepageSections, $audience),
                 'homepageSettings' => $homepageSections,
                 'banners' => $this->homepageSettingBanners($homepageSections),
                 'sections' => $homepageSections->keyBy('section_key'),
-                'productSections' => $this->resolveHomeProductSections($homepageSections),
+                'productSections' => $this->resolveHomeProductSections($homepageSections, $audience),
                 'services' => $this->homepageSettingItems($homepageSections, 'service_section'),
-                'topSellingProducts' => $this->topSellingProducts(),
-                'dealTimerProduct' => $this->dealTimerProduct(),
+                'topSellingProducts' => $this->topSellingProducts($audience),
+                'dealTimerProduct' => $this->dealTimerProduct($audience),
                 'footerLinks' => StorefrontFooterLink::query()
                     ->where('is_active', true)
                     ->orderBy('sort_order')
@@ -321,11 +349,13 @@ class StorefrontController extends Controller
                 ->get()
                 ->groupBy('placement'),
             'sections' => $sections->keyBy('section_key'),
-            'productSections' => $this->resolveHomeProductSections($sections),
+            'productSections' => $this->resolveHomeProductSections($sections, $audience),
             'services' => StorefrontServiceBlock::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->get(),
+            'topSellingProducts' => $this->topSellingProducts($audience),
+            'dealTimerProduct' => $this->dealTimerProduct($audience),
             'footerLinks' => StorefrontFooterLink::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -334,15 +364,15 @@ class StorefrontController extends Controller
         ];
     }
 
-    private function resolveHomeProductSections(Collection $sections): Collection
+    private function resolveHomeProductSections(Collection $sections, string $audience): Collection
     {
         return $sections
             ->filter(fn ($section): bool => in_array((string) $section->section_type, ['product', 'product_section'], true))
-            ->map(function ($section): array {
+            ->map(function ($section) use ($audience): array {
                 $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
                 $products = $section instanceof ProductHomepageSection
-                    ? $this->productsForHomepageSection($section, $limit)
-                    : $this->productsForSection($section, $limit);
+                    ? $this->productsForHomepageSection($section, $limit, $audience)
+                    : $this->productsForSection($section, $limit, $audience);
 
                 return ['section' => $section, 'products' => $products];
             })
@@ -350,19 +380,21 @@ class StorefrontController extends Controller
             ->values();
     }
 
-    private function productsForSection(StorefrontSection $section, int $limit): Collection
+    private function productsForSection(StorefrontSection $section, int $limit, string $audience): Collection
     {
         if ($section->source_type === 'manual') {
+            $visibleColumn = $audience === 'dealer' ? 'is_visible_to_dealers' : 'is_visible_to_customers';
+
             return $section->sectionProducts
                 ->where('is_active', true)
                 ->sortBy('sort_order')
                 ->pluck('product')
-                ->filter(fn (?Product $product): bool => $product && $product->is_active && $product->is_visible_to_customers)
+                ->filter(fn (?Product $product): bool => $product && $product->is_active && (bool) $product->{$visibleColumn})
                 ->take($limit)
                 ->values();
         }
 
-        $query = $this->storefrontProductQuery();
+        $query = $this->storefrontProductQuery($audience);
 
         if ($section->source_type === 'category' && $section->category_id) {
             $query->where('category_id', $section->category_id);
@@ -375,16 +407,15 @@ class StorefrontController extends Controller
         return $query->storefrontOrder()->limit($limit)->get();
     }
 
-
-    private function resolveHomepageRows(Collection $sections): Collection
+    private function resolveHomepageRows(Collection $sections, string $audience): Collection
     {
-        return $sections->map(function (ProductHomepageSection $section): array {
+        return $sections->map(function (ProductHomepageSection $section) use ($audience): array {
             $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
 
             return [
                 'section' => $section,
                 'items' => $section->items->where('is_active', true)->sortBy('sort_order')->values(),
-                'products' => $this->productsForHomepageSection($section, $limit),
+                'products' => $this->productsForHomepageSection($section, $limit, $audience),
             ];
         })->values();
     }
@@ -424,12 +455,11 @@ class StorefrontController extends Controller
         return $groups;
     }
 
-
-    private function productsForHomepageSection(ProductHomepageSection $section, int $limit): Collection
+    private function productsForHomepageSection(ProductHomepageSection $section, int $limit, string $audience): Collection
     {
         $limit = max(1, $limit ?: (int) ($section->product_limit ?: 8));
 
-        $assigned = $this->storefrontProductQuery()
+        $assigned = $this->storefrontProductQuery($audience)
             ->where('show_on_homepage', true)
             ->where('homepage_section_id', $section->id)
             ->orderBy('homepage_sort_order')
@@ -438,7 +468,7 @@ class StorefrontController extends Controller
             ->get();
 
         if ($section->source_type === 'top_selling_products' || $section->section_type === 'top_selling_section') {
-            $topSellingProducts = $this->storefrontProductQuery()
+            $topSellingProducts = $this->storefrontProductQuery($audience)
                 ->where('show_on_homepage', true)
                 ->where('is_top_selling', true)
                 ->orderBy('homepage_sort_order')
@@ -456,7 +486,7 @@ class StorefrontController extends Controller
             return $assigned;
         }
 
-        $query = $this->storefrontProductQuery()
+        $query = $this->storefrontProductQuery($audience)
             ->where('show_on_homepage', true);
 
         if ($section->source_type === 'category_products' && $section->category_id) {
@@ -482,9 +512,9 @@ class StorefrontController extends Controller
             ->get();
     }
 
-    private function topSellingProducts(): Collection
+    private function topSellingProducts(string $audience): Collection
     {
-        return $this->storefrontProductQuery()
+        return $this->storefrontProductQuery($audience)
             ->where('show_on_homepage', true)
             ->where('is_top_selling', true)
             ->storefrontOrder()
@@ -492,29 +522,33 @@ class StorefrontController extends Controller
             ->get();
     }
 
-    private function dealTimerProduct(): ?Product
+    private function dealTimerProduct(string $audience): ?Product
     {
-        return $this->storefrontProductQuery()
+        return $this->storefrontProductQuery($audience)
             ->where('show_on_homepage', true)
             ->where('is_deal_timer_product', true)
             ->storefrontOrder()
             ->first();
     }
 
-    private function storefrontProductQuery(): Builder
+    private function storefrontProductQuery(string $audience = 'customer'): Builder
     {
         return Product::query()
             ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
-            ->visibleFor('customer');
+            ->visibleFor($audience);
     }
 
     private function emptyHomeContent(): array
     {
         return [
+            'homepageRows' => collect(),
+            'homepageSettings' => collect(),
             'banners' => collect(),
             'sections' => collect(),
             'productSections' => collect(),
             'services' => collect(),
+            'topSellingProducts' => collect(),
+            'dealTimerProduct' => null,
             'footerLinks' => collect(),
         ];
     }
@@ -527,5 +561,47 @@ class StorefrontController extends Controller
             'resetUrl' => route('store.page', ['page' => 'forgot']),
             'offerTitle' => 'Special Farmer Medicine Offer',
         ];
+    }
+
+    private function storefrontAudience(Request $request): string
+    {
+        return app(StorefrontSessionService::class)->audience($request);
+    }
+
+    private function storeOrders(User $user): Collection
+    {
+        $query = StoreOrder::query()
+            ->with(['items.product.images', 'invoice', 'dispatches', 'salesman']);
+
+        if ($user->role === User::ROLE_DEALER) {
+            $query->where('dealer_id', $user->id);
+        } else {
+            $query->where('customer_id', $user->id);
+        }
+
+        return $query->latest()->limit(10)->get();
+    }
+
+    private function lastStoreOrder(Request $request, ?User $user): ?StoreOrder
+    {
+        if (! $user) {
+            return null;
+        }
+
+        $orderId = app(StorefrontSessionService::class)->lastOrderId($request);
+        if (! $orderId) {
+            return null;
+        }
+
+        $query = StoreOrder::query()
+            ->with(['items.product.images', 'invoice', 'dispatches', 'salesman']);
+
+        if ($user->role === User::ROLE_DEALER) {
+            $query->where('dealer_id', $user->id);
+        } else {
+            $query->where('customer_id', $user->id);
+        }
+
+        return $query->find($orderId);
     }
 }

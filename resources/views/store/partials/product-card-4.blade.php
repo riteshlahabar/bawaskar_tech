@@ -1,7 +1,8 @@
-@php
+﻿@php
     $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
     $productUrl = route('store.product', ['product' => $product->id]);
-    $price = (float) $product->customer_price;
+    $audience = $storeAudience ?? 'customer';
+    $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
@@ -23,11 +24,6 @@
                 <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
                     <a href="{{ $productUrl }}">
                         <i class="iconly-Show icli"></i>
-                    </a>
-                </li>
-                <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                    <a href="javascript:void(0)" class="notifi-wishlist">
-                        <i class="iconly-Heart icli"></i>
                     </a>
                 </li>
             </ul>
@@ -52,9 +48,20 @@
             </h5>
             <div class="price-qty">
                 <h5 class="text-content">{{ $categoryName }} / {{ $unitName }}</h5>
-                <button class="add-button addcart-button btn buy-button text-light" onclick="location.href='{{ $productUrl }}'" @disabled($isOutOfStock)>
-                    <i class="fa-solid {{ $isOutOfStock ? 'fa-ban' : 'fa-plus' }}"></i>
-                </button>
+                @if($isOutOfStock)
+                    <button class="add-button addcart-button btn buy-button text-light" disabled>
+                        <i class="fa-solid fa-ban"></i>
+                    </button>
+                @else
+                    <form method="POST" action="{{ route('store.cart.add') }}">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="add-button addcart-button btn buy-button text-light">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </form>
+                @endif
             </div>
             @if($isOutOfStock)
                 <div class="label-tag mt-2"><span>Out of Stock</span></div>

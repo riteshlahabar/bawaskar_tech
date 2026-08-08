@@ -10,11 +10,41 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
-    protected $fillable = ['order_no', 'order_type', 'customer_id', 'dealer_id', 'salesman_id', 'approved_by', 'status', 'subtotal', 'gst_total', 'discount_total', 'grand_total', 'notes', 'approved_at'];
+    protected $fillable = [
+        'order_no',
+        'order_type',
+        'customer_id',
+        'dealer_id',
+        'salesman_id',
+        'approved_by',
+        'status',
+        'subtotal',
+        'gst_total',
+        'discount_total',
+        'grand_total',
+        'notes',
+        'contact_name',
+        'contact_mobile',
+        'address_type',
+        'address_line1',
+        'address_line2',
+        'city',
+        'state',
+        'pincode',
+        'payment_method',
+        'payment_status',
+        'approved_at',
+    ];
 
     protected function casts(): array
     {
-        return ['approved_at' => 'datetime', 'subtotal' => 'decimal:2', 'gst_total' => 'decimal:2', 'discount_total' => 'decimal:2', 'grand_total' => 'decimal:2'];
+        return [
+            'approved_at' => 'datetime',
+            'subtotal' => 'decimal:2',
+            'gst_total' => 'decimal:2',
+            'discount_total' => 'decimal:2',
+            'grand_total' => 'decimal:2',
+        ];
     }
 
     public function items(): HasMany
@@ -46,9 +76,9 @@ class Order extends Model
     {
         return $this->hasMany(ProformaInvoice::class);
     }
+
     public function dispatches(): HasMany
     {
         return $this->hasMany(Dispatch::class);
     }
 }
-

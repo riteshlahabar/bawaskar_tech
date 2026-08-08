@@ -1,7 +1,8 @@
-@php
+﻿@php
     $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
     $productUrl = route('store.product', ['product' => $product->id]);
-    $price = (float) $product->customer_price;
+    $audience = $storeAudience ?? 'customer';
+    $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
@@ -21,9 +22,6 @@
                 <ul class="product-option">
                     <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
                         <a href="{{ $productUrl }}"><i data-feather="eye"></i></a>
-                    </li>
-                    <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                        <a href="javascript:void(0)" class="notifi-wishlist"><i data-feather="heart"></i></a>
                     </li>
                 </ul>
             </div>
@@ -48,7 +46,16 @@
                     <h6 class="theme-color">{{ $discount }}% off</h6>
                 @endif
                 <div class="add-to-cart-box bg-white">
-                    <button class="btn btn-add-cart addcart-button" onclick="location.href='{{ $productUrl }}'" @disabled($isOutOfStock)>{{ $isOutOfStock ? 'Out of Stock' : 'View Product' }}</button>
+                    @if($isOutOfStock)
+                        <button class="btn btn-add-cart addcart-button" disabled>Out of Stock</button>
+                    @else
+                        <form method="POST" action="{{ route('store.cart.add') }}">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-add-cart addcart-button">Add To Cart</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>

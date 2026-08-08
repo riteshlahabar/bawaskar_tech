@@ -4,6 +4,11 @@
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
+    $availableStock = (float) $product->available_stock;
+    $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
+    $isOutOfStock = $availableStock <= 0;
+    $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
+    $activeVariants = collect($product->variants ?? collect())->where('is_active', true)->values();
 @endphp
 
     <!-- Breadcrumb Section Start -->
@@ -62,10 +67,32 @@
                                         <li>Category : <a href="javascript:void(0)">{{ data_get($product, 'category.name') ?: 'Product' }}</a></li>
                                         <li>Brand : <a href="javascript:void(0)">{{ data_get($product, 'brand.name') ?: 'Bawaskar' }}</a></li>
                                         <li>Unit : <a href="javascript:void(0)">{{ $unitName }}</a></li>
-                                        <li>Available Stock : <a href="javascript:void(0)">{{ number_format($product->available_stock, 2) }}</a></li>
+                                        <li>Available Stock : <a href="javascript:void(0)">{{ number_format($availableStock, 2) }}</a></li>
+                                        <li>Status : <a href="javascript:void(0)">{{ $isOutOfStock ? 'Out of Stock' : ($isLowStock ? ($product->low_stock_text ?: 'Low Stock') : 'In Stock') }}</a></li>
                                     </ul></div>
                                 </div>
-                                <div class="note-box product-package"><button class="btn btn-md bg-dark cart-button text-white w-100">Add To Cart</button></div>
+
+                                @if($activeVariants->isNotEmpty())
+                                    <div class="product-package mb-3">
+                                        <div class="product-title"><h4>Available Options</h4></div>
+                                        <ul class="select-package">
+                                            @foreach($activeVariants as $variant)
+                                                <li>
+                                                    <a href="javascript:void(0)" class="{{ $variant->is_default ? 'active' : '' }}">
+                                                        {{ $variant->group_name }}: {{ $variant->value }}
+                                                        @if((float) $variant->price_difference !== 0.0)
+                                                            ({{ (float) $variant->price_difference > 0 ? '+' : '' }}Rs. {{ number_format((float) $variant->price_difference, 2) }})
+                                                        @endif
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                <div class="note-box product-package">
+                                    <button class="btn btn-md bg-dark cart-button text-white w-100" @disabled($isOutOfStock)>{{ $isOutOfStock ? 'Out of Stock' : 'Add To Cart' }}</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -73,6 +100,31 @@
             </div>
         </div>
     </section>
+    @if($product->additional_info || $product->care_instructions || $product->manufacturer_details || $product->seller_name || $product->detail_banner_image)
+        <section class="product-list-section section-b-space">
+            <div class="container-fluid-lg">
+                @if($product->detail_banner_image)
+                    <a href="{{ $product->detail_banner_url ?: 'javascript:void(0)' }}" class="d-block mb-4">
+                        <img src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+                    </a>
+                @endif
+                <div class="row g-4">
+                    @if($product->additional_info)
+                        <div class="col-md-6"><h4>Additional Info</h4><p class="text-content">{{ $product->additional_info }}</p></div>
+                    @endif
+                    @if($product->care_instructions)
+                        <div class="col-md-6"><h4>Care Instructions</h4><p class="text-content">{{ $product->care_instructions }}</p></div>
+                    @endif
+                    @if($product->manufacturer_details)
+                        <div class="col-md-6"><h4>{{ $product->manufacturer_title ?: 'Manufacturer Details' }}</h4><p class="text-content">{{ $product->manufacturer_details }}</p></div>
+                    @endif
+                    @if($product->seller_name)
+                        <div class="col-md-6"><h4>Seller Information</h4><p class="text-content mb-1">{{ $product->seller_name }}</p>@if($product->seller_contact)<p class="text-content mb-1">{{ $product->seller_contact }}</p>@endif @if($product->seller_address)<p class="text-content mb-0">{{ $product->seller_address }}</p>@endif</div>
+                    @endif
+                </div>
+            </div>
+        </section>
+    @endif
     <!-- Product Left Sidebar End -->
 
     @if(collect($relatedProducts)->isNotEmpty())

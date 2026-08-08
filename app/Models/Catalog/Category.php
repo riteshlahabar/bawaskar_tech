@@ -18,7 +18,13 @@ class Category extends Model
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return [
+            'is_active' => 'boolean',
+            'show_on_homepage' => 'boolean',
+            'homepage_product_limit' => 'integer',
+            'homepage_sort_order' => 'integer',
+            'sort_order' => 'integer',
+        ];
     }
 
     public function products(): HasMany

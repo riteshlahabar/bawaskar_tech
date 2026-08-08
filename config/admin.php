@@ -5,7 +5,9 @@ use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductHomepageSectionItem;
+use App\Models\Catalog\ProductRelatedProduct;
 use App\Models\Catalog\ProductType;
+use App\Models\Catalog\ProductVariant;
 use App\Models\Catalog\Unit;
 use App\Models\Communication\AppTranslation;
 use App\Models\Communication\Language;
@@ -25,6 +27,7 @@ use App\Models\Finance\Payment;
 use App\Models\InternalExpense;
 use App\Models\InternalExpenseCategory;
 use App\Models\InternalExpenseSubcategory;
+use App\Models\Inventory\InventoryBatch;
 use App\Models\Inventory\Warehouse;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Invoice;
@@ -66,6 +69,8 @@ return [
         ]],
         ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
             ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],
+            ['key'=>'product-variants','label'=>'Product Variants','route'=>'admin.product-variants.index','icon'=>'iconoir-settings-profiles'],
+            ['key'=>'product-related-products','label'=>'Related Products','route'=>'admin.product-related-products.index','icon'=>'iconoir-link'],
             ['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],
             ['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],
             ['key'=>'brands','label'=>'Brand','route'=>'admin.brands.index','icon'=>'iconoir-medal'],
@@ -139,7 +144,7 @@ return [
         ],
 
         'products'=>[
-            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
+            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','variants','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'homepageSection.title','label'=>'Section Title'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_top_selling','label'=>'Top Selling','type'=>'boolean'],['key'=>'is_deal_timer_product','label'=>'Timer Deal','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
                 ['type'=>'section_heading','label'=>'1. Basic Information'],
@@ -264,6 +269,7 @@ return [
                     'offer_section'=>'Offer Section',
                     'strip_offer_banner'=>'Strip Offer Banner',
                     'service_section'=>'Service Section',
+                    'blog_section'=>'Blog Section',
                 ],'rules'=>['required','string','max:80']],
 
                 ['name'=>'layout_type','label'=>'Layout Type','type'=>'select','options'=>[
@@ -279,6 +285,7 @@ return [
                     'full_width_banner'=>'Full Width Banner',
                     'text_strip'=>'Text Strip',
                     'service_icons'=>'Service Icons',
+                    'blog_slider'=>'Blog Slider',
                 ],'rules'=>['nullable','string','max:80']],
 
                 ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>\App\Models\Catalog\Category::class,'rules'=>['nullable','exists:categories,id'],'help'=>'Use this only when Section Type is Product Section.'],
@@ -312,19 +319,45 @@ return [
                 ['name'=>'title','label'=>'Title','rules'=>['nullable','string','max:255']],
                 ['name'=>'subtitle','label'=>'Subtitle','rules'=>['nullable','string','max:255']],
                 ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
+                ['name'=>'highlight_text','label'=>'Highlight Text','rules'=>['nullable','string','max:255']],
                 ['name'=>'image_path','label'=>'Image','type'=>'image','upload_dir'=>'uploads/homepage','rules'=>['nullable','image','max:5120']],
                 ['name'=>'mobile_image_path','label'=>'Mobile Image','type'=>'image','upload_dir'=>'uploads/homepage/mobile','rules'=>['nullable','image','max:5120']],
                 ['name'=>'logo_image_path','label'=>'Coupon / Bank Logo','type'=>'image','upload_dir'=>'uploads/homepage/logos','rules'=>['nullable','image','max:2048']],
-                ['name'=>'image_path','label'=>'Offer Image','type'=>'image','upload_dir'=>'uploads/homepage/offers','rules'=>['nullable','image','max:5120']],
+                ['name'=>'offer_image_path','label'=>'Offer Image','type'=>'image','upload_dir'=>'uploads/homepage/offers','rules'=>['nullable','image','max:5120']],
                 ['name'=>'button_text','label'=>'Button Text','rules'=>['nullable','string','max:80']],
                 ['name'=>'button_url','label'=>'Button Link','rules'=>['nullable','string','max:255']],
                 ['name'=>'coupon_code','label'=>'Coupon Code','rules'=>['nullable','string','max:80']],
                 ['name'=>'discount_text','label'=>'Discount Text','rules'=>['nullable','string','max:120']],
                 ['name'=>'validity_text','label'=>'Validity Text','rules'=>['nullable','string','max:120']],
                 ['name'=>'icon_key','label'=>'Service Icon / SVG Key','rules'=>['nullable','string','max:120']],
+                ['name'=>'background_color','label'=>'Background Color','rules'=>['nullable','string','max:30']],
+                ['name'=>'text_color','label'=>'Text Color','rules'=>['nullable','string','max:30']],
                 ['name'=>'slot','label'=>'Slot / Position','rules'=>['nullable','string','max:80']],
                 ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
+            ],
+        ],
+        'product-variants'=>[
+            'label'=>'Product Variants','group'=>'Catalog','singular'=>'Product Variant','model'=>ProductVariant::class,'with'=>['product'],'search'=>['group_name','value'],'status_column'=>'is_active','status_options'=>$active,
+            'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'group_name','label'=>'Group'],['key'=>'value','label'=>'Value'],['key'=>'price_difference','label'=>'Price Difference','type'=>'money'],['key'=>'stock_quantity','label'=>'Variant Stock'],['key'=>'is_default','label'=>'Default','type'=>'boolean'],['key'=>'sort_order','label'=>'Sort'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
+            'fields'=>[
+                ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
+                ['name'=>'group_name','label'=>'Variant Group','default'=>'Weight','rules'=>['required','string','max:80']],
+                ['name'=>'value','label'=>'Variant Value','rules'=>['required','string','max:120']],
+                ['name'=>'price_difference','label'=>'Price Difference','type'=>'number','step'=>'0.01','default'=>0,'rules'=>['nullable','numeric','min:-999999']],
+                ['name'=>'stock_quantity','label'=>'Variant Stock','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0']],
+                ['name'=>'is_default','label'=>'Default Variant','type'=>'checkbox','rules'=>['boolean']],
+                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
+                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
+            ],
+        ],
+        'product-related-products'=>[
+            'label'=>'Related Products','group'=>'Catalog','singular'=>'Related Product','model'=>ProductRelatedProduct::class,'with'=>['product','relatedProduct'],'search'=>[],
+            'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'relatedProduct.name','label'=>'Related Product'],['key'=>'sort_order','label'=>'Sort']],
+            'fields'=>[
+                ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
+                ['name'=>'related_product_id','label'=>'Related Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id','different:product_id']],
+                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
             ],
         ],
         'pricing'=>[
@@ -339,9 +372,18 @@ return [
         ],
         
         'inventory'=>[
-            'label'=>'Stock','group'=>'Inventory','singular'=>'Stock Record','model'=>InventoryBatch::class,'with'=>['product','warehouse'],'search'=>['batch_no'],'can_create'=>false,'can_delete'=>false,
-            'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'batch_no','label'=>'Batch'],['key'=>'quantity','label'=>'Quantity'],['key'=>'reserved_quantity','label'=>'Reserved'],['key'=>'low_stock_alert','label'=>'Low Stock Level'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date']],
-            'fields'=>[['name'=>'quantity','label'=>'Current Quantity','type'=>'number','step'=>'0.001','rules'=>['required','numeric','min:0']],['name'=>'reserved_quantity','label'=>'Reserved Quantity','type'=>'number','step'=>'0.001','rules'=>['required','numeric','min:0']],['name'=>'low_stock_alert','label'=>'Low Stock Alert','type'=>'number','step'=>'0.001','rules'=>['required','numeric','min:0']]],
+            'label'=>'Stock','group'=>'Inventory','singular'=>'Stock Record','model'=>InventoryBatch::class,'with'=>['product','warehouse'],'search'=>['batch_no'],'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'batch_no','label'=>'Batch'],['key'=>'quantity','label'=>'Quantity'],['key'=>'reserved_quantity','label'=>'Reserved'],['key'=>'low_stock_alert','label'=>'Low Stock Level'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date']],
+            'fields'=>[
+                ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
+                ['name'=>'warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_label'=>'name','rules'=>['required','exists:warehouses,id']],
+                ['name'=>'batch_no','label'=>'Batch Number','rules'=>['nullable','string','max:80']],
+                ['name'=>'manufacturing_date','label'=>'Manufacturing Date','type'=>'date','rules'=>['nullable','date']],
+                ['name'=>'expiry_date','label'=>'Expiry Date','type'=>'date','rules'=>['nullable','date','after_or_equal:manufacturing_date']],
+                ['name'=>'purchase_price','label'=>'Purchase Price','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],
+                ['name'=>'quantity','label'=>'Current Quantity','type'=>'number','step'=>'0.001','rules'=>['required','numeric','min:0']],
+                ['name'=>'reserved_quantity','label'=>'Reserved Quantity','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['required','numeric','min:0','lte:quantity']],
+                ['name'=>'low_stock_alert','label'=>'Low Stock Alert','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['required','numeric','min:0']],
+            ],
         ],
         'orders'=>[
             'label'=>'Sale Orders','group'=>'Sales','singular'=>'Sale Order','model'=>Order::class,'with'=>['customer','dealer.dealerProfile','salesman','invoice','proformaInvoices'],'search'=>['order_no'],'status_column'=>'status','status_options'=>$orderStatus,'filters'=>[['name'=>'type','column'=>'order_type']],'can_delete'=>false,
@@ -459,4 +501,3 @@ return [
         ],
     ],
 ];
-

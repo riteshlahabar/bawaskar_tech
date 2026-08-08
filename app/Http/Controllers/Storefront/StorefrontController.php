@@ -47,15 +47,34 @@ class StorefrontController extends Controller
     public function product(Request $request, Product $product): View
     {
         abort_unless($product->is_active && $product->is_visible_to_customers, 404);
+        $product->load([
+            'category',
+            'brand',
+            'unit',
+            'images',
+            'inventoryBatches',
+            'variants' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
+            'relatedProductLinks.relatedProduct.category',
+            'relatedProductLinks.relatedProduct.brand',
+            'relatedProductLinks.relatedProduct.unit',
+            'relatedProductLinks.relatedProduct.images',
+            'relatedProductLinks.relatedProduct.inventoryBatches',
+        ]);
 
-        $product->load(['category', 'brand', 'unit', 'images', 'inventoryBatches']);
+        $relatedProducts = $product->relatedProductLinks
+            ->sortBy('sort_order')
+            ->pluck('relatedProduct')
+            ->filter(fn (?Product $relatedProduct): bool => $relatedProduct && $relatedProduct->is_active && $relatedProduct->is_visible_to_customers)
+            ->values();
 
-        $relatedProducts = $this->storefrontProductQuery()
-            ->when($product->category_id, fn (Builder $query) => $query->where('category_id', $product->category_id))
-            ->whereKeyNot($product->getKey())
-            ->storefrontOrder()
-            ->limit(8)
-            ->get();
+        if ($relatedProducts->isEmpty()) {
+            $relatedProducts = $this->storefrontProductQuery()
+                ->when($product->category_id, fn (Builder $query) => $query->where('category_id', $product->category_id))
+                ->whereKeyNot($product->getKey())
+                ->storefrontOrder()
+                ->limit(8)
+                ->get();
+        }
 
         return $this->render($request, 'product-left-thumbnail', [
             'storeProduct' => $product,
@@ -389,6 +408,7 @@ class StorefrontController extends Controller
                 'top_small_banners' => 'promo_small',
                 'coupon_section' => 'bank_offer',
                 'strip_offer_banner' => 'strip_banner',
+                'blog_section' => 'blog',
                 'offer_section' => $section->layout_type === 'big_small_banner' ? 'footer_promo' : 'middle_promo',
                 default => $section->section_key,
             };

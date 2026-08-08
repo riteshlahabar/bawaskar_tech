@@ -5,6 +5,10 @@
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
+    $availableStock = (float) $product->available_stock;
+    $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
+    $isOutOfStock = $availableStock <= 0;
+    $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
 @endphp
 
 <div>
@@ -36,11 +40,15 @@
                         <del>Rs. {{ number_format($mrp, 2) }}</del>
                     @endif
                 </h5>
-                @if($discount > 0)
+                @if($isOutOfStock)
+                    <h6 class="theme-color">Out of Stock</h6>
+                @elseif($isLowStock)
+                    <h6 class="theme-color">{{ $product->low_stock_text ?: 'Low Stock' }}</h6>
+                @elseif($discount > 0)
                     <h6 class="theme-color">{{ $discount }}% off</h6>
                 @endif
                 <div class="add-to-cart-box bg-white">
-                    <button class="btn btn-add-cart addcart-button" onclick="location.href='{{ $productUrl }}'">View Product</button>
+                    <button class="btn btn-add-cart addcart-button" onclick="location.href='{{ $productUrl }}'" @disabled($isOutOfStock)>{{ $isOutOfStock ? 'Out of Stock' : 'View Product' }}</button>
                 </div>
             </div>
         </div>

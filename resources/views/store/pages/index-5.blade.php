@@ -59,6 +59,7 @@
     $stripBanners = $cmsBanners->get('strip_banner', collect())->values();
     $personalCareBanners = $cmsBanners->get('footer_promo', collect())->values();
     $bottomBlogSection = $cmsSections->get('row_16_blog');
+    $footerLinks = collect(data_get($homeContent ?? [], 'footerLinks', collect()));
 @endphp
 
     <!-- Loader Start -->
@@ -4618,21 +4619,15 @@
                             <h4 class="text-white">About Bawaskar Farmer Store</h4>
                         </div>
                         <ul class="footer-list footer-contact footer-list-light">
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'about-us']) }}" class="light-text">About Us</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="light-text">Contact Us</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Terms & Conditions</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Careers</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Latest Blog</a>
-                            </li>
+                            @forelse($footerLinks->get('about', collect()) as $footerLink)
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                            @empty
+                                <li><a href="{{ route('store.page', ['page'=>'about-us']) }}" class="light-text">About Us</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="light-text">Contact Us</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">Terms & Conditions</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">Careers</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">Latest Blog</a></li>
+                            @endforelse
                         </ul>
                     </div>
 
@@ -4641,21 +4636,15 @@
                             <h4 class="text-white">Useful Link</h4>
                         </div>
                         <ul class="footer-list footer-list-light footer-contact">
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'order-success']) }}" class="light-text">Your Order</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="light-text">Your Account</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'order-tracking']) }}" class="light-text">Track Orders</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'wishlist']) }}" class="light-text">Your Wishlist</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.page', ['page'=>'faq']) }}" class="light-text">FAQs</a>
-                            </li>
+                            @forelse($footerLinks->get('useful', collect()) as $footerLink)
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                            @empty
+                                <li><a href="{{ route('store.page', ['page'=>'order-success']) }}" class="light-text">Your Order</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="light-text">Your Account</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'order-tracking']) }}" class="light-text">Track Orders</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'wishlist']) }}" class="light-text">Your Wishlist</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'faq']) }}" class="light-text">FAQs</a></li>
+                            @endforelse
                         </ul>
                     </div>
 
@@ -4664,21 +4653,15 @@
                             <h4 class="text-white">Categories</h4>
                         </div>
                         <ul class="footer-list footer-list-light footer-contact">
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Fresh Vegetables</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Hot Spice</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">Brand New Bags</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">New Bakery</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('store.home') }}" class="light-text">New Grocery</a>
-                            </li>
+                            @forelse($footerLinks->get('categories', collect()) as $footerLink)
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                            @empty
+                                <li><a href="{{ route('store.home') }}" class="light-text">Fresh Vegetables</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">Hot Spice</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">Brand New Bags</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">New Bakery</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">New Grocery</a></li>
+                            @endforelse
                         </ul>
                     </div>
 
@@ -4801,7 +4784,7 @@
                                 <div class="product-detail">
                                     <h4>Product Details :</h4>
                                     <p>Candy canes sugar plum tart cotton candy chupa chups sugar plum chocolate I love.
-                                        Caramels marshmallow icing dessert candy canes I love soufflé I love toffee.
+                                        Caramels marshmallow icing dessert candy canes I love souffle I love toffee.
                                         Marshmallow pie sweet sweet roll sesame snaps tiramisu jelly bear claw. Bonbon
                                         muffin I love carrot cake sugar plum dessert bonbon.</p>
                                 </div>

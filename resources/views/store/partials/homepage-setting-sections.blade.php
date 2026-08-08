@@ -43,11 +43,15 @@
             $field = match ($type) {
                 'mobile' => 'mobile_image_path',
                 'logo' => 'logo_image_path',
-                'offer' => 'image_path',
+                'offer' => 'offer_image_path',
                 default => 'image_path',
             };
 
             $path = $entry->{$field} ?? null;
+
+            if ($type === 'offer' && ! $path) {
+                $path = $entry->image_path ?? null;
+            }
         }
 
         return $path ? asset($path) : asset($fallback);
@@ -265,7 +269,7 @@
                         @if($section->title)<div class="title"><h2>{{ $section->title }}</h2></div>@endif
                         <div class="row g-sm-4 g-3">
                             @foreach($entries as $entry)
-                                <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6') }}">
+                                <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($section->layout_type === 'two_column_banner' ? 'col-md-6' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6')) }}">
                                     <div class="banner-contain hover-effect">
                                         <a href="{{ $entryUrl($entry) }}">
                                             <img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/banner/6.jpg') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
@@ -293,6 +297,33 @@
             @endif
             @break
 
+        @case('blog_section')
+            @if($entries->isNotEmpty())
+                <section class="blog-section" id="home-section-{{ $section->section_key }}">
+                    <div class="container-fluid-lg">
+                        <div class="title"><h2>{{ $section->title ?: 'Featured Blog' }}</h2></div>
+                        <div class="slider-3-blog arrow-slider slick-height">
+                            @foreach($entries as $entry)
+                                <div>
+                                    <div class="blog-box ratio_50">
+                                        <div class="blog-box-image">
+                                            <a href="{{ $entryUrl($entry) }}">
+                                                <img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/blog/1.jpg') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                            </a>
+                                        </div>
+                                        <div class="blog-detail">
+                                            @if($entrySubtitle($entry))<label>{{ $entrySubtitle($entry) }}</label>@endif
+                                            <a href="{{ $entryUrl($entry) }}"><h2>{{ $entryTitle($entry, $section->title) }}</h2></a>
+                                            @if($entryDescription($entry))<p class="text-content">{{ str($entryDescription($entry))->limit(120) }}</p>@endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+            @endif
+            @break
         @case('service_section')
             @if($entries->isNotEmpty())
                 <section class="service-section section-b-space" id="home-section-{{ $section->section_key }}">

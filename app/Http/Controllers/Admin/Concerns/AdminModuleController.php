@@ -443,7 +443,7 @@ abstract class AdminModuleController extends Controller
 
     protected function bumpCacheVersionForModule(): void
     {
-        if (! in_array($this->moduleKey, ['products', 'pricing', 'categories', 'brands', 'units', 'languages', 'translations', 'storefront-banners', 'storefront-sections', 'storefront-section-products', 'storefront-service-blocks', 'storefront-footer-links'], true)) {
+        if (! in_array($this->moduleKey, ['products', 'product-variants', 'product-related-products', 'pricing', 'categories', 'brands', 'units', 'inventory', 'warehouses', 'homepage-settings', 'homepage-setting-items', 'languages', 'translations', 'storefront-banners', 'storefront-sections', 'storefront-section-products', 'storefront-service-blocks', 'storefront-footer-links'], true)) {
             return;
         }
 

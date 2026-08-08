@@ -77,6 +77,8 @@ class ProductHomepageSettingController extends AdminModuleController
 
             'service_section' => 'services',
 
+            'blog_section' => 'blog_items',
+
             default => 'none',
         };
     }

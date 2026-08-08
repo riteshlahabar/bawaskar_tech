@@ -9,7 +9,7 @@ class ProductHomepageSectionItem extends Model
 {
     protected $fillable = [
         'section_id', 'slot', 'title', 'subtitle', 'description', 'highlight_text', 'discount_text', 'validity_text',
-        'coupon_code', 'button_text', 'button_url', 'image_path', 'mobile_image_path', 'logo_image_path', 'icon_key',
+        'coupon_code', 'button_text', 'button_url', 'image_path', 'mobile_image_path', 'logo_image_path', 'offer_image_path', 'icon_key',
         'background_color', 'text_color', 'sort_order', 'settings', 'is_active',
     ];
 

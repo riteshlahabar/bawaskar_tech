@@ -11,10 +11,15 @@
     ];
 @endphp
 
-@forelse($categories as $category)
+@php
+    $homepageCategories = collect($categories)->where('show_on_homepage', true)->values();
+    $displayCategories = $homepageCategories->isNotEmpty() ? $homepageCategories : collect($categories);
+@endphp
+
+@forelse($displayCategories as $category)
     @php
         $categoryUrl = route('store.category', ['category' => $category->slug]);
-        $categoryImage = asset($categoryImages[$loop->index % count($categoryImages)]);
+        $categoryImage = $category->image_path ? asset($category->image_path) : asset($categoryImages[$loop->index % count($categoryImages)]);
     @endphp
     <div>
         <div class="category-box-list">

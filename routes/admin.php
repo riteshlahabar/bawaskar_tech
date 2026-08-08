@@ -45,6 +45,8 @@ use App\Http\Controllers\Admin\Warehouses\WarehouseController;
 use App\Http\Controllers\Admin\Imports\CommonImportController;
 use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
 use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
+use App\Http\Controllers\Admin\ProductRelatedProducts\ProductRelatedProductController;
+use App\Http\Controllers\Admin\ProductVariants\ProductVariantController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -62,7 +64,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
+            'products'=>ProductController::class,'product-variants'=>ProductVariantController::class,'product-related-products'=>ProductRelatedProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,
             'internal-expenses'=>InternalExpenseController::class,'expense-categories'=>ExpenseCategoryController::class,'expense-subcategories'=>ExpenseSubcategoryController::class,
@@ -92,4 +94,3 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');
     });
 });
-

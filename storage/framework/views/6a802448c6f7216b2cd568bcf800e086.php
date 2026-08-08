@@ -30,15 +30,15 @@
                 <h2><?php echo e($sectionTitle); ?></h2>
             </div>
 
-            <div class="row g-sm-4 g-3 align-items-stretch">
+            <div class="row g-sm-4 g-3">
                 <?php if($dealProduct): ?>
                     <div class="col-xxl-4 col-lg-5 order-lg-2">
-                        <div class="product-bg-image wow fadeInUp h-100">
+                        <div class="product-bg-image wow fadeInUp">
                             <div class="product-title product-warning">
                                 <h2>Special Offer</h2>
                             </div>
 
-                            <div class="product-box-4 product-box-3 rounded-0 h-100">
+                            <div class="product-box-4 product-box-3 rounded-0">
                                 <div class="deal-box">
                                     <div class="circle-box">
                                         <div class="shape-circle">
@@ -95,7 +95,7 @@
                                     </h5>
 
                                     <?php if($showDealTimer): ?>
-                                        <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="<?php echo e($dealProduct->offer_end_at->toIso8601String()); ?>">
+                                        <div class="timer timer-2 ms-0 my-3 homepage-deal-timer" data-end-at="<?php echo e($dealProduct->offer_end_at->toIso8601String()); ?>">
                                             <ul class="d-flex justify-content-center">
                                                 <li><div class="counter"><div class="days"><h6>0</h6></div></div></li>
                                                 <li><div class="counter"><div class="hours"><h6>0</h6></div></div></li>
@@ -104,16 +104,7 @@
                                             </ul>
                                         </div>
                                     <?php endif; ?>
-
-                                    <?php if($dealStock > 0): ?>
-                                        <form method="POST" action="<?php echo e(route('store.cart.add')); ?>" class="mt-3">
-                                            <?php echo csrf_field(); ?>
-                                            <input type="hidden" name="product_id" value="<?php echo e($dealProduct->id); ?>">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn theme-bg-color text-white">Add To Cart</button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
+</div>
                             </div>
                         </div>
                     </div>

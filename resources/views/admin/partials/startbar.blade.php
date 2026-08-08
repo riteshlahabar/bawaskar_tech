@@ -34,6 +34,31 @@
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','systemMenu'=>'settings'];
 @endphp
 
+<style>
+    .sidebar-wrapper .sidebar-link,
+    .sidebar-wrapper .admin-sidebar-submenu-link,
+    .sidebar-wrapper .submenu-title,
+    .sidebar-wrapper .sidebar-main-title h6 {
+        font-weight: 700 !important;
+    }
+
+    .sidebar-wrapper .sidebar-link span,
+    .sidebar-wrapper .admin-sidebar-submenu-link span,
+    .sidebar-wrapper .submenu-title span {
+        font-weight: 700 !important;
+    }
+
+    .sidebar-wrapper .sidebar-link svg,
+    .sidebar-wrapper .admin-sidebar-submenu-link svg,
+    .sidebar-wrapper .submenu-title svg,
+    .sidebar-wrapper .admin-sidebar-submenu-icon,
+    .sidebar-wrapper .fa-angle-right,
+    .sidebar-wrapper .sub-arrow {
+        stroke-width: 2.4px !important;
+        font-weight: 700 !important;
+    }
+</style>
+
 <div class="sidebar-wrapper">
     <div id="sidebarEffect"></div>
     <div>

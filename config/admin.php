@@ -166,12 +166,12 @@ return [
                 ['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
 
                 ['type'=>'section_heading','label'=>'3. Add Stock','create_only'=>true],
-                ['name'=>'opening_stock_warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_label'=>'name','rules'=>['nullable','exists:warehouses,id'],'create_only'=>true,'help'=>'Add the first stock entry while creating this product.'],
-                ['name'=>'opening_stock_batch_no','label'=>'Batch No','rules'=>['nullable','string','max:80'],'create_only'=>true],
+                ['name'=>'opening_stock_warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_label'=>'name','rules'=>['nullable','exists:warehouses,id'],'create_only'=>true,'force_required_indicator'=>true,'help'=>'Add the first stock entry while creating this product.'],
+                ['name'=>'opening_stock_batch_no','label'=>'Batch No','rules'=>['nullable','string','max:80'],'create_only'=>true,'force_required_indicator'=>true],
                 ['name'=>'opening_stock_manufacturing_date','label'=>'Manufacturing Date','type'=>'date','rules'=>['nullable','date'],'create_only'=>true],
                 ['name'=>'opening_stock_expiry_date','label'=>'Expiry Date','type'=>'date','rules'=>['nullable','date'],'create_only'=>true],
                 ['name'=>'opening_stock_purchase_price','label'=>'Purchase Price','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0'],'create_only'=>true],
-                ['name'=>'opening_stock_quantity','label'=>'Current Quantity','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0'],'create_only'=>true],
+                ['name'=>'opening_stock_quantity','label'=>'Current Quantity','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0'],'create_only'=>true,'force_required_indicator'=>true],
                 ['name'=>'opening_stock_reserved_quantity','label'=>'Reserved Quantity','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['nullable','numeric','min:0'],'create_only'=>true],
                 ['name'=>'opening_stock_low_stock_alert','label'=>'Low Stock Alert','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['nullable','numeric','min:0'],'create_only'=>true],
 

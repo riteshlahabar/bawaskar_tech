@@ -61,8 +61,9 @@
                             @php($rulesList = array_map('strval', (array) ($field['rules'] ?? [])))
                             @php($hasRequiredRule = collect($rulesList)->contains(fn ($rule) => str_starts_with($rule, 'required')))
                             @php($hasConditionalRequiredRule = collect($rulesList)->contains(fn ($rule) => str_starts_with($rule, 'required_with') || str_starts_with($rule, 'required_if') || str_starts_with($rule, 'required_without')))
-                            @php($isRequired = $hasRequiredRule)
-                            @php($requiredIndicator = $hasConditionalRequiredRule && ! $hasRequiredRule ? '*?' : '*')
+                            @php($forcedRequiredIndicator = (bool) ($field['force_required_indicator'] ?? false))
+                            @php($isRequired = $hasRequiredRule || $forcedRequiredIndicator)
+                            @php($requiredIndicator = '*')
 
                             @if($type === 'hidden')
                                 <input type="hidden" name="{{ $name }}" value="{{ $value }}">

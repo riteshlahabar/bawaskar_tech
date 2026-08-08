@@ -63,6 +63,11 @@
                                                         <i class="iconly-Show icli"></i>
                                                     </a>
                                                 </li>
+                                                <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="notifi-wishlist">
+                                                        <i class="iconly-Heart icli"></i>
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </div>
 
@@ -129,6 +134,7 @@
         </div>
     </section>
 @endif
+
 
 
 

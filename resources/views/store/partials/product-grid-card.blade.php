@@ -23,6 +23,9 @@
                     <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
                         <a href="{{ $productUrl }}"><i data-feather="eye"></i></a>
                     </li>
+                    <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                        <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="notifi-wishlist"><i data-feather="heart"></i></a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -61,6 +64,7 @@
         </div>
     </div>
 </div>
+
 
 
 

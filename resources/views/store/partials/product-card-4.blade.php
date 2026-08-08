@@ -41,14 +41,16 @@
             <a href="{{ $productUrl }}">
                 <h5 class="name text-title">{{ $product->name }}</h5>
             </a>
-            @if($mrp > $price)
-                <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
-            @endif
-            <h5 class="sold text-content mb-0">
-                <span class="theme-color price">Rs. {{ number_format($price, 2) }}</span>
-            </h5>
-            <div class="price-qty">
-                <h5 class="text-content">{{ $categoryName }} / {{ $unitName }}</h5>
+            <div class="price-box-4">
+                @if($mrp > $price)
+                    <h6 class="text-content mb-0 lh-sm"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
+                @endif
+                <h5 class="sold text-content mb-0 lh-sm">
+                    <span class="theme-color price">Rs. {{ number_format($price, 2) }}</span>
+                </h5>
+            </div>
+            <div class="price-qty mt-1 pt-0 align-items-start">
+                <h5 class="text-content mb-0 lh-base">{{ $categoryName }} / {{ $unitName }}</h5>
                 @if($isOutOfStock)
                     <button class="add-button addcart-button btn buy-button text-light" disabled>
                         <i class="fa-solid fa-ban"></i>
@@ -74,6 +76,7 @@
         </div>
     </div>
 </div>
+
 
 
 

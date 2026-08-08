@@ -325,9 +325,9 @@
             @if($entries->isNotEmpty())
                 <section class="service-section section-b-space" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        <div class="row g-3">
+                        <div class="row g-3 row-cols-xxl-5 row-cols-lg-3 row-cols-md-2">
                             @foreach($entries as $entry)
-                                <div class="col-xxl-2 col-lg-3 col-sm-6">
+                                <div>
                                     <div class="service-contain-2">
                                         @if($entryIcon($entry))
                                             <svg class="icon-width"><use xlink:href="{{ asset('fastkart-store/svg/svg/service-icon.svg#'.$entryIcon($entry)) }}"></use></svg>
@@ -392,6 +392,7 @@
     }
 })();
 </script>
+
 
 
 

@@ -79,11 +79,11 @@
                                                 <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealProduct->name }}</h3>
                                             </a>
 
-                                            <h3 class="price theme-color d-flex justify-content-center">
+                                            @if($dealMrp > $dealPrice)
+                                                <h6 class="text-content mb-1"><del class="delete-price">Rs. {{ number_format($dealMrp, 2) }}</del></h6>
+                                            @endif
+                                            <h3 class="price theme-color d-flex justify-content-center mb-0">
                                                 Rs. {{ number_format($dealPrice, 2) }}
-                                                @if($dealMrp > $dealPrice)
-                                                    <del class="delete-price">Rs. {{ number_format($dealMrp, 2) }}</del>
-                                                @endif
                                             </h3>
 
                                             <div class="progress custom-progressbar">
@@ -129,6 +129,7 @@
         </div>
     </section>
 @endif
+
 
 
 

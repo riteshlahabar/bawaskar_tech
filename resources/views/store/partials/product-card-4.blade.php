@@ -41,11 +41,11 @@
             <a href="{{ $productUrl }}">
                 <h5 class="name text-title">{{ $product->name }}</h5>
             </a>
-            <h5 class="sold text-content">
+            @if($mrp > $price)
+                <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
+            @endif
+            <h5 class="sold text-content mb-0">
                 <span class="theme-color price">Rs. {{ number_format($price, 2) }}</span>
-                @if($mrp > $price)
-                    <del>Rs. {{ number_format($mrp, 2) }}</del>
-                @endif
             </h5>
             <div class="price-qty">
                 <h5 class="text-content">{{ $categoryName }} / {{ $unitName }}</h5>
@@ -74,6 +74,7 @@
         </div>
     </div>
 </div>
+
 
 
 

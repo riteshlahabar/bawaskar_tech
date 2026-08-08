@@ -39,11 +39,11 @@
             <h5 class="name text-title">{{ $product->homepage_title ?: $product->name }}</h5>
         </a>
 
-        <h5 class="price theme-color">
+        @if($mrp > $price)
+            <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
+        @endif
+        <h5 class="price theme-color mb-0">
             Rs. {{ number_format($price, 2) }}
-            @if($mrp > $price)
-                <del>Rs. {{ number_format($mrp, 2) }}</del>
-            @endif
         </h5>
 
         <div class="addtocart_btn">
@@ -58,6 +58,7 @@
         </div>
     </div>
 </div>
+
 
 
 

@@ -32,11 +32,11 @@
                 <a href="{{ $productUrl }}"><h5 class="name">{{ $product->name }}</h5></a>
                 <p class="text-content mt-1 mb-2">{{ str($product->description ?: 'Quality farmer product')->limit(75) }}</p>
                 <h6 class="unit">{{ $unitName }}</h6>
-                <h5 class="price">
+                @if($mrp > $price)
+                    <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
+                @endif
+                <h5 class="price mb-0">
                     <span class="theme-color">Rs. {{ number_format($price, 2) }}</span>
-                    @if($mrp > $price)
-                        <del>Rs. {{ number_format($mrp, 2) }}</del>
-                    @endif
                 </h5>
                 @if($isOutOfStock)
                     <h6 class="theme-color">Out of Stock</h6>
@@ -61,6 +61,7 @@
         </div>
     </div>
 </div>
+
 
 
 

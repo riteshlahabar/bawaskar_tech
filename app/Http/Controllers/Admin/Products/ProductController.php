@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Products;
 
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductImage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class ProductController extends AdminModuleController
             }
         }
 
-        return $data;
+        return $this->normalizeHomepageSectionData($data, $module);
     }
 
     protected function persist(array $data, ?Model $record): Model
@@ -88,6 +89,43 @@ class ProductController extends AdminModuleController
 
         if ($data['sort_order'] === '') {
             $data['sort_order'] = 0;
+        }
+
+        return $data;
+    }
+
+    private function normalizeHomepageSectionData(array $data, array $module): array
+    {
+        $conditionalFields = collect($module['fields'] ?? [])
+            ->filter(fn (array $field): bool => ($field['visibility_field'] ?? null) === 'homepage_section_id' && ! empty($field['name']))
+            ->keyBy('name');
+
+        if ($conditionalFields->isEmpty()) {
+            return $data;
+        }
+
+        $sectionId = $data['homepage_section_id'] ?? null;
+        $section = $sectionId ? ProductHomepageSection::query()->find($sectionId) : null;
+        $sectionType = (string) ($section?->section_type ?? '');
+        $layoutType = (string) ($section?->layout_type ?? '');
+
+        foreach ($conditionalFields as $fieldName => $field) {
+            $showForSectionTypes = array_values(array_filter((array) ($field['show_for_section_types'] ?? [])));
+            $showForLayoutTypes = array_values(array_filter((array) ($field['show_for_layout_types'] ?? [])));
+
+            $shouldKeep = $section !== null;
+
+            if ($shouldKeep && $showForSectionTypes !== []) {
+                $shouldKeep = in_array($sectionType, $showForSectionTypes, true);
+            }
+
+            if ($shouldKeep && $showForLayoutTypes !== []) {
+                $shouldKeep = in_array($layoutType, $showForLayoutTypes, true);
+            }
+
+            if (! $shouldKeep) {
+                $data[$fieldName] = null;
+            }
         }
 
         return $data;

@@ -46,6 +46,7 @@ abstract class AdminModuleController extends Controller
             'record' => null,
             'formData' => $this->createFormData($request, $module),
             'options' => $this->formOptions($module),
+            'optionAttributes' => $this->formOptionAttributes($module),
         ]);
     }
 
@@ -82,6 +83,7 @@ abstract class AdminModuleController extends Controller
             'record' => $record,
             'formData' => $this->formData($record, $module),
             'options' => $this->formOptions($module),
+            'optionAttributes' => $this->formOptionAttributes($module),
         ]);
     }
 
@@ -543,6 +545,39 @@ abstract class AdminModuleController extends Controller
         }
         return $options;
     }
+
+    protected function formOptionAttributes(array $module): array
+    {
+        $attributes = [];
+
+        foreach ($module['fields'] ?? [] as $field) {
+            if (($field['type'] ?? null) !== 'select' || empty($field['name']) || empty($field['option_model']) || empty($field['option_attributes'])) {
+                continue;
+            }
+
+            $query = $field['option_model']::query();
+
+            foreach ($field['option_where'] ?? [] as $column => $value) {
+                $query->where($column, $value);
+            }
+
+            $labelColumn = $field['option_label'] ?? 'name';
+            $valueColumn = $field['option_value'] ?? 'id';
+            $attributeMap = (array) $field['option_attributes'];
+            $columns = array_values(array_unique(array_merge([$valueColumn, $labelColumn], array_values($attributeMap))));
+
+            foreach ($query->orderBy($labelColumn)->get($columns) as $option) {
+                $key = data_get($option, $valueColumn);
+
+                foreach ($attributeMap as $attributeName => $column) {
+                    $attributes[$field['name']][$key][$attributeName] = data_get($option, $column);
+                }
+            }
+        }
+
+        return $attributes;
+    }
 }
+
 
 

@@ -1,10 +1,11 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 @section('title', $pageTitle)
 @section('content')
 @php
     $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple'], true));
     $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
     $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
+    $optionAttributes = $optionAttributes ?? [];
 @endphp
 <div class="row admin-form-row">
     <div class="col-12">
@@ -34,29 +35,37 @@
 
                     <div class="row g-3">
                         @foreach($module['fields'] as $field)
-                            @if(($field['type'] ?? '') === 'section_heading')
-                                <div class="col-12">
+                            @continue($field['display_only'] ?? false)
+                            @php($type = $field['type'] ?? 'text')
+                            @php($visibilitySource = $field['visibility_field'] ?? null)
+                            @php($visibilitySectionTypes = array_values(array_filter((array) ($field['show_for_section_types'] ?? []))))
+                            @php($visibilityLayoutTypes = array_values(array_filter((array) ($field['show_for_layout_types'] ?? []))))
+                            @php($hasVisibility = filled($visibilitySource) && ($visibilitySectionTypes !== [] || $visibilityLayoutTypes !== []))
+
+                            @if($type === 'section_heading')
+                                <div class="col-12 {{ $hasVisibility ? 'admin-conditional-field' : '' }}"
+                                    @if($hasVisibility)
+                                        data-visibility-source="{{ $visibilitySource }}"
+                                        data-visibility-section-types="{{ implode(',', $visibilitySectionTypes) }}"
+                                        data-visibility-layout-types="{{ implode(',', $visibilityLayoutTypes) }}"
+                                        style="display:none;"
+                                    @endif>
                                     <div class="admin-form-section-heading bg-light border rounded px-3 py-2 mt-2 fw-bold">{{ $field['label'] }}</div>
                                 </div>
                                 @continue
                             @endif
-                            @continue($field['display_only'] ?? false)
-                            @if(($field['type'] ?? '') === 'section_heading')
-                                <div class="{{ $field['col'] ?? 'col-12' }}">
-                                    <div class="admin-section-heading mt-2 mb-1 fw-semibold text-primary border-bottom pb-1">{{ $field['label'] ?? '' }}</div>
-                                </div>
-                                @continue
-                            @endif
+
                             @continue(empty($field['name']))
                             @php($name = $field['name'] ?? '')
-                            @php($type = $field['type'] ?? 'text')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
                             @php($rulesText = implode('|', array_map('strval', (array) ($field['rules'] ?? []))))
                             @php($isRequired = str_contains($rulesText, 'required') && ! str_contains($rulesText, 'nullable'))
+
                             @if($type === 'hidden')
                                 <input type="hidden" name="{{ $name }}" value="{{ $value }}">
                                 @continue
                             @endif
+
                             @php($lockedBySubmenu = in_array($module['key'] ?? '', ['storefront-banners', 'storefront-sections'], true) && in_array($name, ['placement', 'section_key'], true) && request()->filled($name))
 
                             @if($lockedBySubmenu)
@@ -64,7 +73,13 @@
                                 @continue
                             @endif
 
-                            <div class="{{ $field['col'] ?? 'col-md-6' }}">
+                            <div class="{{ $field['col'] ?? 'col-md-6' }} {{ $hasVisibility ? 'admin-conditional-field' : '' }}"
+                                @if($hasVisibility)
+                                    data-visibility-source="{{ $visibilitySource }}"
+                                    data-visibility-section-types="{{ implode(',', $visibilitySectionTypes) }}"
+                                    data-visibility-layout-types="{{ implode(',', $visibilityLayoutTypes) }}"
+                                    style="display:none;"
+                                @endif>
                                 @if($type === 'checkbox')
                                     <div class="form-check form-switch mt-4">
                                         <input type="checkbox" class="form-check-input" name="{{ $name }}" value="1" id="{{ $name }}" @checked((bool) $value)>
@@ -83,7 +98,13 @@
                                         <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" @required($isRequired)>
                                             <option value="">Select {{ $field['label'] }}</option>
                                             @foreach($options[$name] ?? [] as $key => $label)
-                                                <option value="{{ $key }}" @selected((string) $value === (string) $key)>{{ $label }}</option>
+                                                @php($attrs = $optionAttributes[$name][$key] ?? [])
+                                                <option value="{{ $key }}" @selected((string) $value === (string) $key)
+                                                    @foreach($attrs as $attrName => $attrValue)
+                                                        @if($attrValue !== null && $attrValue !== '')
+                                                            data-{{ \Illuminate\Support\Str::kebab($attrName) }}="{{ $attrValue }}"
+                                                        @endif
+                                                    @endforeach>{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     @elseif($type === 'textarea')
@@ -126,4 +147,81 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    function syncConditionalFields(form) {
+        var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
+        if (!conditionalBlocks.length) {
+            return;
+        }
+
+        conditionalBlocks.forEach(function (block) {
+            var sourceName = block.dataset.visibilitySource;
+            var source = form.elements.namedItem(sourceName);
+            if (!source || !('options' in source)) {
+                return;
+            }
+
+            var selectedOption = source.options[source.selectedIndex] || null;
+            var selectedValue = source.value || '';
+            var sectionType = selectedOption ? (selectedOption.dataset.sectionType || '') : '';
+            var layoutType = selectedOption ? (selectedOption.dataset.layoutType || '') : '';
+            var allowedSectionTypes = (block.dataset.visibilitySectionTypes || '').split(',').map(function (value) {
+                return value.trim();
+            }).filter(Boolean);
+            var allowedLayoutTypes = (block.dataset.visibilityLayoutTypes || '').split(',').map(function (value) {
+                return value.trim();
+            }).filter(Boolean);
+            var isVisible = Boolean(selectedValue);
+
+            if (isVisible && allowedSectionTypes.length) {
+                isVisible = allowedSectionTypes.indexOf(sectionType) !== -1;
+            }
+
+            if (isVisible && allowedLayoutTypes.length) {
+                isVisible = allowedLayoutTypes.indexOf(layoutType) !== -1;
+            }
+
+            block.style.display = isVisible ? '' : 'none';
+
+            block.querySelectorAll('input, select, textarea').forEach(function (control) {
+                if (!control.dataset.conditionalOriginalDisabled) {
+                    control.dataset.conditionalOriginalDisabled = control.disabled ? '1' : '0';
+                }
+
+                control.disabled = isVisible ? control.dataset.conditionalOriginalDisabled === '1' : true;
+            });
+        });
+    }
+
+    function initConditionalAdminFields() {
+        document.querySelectorAll('.admin-form-card form').forEach(function (form) {
+            var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
+            if (!conditionalBlocks.length) {
+                return;
+            }
+
+            Array.from(new Set(Array.from(conditionalBlocks).map(function (block) {
+                return block.dataset.visibilitySource;
+            }))).forEach(function (sourceName) {
+                var source = form.elements.namedItem(sourceName);
+                if (source) {
+                    source.addEventListener('change', function () {
+                        syncConditionalFields(form);
+                    });
+                }
+            });
+
+            syncConditionalFields(form);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initConditionalAdminFields);
+    } else {
+        initConditionalAdminFields();
+    }
+})();
+</script>
 @endsection

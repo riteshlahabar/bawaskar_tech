@@ -437,6 +437,21 @@ class StorefrontController extends Controller
             ->limit($limit)
             ->get();
 
+        if ($section->source_type === 'top_selling_products' || $section->section_type === 'top_selling_section') {
+            $topSellingProducts = $this->storefrontProductQuery()
+                ->where('show_on_homepage', true)
+                ->where('is_top_selling', true)
+                ->orderBy('homepage_sort_order')
+                ->storefrontOrder()
+                ->limit($limit)
+                ->get();
+
+            return $assigned
+                ->concat($topSellingProducts)
+                ->unique('id')
+                ->values();
+        }
+
         if ($assigned->isNotEmpty()) {
             return $assigned;
         }

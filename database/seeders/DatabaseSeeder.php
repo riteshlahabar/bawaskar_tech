@@ -46,6 +46,10 @@ class DatabaseSeeder extends Seeder
         InventoryBatch::query()->updateOrCreate(['warehouse_id'=>$warehouse->id,'product_id'=>$product->id,'batch_no'=>'DEMO-B001'],[
             'manufacturing_date'=>today()->subMonth(),'expiry_date'=>today()->addYear(),'purchase_price'=>350,'quantity'=>500,'reserved_quantity'=>0,'low_stock_alert'=>50,
         ]);
+        
         $this->call(StorefrontSeeder::class);
+        $this->call(IndexFiveHomepageSeeder::class);
     }
 }
+
+

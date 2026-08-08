@@ -234,8 +234,10 @@
             @break
 
         @case('top_selling_section')
-            @php($dealProduct = $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct'))
+            @php($assignedDealProduct = $products->first(fn($product) => (int) ($product->homepage_section_id ?? 0) === (int) $section->id))
+            @php($dealProduct = $assignedDealProduct ?: $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct'))
             @php($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->values())
+            @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
             @if($normalProducts->isNotEmpty() || $dealProduct)
                 <section class="product-section product-section-3" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
@@ -246,6 +248,19 @@
                                     <div class="product-bg-image wow fadeInUp">
                                         <div class="product-title product-warning"><h2>Special Offer</h2></div>
                                         @include('store.partials.product-card-4', ['product' => $dealProduct])
+                                        @if($showDealTimer)
+                                            <div class="time deal-timer homepage-deal-timer mx-md-0 mx-auto mt-3" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
+                                                <div class="product-title">
+                                                    <h4>Hurry up! Sales Ends In</h4>
+                                                </div>
+                                                <ul>
+                                                    <li><div class="counter d-block"><div class="days d-block"><h5>0</h5></div><h6>Days</h6></div></li>
+                                                    <li><div class="counter d-block"><div class="hours d-block"><h5>0</h5></div><h6>Hours</h6></div></li>
+                                                    <li><div class="counter d-block"><div class="minutes d-block"><h5>0</h5></div><h6>Min</h6></div></li>
+                                                    <li><div class="counter d-block"><div class="seconds d-block"><h5>0</h5></div><h6>Sec</h6></div></li>
+                                                </ul>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endif
@@ -350,3 +365,43 @@
 
     @endswitch
 @endforeach
+<script>
+(function () {
+    function updateHomepageDealTimer(timer) {
+        var endAt = timer.dataset.endAt;
+        if (!endAt) {
+            return;
+        }
+
+        var endTime = new Date(endAt).getTime();
+        if (Number.isNaN(endTime)) {
+            return;
+        }
+
+        function render() {
+            var diff = Math.max(0, endTime - Date.now());
+            var totalSeconds = Math.floor(diff / 1000);
+            var days = Math.floor(totalSeconds / 86400);
+            var hours = Math.floor((totalSeconds % 86400) / 3600);
+            var minutes = Math.floor((totalSeconds % 3600) / 60);
+            var seconds = totalSeconds % 60;
+
+            timer.querySelector('.days h5').textContent = days;
+            timer.querySelector('.hours h5').textContent = hours;
+            timer.querySelector('.minutes h5').textContent = minutes;
+            timer.querySelector('.seconds h5').textContent = seconds;
+        }
+
+        render();
+        window.setInterval(render, 1000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.homepage-deal-timer[data-end-at]').forEach(updateHomepageDealTimer);
+        });
+    } else {
+        document.querySelectorAll('.homepage-deal-timer[data-end-at]').forEach(updateHomepageDealTimer);
+    }
+})();
+</script>

@@ -1,4 +1,4 @@
-﻿@php
+@php
     $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
@@ -11,9 +11,10 @@
     $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
     $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
+    $cardOuterClass = trim((string) ($cardOuterClass ?? ''));
 @endphp
 
-<div>
+<div@if($cardOuterClass !== '') class="{{ $cardOuterClass }}"@endif>
     <div class="product-box-4 wow fadeInUp">
         <div class="product-image product-image-2">
             <a href="{{ $productUrl }}">

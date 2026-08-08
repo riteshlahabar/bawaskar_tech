@@ -236,45 +236,15 @@
         @case('top_selling_section')
             @php($assignedDealProduct = $products->first(fn($product) => (int) ($product->homepage_section_id ?? 0) === (int) $section->id))
             @php($dealProduct = $assignedDealProduct ?: $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct'))
-            @php($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->values())
+            @php($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->take(8)->values())
             @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
-            @if($normalProducts->isNotEmpty() || $dealProduct)
-                <section class="product-section product-section-3" id="home-section-{{ $section->section_key }}">
-                    <div class="container-fluid-lg">
-                        <div class="title"><h2>{{ $section->title ?: 'Top Selling Items' }}</h2></div>
-                        <div class="row g-sm-4 g-3">
-                            @if($dealProduct)
-                                <div class="col-xxl-4 col-lg-5 order-lg-2">
-                                    <div class="product-bg-image wow fadeInUp">
-                                        <div class="product-title product-warning"><h2>Special Offer</h2></div>
-                                        @include('store.partials.product-card-4', ['product' => $dealProduct])
-                                        @if($showDealTimer)
-                                            <div class="time deal-timer homepage-deal-timer mx-md-0 mx-auto mt-3" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
-                                                <div class="product-title">
-                                                    <h4>Hurry up! Sales Ends In</h4>
-                                                </div>
-                                                <ul>
-                                                    <li><div class="counter d-block"><div class="days d-block"><h5>0</h5></div><h6>Days</h6></div></li>
-                                                    <li><div class="counter d-block"><div class="hours d-block"><h5>0</h5></div><h6>Hours</h6></div></li>
-                                                    <li><div class="counter d-block"><div class="minutes d-block"><h5>0</h5></div><h6>Min</h6></div></li>
-                                                    <li><div class="counter d-block"><div class="seconds d-block"><h5>0</h5></div><h6>Sec</h6></div></li>
-                                                </ul>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="{{ $dealProduct ? 'col-xxl-8 col-lg-7' : 'col-12' }}">
-                                <div class="slider-7_1 arrow-slider img-slider">
-                                    @foreach($normalProducts as $product)
-                                        @include('store.partials.product-card-4', ['product' => $product])
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            @endif
+            @include('store.partials.top-selling-section', [
+                'sectionKey' => $section->section_key,
+                'sectionTitle' => $section->title ?: 'Top Selling Items',
+                'products' => $normalProducts,
+                'dealProduct' => $dealProduct,
+                'showDealTimer' => $showDealTimer,
+            ])
             @break
 
         @case('offer_section')

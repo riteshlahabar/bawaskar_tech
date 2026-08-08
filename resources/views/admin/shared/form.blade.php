@@ -96,7 +96,7 @@
                                     </label>
 
                                     @if($type === 'select')
-                                        <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" @required($isRequired)>
+                                        <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" id="{{ $name }}" data-option-attributes='@json($optionAttributes[$name] ?? [])' @required($isRequired)>
                                             <option value="">Select {{ $field['label'] }}</option>
                                             @foreach($options[$name] ?? [] as $key => $label)
                                                 @php($attrs = $optionAttributes[$name][$key] ?? [])
@@ -166,8 +166,28 @@
 
             var selectedOption = source.options[source.selectedIndex] || null;
             var selectedValue = source.value || '';
+            var optionAttributeMap = {};
+
+            if (source.dataset.optionAttributes) {
+                try {
+                    optionAttributeMap = JSON.parse(source.dataset.optionAttributes);
+                } catch (error) {
+                    optionAttributeMap = {};
+                }
+            }
+
+            var selectedOptionAttributes = selectedValue && optionAttributeMap[selectedValue] ? optionAttributeMap[selectedValue] : {};
             var sectionType = selectedOption ? (selectedOption.dataset.sectionType || '') : '';
             var layoutType = selectedOption ? (selectedOption.dataset.layoutType || '') : '';
+
+            if (!sectionType && selectedOptionAttributes.section_type) {
+                sectionType = selectedOptionAttributes.section_type;
+            }
+
+            if (!layoutType && selectedOptionAttributes.layout_type) {
+                layoutType = selectedOptionAttributes.layout_type;
+            }
+
             var allowedSectionTypes = (block.dataset.visibilitySectionTypes || '').split(',').map(function (value) {
                 return value.trim();
             }).filter(Boolean);

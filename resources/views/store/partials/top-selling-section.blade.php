@@ -2,6 +2,7 @@
     $sectionKey = $sectionKey ?? 'top-selling-items';
     $sectionTitle = $sectionTitle ?? 'Top Selling Items';
     $products = collect($products ?? collect())->filter()->take(8)->values();
+    $productColumns = $products->chunk(2)->values();
     $dealProduct = $dealProduct ?? null;
     $audience = $storeAudience ?? 'customer';
 
@@ -118,9 +119,13 @@
                 @endif
 
                 <div class="{{ $dealProduct ? 'col-xxl-8 col-lg-7 order-lg-1' : 'col-12' }}">
-                    <div class="row g-sm-4 g-3">
-                        @foreach($products as $product)
-                            @include('store.partials.product-card-4', ['product' => $product, 'cardOuterClass' => 'col-6 col-md-4 col-xl-3'])
+                    <div class="slider-5_2 img-slider">
+                        @foreach($productColumns as $columnProducts)
+                            <div>
+                                @foreach($columnProducts as $product)
+                                    @include('store.partials.product-card-4', ['product' => $product])
+                                @endforeach
+                            </div>
                         @endforeach
                     </div>
                 </div>

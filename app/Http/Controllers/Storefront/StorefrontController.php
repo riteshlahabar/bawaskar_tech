@@ -367,7 +367,7 @@ class StorefrontController extends Controller
     private function resolveHomeProductSections(Collection $sections, string $audience): Collection
     {
         return $sections
-            ->filter(fn ($section): bool => in_array((string) $section->section_type, ['product', 'product_section'], true))
+            ->filter(fn ($section): bool => in_array((string) $section->section_type, ['product', 'product_section', 'top_selling_section'], true) || (string) ($section->source_type ?? '') === 'top_selling_products')
             ->map(function ($section) use ($audience): array {
                 $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
                 $products = $section instanceof ProductHomepageSection

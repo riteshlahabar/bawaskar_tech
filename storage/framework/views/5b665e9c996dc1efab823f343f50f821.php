@@ -173,7 +173,19 @@
             <?php break; ?>
 
         <?php case ('product_section'): ?>
-            <?php if($products->isNotEmpty()): ?>
+            <?php if($section->source_type === 'top_selling_products'): ?>
+                <?php ($assignedDealProduct = $products->first(fn($product) => (int) ($product->homepage_section_id ?? 0) === (int) $section->id)); ?>
+                <?php ($dealProduct = $assignedDealProduct ?: $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct')); ?>
+                <?php ($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->take(8)->values()); ?>
+                <?php ($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture()); ?>
+                <?php echo $__env->make('store.partials.top-selling-section', [
+                    'sectionKey' => $section->section_key,
+                    'sectionTitle' => $section->title ?: 'Top Selling Items',
+                    'products' => $normalProducts,
+                    'dealProduct' => $dealProduct,
+                    'showDealTimer' => $showDealTimer,
+                ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+            <?php elseif($products->isNotEmpty()): ?>
                 <section class="product-section-3" id="home-section-<?php echo e($section->section_key); ?>">
                     <div class="container-fluid-lg">
                         <div class="title">

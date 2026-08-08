@@ -2,6 +2,7 @@
     $sectionKey = $sectionKey ?? 'top-selling-items';
     $sectionTitle = $sectionTitle ?? 'Top Selling Items';
     $products = collect($products ?? collect())->filter()->take(8)->values();
+    $productColumns = $products->chunk(2)->values();
     $dealProduct = $dealProduct ?? null;
     $audience = $storeAudience ?? 'customer';
 
@@ -119,9 +120,13 @@
                 <?php endif; ?>
 
                 <div class="<?php echo e($dealProduct ? 'col-xxl-8 col-lg-7 order-lg-1' : 'col-12'); ?>">
-                    <div class="row g-sm-4 g-3">
-                        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php echo $__env->make('store.partials.product-card-4', ['product' => $product, 'cardOuterClass' => 'col-6 col-md-4 col-xl-3'], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                    <div class="slider-5_2 img-slider">
+                        <?php $__currentLoopData = $productColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $columnProducts): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div>
+                                <?php $__currentLoopData = $columnProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php echo $__env->make('store.partials.product-card-4', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>

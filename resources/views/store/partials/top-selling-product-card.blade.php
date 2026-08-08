@@ -1,10 +1,11 @@
-@php
+﻿@php
     $imageUrl = $product->storefront_image_url;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
     $mrp = (float) $product->mrp;
     $wowDelay = trim((string) ($wowDelay ?? ''));
+    $isInWishlist = in_array($product->id, array_map('intval', $storeWishlistProductIds ?? []), true);
 @endphp
 
 @if($wowDelay !== '')
@@ -21,6 +22,16 @@
             <li data-bs-toggle="tooltip" data-bs-placement="top" title="Quick View">
                 <a href="{{ $productUrl }}">
                     <i class="iconly-Show icli"></i>
+                </a>
+            </li>
+            <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                <a href="{{ route('store.page', ['page' => 'wishlist']) }}"
+                   class="notifi-wishlist store-wishlist-toggle {{ $isInWishlist ? 'is-active active' : '' }}"
+                   data-store-wishlist-toggle
+                   data-product-id="{{ $product->id }}"
+                   data-in-wishlist="{{ $isInWishlist ? '1' : '0' }}"
+                   aria-pressed="{{ $isInWishlist ? 'true' : 'false' }}">
+                    <i class="iconly-Heart icli"></i>
                 </a>
             </li>
         </ul>
@@ -58,8 +69,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-

@@ -13,6 +13,8 @@
             && $dealProduct->offer_end_at->isFuture();
     }
 
+    $dealInWishlist = $dealProduct ? in_array($dealProduct->id, array_map('intval', $storeWishlistProductIds ?? []), true) : false;
+
     if ($dealProduct) {
         $dealImage = $dealProduct->storefront_deal_image_url;
         $dealUrl = route('store.product', ['product' => $dealProduct->id]);
@@ -64,7 +66,12 @@
                                                     </a>
                                                 </li>
                                                 <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                    <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="notifi-wishlist">
+                                                    <a href="{{ route('store.page', ['page' => 'wishlist']) }}"
+                                                       class="notifi-wishlist store-wishlist-toggle {{ $dealInWishlist ? 'is-active active' : '' }}"
+                                                       data-store-wishlist-toggle
+                                                       data-product-id="{{ $dealProduct->id }}"
+                                                       data-in-wishlist="{{ $dealInWishlist ? '1' : '0' }}"
+                                                       aria-pressed="{{ $dealInWishlist ? 'true' : 'false' }}">
                                                         <i class="iconly-Heart icli"></i>
                                                     </a>
                                                 </li>
@@ -134,6 +141,7 @@
         </div>
     </section>
 @endif
+
 
 
 

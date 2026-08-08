@@ -1,4 +1,4 @@
-@php
+﻿@php
     $imageUrl = $product->storefront_image_url;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
@@ -10,6 +10,7 @@
     $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
     $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
+    $isInWishlist = in_array($product->id, array_map('intval', $storeWishlistProductIds ?? []), true);
 @endphp
 
 <div>
@@ -24,7 +25,12 @@
                         <a href="{{ $productUrl }}"><i data-feather="eye"></i></a>
                     </li>
                     <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                        <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="notifi-wishlist"><i data-feather="heart"></i></a>
+                        <a href="{{ route('store.page', ['page' => 'wishlist']) }}"
+                           class="notifi-wishlist store-wishlist-toggle {{ $isInWishlist ? 'is-active active' : '' }}"
+                           data-store-wishlist-toggle
+                           data-product-id="{{ $product->id }}"
+                           data-in-wishlist="{{ $isInWishlist ? '1' : '0' }}"
+                           aria-pressed="{{ $isInWishlist ? 'true' : 'false' }}"><i data-feather="heart"></i></a>
                     </li>
                 </ul>
             </div>
@@ -64,8 +70,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-

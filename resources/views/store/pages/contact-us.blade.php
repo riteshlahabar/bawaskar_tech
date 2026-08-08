@@ -897,7 +897,7 @@
                                                 </div>
 
                                                 <div class="contact-detail-contain">
-                                                    <p>Visitación de la Encina 22</p>
+                                                    <p>VisitaciÃƒÂ³n de la Encina 22</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1209,7 +1209,7 @@
 
             <div class="sub-footer section-small-space">
                 <div class="reserve">
-                    <h6 class="text-content">©2022 Bawaskar Farmer Store All rights reserved</h6>
+                    <h6 class="text-content">Ã‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
                 </div>
 
                 <div class="payment">
@@ -1511,6 +1511,8 @@
 
     <!-- script js -->
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
+
+    @include('store.partials.wishlist-script')
 
     <!-- theme setting js -->
     <script src="{{ asset('fastkart-store/js/theme-setting.js') }}"></script>

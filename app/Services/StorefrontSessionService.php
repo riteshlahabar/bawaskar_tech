@@ -13,6 +13,7 @@ class StorefrontSessionService
     private const USER_ID_KEY = 'storefront.user_id';
     private const USER_ROLE_KEY = 'storefront.user_role';
     private const CART_KEY = 'storefront.cart';
+    private const WISHLIST_KEY = 'storefront.wishlist';
     private const LAST_ORDER_ID_KEY = 'storefront.last_order_id';
 
     public function user(Request $request): ?User
@@ -54,6 +55,7 @@ class StorefrontSessionService
 
         if ($previousRole !== '' && $previousRole !== $user->role) {
             $this->clearCart($request);
+            $this->clearWishlist($request);
         }
     }
 
@@ -63,6 +65,7 @@ class StorefrontSessionService
             self::USER_ID_KEY,
             self::USER_ROLE_KEY,
             self::CART_KEY,
+            self::WISHLIST_KEY,
             self::LAST_ORDER_ID_KEY,
         ]);
 
@@ -135,6 +138,46 @@ class StorefrontSessionService
         $request->session()->forget(self::CART_KEY);
     }
 
+    public function addToWishlist(Request $request, Product $product): void
+    {
+        $this->assertVisibleForAudience($product, $this->audience($request));
+
+        $wishlist = $this->wishlist($request);
+        if (! in_array($product->id, $wishlist, true)) {
+            $wishlist[] = $product->id;
+        }
+
+        $this->storeWishlist($request, $wishlist);
+    }
+
+    public function removeFromWishlist(Request $request, int $productId): void
+    {
+        $wishlist = collect($this->wishlist($request))
+            ->reject(fn (int $storedProductId): bool => $storedProductId === $productId)
+            ->values()
+            ->all();
+
+        $this->storeWishlist($request, $wishlist);
+    }
+
+    public function toggleWishlist(Request $request, Product $product): bool
+    {
+        if ($this->hasInWishlist($request, $product->id)) {
+            $this->removeFromWishlist($request, $product->id);
+
+            return false;
+        }
+
+        $this->addToWishlist($request, $product);
+
+        return true;
+    }
+
+    public function clearWishlist(Request $request): void
+    {
+        $request->session()->forget(self::WISHLIST_KEY);
+    }
+
     public function cart(Request $request): array
     {
         $stored = $request->session()->get(self::CART_KEY, []);
@@ -154,6 +197,26 @@ class StorefrontSessionService
         }
 
         return $cart;
+    }
+
+    public function wishlist(Request $request): array
+    {
+        $stored = $request->session()->get(self::WISHLIST_KEY, []);
+        if (! is_array($stored)) {
+            return [];
+        }
+
+        return collect($stored)
+            ->map(fn ($productId): int => (int) $productId)
+            ->filter(fn (int $productId): bool => $productId > 0)
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    public function hasInWishlist(Request $request, int $productId): bool
+    {
+        return in_array($productId, $this->wishlist($request), true);
     }
 
     public function cartSummary(Request $request): array
@@ -207,6 +270,22 @@ class StorefrontSessionService
         ];
     }
 
+    public function wishlistSummary(Request $request): array
+    {
+        $wishlist = collect($this->wishlist($request));
+        $products = $this->productsForWishlist($request, $wishlist->all());
+        $items = $wishlist
+            ->map(fn (int $productId): ?Product => $products->get($productId))
+            ->filter()
+            ->values();
+
+        return [
+            'items' => $items,
+            'count' => $items->count(),
+            'ids' => $items->pluck('id')->all(),
+        ];
+    }
+
     public function checkoutItems(Request $request): array
     {
         return collect($this->cartSummary($request)['items'])
@@ -235,10 +314,34 @@ class StorefrontSessionService
         $request->session()->put(self::CART_KEY, $cart);
     }
 
+    private function storeWishlist(Request $request, array $wishlist): void
+    {
+        $request->session()->put(self::WISHLIST_KEY, array_values($wishlist));
+    }
+
     private function productsForCart(Request $request, array $cart): Collection
     {
         $productIds = collect($cart)
             ->keys()
+            ->map(fn ($id): int => (int) $id)
+            ->filter()
+            ->values();
+
+        if ($productIds->isEmpty()) {
+            return collect();
+        }
+
+        return Product::query()
+            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->visibleFor($this->audience($request))
+            ->whereKey($productIds)
+            ->get()
+            ->keyBy('id');
+    }
+
+    private function productsForWishlist(Request $request, array $wishlist): Collection
+    {
+        $productIds = collect($wishlist)
             ->map(fn ($id): int => (int) $id)
             ->filter()
             ->values();

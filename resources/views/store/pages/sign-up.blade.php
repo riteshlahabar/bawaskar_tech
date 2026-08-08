@@ -903,6 +903,8 @@
 
     <!-- script js -->
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
+
+    @include('store.partials.wishlist-script')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const roleInput = document.getElementById('signupRole');

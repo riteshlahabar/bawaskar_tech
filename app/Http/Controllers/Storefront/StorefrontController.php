@@ -121,6 +121,7 @@ class StorefrontController extends Controller
         $storeUser = $storefrontSession->user($request);
         $audience = $storefrontSession->audience($request);
         $storeCart = $storefrontSession->cartSummary($request);
+        $storeWishlist = $storefrontSession->wishlistSummary($request);
         $storeOrders = $storeUser ? $this->storeOrders($storeUser) : collect();
         $storePrimaryAddress = $storeUser?->addresses->firstWhere('is_default', true) ?: $storeUser?->addresses->first();
         $storeLastOrder = $this->lastStoreOrder($request, $storeUser);
@@ -164,6 +165,9 @@ class StorefrontController extends Controller
             'storeAudience' => $audience,
             'storeCart' => $storeCart,
             'storeCartCount' => $storeCart['count'],
+            'storeWishlist' => $storeWishlist,
+            'storeWishlistCount' => (int) ($storeWishlist['count'] ?? 0),
+            'storeWishlistProductIds' => $storeWishlist['ids'] ?? [],
             'storeOrders' => $storeOrders,
             'storePrimaryAddress' => $storePrimaryAddress,
             'storeLastOrder' => $storeLastOrder,
@@ -605,3 +609,4 @@ class StorefrontController extends Controller
         return $query->find($orderId);
     }
 }
+

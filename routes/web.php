@@ -4,6 +4,7 @@ use App\Http\Controllers\Storefront\StorefrontAuthController;
 use App\Http\Controllers\Storefront\StorefrontCartController;
 use App\Http\Controllers\Storefront\StorefrontCheckoutController;
 use App\Http\Controllers\Storefront\StorefrontController;
+use App\Http\Controllers\Storefront\StorefrontWishlistController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/admin.php';
@@ -22,6 +23,10 @@ Route::post('/cart/add', [StorefrontCartController::class, 'add'])->name('store.
 Route::post('/cart/update', [StorefrontCartController::class, 'update'])->name('store.cart.update');
 Route::post('/cart/remove/{productId}', [StorefrontCartController::class, 'remove'])->name('store.cart.remove');
 Route::post('/cart/clear', [StorefrontCartController::class, 'clear'])->name('store.cart.clear');
+Route::post('/wishlist/add', [StorefrontWishlistController::class, 'add'])->name('store.wishlist.add');
+Route::post('/wishlist/remove/{productId}', [StorefrontWishlistController::class, 'remove'])->name('store.wishlist.remove');
+Route::post('/wishlist/toggle', [StorefrontWishlistController::class, 'toggle'])->name('store.wishlist.toggle');
 Route::post('/checkout/place-order', [StorefrontCheckoutController::class, 'placeOrder'])->name('store.checkout.place-order');
 
 Route::get('/{page}', [StorefrontController::class, 'page'])->name('store.page');
+

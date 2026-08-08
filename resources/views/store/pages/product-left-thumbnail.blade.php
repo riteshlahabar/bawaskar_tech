@@ -1221,18 +1221,18 @@
                                                     cotton candy croissant chocolate cake. Tart cupcake caramels gummi
                                                     bears macaroon gingerbread fruitcake marzipan wafer. Marzipan
                                                     dessert cupcake ice cream tootsie roll. Brownie chocolate cake
-                                                    pudding cake powder candy ice cream ice cream cake. Jujubes soufflé
+                                                    pudding cake powder candy ice cream ice cream cake. Jujubes soufflÃƒÂ©
                                                     chupa chups cake candy halvah donut. Tart tart icing lemon drops
                                                     fruitcake apple pie.</p>
 
-                                                <p>Dessert liquorice tart soufflé chocolate bar apple pie pastry danish
-                                                    soufflé. Gummi bears halvah gingerbread jelly icing. Chocolate cake
-                                                    chocolate bar pudding chupa chups bear claw pie dragée donut halvah.
+                                                <p>Dessert liquorice tart soufflÃƒÂ© chocolate bar apple pie pastry danish
+                                                    soufflÃƒÂ©. Gummi bears halvah gingerbread jelly icing. Chocolate cake
+                                                    chocolate bar pudding chupa chups bear claw pie dragÃƒÂ©e donut halvah.
                                                     Gummi bears cookie ice cream jelly-o jujubes sweet croissant.
                                                     Marzipan cotton candy gummi bears lemon drops lollipop lollipop
-                                                    chocolate. Ice cream cookie dragée cake sweet roll sweet roll.Lemon
+                                                    chocolate. Ice cream cookie dragÃƒÂ©e cake sweet roll sweet roll.Lemon
                                                     drops cookie muffin carrot cake chocolate marzipan gingerbread
-                                                    topping chocolate bar. Soufflé tiramisu pastry sweet dessert.</p>
+                                                    topping chocolate bar. SoufflÃƒÂ© tiramisu pastry sweet dessert.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1267,7 +1267,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>Item part number</td>
-                                                        <td>LE 014 - 20pcs Crème Bakes (Pack of 2)</td>
+                                                        <td>LE 014 - 20pcs CrÃƒÂ¨me Bakes (Pack of 2)</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Net Quantity</td>
@@ -2691,7 +2691,7 @@
 
             <div class="sub-footer section-small-space">
                 <div class="reserve">
-                    <h6 class="text-content">©2022 Bawaskar Farmer Store All rights reserved</h6>
+                    <h6 class="text-content">Ã‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
                 </div>
 
                 <div class="payment">
@@ -2775,7 +2775,7 @@
                                 <div class="product-detail">
                                     <h4>Product Details :</h4>
                                     <p>Candy canes sugar plum tart cotton candy chupa chups sugar plum chocolate I love.
-                                        Caramels marshmallow icing dessert candy canes I love soufflé I love toffee.
+                                        Caramels marshmallow icing dessert candy canes I love soufflÃƒÂ© I love toffee.
                                         Marshmallow pie sweet sweet roll sesame snaps tiramisu jelly bear claw. Bonbon
                                         muffin I love carrot cake sugar plum dessert bonbon.</p>
                                 </div>
@@ -3246,6 +3246,8 @@
 
     <!-- script js -->
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
+
+    @include('store.partials.wishlist-script')
 
     <!-- theme setting js -->
     <script src="{{ asset('fastkart-store/js/theme-setting.js') }}"></script>

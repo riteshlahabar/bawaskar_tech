@@ -4166,6 +4166,8 @@
     <!-- script js -->
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
 
+    @include('store.partials.wishlist-script')
+
     <!-- theme setting js -->
     <script src="{{ asset('fastkart-store/js/theme-setting.js') }}"></script>
 </body>

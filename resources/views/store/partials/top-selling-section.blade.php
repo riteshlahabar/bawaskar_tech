@@ -14,7 +14,7 @@
     }
 
     if ($dealProduct) {
-        $dealImage = optional($dealProduct->images->first())->url ?: asset('fastkart-store/images/grocery/deal/big.png');
+        $dealImage = $dealProduct->storefront_deal_image_url;
         $dealUrl = route('store.product', ['product' => $dealProduct->id]);
         $dealPrice = (float) ($audience === 'dealer' ? $dealProduct->dealer_price : $dealProduct->customer_price);
         $dealMrp = (float) $dealProduct->mrp;
@@ -96,10 +96,10 @@
                                             @if($showDealTimer)
                                                 <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
                                                     <ul class="d-flex justify-content-center">
-                                                        <li><div class="counter"><div class="days"><h6>0</h6></div></div></li>
-                                                        <li><div class="counter"><div class="hours"><h6>0</h6></div></div></li>
-                                                        <li><div class="counter"><div class="minutes"><h6>0</h6></div></div></li>
-                                                        <li><div class="counter"><div class="seconds"><h6>0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="days"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="hours"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="minutes"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>
+                                                        <li><div class="counter"><div class="seconds"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>
                                                     </ul>
                                                 </div>
                                             @endif
@@ -129,3 +129,7 @@
         </div>
     </section>
 @endif
+
+
+
+

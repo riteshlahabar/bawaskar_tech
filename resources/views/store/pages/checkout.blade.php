@@ -810,7 +810,7 @@
                                     <div class="summery-header"><h3>Order Summery</h3></div>
                                     <ul class="summery-contain">
                                         @foreach($cartItems as $item)
-                                            @php $imageUrl = optional($item['product']->images->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); @endphp
+                                            @php $imageUrl = $item['product']->storefront_image_url; @endphp
                                             <li>
                                                 <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyloaded checkout-image" alt="{{ $item['product']->name }}">
                                                 <h4>{{ $item['product']->name }} <span>X {{ number_format((float) $item['quantity'], 3) }}</span></h4>
@@ -1432,3 +1432,6 @@
 </body>
 
 </html>
+
+
+

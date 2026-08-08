@@ -1,5 +1,8 @@
-﻿@php
-    $detailImages = $product->images->isNotEmpty() ? $product->images : collect([(object) ['url' => asset('fastkart-store/images/product/category/1.jpg')]]);
+@php
+    $detailImages = $product->images->filter(fn ($image) => filled($image->url))->values();
+    if ($detailImages->isEmpty()) {
+        $detailImages = collect([(object) ['url' => $product->storefront_image_url]]);
+    }
     $audience = $storeAudience ?? 'customer';
     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
     $mrp = (float) $product->mrp;
@@ -149,3 +152,6 @@
         </div>
     </section>
 @endif
+
+
+

@@ -812,7 +812,7 @@
                                             @foreach($cartItems as $item)
                                                 @php
                                                     $product = $item['product'];
-                                                    $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
+                                                    $imageUrl = $product->storefront_image_url;
                                                     $productUrl = route('store.product', ['product' => $product->id]);
                                                     $mrp = (float) $product->mrp;
                                                     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
@@ -1455,3 +1455,6 @@
 </body>
 
 </html>
+
+
+

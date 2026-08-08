@@ -47,7 +47,7 @@
                         @php
                             $product = $item['product'];
                             $productUrl = route('store.product', ['product' => $product->id]);
-                            $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
+                            $imageUrl = $product->storefront_image_url;
                         @endphp
                         <li class="product-box-contain">
                             <div class="drop-cart">
@@ -134,3 +134,6 @@
         </div>
     </li>
 </ul>
+
+
+

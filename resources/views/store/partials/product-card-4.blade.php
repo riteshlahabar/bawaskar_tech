@@ -1,5 +1,5 @@
 @php
-    $imageUrl = optional($product->images->first())->url ?: asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
+    $imageUrl = $product->storefront_image_url;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
@@ -74,3 +74,6 @@
         </div>
     </div>
 </div>
+
+
+

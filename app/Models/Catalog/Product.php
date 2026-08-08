@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -60,14 +61,14 @@ class Product extends Model
         'is_visible_to_customers',
         'is_visible_to_dealers',
         'is_featured',
-        'sort_order',        'is_offer_product',        'show_on_homepage',        'meta_title',        'meta_description',        'meta_keywords',
-
-
-
-
-
+        'sort_order',
+        'is_offer_product',
+        'show_on_homepage',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
         'is_active',
-            'homepage_section_id',
+        'homepage_section_id',
         'homepage_title',
         'homepage_subtitle',
         'homepage_description',
@@ -86,33 +87,32 @@ class Product extends Model
         'homepage_background_color',
         'homepage_text_color',
         'homepage_sort_order',
-];
+    ];
 
-    protected function casts(): array
-    {
-        return [
-            'gst_percent' => 'decimal:2',
-            'mrp' => 'decimal:2',
-            'customer_price' => 'decimal:2',
-            'dealer_price' => 'decimal:2',
-            'is_offer_active' => 'boolean',
-            'offer_start_at' => 'datetime',
-            'offer_end_at' => 'datetime',
-            'is_visible_to_customers' => 'boolean',
-            'is_visible_to_dealers' => 'boolean',
-            'is_featured' => 'boolean',
-            'sold_quantity' => 'integer',
-            'total_quantity' => 'integer',
-            'is_top_selling' => 'boolean',
-            'is_trending' => 'boolean',
-            'is_new_arrival' => 'boolean',
-            'is_deal_timer_product' => 'boolean',            'is_offer_product' => 'boolean',            'show_on_homepage' => 'boolean',
-
-
-            'is_active' => 'boolean',
-            'sort_order' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'gst_percent' => 'decimal:2',
+        'mrp' => 'decimal:2',
+        'customer_price' => 'decimal:2',
+        'dealer_price' => 'decimal:2',
+        'is_offer_active' => 'boolean',
+        'offer_start_at' => 'datetime',
+        'offer_end_at' => 'datetime',
+        'is_visible_to_customers' => 'boolean',
+        'is_visible_to_dealers' => 'boolean',
+        'is_featured' => 'boolean',
+        'sold_quantity' => 'integer',
+        'total_quantity' => 'integer',
+        'is_top_selling' => 'boolean',
+        'is_trending' => 'boolean',
+        'is_new_arrival' => 'boolean',
+        'is_deal_timer_product' => 'boolean',
+        'is_offer_product' => 'boolean',
+        'show_on_homepage' => 'boolean',
+        'is_active' => 'boolean',
+        'sort_order' => 'integer',
+        'homepage_section_id' => 'integer',
+        'homepage_sort_order' => 'integer',
+    ];
 
     public function category(): BelongsTo
     {
@@ -124,11 +124,11 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-
     public function productType(): BelongsTo
     {
         return $this->belongsTo(ProductType::class);
     }
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);
@@ -182,14 +182,40 @@ class Product extends Model
             ->sum(fn (InventoryBatch $batch): float => max(0, (float) $batch->quantity - (float) $batch->reserved_quantity));
     }
 
-    public function homepageSection()
+    public function homepageSection(): BelongsTo
     {
         return $this->belongsTo(ProductHomepageSection::class, 'homepage_section_id');
     }
 
-    protected $casts = [
-        'homepage_section_id' => 'integer',
-        'homepage_sort_order' => 'integer',
-    ];
+    public function getStorefrontImageUrlAttribute(): string
+    {
+        $productImageUrl = optional($this->images->first())->url;
+        if (filled($productImageUrl)) {
+            return $productImageUrl;
+        }
 
+        foreach ([$this->homepage_image_path, $this->storefront_banner_image] as $path) {
+            if (filled($path)) {
+                return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+            }
+        }
+
+        return asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
+    }
+
+    public function getStorefrontDealImageUrlAttribute(): string
+    {
+        $productImageUrl = optional($this->images->first())->url;
+        if (filled($productImageUrl)) {
+            return $productImageUrl;
+        }
+
+        foreach ([$this->homepage_offer_image_path, $this->homepage_image_path, $this->storefront_banner_image] as $path) {
+            if (filled($path)) {
+                return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+            }
+        }
+
+        return asset('fastkart-store/images/grocery/deal/big.png');
+    }
 }

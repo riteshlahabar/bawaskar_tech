@@ -1,25 +1,11 @@
 @php
-    $categoryImages = [
-        'fastkart-store/images/grocery/category/1.png',
-        'fastkart-store/images/grocery/category/2.png',
-        'fastkart-store/images/grocery/category/3.png',
-        'fastkart-store/images/grocery/category/4.png',
-        'fastkart-store/images/grocery/category/5.png',
-        'fastkart-store/images/grocery/category/6.png',
-        'fastkart-store/images/grocery/category/7.png',
-        'fastkart-store/images/grocery/category/8.png',
-    ];
-@endphp
-
-@php
-    $homepageCategories = collect($categories)->where('show_on_homepage', true)->values();
-    $displayCategories = $homepageCategories->isNotEmpty() ? $homepageCategories : collect($categories);
+    $displayCategories = collect($categories)->values();
 @endphp
 
 @forelse($displayCategories as $category)
     @php
         $categoryUrl = route('store.category', ['category' => $category->slug]);
-        $categoryImage = $category->image_path ? asset($category->image_path) : asset($categoryImages[$loop->index % count($categoryImages)]);
+        $categoryImage = $category->storefront_image_url;
     @endphp
     <div>
         <div class="category-box-list">

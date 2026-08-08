@@ -8,13 +8,18 @@ use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug',        'image_path',        'homepage_title',        'homepage_layout',        'homepage_product_limit',        'homepage_sort_order',        'show_on_homepage',
-
-
-
-
-
- 'is_active', 'sort_order'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'image_path',
+        'homepage_title',
+        'homepage_layout',
+        'homepage_product_limit',
+        'homepage_sort_order',
+        'show_on_homepage',
+        'is_active',
+        'sort_order',
+    ];
 
     protected function casts(): array
     {
@@ -35,6 +40,30 @@ class Category extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(CategoryTranslation::class);
+    }
+
+    public function getStorefrontImageUrlAttribute(): string
+    {
+        if (filled($this->image_path)) {
+            return Str::startsWith($this->image_path, ['http://', 'https://'])
+                ? $this->image_path
+                : asset($this->image_path);
+        }
+
+        $fallbacks = [
+            'fastkart-store/images/grocery/category/1.png',
+            'fastkart-store/images/grocery/category/2.png',
+            'fastkart-store/images/grocery/category/3.png',
+            'fastkart-store/images/grocery/category/4.png',
+            'fastkart-store/images/grocery/category/5.png',
+            'fastkart-store/images/grocery/category/6.png',
+            'fastkart-store/images/grocery/category/7.png',
+            'fastkart-store/images/grocery/category/8.png',
+        ];
+
+        $fallbackIndex = max(0, ((int) ($this->id ?: 1)) - 1) % count($fallbacks);
+
+        return asset($fallbacks[$fallbackIndex]);
     }
 
     protected static function booted(): void

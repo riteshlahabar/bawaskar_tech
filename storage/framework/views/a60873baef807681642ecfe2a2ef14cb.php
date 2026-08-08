@@ -14,7 +14,7 @@
     $cardOuterClass = trim((string) ($cardOuterClass ?? ''));
 ?>
 
-<div@if($cardOuterClass !== '') class="<?php echo e($cardOuterClass); ?>"<?php endif; ?>>
+<div class="<?php echo e($cardOuterClass); ?>">
     <div class="product-box-4 wow fadeInUp">
         <div class="product-image product-image-2">
             <a href="<?php echo e($productUrl); ?>">

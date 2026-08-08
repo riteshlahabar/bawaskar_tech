@@ -14,7 +14,7 @@
     $cardOuterClass = trim((string) ($cardOuterClass ?? ''));
 @endphp
 
-<div@if($cardOuterClass !== '') class="{{ $cardOuterClass }}"@endif>
+<div class="{{ $cardOuterClass }}">
     <div class="product-box-4 wow fadeInUp">
         <div class="product-image product-image-2">
             <a href="{{ $productUrl }}">

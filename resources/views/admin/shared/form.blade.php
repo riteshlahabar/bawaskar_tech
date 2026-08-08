@@ -35,7 +35,7 @@
 
                     <div class="row g-3">
                         @foreach($module['fields'] as $field)
-                            @continue($field['display_only'] ?? false)
+                            @continue(($field['display_only'] ?? false) || (($field['create_only'] ?? false) && $record) || (($field['edit_only'] ?? false) && ! $record))
                             @php($type = $field['type'] ?? 'text')
                             @php($visibilitySource = $field['visibility_field'] ?? null)
                             @php($visibilitySectionTypes = array_values(array_filter((array) ($field['show_for_section_types'] ?? []))))

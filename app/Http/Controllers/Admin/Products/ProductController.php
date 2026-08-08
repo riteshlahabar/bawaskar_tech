@@ -6,8 +6,10 @@ use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductImage;
+use App\Models\Inventory\InventoryBatch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProductController extends AdminModuleController
 {
@@ -17,10 +19,41 @@ class ProductController extends AdminModuleController
 
     private array $galleryImagePaths = [];
 
+    private ?array $openingStockData = null;
+
+    protected function rules(array $module, ?Model $record = null): array
+    {
+        $rules = parent::rules($module, $record);
+
+        if ($record) {
+            return $rules;
+        }
+
+        $stockSupportFields = [
+            'opening_stock_warehouse_id',
+            'opening_stock_batch_no',
+            'opening_stock_manufacturing_date',
+            'opening_stock_expiry_date',
+            'opening_stock_purchase_price',
+            'opening_stock_quantity',
+            'opening_stock_reserved_quantity',
+            'opening_stock_low_stock_alert',
+        ];
+
+        $rules['opening_stock_warehouse_id'][] = 'required_with:'.implode(',', array_diff($stockSupportFields, ['opening_stock_warehouse_id']));
+        $rules['opening_stock_batch_no'][] = 'required_with:'.implode(',', array_diff($stockSupportFields, ['opening_stock_batch_no']));
+        $rules['opening_stock_quantity'][] = 'required_with:'.implode(',', array_diff($stockSupportFields, ['opening_stock_quantity']));
+        $rules['opening_stock_expiry_date'][] = 'after_or_equal:opening_stock_manufacturing_date';
+        $rules['opening_stock_reserved_quantity'][] = 'lte:opening_stock_quantity';
+
+        return $rules;
+    }
+
     protected function prepareData(array $validated, Request $request, array $module): array
     {
         $this->primaryImagePath = null;
         $this->galleryImagePaths = [];
+        $this->openingStockData = null;
 
         $data = parent::prepareData($validated, $request, $module);
 
@@ -41,11 +74,14 @@ class ProductController extends AdminModuleController
             }
         }
 
+        $this->openingStockData = $this->extractOpeningStockData($data);
+
         return $this->normalizeHomepageSectionData($data, $module);
     }
 
     protected function persist(array $data, ?Model $record): Model
     {
+        $isCreating = $record === null;
         $product = parent::persist($data, $record);
 
         if ($this->primaryImagePath) {
@@ -76,12 +112,14 @@ class ProductController extends AdminModuleController
             }
         }
 
-        $product = $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection']);
+        if ($isCreating && $this->shouldCreateOpeningStock()) {
+            InventoryBatch::query()->create(array_merge($this->openingStockData, [
+                'product_id' => $product->getKey(),
+            ]));
+        }
 
-        return $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection']);
+        return $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection', 'inventoryBatches']);
     }
-
-
 
     protected function mutateValidatedDataBeforeSave(array $data): array
     {
@@ -92,6 +130,56 @@ class ProductController extends AdminModuleController
         }
 
         return $data;
+    }
+
+    private function extractOpeningStockData(array &$data): ?array
+    {
+        $fieldMap = [
+            'opening_stock_warehouse_id' => 'warehouse_id',
+            'opening_stock_batch_no' => 'batch_no',
+            'opening_stock_manufacturing_date' => 'manufacturing_date',
+            'opening_stock_expiry_date' => 'expiry_date',
+            'opening_stock_purchase_price' => 'purchase_price',
+            'opening_stock_quantity' => 'quantity',
+            'opening_stock_reserved_quantity' => 'reserved_quantity',
+            'opening_stock_low_stock_alert' => 'low_stock_alert',
+        ];
+
+        $stockInput = Arr::only($data, array_keys($fieldMap));
+        $data = Arr::except($data, array_keys($fieldMap));
+
+        $hasAnyValue = collect($stockInput)->contains(function ($value): bool {
+            return ! blank($value);
+        });
+
+        if (! $hasAnyValue) {
+            return null;
+        }
+
+        $stockData = [];
+
+        foreach ($fieldMap as $inputKey => $stockKey) {
+            $value = $stockInput[$inputKey] ?? null;
+
+            if (in_array($stockKey, ['purchase_price', 'reserved_quantity', 'low_stock_alert'], true) && blank($value)) {
+                $value = 0;
+            }
+
+            $stockData[$stockKey] = blank($value) ? null : $value;
+        }
+
+        return $stockData;
+    }
+
+    private function shouldCreateOpeningStock(): bool
+    {
+        if ($this->openingStockData === null) {
+            return false;
+        }
+
+        return filled($this->openingStockData['warehouse_id'] ?? null)
+            && filled($this->openingStockData['batch_no'] ?? null)
+            && ($this->openingStockData['quantity'] ?? null) !== null;
     }
 
     private function normalizeHomepageSectionData(array $data, array $module): array

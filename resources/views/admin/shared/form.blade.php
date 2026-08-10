@@ -119,11 +119,15 @@
                                         @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
                                             @php($galleryPreviewImages = $record->images->where('is_primary', false))
                                             @if($galleryPreviewImages->isNotEmpty())
-                                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                                <div class="admin-gallery-remove-inputs" data-gallery-remove-inputs></div>
+                                                <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2" data-gallery-removal-list>
                                                     @foreach($galleryPreviewImages as $img)
-                                                        <a href="{{ asset($img->path) }}" target="_blank">
-                                                            <img src="{{ asset($img->path) }}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
-                                                        </a>
+                                                        <div class="admin-gallery-preview-item" data-gallery-preview-item>
+                                                            <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-image-id="{{ $img->id }}" aria-label="Remove image">&times;</button>
+                                                            <a href="{{ asset($img->path) }}" target="_blank">
+                                                                <img src="{{ asset($img->path) }}" class="admin-gallery-preview-thumb" alt="Gallery image">
+                                                            </a>
+                                                        </div>
                                                     @endforeach
                                                 </div>
                                             @endif
@@ -223,6 +227,47 @@
         });
     }
 
+
+    function initGalleryImageRemoval() {
+        document.querySelectorAll('[data-gallery-removal-list]').forEach(function (list) {
+            var form = list.closest('form');
+            var inputsHost = form ? form.querySelector('[data-gallery-remove-inputs]') : null;
+
+            if (!form || !inputsHost) {
+                return;
+            }
+
+            list.addEventListener('click', function (event) {
+                var button = event.target.closest('[data-gallery-remove-button]');
+                if (!button) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var item = button.closest('[data-gallery-preview-item]');
+                var imageId = button.dataset.imageId || '';
+
+                if (!item || !imageId) {
+                    return;
+                }
+
+                var existingInput = Array.from(inputsHost.querySelectorAll('input[name="remove_gallery_image_ids[]"]')).find(function (input) {
+                    return input.value === imageId;
+                });
+
+                if (!existingInput) {
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'remove_gallery_image_ids[]';
+                    hiddenInput.value = imageId;
+                    inputsHost.appendChild(hiddenInput);
+                }
+
+                item.remove();
+            });
+        });
+    }
     function initConditionalAdminFields() {
         document.querySelectorAll('.admin-form-card form').forEach(function (form) {
             var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
@@ -246,9 +291,13 @@
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initConditionalAdminFields);
+        document.addEventListener('DOMContentLoaded', function () {
+            initConditionalAdminFields();
+            initGalleryImageRemoval();
+        });
     } else {
         initConditionalAdminFields();
+        initGalleryImageRemoval();
     }
 })();
 </script>

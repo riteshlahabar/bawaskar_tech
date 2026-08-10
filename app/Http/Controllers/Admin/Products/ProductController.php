@@ -19,6 +19,8 @@ class ProductController extends AdminModuleController
 
     private array $galleryImagePaths = [];
 
+    private array $removeGalleryImageIds = [];
+
     private ?array $openingStockData = null;
 
     protected function rules(array $module, ?Model $record = null): array
@@ -64,6 +66,13 @@ class ProductController extends AdminModuleController
 
         unset($data['gallery_images']);
 
+        $this->removeGalleryImageIds = collect((array) $request->input('remove_gallery_image_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
         if ($request->hasFile('gallery_images')) {
             foreach ((array) $request->file('gallery_images') as $file) {
                 if ($file && $file->isValid()) {
@@ -104,6 +113,23 @@ class ProductController extends AdminModuleController
                 'is_primary' => true,
                 'sort_order' => 0,
             ]);
+        }
+
+        if ($this->removeGalleryImageIds !== []) {
+            $galleryImagesToRemove = ProductImage::query()
+                ->where('product_id', $product->getKey())
+                ->where('is_primary', false)
+                ->whereIn('id', $this->removeGalleryImageIds)
+                ->get();
+
+            foreach ($galleryImagesToRemove as $galleryImage) {
+                $absolutePath = filled($galleryImage->path) ? public_path($galleryImage->path) : null;
+                $galleryImage->delete();
+
+                if ($absolutePath && is_file($absolutePath)) {
+                    @unlink($absolutePath);
+                }
+            }
         }
 
         if ($this->galleryImagePaths !== []) {

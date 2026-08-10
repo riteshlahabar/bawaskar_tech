@@ -42,6 +42,22 @@ class Category extends Model
         return $this->hasMany(CategoryTranslation::class);
     }
 
+    public function getStorefrontNameAttribute(): string
+    {
+        $locale = app()->getLocale();
+
+        if ($locale === '' || $locale === 'en') {
+            return $this->name;
+        }
+
+        $translations = $this->relationLoaded('translations')
+            ? $this->translations
+            : $this->translations()->where('locale', $locale)->get();
+
+        $translation = $translations->firstWhere('locale', $locale);
+
+        return filled($translation?->name) ? $translation->name : $this->name;
+    }
     public function getStorefrontImageUrlAttribute(): string
     {
         if (filled($this->image_path)) {
@@ -92,3 +108,4 @@ class Category extends Model
         return $slug;
     }
 }
+

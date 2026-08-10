@@ -954,7 +954,7 @@
                 <div class="row g-sm-4 g-3">
                     <div class="col-xxl-3 col-xl-4 col-lg-6">
                         <div class="order-image">
-                            <img src="{{ $trackedImage }}" class="img-fluid blur-up lazyload" alt="{{ $trackedProduct?->name ?: 'Tracked order item' }}">
+                            <img src="{{ $trackedImage }}" class="img-fluid blur-up lazyload" alt="{{ $trackedProduct?->translatedName() ?: 'Tracked order item' }}">
                         </div>
                     </div>
 
@@ -1565,6 +1565,8 @@
 </body>
 
 </html>
+
+
 
 
 

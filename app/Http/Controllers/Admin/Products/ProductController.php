@@ -50,7 +50,6 @@ class ProductController extends AdminModuleController
 
         return response()->json(['translations' => $translations]);
     }
-
     protected function rules(array $module, ?Model $record = null): array
     {
         $rules = parent::rules($module, $record);
@@ -243,7 +242,6 @@ class ProductController extends AdminModuleController
             ->map(fn ($segment): string => (string) ($segment[0] ?? ''))
             ->implode('');
     }
-
     private function extractTranslationData(array &$data): array
     {
         $translations = [];
@@ -374,4 +372,7 @@ class ProductController extends AdminModuleController
         return $data;
     }
 }
+
+
+
 

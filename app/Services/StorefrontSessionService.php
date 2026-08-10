@@ -332,7 +332,7 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
@@ -351,7 +351,7 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
@@ -374,4 +374,5 @@ class StorefrontSessionService
         }
     }
 }
+
 

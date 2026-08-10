@@ -23,7 +23,7 @@
             <h2>{{ $displayName }}</h2>
             <nav><ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('store.home') }}"><i class="fa-solid fa-house"></i></a></li>
-                @if($product->category)<li class="breadcrumb-item"><a href="{{ route('store.category', ['category' => $product->category->slug]) }}">{{ $product->category->name }}</a></li>@endif
+                @if($product->category)<li class="breadcrumb-item"><a href="{{ route('store.category', ['category' => $product->category->slug]) }}">{{ $product->category->storefront_name }}</a></li>@endif
                 <li class="breadcrumb-item active">{{ $displayName }}</li>
             </ol></nav>
         </div></div></div>
@@ -67,7 +67,7 @@
                             <div class="pickup-box">
                                 <div class="product-info"><ul class="product-info-list product-info-list-2">
                                     <li>SKU : <a href="javascript:void(0)">{{ $product->sku }}</a></li>
-                                    <li>Category : <a href="javascript:void(0)">{{ data_get($product, 'category.name') ?: 'Product' }}</a></li>
+                                    <li>Category : <a href="javascript:void(0)">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</a></li>
                                     <li>Brand : <a href="javascript:void(0)">{{ data_get($product, 'brand.name') ?: 'Bawaskar' }}</a></li>
                                     <li>Unit : <a href="javascript:void(0)">{{ $unitName }}</a></li>
                                     <li>Available Stock : <a href="javascript:void(0)">{{ number_format($availableStock, 2) }}</a></li>
@@ -154,6 +154,7 @@
         </div>
     </section>
 @endif
+
 
 
 

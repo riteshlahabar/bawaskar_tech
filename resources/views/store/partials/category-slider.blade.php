@@ -10,12 +10,12 @@
     <div>
         <div class="category-box-list">
             <a href="{{ $categoryUrl }}" class="category-name">
-                <h4>{{ $category->name }}</h4>
+                <h4>{{ $category->storefront_name }}</h4>
                 <h6>{{ (int) ($category->products_count ?? 0) }} items</h6>
             </a>
             <div class="category-box-view">
                 <a href="{{ $categoryUrl }}">
-                    <img src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->name }}">
+                    <img src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->storefront_name }}">
                 </a>
                 <button onclick="location.href='{{ $categoryUrl }}';" class="btn shop-button">
                     <span>Shop Now</span>
@@ -43,3 +43,4 @@
         </div>
     </div>
 @endforelse
+

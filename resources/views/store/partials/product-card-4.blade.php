@@ -7,7 +7,7 @@
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
-    $categoryName = data_get($product, 'category.name') ?: 'Product';
+    $categoryName = data_get($product, 'category.storefront_name') ?: 'Product';
     $availableStock = (float) $product->available_stock;
     $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
@@ -88,4 +88,5 @@
         </div>
     </div>
 </div>
+
 

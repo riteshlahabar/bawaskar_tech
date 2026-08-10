@@ -39,7 +39,7 @@
         </div>
         <div class="product-footer">
             <div class="product-detail">
-                <span class="span-name">{{ data_get($product, 'category.name') ?: 'Product' }}</span>
+                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</span>
                 <a href="{{ $productUrl }}"><h5 class="name">{{ $displayName }}</h5></a>
                 <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: 'Quality farmer product')->limit(75) }}</p>
                 <h6 class="unit">{{ $unitName }}</h6>
@@ -72,4 +72,5 @@
         </div>
     </div>
 </div>
+
 

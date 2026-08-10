@@ -76,7 +76,7 @@ class StorefrontWishlistController extends Controller
     private function wishlistProduct(int $productId): Product
     {
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->findOrFail($productId);
     }
 
@@ -117,4 +117,5 @@ class StorefrontWishlistController extends Controller
         return back()->with('success', $message);
     }
 }
+
 

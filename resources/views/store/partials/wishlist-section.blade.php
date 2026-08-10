@@ -42,7 +42,7 @@
 
                         <div class="product-footer">
                             <div class="product-detail">
-                                <span class="span-name">{{ data_get($product, 'category.name') ?: 'Product' }}</span>
+                                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</span>
                                 <a href="{{ $productUrl }}">
                                     <h5 class="name">{{ $displayName }}</h5>
                                 </a>
@@ -94,4 +94,5 @@
         </div>
     </div>
 </section>
+
 

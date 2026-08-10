@@ -26,7 +26,7 @@ class StorefrontCartController extends Controller
         ]);
 
         $product = Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->findOrFail($validated['product_id']);
 
         $storefrontSession->addToCart($request, $product, (float) $validated['quantity']);
@@ -158,4 +158,5 @@ class StorefrontCartController extends Controller
         return back()->with('success', $message);
     }
 }
+
 

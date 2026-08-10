@@ -63,10 +63,11 @@ class StorefrontController extends Controller
             'images',
             'inventoryBatches',
             'variants' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
-            'relatedProductLinks.relatedProduct.category',
+            'relatedProductLinks.relatedProduct.category.translations',
             'relatedProductLinks.relatedProduct.brand',
             'relatedProductLinks.relatedProduct.unit',
             'relatedProductLinks.relatedProduct.images',
+            'relatedProductLinks.relatedProduct.translations',
             'relatedProductLinks.relatedProduct.inventoryBatches',
         ]);
 
@@ -129,7 +130,7 @@ class StorefrontController extends Controller
 
         try {
             $categories = $data['categories'] ?? Category::query()
-                ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
+                ->with(['translations'])->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->limit(18)
@@ -236,7 +237,7 @@ class StorefrontController extends Controller
         $productTypeLabels = $this->productTypeLabels();
 
         $categories = Category::query()
-            ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
+            ->with(['translations'])->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->limit(12)
@@ -543,7 +544,7 @@ class StorefrontController extends Controller
     private function storefrontProductQuery(string $audience = 'customer'): Builder
     {
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($audience);
     }
 
@@ -631,7 +632,7 @@ class StorefrontController extends Controller
     private function storeOrdersQuery(User $user): Builder
     {
         $query = StoreOrder::query()
-            ->with(['items.product.images', 'invoice', 'dispatches', 'salesman']);
+            ->with(['items.product.images', 'items.product.translations', 'invoice', 'dispatches', 'salesman']);
 
         if ($user->role === User::ROLE_DEALER) {
             $query->where('dealer_id', $user->id);
@@ -642,6 +643,9 @@ class StorefrontController extends Controller
         return $query;
     }
 }
+
+
+
 
 
 

@@ -45,14 +45,14 @@
                 @endphp
                 <li>
                     <a class="dropdown-item d-flex justify-content-between" href="{{ $categoryUrl }}">
-                        <span>{{ $category->name }}</span>
+                        <span>{{ $category->storefront_name }}</span>
                         <small>{{ (int) ($category->products_count ?? 0) }}</small>
                     </a>
                 </li>
                 @foreach($children as $childCategory)
                     <li>
                         <a class="dropdown-item ps-4 d-flex justify-content-between" href="{{ $childCategory->slug ? route('store.category', ['category' => $childCategory->slug]) : $shopUrl }}">
-                            <span>{{ $childCategory->name }}</span>
+                            <span>{{ $childCategory->storefront_name }}</span>
                             <small>{{ (int) ($childCategory->products_count ?? 0) }}</small>
                         </a>
                     </li>
@@ -85,7 +85,7 @@
                 <div class="dropdown-column col-xl-3">
                     <h5 class="dropdown-header">Categories</h5>
                     @forelse($navCategories->take(6) as $category)
-                        <a class="dropdown-item" href="{{ $category->slug ? route('store.category', ['category' => $category->slug]) : $shopUrl }}">{{ $category->name }}</a>
+                        <a class="dropdown-item" href="{{ $category->slug ? route('store.category', ['category' => $category->slug]) : $shopUrl }}">{{ $category->storefront_name }}</a>
                     @empty
                         <a class="dropdown-item" href="{{ $shopUrl }}">All Categories</a>
                     @endforelse
@@ -147,3 +147,4 @@
         <a class="nav-link no-dropdown-arrow" href="{{ route('store.page', ['page' => 'contact-us']) }}">Contact Us</a>
     </li>
 </ul>
+

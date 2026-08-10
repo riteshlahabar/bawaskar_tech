@@ -232,6 +232,19 @@ class Product extends Model
         return asset('fastkart-store/images/grocery/product/fruits-vegetables/1.png');
     }
 
+    public function getStorefrontNameAttribute(): string
+    {
+        $translation = $this->translationForCurrentLocale();
+
+        return filled($translation?->name) ? $translation->name : $this->name;
+    }
+
+    public function getStorefrontDescriptionAttribute(): ?string
+    {
+        $translation = $this->translationForCurrentLocale();
+
+        return filled($translation?->description) ? $translation->description : $this->description;
+    }
     public function getStorefrontDealImageUrlAttribute(): string
     {
         $productImageUrl = optional($this->images->first())->url;
@@ -248,4 +261,6 @@ class Product extends Model
         return asset('fastkart-store/images/grocery/deal/big.png');
     }
 }
+
+
 

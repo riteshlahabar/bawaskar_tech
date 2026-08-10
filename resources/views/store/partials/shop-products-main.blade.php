@@ -1,7 +1,7 @@
 @php
     $productTypeLabels = data_get($storefrontNavigation ?? [], 'productTypeLabels', []);
     $productTypeTitle = $selectedProductType ? ($productTypeLabels[$selectedProductType] ?? str($selectedProductType)->replace(['_', '-'], ' ')->headline()->toString()) : null;
-    $pageTitle = $selectedCategory?->name ?: ($productTypeTitle ?: ($searchQuery ? 'Search Products' : 'Shop Products'));
+    $pageTitle = $selectedCategory?->storefront_name ?: ($productTypeTitle ?: ($searchQuery ? 'Search Products' : 'Shop Products'));
     $shopProducts = collect(method_exists($products, 'items') ? $products->items() : $products);
 @endphp
 
@@ -45,7 +45,7 @@
                                                     <li>
                                                         <div class="form-check ps-0 m-0 category-list-box">
                                                             <a class="form-check-label w-100 d-flex justify-content-between" href="{{ route('store.category', ['category' => $category->slug]) }}">
-                                                                <span class="name">{{ $category->name }}</span>
+                                                                <span class="name">{{ $category->storefront_name }}</span>
                                                                 <span class="number">({{ (int) ($category->products_count ?? 0) }})</span>
                                                             </a>
                                                         </div>

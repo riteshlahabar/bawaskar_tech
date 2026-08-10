@@ -825,8 +825,8 @@
                                 <div class="table-responsive-xl">
                                     <table class="table">
                                         <tbody data-store-cart-rows>
-                                            @foreach($cartItems as $item)
-                                                @php
+                                            <?php foreach ($cartItems as $item): ?>
+                                                <?php
                                                     $product = $item['product'];
                                                     $imageUrl = $product->storefront_image_url;
                                                     $productUrl = route('store.product', ['product' => $product->id]);
@@ -837,7 +837,7 @@
                                                     $hasDiscount = $mrp > $unitPrice;
                                                     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
                                                     $savings = max(0, ($mrp * $quantity) - $item['line_base']);
-                                                @endphp
+                                                ?>
                                                 <tr class="product-box-contain" data-product-id="{{ $product->id }}">
                                                     <td class="product-detail">
                                                         <div class="product border-0">
@@ -858,20 +858,20 @@
                                                                     <li>
                                                                         <h5 class="text-content d-inline-block">Price :</h5>
                                                                         <span>Rs. {{ number_format($unitPrice, 2) }}</span>
-                                                                        @if($hasDiscount)
+                                                                        <?php if ($hasDiscount): ?>
                                                                             <span class="text-content">Rs. {{ number_format($mrp, 2) }}</span>
-                                                                        @endif
+                                                                        <?php endif; ?>
                                                                     </li>
-                                                                    @if($savings > 0)
+                                                                    <?php if ($savings > 0): ?>
                                                                         <li>
                                                                             <h5 class="saving theme-color">Saving : Rs. {{ number_format($savings, 2) }}</h5>
                                                                         </li>
-                                                                    @endif
-                                                                    @if($item['has_issue'])
+                                                                    <?php endif; ?>
+                                                                    <?php if ($item['has_issue']): ?>
                                                                         <li>
                                                                             <h6 class="text-danger">Available stock: {{ number_format((float) $item['available_stock'], 3) }}</h6>
                                                                         </li>
-                                                                    @endif
+                                                                    <?php endif; ?>
                                                                     <li class="quantity-price-box">
                                                                         <div class="cart_qty">
                                                                             <div class="input-group">
@@ -889,12 +889,12 @@
                                                     <td class="price">
                                                         <h4 class="table-title text-content">Price</h4>
                                                         <h5>Rs. {{ number_format($unitPrice, 2) }}</h5>
-                                                        @if($hasDiscount)
+                                                        <?php if ($hasDiscount): ?>
                                                             <h6 class="text-content"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
-                                                        @endif
-                                                        @if($savings > 0)
+                                                        <?php endif; ?>
+                                                        <?php if ($savings > 0): ?>
                                                             <h6 class="theme-color">You Save : Rs. {{ number_format($savings, 2) }}</h6>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td class="quantity">
                                                         <h4 class="table-title text-content">Qty</h4>
@@ -915,7 +915,7 @@
                                                         <button type="submit" formaction="{{ route('store.cart.remove', ['productId' => $product->id]) }}" class="remove close_button border-0 bg-transparent">Remove</button>
                                                     </td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; ?>
                                         </tbody>
                                     </table>
                                 </div>

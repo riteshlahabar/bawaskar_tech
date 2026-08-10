@@ -294,3 +294,6 @@
     object-fit: contain !important;
     object-position: center;
 }
+
+/* Match inner page header logo size with home page header */
+.top-header .navbar-top .web-logo{flex:0 0 260px;min-width:260px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:72px!important;height:72px!important;max-width:72px!important;min-width:72px!important;object-fit:contain!important;flex:0 0 72px!important}.top-header .bawaskar-store-logo{gap:8px;font-size:18px}.top-header .bawaskar-store-logo small{font-size:9px}@media(max-width:1399px){.top-header .navbar-top .web-logo{flex-basis:240px;min-width:240px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:64px!important;height:64px!important;max-width:64px!important;min-width:64px!important;flex-basis:64px!important}.top-header .bawaskar-store-logo{font-size:17px}}@media(max-width:575px){.top-header .navbar-top .web-logo{min-width:0;flex:0 0 auto;max-width:210px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:42px!important;height:42px!important;max-width:42px!important;min-width:42px!important;flex-basis:42px!important}}

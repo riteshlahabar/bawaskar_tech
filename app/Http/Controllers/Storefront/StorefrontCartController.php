@@ -105,17 +105,35 @@ class StorefrontCartController extends Controller
                 'subtotal' => (float) ($summary['subtotal'] ?? 0),
                 'gst_total' => (float) ($summary['gst_total'] ?? 0),
                 'grand_total' => (float) ($summary['grand_total'] ?? 0),
+                'has_issues' => (bool) ($summary['has_issues'] ?? false),
                 'items' => collect($summary['items'] ?? collect())
-                    ->take(3)
-                    ->map(fn (array $item): array => [
-                        'id' => $item['product']->id,
-                        'name' => $item['product']->name,
-                        'product_url' => route('store.product', ['product' => $item['product']->id]),
-                        'image_url' => $item['product']->storefront_image_url,
-                        'quantity' => (float) $item['quantity'],
-                        'unit_price' => (float) $item['unit_price'],
-                        'line_total' => (float) $item['line_total'],
-                    ])
+                    ->map(function (array $item): array {
+                        $product = $item['product'];
+                        $mrp = (float) $product->mrp;
+                        $unitPrice = (float) $item['unit_price'];
+                        $quantity = (float) $item['quantity'];
+                        $lineBase = (float) $item['line_base'];
+                        $lineTotal = (float) $item['line_total'];
+                        $savings = max(0, ($mrp * $quantity) - $lineBase);
+
+                        return [
+                            'id' => $product->id,
+                            'name' => $product->name,
+                            'product_url' => route('store.product', ['product' => $product->id]),
+                            'remove_url' => route('store.cart.remove', ['productId' => $product->id]),
+                            'image_url' => $product->storefront_image_url,
+                            'category_name' => data_get($product, 'category.name') ?: 'Product',
+                            'unit_name' => data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs',
+                            'quantity' => $quantity,
+                            'unit_price' => $unitPrice,
+                            'mrp' => $mrp,
+                            'line_base' => $lineBase,
+                            'line_total' => $lineTotal,
+                            'available_stock' => (float) $item['available_stock'],
+                            'has_issue' => (bool) $item['has_issue'],
+                            'savings' => $savings,
+                        ];
+                    })
                     ->values()
                     ->all(),
             ]);

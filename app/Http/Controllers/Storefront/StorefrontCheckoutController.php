@@ -36,6 +36,10 @@ class StorefrontCheckoutController extends Controller
                 ->with('error', 'Please update your cart before placing the order.');
         }
 
+        $paymentMethods = $user->role === User::ROLE_DEALER
+            ? ['cod', 'bank_transfer', 'upi', 'credit']
+            : ['cod', 'bank_transfer', 'upi'];
+
         $validated = $request->validate([
             'address_type' => ['nullable', 'string', 'max:30'],
             'contact_name' => ['required', 'string', 'max:255'],
@@ -45,9 +49,18 @@ class StorefrontCheckoutController extends Controller
             'city' => ['required', 'string', 'max:100'],
             'state' => ['required', 'string', 'max:100'],
             'pincode' => ['required', 'string', 'max:12'],
-            'payment_method' => ['required', Rule::in(['cod', 'bank_transfer', 'upi', 'credit'])],
+            'payment_method' => ['required', Rule::in($paymentMethods)],
             'notes' => ['nullable', 'string'],
             'save_as_default' => ['nullable', 'boolean'],
+        ], [
+            'contact_name.required' => 'Please enter contact name.',
+            'contact_mobile.required' => 'Please enter contact mobile number.',
+            'address_line1.required' => 'Please enter address line 1.',
+            'city.required' => 'Please enter city.',
+            'state.required' => 'Please enter state.',
+            'pincode.required' => 'Please enter pincode.',
+            'payment_method.required' => 'Please select payment method.',
+            'payment_method.in' => 'Selected payment method is not allowed for this account.',
         ]);
 
         $addressPayload = [

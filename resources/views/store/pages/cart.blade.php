@@ -792,40 +792,53 @@
 
         <!-- Cart Section Start -->
     @php($cartItems = collect(data_get($storeCart, 'items', collect())))
-    <section class="cart-section section-b-space">
+    <section class="cart-section section-b-space" data-store-cart-page>
         <div class="container-fluid-lg">
+            <div class="row g-sm-5 g-3 mb-3 d-none" data-store-cart-message-row>
+                <div class="col-12">
+                    <div class="alert mb-0" data-store-cart-message></div>
+                </div>
+            </div>
+
             @if(! $storeUser)
                 <div class="row g-sm-5 g-3 mb-3">
                     <div class="col-12">
-                        <div class="alert alert-warning mb-0">Please <a href="{{ route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'cart'])]) }}">log in</a> to add products and continue checkout.</div>
+                        <div class="alert alert-warning mb-0">
+                            Please <a href="{{ route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'cart'])]) }}">log in</a> to add products and continue checkout.
+                        </div>
                     </div>
                 </div>
             @endif
-            @if($cartItems->isEmpty())
-                <div class="row g-sm-5 g-3">
-                    <div class="col-12">
-                        <div class="alert alert-light mb-0">Your cart is empty. <a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">Continue shopping</a>.</div>
-                    </div>
+
+            <div class="row g-sm-5 g-3 mb-3{{ data_get($storeCart, 'has_issues') ? '' : ' d-none' }}" data-store-cart-issues-row>
+                <div class="col-12">
+                    <div class="alert alert-warning mb-0" data-store-cart-issues>{{ data_get($storeCart, 'has_issues') ? 'Some quantities exceed available stock. Please update your cart before checkout.' : '' }}</div>
                 </div>
-            @else
-                <form method="POST" action="{{ route('store.cart.update') }}">
+            </div>
+
+            @if($cartItems->isNotEmpty())
+                <form method="POST" action="{{ route('store.cart.update') }}" data-store-cart-form>
                     @csrf
-                    <div class="row g-sm-5 g-3">
+                    <div class="row g-sm-5 g-3" data-store-cart-content>
                         <div class="col-xxl-9">
                             <div class="cart-table">
                                 <div class="table-responsive-xl">
                                     <table class="table">
-                                        <tbody>
+                                        <tbody data-store-cart-rows>
                                             @foreach($cartItems as $item)
                                                 @php
                                                     $product = $item['product'];
                                                     $imageUrl = $product->storefront_image_url;
                                                     $productUrl = route('store.product', ['product' => $product->id]);
                                                     $mrp = (float) $product->mrp;
+                                                    $unitPrice = (float) $item['unit_price'];
+                                                    $quantity = (float) $item['quantity'];
+                                                    $lineTotal = (float) $item['line_total'];
+                                                    $hasDiscount = $mrp > $unitPrice;
                                                     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
-                                                    $savings = max(0, ($mrp * $item['quantity']) - $item['line_base']);
+                                                    $savings = max(0, ($mrp * $quantity) - $item['line_base']);
                                                 @endphp
-                                                <tr class="product-box-contain">
+                                                <tr class="product-box-contain" data-product-id="{{ $product->id }}">
                                                     <td class="product-detail">
                                                         <div class="product border-0">
                                                             <a href="{{ $productUrl }}" class="product-image">
@@ -833,37 +846,52 @@
                                                             </a>
                                                             <div class="product-detail">
                                                                 <ul>
-                                                                    <li class="name"><a href="{{ $productUrl }}">{{ $product->name }}</a></li>
-                                                                    <li class="text-content"><span class="text-title">Category:</span> {{ data_get($product, 'category.name') ?: 'Product' }}</li>
-                                                                    <li class="text-content"><span class="text-title">Quantity</span> - {{ number_format((float) $item['quantity'], 3) }} {{ $unitName }}</li>
+                                                                    <li class="name">
+                                                                        <a href="{{ $productUrl }}">{{ $product->name }}</a>
+                                                                    </li>
+                                                                    <li class="text-content">
+                                                                        <span class="text-title">Category:</span> {{ data_get($product, 'category.name') ?: 'Product' }}
+                                                                    </li>
+                                                                    <li class="text-content">
+                                                                        <span class="text-title">Quantity</span> - {{ number_format($quantity, 3) }} {{ $unitName }}
+                                                                    </li>
                                                                     <li>
                                                                         <h5 class="text-content d-inline-block">Price :</h5>
-                                                                        <span>Rs. {{ number_format((float) $item['unit_price'], 2) }}</span>
-                                                                        @if($mrp > (float) $item['unit_price'])
+                                                                        <span>Rs. {{ number_format($unitPrice, 2) }}</span>
+                                                                        @if($hasDiscount)
                                                                             <span class="text-content">Rs. {{ number_format($mrp, 2) }}</span>
                                                                         @endif
                                                                     </li>
                                                                     @if($savings > 0)
-                                                                        <li><h5 class="saving theme-color">Saving : Rs. {{ number_format($savings, 2) }}</h5></li>
+                                                                        <li>
+                                                                            <h5 class="saving theme-color">Saving : Rs. {{ number_format($savings, 2) }}</h5>
+                                                                        </li>
                                                                     @endif
                                                                     @if($item['has_issue'])
-                                                                        <li><h6 class="text-danger">Available stock: {{ number_format((float) $item['available_stock'], 3) }}</h6></li>
+                                                                        <li>
+                                                                            <h6 class="text-danger">Available stock: {{ number_format((float) $item['available_stock'], 3) }}</h6>
+                                                                        </li>
                                                                     @endif
                                                                     <li class="quantity-price-box">
                                                                         <div class="cart_qty">
                                                                             <div class="input-group">
-                                                                                <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $item['quantity'] }}">
+                                                                                <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $quantity }}">
                                                                             </div>
                                                                         </div>
                                                                     </li>
-                                                                    <li><h5>Total: Rs. {{ number_format((float) $item['line_total'], 2) }}</h5></li>
+                                                                    <li>
+                                                                        <h5>Total: Rs. {{ number_format($lineTotal, 2) }}</h5>
+                                                                    </li>
                                                                 </ul>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td class="price">
                                                         <h4 class="table-title text-content">Price</h4>
-                                                        <h5>Rs. {{ number_format((float) $item['unit_price'], 2) }} @if($mrp > (float) $item['unit_price'])<del class="text-content">Rs. {{ number_format($mrp, 2) }}</del>@endif</h5>
+                                                        <h5>Rs. {{ number_format($unitPrice, 2) }}</h5>
+                                                        @if($hasDiscount)
+                                                            <h6 class="text-content"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
+                                                        @endif
                                                         @if($savings > 0)
                                                             <h6 class="theme-color">You Save : Rs. {{ number_format($savings, 2) }}</h6>
                                                         @endif
@@ -873,14 +901,14 @@
                                                         <div class="quantity-price">
                                                             <div class="cart_qty">
                                                                 <div class="input-group">
-                                                                    <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $item['quantity'] }}">
+                                                                    <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $quantity }}">
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td class="subtotal">
                                                         <h4 class="table-title text-content">Total</h4>
-                                                        <h5>Rs. {{ number_format((float) $item['line_total'], 2) }}</h5>
+                                                        <h5>Rs. {{ number_format($lineTotal, 2) }}</h5>
                                                     </td>
                                                     <td class="save-remove">
                                                         <h4 class="table-title text-content">Action</h4>
@@ -905,9 +933,9 @@
                                         <h6 class="text-content mb-2">Order Summary</h6>
                                     </div>
                                     <ul>
-                                        <li><h4>Items</h4><h4 class="price">{{ rtrim(rtrim(number_format((float) data_get($storeCart, 'count', 0), 3, '.', ''), '0'), '.') ?: '0' }}</h4></li>
-                                        <li><h4>Subtotal</h4><h4 class="price">Rs. {{ number_format((float) data_get($storeCart, 'subtotal', 0), 2) }}</h4></li>
-                                        <li><h4>GST</h4><h4 class="price">Rs. {{ number_format((float) data_get($storeCart, 'gst_total', 0), 2) }}</h4></li>
+                                        <li><h4>Items</h4><h4 class="price" data-store-cart-page-count>{{ rtrim(rtrim(number_format((float) data_get($storeCart, 'count', 0), 3, '.', ''), '0'), '.') ?: '0' }}</h4></li>
+                                        <li><h4>Subtotal</h4><h4 class="price" data-store-cart-page-subtotal>Rs. {{ number_format((float) data_get($storeCart, 'subtotal', 0), 2) }}</h4></li>
+                                        <li><h4>GST</h4><h4 class="price" data-store-cart-page-gst>Rs. {{ number_format((float) data_get($storeCart, 'gst_total', 0), 2) }}</h4></li>
                                         <li class="align-items-start"><h4>Shipping</h4><h4 class="price text-end">Rs. 0.00</h4></li>
                                     </ul>
                                 </div>
@@ -915,14 +943,14 @@
                                 <ul class="summery-total">
                                     <li class="list-total border-top-0">
                                         <h4>Total (INR)</h4>
-                                        <h4 class="price theme-color">Rs. {{ number_format((float) data_get($storeCart, 'grand_total', 0), 2) }}</h4>
+                                        <h4 class="price theme-color" data-store-cart-page-total>Rs. {{ number_format((float) data_get($storeCart, 'grand_total', 0), 2) }}</h4>
                                     </li>
                                 </ul>
 
                                 <div class="button-group cart-button">
                                     <ul>
                                         <li><button type="submit" class="btn btn-animation proceed-btn fw-bold">Update Cart</button></li>
-                                        <li><a href="{{ route('store.page', ['page' => 'checkout']) }}" class="btn btn-animation proceed-btn fw-bold">Process To Checkout</a></li>
+                                        <li><a href="{{ route('store.page', ['page' => 'checkout']) }}" class="btn btn-animation proceed-btn fw-bold" data-store-cart-checkout-link>Process To Checkout</a></li>
                                         <li><button type="submit" formaction="{{ route('store.cart.clear') }}" class="btn btn-light shopping-button text-dark">Clear Cart</button></li>
                                         <li><a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}" class="btn btn-light shopping-button text-dark"><i class="fa-solid fa-arrow-left-long"></i>Return To Shopping</a></li>
                                     </ul>
@@ -932,6 +960,14 @@
                     </div>
                 </form>
             @endif
+
+            <div class="row g-sm-5 g-3{{ $cartItems->isNotEmpty() ? ' d-none' : '' }}" data-store-cart-empty>
+                <div class="col-12">
+                    <div class="alert alert-light mb-0">
+                        Your cart is empty. <a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">Continue shopping</a>.
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     <!-- Cart Section End -->

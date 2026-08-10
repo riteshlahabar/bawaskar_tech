@@ -714,66 +714,92 @@
                             <h4>Create New Account</h4>
                         </div>
 
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0 ps-3">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="input-box">
-                                                        <form method="POST" action="{{ route('store.auth.register') }}" class="row g-4">
+                            <form method="POST" action="{{ route('store.auth.register') }}" class="row g-4" novalidate>
                                 @csrf
                                 @php($selectedRole = old('role', request('role', 'customer')))
+                                <input type="hidden" name="redirect_to" value="{{ request('redirect_to', route('store.page', ['page' => 'user-dashboard'])) }}">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <select class="form-select" id="signupRole" name="role">
+                                        <select class="form-select @error('role') is-invalid @enderror" id="signupRole" name="role">
                                             <option value="customer" {{ $selectedRole === 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="dealer" {{ $selectedRole === 'dealer' ? 'selected' : '' }}>Dealer</option>
                                         </select>
                                         <label for="signupRole">Account Type</label>
+                                        @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="fullname" name="name" value="{{ old('name') }}" placeholder="Full Name">
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="fullname" name="name" value="{{ old('name') }}" placeholder="Full Name">
                                         <label for="fullname">Full Name</label>
+                                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12 dealer-only-field">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="firm_name" name="firm_name" value="{{ old('firm_name') }}" placeholder="Firm Name">
+                                        <input type="text" class="form-control @error('firm_name') is-invalid @enderror" id="firm_name" name="firm_name" value="{{ old('firm_name') }}" placeholder="Firm Name">
                                         <label for="firm_name">Firm Name</label>
+                                        @error('firm_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="Email Address">
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="Email Address">
                                         <label for="email">Email Address</label>
+                                        @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="mobile" name="mobile" value="{{ old('mobile') }}" placeholder="Mobile Number">
+                                        <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="mobile" name="mobile" value="{{ old('mobile') }}" placeholder="Mobile Number" inputmode="numeric" maxlength="10">
                                         <label for="mobile">Mobile Number</label>
+                                        @error('mobile')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12 dealer-only-field">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="gst_number" name="gst_number" value="{{ old('gst_number') }}" placeholder="GST Number">
+                                        <input type="text" class="form-control @error('gst_number') is-invalid @enderror" id="gst_number" name="gst_number" value="{{ old('gst_number') }}" placeholder="GST Number">
                                         <label for="gst_number">GST Number</label>
+                                        @error('gst_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password">
                                         <label for="password">Password</label>
+                                        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password">
+                                        <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password">
                                         <label for="password_confirmation">Confirm Password</label>
+                                        @error('password_confirmation')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="forgot-box">
                                         <div class="form-check ps-0 m-0 remember-box">
-                                            <input class="checkbox_animated check-box" type="checkbox" checked id="flexCheckDefault">
-                                            <label class="form-check-label" for="flexCheckDefault">I agree with <span>Terms</span> and <span>Privacy</span></label>
+                                            <input class="checkbox_animated check-box @error('accept_terms') is-invalid @enderror" type="checkbox" id="accept_terms" name="accept_terms" value="1" {{ old('accept_terms') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="accept_terms">I agree with <span>Terms</span> and <span>Privacy</span></label>
+                                            @error('accept_terms')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                         </div>
                                     </div>
                                 </div>

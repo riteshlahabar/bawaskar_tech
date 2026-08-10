@@ -717,30 +717,49 @@
                             <h4>Log In Your Account</h4>
                         </div>
 
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0 ps-3">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="input-box">
-                                                        <form method="POST" action="{{ route('store.auth.login') }}" class="row g-4">
+                            <form method="POST" action="{{ route('store.auth.login') }}" class="row g-4" novalidate>
                                 @csrf
                                 @php($selectedRole = old('role', request('role', 'customer')))
                                 <input type="hidden" name="redirect_to" value="{{ request('redirect_to', route('store.page', ['page' => 'user-dashboard'])) }}">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
-                                        <select class="form-select" id="loginRole" name="role">
+                                        <select class="form-select @error('role') is-invalid @enderror" id="loginRole" name="role">
                                             <option value="customer" {{ $selectedRole === 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="dealer" {{ $selectedRole === 'dealer' ? 'selected' : '' }}>Dealer</option>
                                         </select>
                                         <label for="loginRole">Account Type</label>
+                                        @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
-                                        <input type="text" class="form-control" id="login" name="login" value="{{ old('login') }}" placeholder="Email Address or Mobile Number">
+                                        <input type="text" class="form-control @error('login') is-invalid @enderror" id="login" name="login" value="{{ old('login') }}" placeholder="Email Address or Mobile Number">
                                         <label for="login">Email Address or Mobile Number</label>
+                                        @error('login')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password">
                                         <label for="password">Password</label>
+                                        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -1012,7 +1031,7 @@
 
             <div class="sub-footer section-small-space">
                 <div class="reserve">
-                    <h6 class="text-content">Ã‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
+                    <h6 class="text-content">Ãƒâ€šÃ‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
                 </div>
 
                 <div class="payment">

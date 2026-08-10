@@ -62,7 +62,7 @@
                                         <h5>{{ $product->name }}</h5>
                                     </a>
                                     <h6><span>{{ rtrim(rtrim(number_format((float) $item['quantity'], 3, '.', ''), '0'), '.') }} x</span> Rs. {{ number_format((float) $item['unit_price'], 2) }}</h6>
-                                    <form method="POST" action="{{ route('store.cart.remove', ['productId' => $product->id]) }}">
+                                    <form method="POST" action="{{ route('store.cart.remove', ['productId' => $product->id]) }}" data-store-cart-remove-form>
                                         @csrf
                                         <button type="submit" class="close-button close_button">
                                             <i class="fa-solid fa-xmark"></i>

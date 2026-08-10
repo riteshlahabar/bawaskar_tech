@@ -680,3 +680,58 @@ input[type="file"].form-control::file-selector-button {
 .admin-gallery-remove-btn:hover {
     background: #bb2d3b;
 }
+/* Improve spacing and alignment in table row action dropdown */
+.admin-row-action-toggle {
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-row-action-menu {
+    min-width: 190px;
+    padding: 8px;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.admin-row-action-menu .dropdown-item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: left;
+}
+
+.admin-row-action-menu .dropdown-item i,
+.admin-row-action-menu .dropdown-item [class^="iconoir-"],
+.admin-row-action-menu .dropdown-item [class*=" iconoir-"] {
+    width: 16px;
+    min-width: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.admin-row-action-menu .dropdown-item span {
+    flex: 1 1 auto;
+}
+
+.admin-row-action-menu .dropdown-item:hover,
+.admin-row-action-menu .dropdown-item:focus {
+    background: #f5fbf9;
+    color: var(--theme-color);
+}
+
+.admin-row-action-menu .dropdown-divider {
+    margin: 6px 0;
+}

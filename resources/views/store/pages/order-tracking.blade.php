@@ -823,9 +823,6 @@
     <!-- Breadcrumb Section End -->
 
     @php
-         =  ??  ?? ->first();
-    @endphp
-    @php
         $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
     @endphp
 

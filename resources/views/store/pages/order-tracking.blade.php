@@ -843,6 +843,10 @@
     </section>
     <!-- Breadcrumb Section End -->
 
+    @php
+        $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
+    @endphp
+
     <!-- Order Detail Section Start -->
     <section class="order-detail">
         <div class="container-fluid-lg">
@@ -854,7 +858,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif($storeOrders->isEmpty() || ! ($storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first()))
+            @elseif($storeOrders->isEmpty() || ! $trackedOrder)
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-light store-tracking-empty mb-0">
@@ -864,7 +868,6 @@
                 </div>
             @else
                 @php
-                    $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
                     $firstItem = $trackedOrder->items->first();
                     $trackedProduct = $firstItem?->product;
                     $trackedImage = optional($trackedProduct?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');

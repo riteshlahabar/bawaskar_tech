@@ -67,11 +67,11 @@
                             <div class="pickup-box">
                                 <div class="product-info"><ul class="product-info-list product-info-list-2">
                                     <li>SKU : <a href="javascript:void(0)">{{ $product->sku }}</a></li>
-                                    <li>Category : <a href="javascript:void(0)">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</a></li>
+                                    <li>{{ web_t('product.category', 'Category') }} : <a href="javascript:void(0)">{{ data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product') }}</a></li>
                                     <li>Brand : <a href="javascript:void(0)">{{ data_get($product, 'brand.name') ?: 'Bawaskar' }}</a></li>
-                                    <li>Unit : <a href="javascript:void(0)">{{ $unitName }}</a></li>
+                                    <li>Unit : <a href="javascript:void(0)">{{ storefront_public_t($unitName, 'unit') }}</a></li>
                                     <li>Available Stock : <a href="javascript:void(0)">{{ number_format($availableStock, 2) }}</a></li>
-                                    <li>Status : <a href="javascript:void(0)">{{ $isOutOfStock ? 'Out of Stock' : ($isLowStock ? ($product->low_stock_text ?: 'Low Stock') : 'In Stock') }}</a></li>
+                                    <li>{{ web_t('product.status', 'Status') }} : <a href="javascript:void(0)">{{ $isOutOfStock ? web_t('product.out_of_stock', 'Out of Stock') : ($isLowStock ? storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') : web_t('product.in_stock', 'In Stock')) }}</a></li>
                                 </ul></div>
                             </div>
 
@@ -95,7 +95,7 @@
 
                             <div class="note-box product-package">
                                 @if($isOutOfStock)
-                                    <button class="btn btn-md bg-dark cart-button text-white w-100" disabled>Out of Stock</button>
+                                    <button class="btn btn-md bg-dark cart-button text-white w-100" disabled>{{ web_t('product.out_of_stock', 'Out of Stock') }}</button>
                                 @else
                                     <form method="POST" action="{{ route('store.cart.add') }}" class="row g-2 align-items-center" data-store-cart-add>
                                         @csrf
@@ -104,7 +104,7 @@
                                             <input type="number" class="form-control" name="quantity" value="1" min="0.001" step="0.001">
                                         </div>
                                         <div class="col-sm-8">
-                                            <button type="submit" class="btn btn-md bg-dark cart-button text-white w-100">Add To Cart</button>
+                                            <button type="submit" class="btn btn-md bg-dark cart-button text-white w-100">{{ web_t('product.add_to_cart', 'Add To Cart') }}</button>
                                         </div>
                                     </form>
                                 @endif

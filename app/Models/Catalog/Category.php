@@ -50,14 +50,55 @@ class Category extends Model
             return $this->name;
         }
 
-        $translations = $this->relationLoaded('translations')
-            ? $this->translations
-            : $this->translations()->where('locale', $locale)->get();
+        $translation = $this->translationForLocale($locale);
 
-        $translation = $translations->firstWhere('locale', $locale);
+        if (filled($translation?->name)) {
+            return $translation->name;
+        }
 
-        return filled($translation?->name) ? $translation->name : $this->name;
+        return $this->storefrontTranslatedNameFallback($locale);
     }
+
+    private function translationForLocale(string $locale): ?CategoryTranslation
+    {
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale);
+        }
+
+        return $this->translations()->where('locale', $locale)->first();
+    }
+
+    private function storefrontTranslatedNameFallback(string $locale): string
+    {
+        $translated = function_exists('storefront_public_auto_translate')
+            ? storefront_public_auto_translate($this->name, $locale)
+            : $this->name;
+
+        if ($translated === '' || $translated === $this->name) {
+            return $this->name;
+        }
+
+        try {
+            $translation = CategoryTranslation::query()->updateOrCreate(
+                ['category_id' => $this->getKey(), 'locale' => $locale],
+                ['name' => $translated]
+            );
+
+            if ($this->relationLoaded('translations')) {
+                $this->setRelation(
+                    'translations',
+                    $this->translations
+                        ->reject(fn (CategoryTranslation $item): bool => $item->locale === $locale)
+                        ->push($translation)
+                );
+            }
+        } catch (\Throwable) {
+            return $translated;
+        }
+
+        return $translated;
+    }
+
     public function getStorefrontImageUrlAttribute(): string
     {
         if (filled($this->image_path)) {
@@ -108,4 +149,3 @@ class Category extends Model
         return $slug;
     }
 }
-

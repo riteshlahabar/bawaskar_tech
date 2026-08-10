@@ -39,10 +39,10 @@
         </div>
         <div class="product-footer">
             <div class="product-detail">
-                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</span>
+                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product') }}</span>
                 <a href="{{ $productUrl }}"><h5 class="name">{{ $displayName }}</h5></a>
-                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: 'Quality farmer product')->limit(75) }}</p>
-                <h6 class="unit">{{ $unitName }}</h6>
+                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: web_t('product.quality_farmer_product', 'Quality farmer product'))->limit(75) }}</p>
+                <h6 class="unit">{{ storefront_public_t($unitName, 'unit') }}</h6>
                 @if($mrp > $price)
                     <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
                 @endif
@@ -50,21 +50,21 @@
                     <span class="theme-color">Rs. {{ number_format($price, 2) }}</span>
                 </h5>
                 @if($isOutOfStock)
-                    <h6 class="theme-color">Out of Stock</h6>
+                    <h6 class="theme-color">{{ web_t('product.out_of_stock', 'Out of Stock') }}</h6>
                 @elseif($isLowStock)
-                    <h6 class="theme-color">{{ $product->low_stock_text ?: 'Low Stock' }}</h6>
+                    <h6 class="theme-color">{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</h6>
                 @elseif($discount > 0)
                     <h6 class="theme-color">{{ $discount }}% off</h6>
                 @endif
                 <div class="add-to-cart-box bg-white">
                     @if($isOutOfStock)
-                        <button class="btn btn-add-cart addcart-button" disabled>Out of Stock</button>
+                        <button class="btn btn-add-cart addcart-button" disabled>{{ web_t('product.out_of_stock', 'Out of Stock') }}</button>
                     @else
                         <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-add-cart addcart-button">Add To Cart</button>
+                            <button type="submit" class="btn btn-add-cart addcart-button">{{ web_t('product.add_to_cart', 'Add To Cart') }}</button>
                         </form>
                     @endif
                 </div>

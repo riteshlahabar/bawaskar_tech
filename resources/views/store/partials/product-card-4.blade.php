@@ -7,7 +7,7 @@
     $mrp = (float) $product->mrp;
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
     $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
-    $categoryName = data_get($product, 'category.storefront_name') ?: 'Product';
+    $categoryName = data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product');
     $availableStock = (float) $product->available_stock;
     $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
@@ -62,7 +62,7 @@
                 </h5>
             </div>
             <div class="price-qty mt-1 pt-0 align-items-start">
-                <h5 class="text-content mb-0 lh-base">{{ $categoryName }} / {{ $unitName }}</h5>
+                <h5 class="text-content mb-0 lh-base">{{ $categoryName }} / {{ storefront_public_t($unitName, 'unit') }}</h5>
                 @if($isOutOfStock)
                     <button class="add-button addcart-button btn buy-button text-light" disabled>
                         <i class="fa-solid fa-ban"></i>
@@ -79,9 +79,9 @@
                 @endif
             </div>
             @if($isOutOfStock)
-                <div class="label-tag mt-2"><span>Out of Stock</span></div>
+                <div class="label-tag mt-2"><span>{{ web_t('product.out_of_stock', 'Out of Stock') }}</span></div>
             @elseif($isLowStock)
-                <div class="label-tag mt-2"><span>{{ $product->low_stock_text ?: 'Low Stock' }}</span></div>
+                <div class="label-tag mt-2"><span>{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</span></div>
             @elseif($discount > 0)
                 <div class="label-tag mt-2"><span>{{ $discount }}% off</span></div>
             @endif

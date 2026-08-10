@@ -141,16 +141,32 @@ class Product extends Model
 
     public function translatedName(?string $locale = null): string
     {
+        $locale = $locale ?: app()->getLocale();
         $translation = $this->translationForLocale($locale);
 
-        return filled($translation?->name) ? $translation->name : $this->name;
+        if (filled($translation?->name) && $translation->name !== $this->name) {
+            return $translation->name;
+        }
+
+        return $this->storefrontTranslatedFieldFallback('name', (string) $this->name, $locale);
     }
 
     public function translatedDescription(?string $locale = null): ?string
     {
+        $locale = $locale ?: app()->getLocale();
+        $fallback = (string) ($this->description ?? '');
+
+        if ($fallback === '') {
+            return $this->description;
+        }
+
         $translation = $this->translationForLocale($locale);
 
-        return filled($translation?->description) ? $translation->description : $this->description;
+        if (filled($translation?->description) && $translation->description !== $this->description) {
+            return $translation->description;
+        }
+
+        return $this->storefrontTranslatedFieldFallback('description', $fallback, $locale);
     }
 
     private function translationForLocale(?string $locale = null): ?ProductTranslation
@@ -166,6 +182,64 @@ class Product extends Model
         }
 
         return $this->translations()->where('locale', $locale)->first();
+    }
+
+    private function storefrontTranslatedFieldFallback(string $field, string $fallback, ?string $locale = null): string
+    {
+        $locale = $locale ?: app()->getLocale();
+
+        if ($fallback === '' || $locale === '' || $locale === 'en') {
+            return $fallback;
+        }
+
+        $translated = function_exists('storefront_public_auto_translate')
+            ? storefront_public_auto_translate($fallback, $locale)
+            : $fallback;
+
+        if ($translated === '' || $translated === $fallback) {
+            return $fallback;
+        }
+
+        try {
+            $translation = $this->translationForLocale($locale);
+            $name = $translation?->name;
+            $description = $translation?->description;
+
+            if ($field === 'name') {
+                $name = $translated;
+            }
+
+            if ($field === 'description') {
+                $description = $translated;
+                if (blank($name) || $name === $this->name) {
+                    $autoName = function_exists('storefront_public_auto_translate')
+                        ? storefront_public_auto_translate((string) $this->name, $locale)
+                        : (string) $this->name;
+                    $name = $autoName !== '' ? $autoName : (string) $this->name;
+                }
+            }
+
+            $savedTranslation = ProductTranslation::query()->updateOrCreate(
+                ['product_id' => $this->getKey(), 'locale' => $locale],
+                [
+                    'name' => filled($name) ? $name : (string) $this->name,
+                    'description' => filled($description) ? $description : null,
+                ]
+            );
+
+            if ($this->relationLoaded('translations')) {
+                $this->setRelation(
+                    'translations',
+                    $this->translations
+                        ->reject(fn (ProductTranslation $item): bool => $item->locale === $locale)
+                        ->push($savedTranslation)
+                );
+            }
+        } catch (\Throwable) {
+            return $translated;
+        }
+
+        return $translated;
     }
 
     public function images(): HasMany
@@ -234,17 +308,14 @@ class Product extends Model
 
     public function getStorefrontNameAttribute(): string
     {
-        $translation = $this->translationForCurrentLocale();
-
-        return filled($translation?->name) ? $translation->name : $this->name;
+        return $this->translatedName();
     }
 
     public function getStorefrontDescriptionAttribute(): ?string
     {
-        $translation = $this->translationForCurrentLocale();
-
-        return filled($translation?->description) ? $translation->description : $this->description;
+        return $this->translatedDescription();
     }
+
     public function getStorefrontDealImageUrlAttribute(): string
     {
         $productImageUrl = optional($this->images->first())->url;
@@ -261,6 +332,3 @@ class Product extends Model
         return asset('fastkart-store/images/grocery/deal/big.png');
     }
 }
-
-
-

@@ -5,26 +5,27 @@
 
     $entryTitle = function ($entry, $fallback = '') use ($isProduct) {
         if ($isProduct($entry)) {
-            return $entry->homepage_title ?: $entry->name ?: $fallback;
+            $value = $entry->homepage_title ?: $entry->translatedName() ?: $fallback;
+            return storefront_public_t($value, 'homepage_entry');
         }
 
-        return $entry->title ?: $fallback;
+        return storefront_public_t($entry->title ?: $fallback, 'homepage_entry');
     };
 
     $entrySubtitle = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
-            return $entry->homepage_subtitle ?: $entry->sale_badge_text;
+            return storefront_public_t($entry->homepage_subtitle ?: $entry->sale_badge_text, 'homepage_entry');
         }
 
-        return $entry->subtitle;
+        return storefront_public_t($entry->subtitle, 'homepage_entry');
     };
 
     $entryDescription = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
-            return $entry->homepage_description ?: $entry->short_description;
+            return storefront_public_t($entry->homepage_description ?: $entry->short_description, 'homepage_entry');
         }
 
-        return $entry->description;
+        return storefront_public_t($entry->description, 'homepage_entry');
     };
 
     $entryImage = function ($entry, string $type = 'main', string $fallback = '') use ($isProduct) {
@@ -67,18 +68,18 @@
 
     $entryButton = function ($entry, $default = 'Shop Now') use ($isProduct) {
         if ($isProduct($entry)) {
-            return $entry->homepage_button_text ?: $default;
+            return storefront_public_t($entry->homepage_button_text ?: $default, 'homepage_button');
         }
 
-        return $entry->button_text ?: $default;
+        return storefront_public_t($entry->button_text ?: $default, 'homepage_button');
     };
 
     $entryDiscount = function ($entry) use ($isProduct) {
-        return $isProduct($entry) ? $entry->homepage_discount_text : $entry->discount_text;
+        return storefront_public_t($isProduct($entry) ? $entry->homepage_discount_text : $entry->discount_text, 'homepage_entry');
     };
 
     $entryValidity = function ($entry) use ($isProduct) {
-        return $isProduct($entry) ? $entry->homepage_validity_text : $entry->validity_text;
+        return storefront_public_t($isProduct($entry) ? $entry->homepage_validity_text : $entry->validity_text, 'homepage_entry');
     };
 
     $entryCoupon = function ($entry) use ($isProduct) {
@@ -160,7 +161,7 @@
         @case('category_section')
             <section class="category-section-3" id="home-section-{{ $section->section_key }}">
                 <div class="container-fluid-lg">
-                    <div class="title"><h2>{{ $section->title ?: 'Shop By Categories' }}</h2></div>
+                    <div class="title"><h2>{{ storefront_public_t($section->title ?: 'Shop By Categories', 'homepage_section') }}</h2></div>
                     <div class="row">
                         <div class="col-12">
                             <div class="category-slider-1 arrow-slider wow fadeInUp">
@@ -180,7 +181,7 @@
                 @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
                 @include('store.partials.top-selling-section', [
                     'sectionKey' => $section->section_key,
-                    'sectionTitle' => $section->title ?: 'Top Selling Items',
+                    'sectionTitle' => storefront_public_t($section->title ?: 'Top Selling Items', 'homepage_section'),
                     'products' => $normalProducts,
                     'dealProduct' => $dealProduct,
                     'showDealTimer' => $showDealTimer,
@@ -189,8 +190,8 @@
                 <section class="product-section-3" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
                         <div class="title">
-                            <h2>{{ $section->title }}</h2>
-                            @if($section->subtitle)<span class="title-leaf"><span>{{ $section->subtitle }}</span></span>@endif
+                            <h2>{{ storefront_public_t($section->title, 'homepage_section') }}</h2>
+                            @if($section->subtitle)<span class="title-leaf"><span>{{ storefront_public_t($section->subtitle, 'homepage_section') }}</span></span>@endif
                         </div>
                         <div class="row">
                             <div class="col-12">
@@ -210,7 +211,7 @@
             @if($entries->isNotEmpty())
                 <section class="bank-section overflow-hidden" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        <div class="title"><h2>{{ $section->title }}</h2></div>
+                        <div class="title"><h2>{{ storefront_public_t($section->title, 'homepage_section') }}</h2></div>
                         <div class="slider-bank-3 arrow-slider slick-height">
                             @foreach($entries as $entry)
                                 <div>
@@ -232,8 +233,8 @@
                                         </div>
                                         @if($entryCoupon($entry))
                                             <div class="bank-footer bank-footer-1">
-                                                <h4>Code : <input value="{{ $entryCoupon($entry) }}" readonly></h4>
-                                                <button class="bank-coupon btn">Copy Code</button>
+                                                <h4>{{ web_t('coupon.code', 'Code') }} : <input value="{{ $entryCoupon($entry) }}" readonly></h4>
+                                                <button class="bank-coupon btn">{{ web_t('coupon.copy_code', 'Copy Code') }}</button>
                                             </div>
                                         @endif
                                     </div>
@@ -252,7 +253,7 @@
             @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
             @include('store.partials.top-selling-section', [
                 'sectionKey' => $section->section_key,
-                'sectionTitle' => $section->title ?: 'Top Selling Items',
+                'sectionTitle' => storefront_public_t($section->title ?: 'Top Selling Items', 'homepage_section'),
                 'products' => $normalProducts,
                 'dealProduct' => $dealProduct,
                 'showDealTimer' => $showDealTimer,
@@ -263,7 +264,7 @@
             @if($entries->isNotEmpty())
                 <section class="banner-section ratio_60" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        @if($section->title)<div class="title"><h2>{{ $section->title }}</h2></div>@endif
+                        @if($section->title)<div class="title"><h2>{{ storefront_public_t($section->title, 'homepage_section') }}</h2></div>@endif
                         <div class="row g-sm-4 g-3">
                             @foreach($entries as $entry)
                                 <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($section->layout_type === 'two_column_banner' ? 'col-md-6' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6')) }}">
@@ -298,7 +299,7 @@
             @if($entries->isNotEmpty())
                 <section class="blog-section" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        <div class="title"><h2>{{ $section->title ?: 'Featured Blog' }}</h2></div>
+                        <div class="title"><h2>{{ storefront_public_t($section->title ?: 'Featured Blog', 'homepage_section') }}</h2></div>
                         <div class="slider-3-blog arrow-slider slick-height">
                             @foreach($entries as $entry)
                                 <div>

@@ -30,7 +30,7 @@
     <section class="product-section product-section-3" id="home-section-{{ $sectionKey }}">
         <div class="container-fluid-lg">
             <div class="title">
-                <h2>{{ $sectionTitle }}</h2>
+                <h2>{{ storefront_public_t($sectionTitle, 'homepage_section') }}</h2>
             </div>
 
             <div class="row g-sm-4 g-3">
@@ -38,7 +38,7 @@
                     <div class="col-xxl-4 col-lg-5 order-lg-2">
                         <div class="product-bg-image wow fadeInUp">
                             <div class="product-title product-warning">
-                                <h2>Special Offer</h2>
+                                <h2>{{ web_t('offer.special_offer', 'Special Offer') }}</h2>
                             </div>
 
                             <div class="product-box-4 product-box-3 rounded-0">
@@ -47,7 +47,7 @@
                                         <div class="shape-circle">
                                             <img src="{{ asset('fastkart-store/images/grocery/circle.svg') }}" class="blur-up lazyload" alt="">
                                             <div class="shape-text">
-                                                <h6>Hot <br> Deal</h6>
+                                                <h6>{{ web_t('offer.hot', 'Hot') }} <br> {{ web_t('offer.deal', 'Deal') }}</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -89,7 +89,7 @@
                                             </ul>
 
                                             <a href="{{ $dealUrl }}">
-                                                <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealDisplayName }}</h3>
+                                                <h3 class="name w-100 mx-auto text-center text-title">{{ storefront_public_t($dealProduct->homepage_title ?: $dealDisplayName, 'product') }}</h3>
                                             </a>
 
                                             @if($dealMrp > $dealPrice)
@@ -103,8 +103,8 @@
                                                 <div class="progress-bar" style="width: {{ $progressWidth }}%" role="progressbar"></div>
                                             </div>
 
-                                            <h5 class="text-content">Solid : <span class="text-dark">{{ rtrim(rtrim(number_format($dealStock, 3, '.', ''), '0'), '.') ?: '0' }} items</span>
-                                                <span class="ms-auto text-content">Hurry up offer end in</span></h5>
+                                            <h5 class="text-content">{{ web_t('offer.sold', 'Sold') }} : <span class="text-dark">{{ rtrim(rtrim(number_format($dealStock, 3, '.', ''), '0'), '.') ?: '0' }} {{ web_t('offer.items', 'items') }}</span>
+                                                <span class="ms-auto text-content">{{ web_t('offer.hurry_up_offer_end_in', 'Hurry up offer end in') }}</span></h5>
 
                                             @if($showDealTimer)
                                                 <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">

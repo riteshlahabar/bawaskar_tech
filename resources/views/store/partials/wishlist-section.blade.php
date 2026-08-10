@@ -42,11 +42,11 @@
 
                         <div class="product-footer">
                             <div class="product-detail">
-                                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: 'Product' }}</span>
+                                <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product') }}</span>
                                 <a href="{{ $productUrl }}">
                                     <h5 class="name">{{ $displayName }}</h5>
                                 </a>
-                                <h6 class="unit mt-1">{{ $unitName }}</h6>
+                                <h6 class="unit mt-1">{{ storefront_public_t($unitName, 'unit') }}</h6>
                                 <h5 class="price">
                                     <span class="theme-color">Rs. {{ number_format($price, 2) }}</span>
                                     @if($mrp > $price)
@@ -56,7 +56,7 @@
 
                                 @if($isOutOfStock)
                                     <div class="add-to-cart-box bg-white mt-2">
-                                        <button class="btn btn-add-cart addcart-button" disabled>Out of Stock</button>
+                                        <button class="btn btn-add-cart addcart-button" disabled>{{ web_t('product.out_of_stock', 'Out of Stock') }}</button>
                                     </div>
                                 @else
                                     <div class="add-to-cart-box bg-white mt-2">
@@ -74,7 +74,7 @@
                                 @endif
 
                                 @if($isLowStock)
-                                    <h6 class="theme-color mt-2">{{ $product->low_stock_text ?: 'Low Stock' }}</h6>
+                                    <h6 class="theme-color mt-2">{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</h6>
                                 @endif
                             </div>
                         </div>

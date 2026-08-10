@@ -6,9 +6,9 @@
     <section class="product-section-3" id="home-section-{{ $section->section_key }}">
         <div class="container-fluid-lg">
             <div class="title">
-                <h2>{{ $section->title }}</h2>
+                <h2>{{ storefront_public_t($section->title, 'homepage_section') }}</h2>
                 @if($section->subtitle)
-                    <span class="title-leaf"><span>{{ $section->subtitle }}</span></span>
+                    <span class="title-leaf"><span>{{ storefront_public_t($section->subtitle, 'homepage_section') }}</span></span>
                 @endif
             </div>
             <div class="row">

@@ -48,7 +48,7 @@
         </ul>
 
         <a href="{{ $productUrl }}">
-            <h5 class="name text-title">{{ $product->homepage_title ?: $displayName }}</h5>
+            <h5 class="name text-title">{{ storefront_public_t($product->homepage_title ?: $displayName, 'product') }}</h5>
         </a>
 
         @if($mrp > $price)

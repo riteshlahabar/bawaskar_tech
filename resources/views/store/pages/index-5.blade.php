@@ -43,9 +43,9 @@
     $cmsBanner = function (string $placement, int $index = 0) use ($cmsBanners) {
         return $cmsBanners->get($placement, collect())->values()->get($index);
     };
-    $cmsField = fn ($record, string $field, $fallback = null) => data_get($record, $field) ?: $fallback;
+    $cmsField = fn ($record, string $field, $fallback = null) => in_array($field, ['title', 'subtitle', 'description', 'button_text'], true) ? storefront_public_t(data_get($record, $field) ?: $fallback, 'homepage_cms') : (data_get($record, $field) ?: $fallback);
     $cmsAsset = fn ($path, string $fallback) => asset($path ?: $fallback);
-    $cmsSectionTitle = fn (string $key, string $fallback) => data_get($cmsSections->get($key), 'title') ?: $fallback;
+    $cmsSectionTitle = fn (string $key, string $fallback) => storefront_public_t(data_get($cmsSections->get($key), 'title') ?: $fallback, 'homepage_section');
     $heroBanner = $cmsBanner('hero_main');
     $promoBanner0 = $cmsBanner('promo_small', 0);
     $promoBanner1 = $cmsBanner('promo_small', 1);
@@ -348,21 +348,21 @@
                                 <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                     <div class="container-fluid-lg">
                                         <div>
-                                            @if(!empty(data_get($heroBanner, 'subtitle')))
-                                                <h6 class="ls-expanded theme-color text-uppercase">{{ data_get($heroBanner, 'subtitle') }}</h6>
+                                            @if(!empty($cmsField($heroBanner, 'subtitle')))
+                                                <h6 class="ls-expanded theme-color text-uppercase">{{ $cmsField($heroBanner, 'subtitle') }}</h6>
                                             @endif
 
-                                            @if(!empty(data_get($heroBanner, 'title')))
-                                                <h1 class="heding-2">{{ data_get($heroBanner, 'title') }}</h1>
+                                            @if(!empty($cmsField($heroBanner, 'title')))
+                                                <h1 class="heding-2">{{ $cmsField($heroBanner, 'title') }}</h1>
                                             @endif
 
-                                            @if(!empty(data_get($heroBanner, 'description')))
-                                                <h5 class="text-content">{{ data_get($heroBanner, 'description') }}</h5>
+                                            @if(!empty($cmsField($heroBanner, 'description')))
+                                                <h5 class="text-content">{{ $cmsField($heroBanner, 'description') }}</h5>
                                             @endif
 
                                             <button
                                                 class="btn theme-bg-color btn-md text-white fw-bold mt-md-4 mt-2 mend-auto"
-                                                onclick="location.href = '{{ data_get($heroBanner, 'button_url') ?: route('store.page', ['page'=>'shop-left-sidebar']) }}';">{{ data_get($heroBanner, 'button_text') ?: 'Shop Now' }} <i class="fa-solid fa-arrow-right icon"></i></button>
+                                                onclick="location.href = '{{ data_get($heroBanner, 'button_url') ?: route('store.page', ['page'=>'shop-left-sidebar']) }}';">{{ $cmsField($heroBanner, 'button_text', 'Shop Now') }} <i class="fa-solid fa-arrow-right icon"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1083,7 +1083,7 @@
                                     src="{{ $cmsAsset(data_get($bankOfferBanner, 'image_path'), 'fastkart-store/images/grocery/bank/price/1.svg') }}"
                                     class="img-fluid w-100 rounded-3"
                                     style="max-height: 280px; object-fit: cover;"
-                                    alt="{{ data_get($bankOfferBanner, 'title') ?: 'Bank & Wallet Offers' }}">
+                                    alt="{{ storefront_public_t(data_get($bankOfferBanner, 'title') ?: 'Bank & Wallet Offers', 'homepage_cms') }}">
                             </a>
                         </div>
                     @endforeach
@@ -1099,7 +1099,7 @@
 <!-- Deal Section Start -->
     @include('store.partials.top-selling-section', [
         'sectionKey' => data_get($fallbackTopSellingSection, 'section_key', 'top-selling-items'),
-        'sectionTitle' => data_get($fallbackTopSellingSection, 'title') ?: $cmsSectionTitle('top_selling_items', 'Top Selling Items'),
+        'sectionTitle' => storefront_public_t(data_get($fallbackTopSellingSection, 'title') ?: $cmsSectionTitle('top_selling_items', 'Top Selling Items'), 'homepage_section'),
         'products' => $fallbackTopSellingProducts,
         'dealProduct' => $fallbackDealProduct,
         'showDealTimer' => $fallbackTopSellingShowTimer,
@@ -1119,12 +1119,12 @@
                             src="{{ $cmsAsset(data_get($stripBanner, 'image_path'), 'fastkart-store/images/grocery/banner/5.jpg') }}"
                             class="img-fluid w-100 rounded-3 blur-up lazyload"
                             style="min-height: 70px; max-height: 125px; object-fit: cover;"
-                            alt="{{ data_get($stripBanner, 'title') ?: 'Small Strip Banner' }}">
+                            alt="{{ storefront_public_t(data_get($stripBanner, 'title') ?: 'Small Strip Banner', 'homepage_cms') }}">
                     </a>
                 @endforeach
             @else
                 <div class="offer-box hover-effect">
-                    <h2><span>Small Strip Banner</span> Add active strip banner from admin.</h2>
+                    <h2><span>{{ storefront_public_t('Small Strip Banner', 'homepage_cms') }}</span> {{ storefront_public_t('Add active strip banner from admin.', 'homepage_cms') }}</h2>
                 </div>
             @endif
         </div>
@@ -2316,7 +2316,7 @@
     <section class="banner-section">
         <div class="container-fluid-lg">
             <div class="title">
-                <h2>Banner Above Personal Care</h2>
+                <h2>{{ storefront_public_t('Banner Above Personal Care', 'homepage_cms') }}</h2>
             </div>
 
             @if($personalCareBanners->isNotEmpty())
@@ -2332,14 +2332,14 @@
                                     src="{{ $cmsAsset(data_get($personalCareBanner, 'image_path'), 'fastkart-store/images/grocery/banner/8.png') }}"
                                     class="img-fluid w-100 rounded-3 blur-up lazyload"
                                     style="max-height: 380px; object-fit: cover;"
-                                    alt="{{ data_get($personalCareBanner, 'title') ?: 'Banner Above Personal Care' }}">
+                                    alt="{{ storefront_public_t(data_get($personalCareBanner, 'title') ?: 'Banner Above Personal Care', 'homepage_cms') }}">
                             </a>
                         </div>
                     @endforeach
                 </div>
             @else
                 <div class="offer-box hover-effect">
-                    <h2><span>Banner Above Personal Care</span> Add active banner from admin.</h2>
+                    <h2><span>{{ storefront_public_t('Banner Above Personal Care', 'homepage_cms') }}</span> {{ storefront_public_t('Add active banner from admin.', 'homepage_cms') }}</h2>
                 </div>
             @endif
         </div>
@@ -3617,8 +3617,8 @@
                             <use xlink:href="{{ asset('fastkart-store/svg/svg/service-icon-4.svg') }}#service"></use>
                         </svg>
                         <div class="service-detail">
-                            <h3>24 x 7 Service</h3>
-                            <h6 class="text-content">Online Service For 24 x 7</h6>
+                            <h3>{{ storefront_public_t('24 x 7 Service', 'service') }}</h3>
+                            <h6 class="text-content">{{ storefront_public_t('Online Service For 24 x 7', 'service') }}</h6>
                         </div>
                     </div>
                 </div>
@@ -3712,7 +3712,7 @@
                         </div>
                         <ul class="footer-list footer-contact footer-list-light">
                             @forelse($footerLinks->get('about', collect()) as $footerLink)
-                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ storefront_public_t($footerLink->title, 'footer') }}</a></li>
                             @empty
                                 <li><a href="{{ route('store.page', ['page'=>'about-us']) }}" class="light-text">{{ web_t('nav.about_us', 'About Us') }}</a></li>
                                 <li><a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="light-text">{{ web_t('nav.contact_us', 'Contact Us') }}</a></li>
@@ -3729,7 +3729,7 @@
                         </div>
                         <ul class="footer-list footer-list-light footer-contact">
                             @forelse($footerLinks->get('useful', collect()) as $footerLink)
-                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ storefront_public_t($footerLink->title, 'footer') }}</a></li>
                             @empty
                                 <li><a href="{{ route('store.page', ['page'=>'user-dashboard']) }}#pills-order" class="light-text">Your Order</a></li>
                                 <li><a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="light-text">Your Account</a></li>
@@ -3746,7 +3746,7 @@
                         </div>
                         <ul class="footer-list footer-list-light footer-contact">
                             @forelse($footerLinks->get('categories', collect()) as $footerLink)
-                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
+                                <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ storefront_public_t($footerLink->title, 'footer') }}</a></li>
                             @empty
                                 <li><a href="{{ route('store.home') }}" class="light-text">Fresh Vegetables</a></li>
                                 <li><a href="{{ route('store.home') }}" class="light-text">Hot Spice</a></li>

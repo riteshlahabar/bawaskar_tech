@@ -1,4 +1,4 @@
-﻿@php
+@php
     $navigation = $storefrontNavigation ?? [];
     $navCategories = collect(data_get($navigation, 'categories', collect()));
     $navProductTypes = collect(data_get($navigation, 'productTypes', collect()));
@@ -70,7 +70,7 @@
             @foreach($navProductTypes as $productType)
                 <li>
                     <a class="dropdown-item d-flex justify-content-between" href="{{ route('store.page', ['page' => 'shop-left-sidebar', 'product_type' => $productType['slug']]) }}">
-                        <span>{{ $productType['name'] }}</span>
+                        <span>{{ storefront_public_t($productType['name'], 'product_type') }}</span>
                         <small>{{ (int) ($productType['products_count'] ?? 0) }}</small>
                     </a>
                 </li>
@@ -93,7 +93,7 @@
                 <div class="dropdown-column col-xl-3">
                     <h5 class="dropdown-header">Product Types</h5>
                     @foreach($navProductTypes->take(6) as $productType)
-                        <a class="dropdown-item" href="{{ route('store.page', ['page' => 'shop-left-sidebar', 'product_type' => $productType['slug']]) }}">{{ $productType['name'] }}</a>
+                        <a class="dropdown-item" href="{{ route('store.page', ['page' => 'shop-left-sidebar', 'product_type' => $productType['slug']]) }}">{{ storefront_public_t($productType['name'], 'product_type') }}</a>
                     @endforeach
                 </div>
                 <div class="dropdown-column col-xl-3">

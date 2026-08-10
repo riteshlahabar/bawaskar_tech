@@ -303,7 +303,7 @@
                                                     </li>
 
                                                     <li class="product-box-contain">
-                                                        <a href="{{ route('store.page', ['page'=>'order-success']) }}">Recent Order</a>
+                                                        <a href="{{ route('store.page', ['page'=>'order-tracking']) }}">Recent Order</a>
                                                     </li>
 
                                                     <li class="product-box-contain">
@@ -843,10 +843,6 @@
     </section>
     <!-- Breadcrumb Section End -->
 
-    @php
-        $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
-    @endphp
-
     <!-- Order Detail Section Start -->
     <section class="order-detail">
         <div class="container-fluid-lg">
@@ -858,7 +854,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif($storeOrders->isEmpty() || ! $trackedOrder)
+            @elseif($storeOrders->isEmpty() || ! ($storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first()))
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-light store-tracking-empty mb-0">
@@ -868,6 +864,7 @@
                 </div>
             @else
                 @php
+                    $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
                     $firstItem = $trackedOrder->items->first();
                     $trackedProduct = $firstItem?->product;
                     $trackedImage = optional($trackedProduct?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
@@ -1169,7 +1166,7 @@
                         <div class="footer-contain">
                             <ul>
                                 <li>
-                                    <a href="{{ route('store.page', ['page'=>'order-success']) }}" class="text-content">Your Order</a>
+                                    <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}#pills-order" class="text-content">Your Order</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="text-content">Your Account</a>

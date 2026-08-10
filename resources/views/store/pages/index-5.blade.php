@@ -3731,7 +3731,7 @@
                             @forelse($footerLinks->get('useful', collect()) as $footerLink)
                                 <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
                             @empty
-                                <li><a href="{{ route('store.page', ['page'=>'order-success']) }}" class="light-text">Your Order</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'user-dashboard']) }}#pills-order" class="light-text">Your Order</a></li>
                                 <li><a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="light-text">Your Account</a></li>
                                 <li><a href="{{ route('store.page', ['page'=>'order-tracking']) }}" class="light-text">Track Orders</a></li>
                                 <li><a href="{{ route('store.page', ['page'=>'wishlist']) }}" class="light-text">Your Wishlist</a></li>

@@ -305,7 +305,7 @@
                                                     </li>
 
                                                     <li class="product-box-contain">
-                                                        <a href="{{ route('store.page', ['page'=>'order-success']) }}">Recent Order</a>
+                                                        <a href="{{ route('store.page', ['page'=>'order-tracking']) }}">Recent Order</a>
                                                     </li>
 
                                                     <li class="product-box-contain">
@@ -1817,7 +1817,7 @@
                         <div class="footer-contain">
                             <ul>
                                 <li>
-                                    <a href="{{ route('store.page', ['page'=>'order-success']) }}" class="text-content">Your Order</a>
+                                    <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}#pills-order" class="text-content">Your Order</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="text-content">Your Account</a>

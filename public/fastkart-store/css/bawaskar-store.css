@@ -336,3 +336,14 @@
         gap: 8px;
     }
 }
+.store-order-success-card .checkmark__background path {
+    fill: #dff7f0;
+}
+
+.store-order-success-card .checkmark__check path {
+    fill: #0da487;
+}
+
+.store-order-success-card .checkmark .star path {
+    fill: rgba(13, 164, 135, 0.24);
+}

@@ -108,7 +108,7 @@
                     <h5 class="dropdown-header">{{ $storeUser ? 'My Account' : 'Customer' }}</h5>
                     @if($storeUser)
                         <a class="dropdown-item" href="{{ route('store.page', ['page' => 'user-dashboard']) }}">Dashboard</a>
-                        <a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-success']) }}">Recent Order</a>
+                        <a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-tracking']) }}">Recent Order</a>
                         <a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-tracking']) }}">Order Tracking</a>
                     @else
                         <a class="dropdown-item" href="{{ route('store.page', ['page' => 'login']) }}">Customer Login</a>
@@ -125,7 +125,7 @@
         <ul class="dropdown-menu">
             @if($storeUser?->role === 'dealer')
                 <li><a class="dropdown-item" href="{{ route('store.page', ['page' => 'user-dashboard']) }}">Dealer Dashboard</a></li>
-                <li><a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-success']) }}">Recent Order</a></li>
+                <li><a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-tracking']) }}">Recent Order</a></li>
                 <li><a class="dropdown-item" href="{{ route('store.page', ['page' => 'order-tracking']) }}">Track Order</a></li>
             @else
                 <li><a class="dropdown-item" href="{{ route('store.page', ['page' => 'login', 'role' => 'dealer']) }}">Dealer Login</a></li>

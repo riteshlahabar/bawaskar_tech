@@ -65,8 +65,8 @@
 
                                 <div>
                                     <div class="timer-notification">
-                                        <h6>Something you love is now on sale!
-                                            <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="text-white">Buy Now
+                                        <h6>{{ web_t('topbar.sale_message', 'Something you love is now on sale!') }}
+                                            <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="text-white">{{ web_t('topbar.buy_now', 'Buy Now') }}
                                                 !</a>
                                         </h6>
                                     </div>
@@ -77,58 +77,7 @@
 
                     <div class="col-lg-3">
                         <ul class="about-list right-nav-about">
-                            <li class="right-nav-list">
-                                <div class="dropdown theme-form-select">
-                                    <button class="btn dropdown-toggle" type="button" id="select-language"
-                                        data-bs-toggle="dropdown">
-                                        <img src="{{ asset('fastkart-store/images/country/united-states.png') }}"
-                                            class="img-fluid blur-up lazyload" alt="">
-                                        <span>English</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0)" id="english">
-                                                <img src="{{ asset('fastkart-store/images/country/united-kingdom.png') }}"
-                                                    class="img-fluid blur-up lazyload" alt="">
-                                                <span>English</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0)" id="france">
-                                                <img src="{{ asset('fastkart-store/images/country/germany.png') }}"
-                                                    class="img-fluid blur-up lazyload" alt="">
-                                                <span>Germany</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0)" id="chinese">
-                                                <img src="{{ asset('fastkart-store/images/country/turkish.png') }}"
-                                                    class="img-fluid blur-up lazyload" alt="">
-                                                <span>Turki</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <li class="right-nav-list">
-                                <div class="dropdown theme-form-select">
-                                    <button class="btn dropdown-toggle" type="button" id="select-dollar"
-                                        data-bs-toggle="dropdown">
-                                        <span>USD</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end sm-dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" id="aud" href="javascript:void(0)">AUD</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="eur" href="javascript:void(0)">EUR</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="cny" href="javascript:void(0)">CNY</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
+                            @include('store.partials.topbar-language-currency')
                         </ul>
                     </div>
                 </div>

@@ -76,6 +76,7 @@
 }
 
 .header-3 .language-dropdown {
+    display: block;
     min-width: 190px;
     padding: 8px;
     border: 0;
@@ -83,7 +84,13 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, .14);
 }
 
+.header-3 .language-dropdown li {
+    display: block;
+    width: 100%;
+}
+
 .header-3 .language-dropdown .dropdown-item {
+    width: 100%;
     border-radius: 5px;
     padding: 8px 10px;
     gap: 12px;
@@ -407,3 +414,47 @@
     display: block;
 }
 
+
+/* Inner-page storefront topbar language/currency. */
+.store-india-flag {
+    width: 20px;
+    height: 14px;
+    display: inline-block;
+    flex: 0 0 20px;
+    border: 1px solid rgba(0, 0, 0, .12);
+    border-radius: 2px;
+    background: linear-gradient(to bottom, #ff9933 0 33.33%, #fff 33.33% 66.66%, #138808 66.66% 100%);
+    position: relative;
+    vertical-align: middle;
+}
+
+.store-india-flag::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border: 1px solid #000080;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+}
+
+.store-topbar-language-menu {
+    min-width: 210px;
+}
+
+.store-topbar-language-menu li,
+.store-topbar-language-menu .dropdown-item {
+    width: 100%;
+}
+
+.store-topbar-language-menu .dropdown-item {
+    gap: 12px;
+}
+
+.store-topbar-language-menu .dropdown-item small {
+    color: #7a8494;
+    margin-left: 12px;
+}

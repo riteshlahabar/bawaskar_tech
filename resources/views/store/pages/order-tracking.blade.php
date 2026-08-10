@@ -283,7 +283,7 @@
                                             </div>
                                         </div>
                                     </li>
-                                    @php($headerUserRole = $storeUser?->role === 'dealer' ? 'Dealer' : 'Customer')
+                                    <?php $headerUserRole = $storeUser?->role === 'dealer' ? 'Dealer' : 'Customer'; ?>
                                     <li class="right-side onhover-dropdown">
                                         <div class="delivery-login-box">
                                             <div class="delivery-icon">
@@ -843,12 +843,12 @@
     </section>
     <!-- Breadcrumb Section End -->
 
-    @php
+    <?php
         // These aliases keep the tracking page compatible with all previous variable names.
         $trackedOrder = $trackedOrder ?? $activeTrackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
         $activeTrackedOrder = $activeTrackedOrder ?? $trackedOrder;
         $storeTrackedOrder = $storeTrackedOrder ?? $trackedOrder;
-    @endphp
+    ?>
 
     <!-- Order Detail Section Start -->
     <section class="order-detail">
@@ -870,7 +870,7 @@
                     </div>
                 </div>
             @else
-                @php
+                <?php
                     $firstItem = $trackedOrder->items->first();
                     $trackedProduct = $firstItem?->product;
                     $trackedImage = optional($trackedProduct?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
@@ -922,7 +922,7 @@
                     if ($trackedOrder->status === 'cancelled') {
                         $trackingHistory[] = ['label' => 'Order Cancelled', 'moment' => $trackedOrder->updated_at ?: $trackedOrder->created_at, 'location' => 'Order Management Desk'];
                     }
-                @endphp
+                ?>
 
                 <div class="row mb-4">
                     <div class="col-12">
@@ -970,7 +970,7 @@
                             <div class="col-12 overflow-hidden">
                                 <ol class="progtrckr">
                                     @foreach($progressSteps as $index => $step)
-                                        @php $stepNumber = $index + 1; $stepClass = $stepNumber <= $currentStep ? 'progtrckr-done' : 'progtrckr-todo'; @endphp
+                                        <?php $stepNumber = $index + 1; $stepClass = $stepNumber <= $currentStep ? 'progtrckr-done' : 'progtrckr-todo'; ?>
                                         <li class="{{ $stepClass }}{{ $stepNumber === $currentStep ? ' store-progress-current' : '' }}">
                                             <h5>{{ $step['label'] }}</h5>
                                             <h6>{{ $step['time'] }}</h6>

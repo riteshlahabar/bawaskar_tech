@@ -1,4 +1,6 @@
 @php
+    $displayName = $product->translatedName();
+    $displayDescription = $product->translatedDescription();
     $detailImages = $product->images->filter(fn ($image) => filled($image->url))->values();
     if ($detailImages->isEmpty()) {
         $detailImages = collect([(object) ['url' => $product->storefront_image_url]]);
@@ -18,11 +20,11 @@
 <section class="breadcrumb-section pt-0">
     <div class="container-fluid-lg">
         <div class="row"><div class="col-12"><div class="breadcrumb-contain">
-            <h2>{{ $product->name }}</h2>
+            <h2>{{ $displayName }}</h2>
             <nav><ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('store.home') }}"><i class="fa-solid fa-house"></i></a></li>
                 @if($product->category)<li class="breadcrumb-item"><a href="{{ route('store.category', ['category' => $product->category->slug]) }}">{{ $product->category->name }}</a></li>@endif
-                <li class="breadcrumb-item active">{{ $product->name }}</li>
+                <li class="breadcrumb-item active">{{ $displayName }}</li>
             </ol></nav>
         </div></div></div>
     </div>
@@ -39,14 +41,14 @@
                                 <div class="col-xxl-10 col-lg-12 col-md-10 order-xxl-2 order-lg-1 order-md-2">
                                     <div class="product-main-2 no-arrow">
                                         @foreach($detailImages as $image)
-                                            <div><div class="slider-image"><img src="{{ $image->url }}" class="img-fluid image_zoom_cls-{{ $loop->index }} blur-up lazyload" alt="{{ $product->name }}"></div></div>
+                                            <div><div class="slider-image"><img src="{{ $image->url }}" class="img-fluid image_zoom_cls-{{ $loop->index }} blur-up lazyload" alt="{{ $displayName }}"></div></div>
                                         @endforeach
                                     </div>
                                 </div>
                                 <div class="col-xxl-2 col-lg-12 col-md-2 order-xxl-1 order-lg-2 order-md-1">
                                     <div class="left-slider-image-2 left-slider no-arrow slick-top">
                                         @foreach($detailImages as $image)
-                                            <div><div class="sidebar-image"><img src="{{ $image->url }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}"></div></div>
+                                            <div><div class="sidebar-image"><img src="{{ $image->url }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"></div></div>
                                         @endforeach
                                     </div>
                                 </div>
@@ -57,11 +59,11 @@
                     <div class="col-xl-6 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="right-box-contain">
                             @if($discount > 0)<h6 class="offer-top">{{ $discount }}% Off</h6>@endif
-                            <h2 class="name">{{ $product->name }}</h2>
+                            <h2 class="name">{{ $displayName }}</h2>
                             <div class="price-rating">
                                 <h3 class="theme-color price">Rs. {{ number_format($price, 2) }} @if($mrp > $price)<del class="text-content">Rs. {{ number_format($mrp, 2) }}</del>@endif</h3>
                             </div>
-                            <div class="product-contain"><p>{{ $product->description ?: 'Quality product for farmer requirements.' }}</p></div>
+                            <div class="product-contain"><p>{{ $displayDescription ?: 'Quality product for farmer requirements.' }}</p></div>
                             <div class="pickup-box">
                                 <div class="product-info"><ul class="product-info-list product-info-list-2">
                                     <li>SKU : <a href="javascript:void(0)">{{ $product->sku }}</a></li>
@@ -119,7 +121,7 @@
         <div class="container-fluid-lg">
             @if($product->detail_banner_image)
                 <a href="{{ $product->detail_banner_url ?: 'javascript:void(0)' }}" class="d-block mb-4">
-                    <img src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+                    <img src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                 </a>
             @endif
             <div class="row g-4">
@@ -152,6 +154,7 @@
         </div>
     </section>
 @endif
+
 
 
 

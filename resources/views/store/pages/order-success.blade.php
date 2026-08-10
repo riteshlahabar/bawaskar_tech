@@ -749,7 +749,7 @@
                                         @foreach($storeLastOrder->items as $item)
                                             @php $product = $item->product; $imageUrl = optional($product?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs'; @endphp
                                             <tr>
-                                                <td class="product-detail"><div class="product border-0"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="product-image"><img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product?->name ?: 'Order item' }}"></a><div class="product-detail"><ul><li class="name"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ $product?->name ?: 'Product removed' }}</a></li><li class="text-content">SKU: {{ $product?->sku ?: 'Not available' }}</li><li class="text-content">Quantity - {{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }} {{ $unitName }}</li></ul></div></div></td>
+                                                <td class="product-detail"><div class="product border-0"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="product-image"><img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product?->translatedName() ?: 'Order item' }}"></a><div class="product-detail"><ul><li class="name"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ $product?->translatedName() ?: 'Product removed' }}</a></li><li class="text-content">SKU: {{ $product?->sku ?: 'Not available' }}</li><li class="text-content">Quantity - {{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }} {{ $unitName }}</li></ul></div></div></td>
                                                 <td class="price"><h4 class="table-title text-content">Price</h4><h6 class="theme-color">Rs. {{ number_format((float) $item->unit_price, 2) }}</h6></td>
                                                 <td class="quantity"><h4 class="table-title text-content">Qty</h4><h4 class="text-title">{{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }}</h4></td>
                                                 <td class="subtotal"><h4 class="table-title text-content">Total</h4><h5>Rs. {{ number_format((float) $item->line_total, 2) }}</h5></td>
@@ -1299,4 +1299,5 @@
 </body>
 
 </html>
+
 

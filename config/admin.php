@@ -144,7 +144,7 @@ return [
         ],
 
         'products'=>[
-            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','variants','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
+            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','translations','variants','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'homepageSection.title','label'=>'Section Title'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_top_selling','label'=>'Top Selling','type'=>'boolean'],['key'=>'is_deal_timer_product','label'=>'Timer Deal','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
                 ['type'=>'section_heading','label'=>'1. Basic Information'],
@@ -209,7 +209,20 @@ return [
                 ['name'=>'offer_end_at','label'=>'Offer End Date & Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:offer_start_at']],
                 ['name'=>'is_offer_active','label'=>'Offer Timer Active','type'=>'checkbox','rules'=>['boolean'],'help'=>'Turns the countdown offer timer on for this product.'],
 
-                ['type'=>'section_heading','label'=>'9. Homepage / Display Flags'],
+                ['type'=>'section_heading','label'=>'9. Product Language Translations'],
+                ['type'=>'product_translation_tools','label'=>'Auto Translate from Product Name & Description'],
+                ['name'=>'translation_hi_name','label'=>'Hindi Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Hindi product name'],
+                ['name'=>'translation_hi_description','label'=>'Hindi Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Hindi description'],
+                ['name'=>'translation_mr_name','label'=>'Marathi Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Marathi product name'],
+                ['name'=>'translation_mr_description','label'=>'Marathi Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Marathi description'],
+                ['name'=>'translation_gu_name','label'=>'Gujarati Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Gujarati product name'],
+                ['name'=>'translation_gu_description','label'=>'Gujarati Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Gujarati description'],
+                ['name'=>'translation_kn_name','label'=>'Kannada Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Kannada product name'],
+                ['name'=>'translation_kn_description','label'=>'Kannada Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Kannada description'],
+                ['name'=>'translation_te_name','label'=>'Telugu Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Telugu product name'],
+                ['name'=>'translation_te_description','label'=>'Telugu Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Telugu description'],
+
+                ['type'=>'section_heading','label'=>'10. Homepage / Display Flags'],
                 ['name'=>'show_on_homepage','label'=>'Allow product on homepage product rows','type'=>'checkbox','rules'=>['boolean'],'help'=>'Allows this product to appear in homepage product sections.'],
                 ['name'=>'is_featured','label'=>'Featured Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Marks this product as featured for highlighted listings.'],
                 ['name'=>'is_top_selling','label'=>'Top Selling Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Uses this product in top-selling product collections.'],
@@ -221,7 +234,7 @@ return [
                 ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','rules'=>['boolean'],'help'=>'Makes this product visible in the public customer storefront.'],
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean'],'help'=>'Keeps this product enabled for use in the system.'],
 
-                ['type'=>'section_heading','label'=>'10. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
+                ['type'=>'section_heading','label'=>'11. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
                 ['name'=>'homepage_title','label'=>'Homepage Title','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','coupon_section','strip_offer_banner','blog_section','service_section']],
                 ['name'=>'homepage_subtitle','label'=>'Homepage Subtitle','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','blog_section','service_section']],
                 ['name'=>'homepage_description','label'=>'Homepage Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','blog_section']],
@@ -241,7 +254,7 @@ return [
                 ['name'=>'homepage_text_color','label'=>'Homepage Text Color','rules'=>['nullable','string','max:30'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['strip_offer_banner']],
                 ['name'=>'homepage_sort_order','label'=>'Homepage Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
 
-                ['type'=>'section_heading','label'=>'11. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
+                ['type'=>'section_heading','label'=>'12. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
                 ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'display_only'=>true],
                 ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255'],'display_only'=>true],
             ],
@@ -498,7 +511,7 @@ return [
         'languages'=>[
             'label'=>'Languages','group'=>'System','singular'=>'Language','model'=>Language::class,'search'=>['code','name','native_name'],'status_column'=>'is_active','status_options'=>$active,'can_delete'=>false,
             'columns'=>[['key'=>'code','label'=>'Code'],['key'=>'name','label'=>'English Name'],['key'=>'native_name','label'=>'Native Name'],['key'=>'is_default','label'=>'Default','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean'],['key'=>'sort_order','label'=>'Sort']],
-            'fields'=>[['name'=>'code','label'=>'Language Code','rules'=>['required','string','max:10','unique:languages,code,{id}'],'help'=>'Use stable locale keys like en, hi, mr, gu, pa, te. English remains the app fallback/default.'],['name'=>'name','label'=>'English Name','rules'=>['required','string','max:80']],['name'=>'native_name','label'=>'Native Name','rules'=>['nullable','string','max:120']],['name'=>'is_default','label'=>'Default Language','type'=>'checkbox','rules'=>['boolean'],'help'=>'Keep English as default. Only one default should be active.'],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['required','integer','min:0']]],
+            'fields'=>[['name'=>'code','label'=>'Language Code','rules'=>['required','string','max:10','unique:languages,code,{id}'],'help'=>'Use stable locale keys like en, hi, mr, gu, kn, te. English remains the app fallback/default.'],['name'=>'name','label'=>'English Name','rules'=>['required','string','max:80']],['name'=>'native_name','label'=>'Native Name','rules'=>['nullable','string','max:120']],['name'=>'is_default','label'=>'Default Language','type'=>'checkbox','rules'=>['boolean'],'help'=>'Keep English as default. Only one default should be active.'],['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],['name'=>'sort_order','label'=>'Sort Order','type'=>'number','rules'=>['required','integer','min:0']]],
         ],        'translations'=>[
             'label'=>'Languages & Translations','group'=>'System','singular'=>'Translation','model'=>AppTranslation::class,'search'=>['translation_key','value','locale'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'group','label'=>'Group'],['key'=>'translation_key','label'=>'Key'],['key'=>'locale','label'=>'Locale'],['key'=>'value','label'=>'Translation'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
@@ -511,4 +524,6 @@ return [
         ],
     ],
 ];
+
+
 

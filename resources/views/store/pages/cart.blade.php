@@ -831,6 +831,7 @@
                                                     $product = $item['product'];
                                                     $imageUrl = $product->storefront_image_url;
                                                     $productUrl = route('store.product', ['product' => $product->id]);
+                                                    $displayName = $product->translatedName();
                                                     $mrp = (float) $product->mrp;
                                                     $unitPrice = (float) $item['unit_price'];
                                                     $quantity = (float) $item['quantity'];
@@ -843,12 +844,12 @@
                                                     <td class="product-detail">
                                                         <div class="product border-0">
                                                             <a href="{{ $productUrl }}" class="product-image">
-                                                                <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+                                                                <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                                                             </a>
                                                             <div class="product-detail">
                                                                 <ul>
                                                                     <li class="name">
-                                                                        <a href="{{ $productUrl }}">{{ $product->name }}</a>
+                                                                        <a href="{{ $productUrl }}">{{ $displayName }}</a>
                                                                     </li>
                                                                     <li class="text-content">
                                                                         <span class="text-title">Category:</span> {{ data_get($product, 'category.name') ?: 'Product' }}
@@ -1501,6 +1502,7 @@
 </body>
 
 </html>
+
 
 
 

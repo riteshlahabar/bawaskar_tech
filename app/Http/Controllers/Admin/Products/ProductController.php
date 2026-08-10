@@ -6,14 +6,19 @@ use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductImage;
+use App\Models\Catalog\ProductTranslation;
 use App\Models\Inventory\InventoryBatch;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends AdminModuleController
 {
     protected string $moduleKey = 'products';
+
+    private const TRANSLATION_LOCALES = ['hi', 'mr', 'gu', 'kn', 'te'];
 
     private ?string $primaryImagePath = null;
 
@@ -22,6 +27,29 @@ class ProductController extends AdminModuleController
     private array $removeGalleryImageIds = [];
 
     private ?array $openingStockData = null;
+
+    private array $translationData = [];
+
+    public function translate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $translations = [];
+
+        foreach (self::TRANSLATION_LOCALES as $locale) {
+            $translations[$locale] = [
+                'name' => $this->translateText($validated['name'], $locale),
+                'description' => filled($validated['description'] ?? null)
+                    ? $this->translateText((string) $validated['description'], $locale)
+                    : '',
+            ];
+        }
+
+        return response()->json(['translations' => $translations]);
+    }
 
     protected function rules(array $module, ?Model $record = null): array
     {
@@ -56,6 +84,7 @@ class ProductController extends AdminModuleController
         $this->primaryImagePath = null;
         $this->galleryImagePaths = [];
         $this->openingStockData = null;
+        $this->translationData = [];
 
         $data = parent::prepareData($validated, $request, $module);
 
@@ -84,6 +113,7 @@ class ProductController extends AdminModuleController
         }
 
         $this->openingStockData = $this->extractOpeningStockData($data);
+        $this->translationData = $this->extractTranslationData($data);
         $data = $this->normalizeHomepageSectionData($data, $module);
 
         if (blank($data['sort_order'] ?? null)) {
@@ -153,7 +183,9 @@ class ProductController extends AdminModuleController
             ]));
         }
 
-        return $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection', 'inventoryBatches']);
+        $this->syncTranslations($product);
+
+        return $product->fresh(['category', 'brand', 'unit', 'images', 'homepageSection', 'inventoryBatches', 'translations']);
     }
 
     protected function mutateValidatedDataBeforeSave(array $data): array
@@ -176,9 +208,85 @@ class ProductController extends AdminModuleController
 
         $data['primary_image'] = $primaryImage?->path;
 
+        $translations = $record->relationLoaded('translations')
+            ? $record->translations
+            : $record->translations()->get();
+
+        foreach (self::TRANSLATION_LOCALES as $locale) {
+            $translation = $translations->firstWhere('locale', $locale);
+            $data['translation_'.$locale.'_name'] = $translation?->name;
+            $data['translation_'.$locale.'_description'] = $translation?->description;
+        }
+
         return $data;
     }
 
+    private function translateText(string $text, string $locale): string
+    {
+        $response = Http::timeout(12)
+            ->retry(1, 250)
+            ->get('https://translate.googleapis.com/translate_a/single', [
+                'client' => 'gtx',
+                'sl' => 'en',
+                'tl' => $locale,
+                'dt' => 't',
+                'q' => $text,
+            ]);
+
+        if (! $response->successful()) {
+            abort(422, 'Auto translation failed. Please enter translations manually.');
+        }
+
+        $segments = $response->json()[0] ?? [];
+
+        return collect($segments)
+            ->map(fn ($segment): string => (string) ($segment[0] ?? ''))
+            ->implode('');
+    }
+
+    private function extractTranslationData(array &$data): array
+    {
+        $translations = [];
+
+        foreach (self::TRANSLATION_LOCALES as $locale) {
+            $nameKey = 'translation_'.$locale.'_name';
+            $descriptionKey = 'translation_'.$locale.'_description';
+
+            $translations[$locale] = [
+                'name' => trim((string) ($data[$nameKey] ?? '')),
+                'description' => trim((string) ($data[$descriptionKey] ?? '')),
+            ];
+
+            unset($data[$nameKey], $data[$descriptionKey]);
+        }
+
+        return $translations;
+    }
+
+    private function syncTranslations(Product $product): void
+    {
+        foreach ($this->translationData as $locale => $translation) {
+            $name = $translation['name'] ?? '';
+            $description = $translation['description'] ?? '';
+
+            if ($name === '' && $description === '') {
+                ProductTranslation::query()
+                    ->where('product_id', $product->getKey())
+                    ->where('locale', $locale)
+                    ->delete();
+
+                continue;
+            }
+
+            ProductTranslation::query()->updateOrCreate(
+                ['product_id' => $product->getKey(), 'locale' => $locale],
+                [
+                    'name' => $name !== '' ? $name : $product->name,
+                    'description' => $description !== '' ? $description : null,
+                ]
+            );
+        }
+    }
     private function extractOpeningStockData(array &$data): ?array
     {
         $fieldMap = [
@@ -266,3 +374,4 @@ class ProductController extends AdminModuleController
         return $data;
     }
 }
+

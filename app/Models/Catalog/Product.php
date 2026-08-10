@@ -139,6 +139,35 @@ class Product extends Model
         return $this->hasMany(ProductTranslation::class);
     }
 
+    public function translatedName(?string $locale = null): string
+    {
+        $translation = $this->translationForLocale($locale);
+
+        return filled($translation?->name) ? $translation->name : $this->name;
+    }
+
+    public function translatedDescription(?string $locale = null): ?string
+    {
+        $translation = $this->translationForLocale($locale);
+
+        return filled($translation?->description) ? $translation->description : $this->description;
+    }
+
+    private function translationForLocale(?string $locale = null): ?ProductTranslation
+    {
+        $locale = $locale ?: app()->getLocale();
+
+        if ($locale === '' || $locale === 'en') {
+            return null;
+        }
+
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale);
+        }
+
+        return $this->translations()->where('locale', $locale)->first();
+    }
+
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class)->orderByDesc('is_primary')->orderBy('sort_order');
@@ -219,3 +248,4 @@ class Product extends Model
         return asset('fastkart-store/images/grocery/deal/big.png');
     }
 }
+

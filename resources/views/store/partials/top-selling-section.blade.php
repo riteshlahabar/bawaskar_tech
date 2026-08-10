@@ -17,6 +17,7 @@
 
     if ($dealProduct) {
         $dealImage = $dealProduct->storefront_deal_image_url;
+        $dealDisplayName = $dealProduct->translatedName();
         $dealUrl = route('store.product', ['product' => $dealProduct->id]);
         $dealPrice = (float) ($audience === 'dealer' ? $dealProduct->dealer_price : $dealProduct->customer_price);
         $dealMrp = (float) $dealProduct->mrp;
@@ -56,7 +57,7 @@
                                     <div>
                                         <div class="product-image">
                                             <a href="{{ $dealUrl }}">
-                                                <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealProduct->name }}">
+                                                <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealDisplayName }}">
                                             </a>
 
                                             <ul class="option">
@@ -88,7 +89,7 @@
                                             </ul>
 
                                             <a href="{{ $dealUrl }}">
-                                                <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealProduct->name }}</h3>
+                                                <h3 class="name w-100 mx-auto text-center text-title">{{ $dealProduct->homepage_title ?: $dealDisplayName }}</h3>
                                             </a>
 
                                             @if($dealMrp > $dealPrice)
@@ -141,6 +142,7 @@
         </div>
     </section>
 @endif
+
 
 
 

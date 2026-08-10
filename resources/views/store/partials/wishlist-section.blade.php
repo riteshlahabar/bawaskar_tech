@@ -9,6 +9,7 @@
             @foreach($wishlistItems as $product)
                 @php
                     $imageUrl = $product->storefront_image_url;
+                    $displayName = $product->translatedName();
                     $productUrl = route('store.product', ['product' => $product->id]);
                     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
                     $mrp = (float) $product->mrp;
@@ -23,7 +24,7 @@
                         <div class="product-header">
                             <div class="product-image">
                                 <a href="{{ $productUrl }}">
-                                    <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+                                    <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                                 </a>
 
                                 <div class="product-header-top">
@@ -43,7 +44,7 @@
                             <div class="product-detail">
                                 <span class="span-name">{{ data_get($product, 'category.name') ?: 'Product' }}</span>
                                 <a href="{{ $productUrl }}">
-                                    <h5 class="name">{{ $product->name }}</h5>
+                                    <h5 class="name">{{ $displayName }}</h5>
                                 </a>
                                 <h6 class="unit mt-1">{{ $unitName }}</h6>
                                 <h5 class="price">
@@ -93,3 +94,4 @@
         </div>
     </div>
 </section>
+

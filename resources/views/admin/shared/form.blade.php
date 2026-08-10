@@ -55,6 +55,19 @@
                                 @continue
                             @endif
 
+
+                            @if($type === 'product_translation_tools')
+                                <div class="col-12">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 border rounded px-3 py-2 bg-light">
+                                        <button type="button" class="btn btn-sm btn-primary" data-product-auto-translate data-url="{{ route('admin.products.translate') }}">
+                                            Auto Translate
+                                        </button>
+                                        <small class="text-muted">Uses Product Name and Description. You can edit every language before saving.</small>
+                                        <span class="small text-muted d-none" data-product-auto-translate-status></span>
+                                    </div>
+                                </div>
+                                @continue
+                            @endif
                             @continue(empty($field['name']))
                             @php($name = $field['name'] ?? '')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
@@ -268,6 +281,89 @@
             });
         });
     }
+    function initProductAutoTranslate() {
+        document.querySelectorAll('[data-product-auto-translate]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var form = button.closest('form');
+                if (!form) {
+                    return;
+                }
+
+                var status = form.querySelector('[data-product-auto-translate-status]');
+                var token = form.querySelector('input[name="_token"]');
+                var nameInput = form.elements.namedItem('name');
+                var descriptionInput = form.elements.namedItem('description');
+                var name = nameInput ? nameInput.value.trim() : '';
+                var description = descriptionInput ? descriptionInput.value.trim() : '';
+
+                if (!name) {
+                    if (status) {
+                        status.classList.remove('d-none', 'text-success');
+                        status.classList.add('text-danger');
+                        status.textContent = 'Enter Product Name first.';
+                    }
+                    return;
+                }
+
+                button.disabled = true;
+                if (status) {
+                    status.classList.remove('d-none', 'text-danger', 'text-success');
+                    status.textContent = 'Translating...';
+                }
+
+                fetch(button.dataset.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': token ? token.value : ''
+                    },
+                    body: JSON.stringify({ name: name, description: description })
+                })
+                    .then(function (response) {
+                        return response.json().then(function (payload) {
+                            if (!response.ok) {
+                                throw payload;
+                            }
+                            return payload;
+                        });
+                    })
+                    .then(function (payload) {
+                        var translations = payload.translations || {};
+                        ['hi', 'mr', 'gu', 'kn', 'te'].forEach(function (locale) {
+                            var localeTranslation = translations[locale] || {};
+                            var nameField = form.elements.namedItem('translation_' + locale + '_name');
+                            var descriptionField = form.elements.namedItem('translation_' + locale + '_description');
+
+                            if (nameField && localeTranslation.name) {
+                                nameField.value = localeTranslation.name;
+                            }
+
+                            if (descriptionField && localeTranslation.description) {
+                                descriptionField.value = localeTranslation.description;
+                            }
+                        });
+
+                        if (status) {
+                            status.classList.remove('d-none', 'text-danger');
+                            status.classList.add('text-success');
+                            status.textContent = 'Translation filled. Review and save product.';
+                        }
+                    })
+                    .catch(function (error) {
+                        var message = error && (error.message || error.error) ? (error.message || error.error) : 'Auto translation failed. Enter translations manually.';
+                        if (status) {
+                            status.classList.remove('d-none', 'text-success');
+                            status.classList.add('text-danger');
+                            status.textContent = message;
+                        }
+                    })
+                    .finally(function () {
+                        button.disabled = false;
+                    });
+            });
+        });
+    }
     function initConditionalAdminFields() {
         document.querySelectorAll('.admin-form-card form').forEach(function (form) {
             var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
@@ -294,11 +390,16 @@
         document.addEventListener('DOMContentLoaded', function () {
             initConditionalAdminFields();
             initGalleryImageRemoval();
+            initProductAutoTranslate();
         });
     } else {
         initConditionalAdminFields();
         initGalleryImageRemoval();
+        initProductAutoTranslate();
     }
 })();
 </script>
 @endsection
+
+
+

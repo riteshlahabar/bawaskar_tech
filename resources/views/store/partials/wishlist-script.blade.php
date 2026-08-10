@@ -3,7 +3,7 @@
         ->take(3)
         ->map(fn (array $item): array => [
             'id' => $item['product']->id,
-            'name' => $item['product']->name,
+            'name' => $item['product']->translatedName(),
             'product_url' => route('store.product', ['product' => $item['product']->id]),
             'image_url' => $item['product']->storefront_image_url,
             'quantity' => (float) $item['quantity'],
@@ -19,7 +19,7 @@
 
             return [
                 'id' => $product->id,
-                'name' => $product->name,
+                'name' => $product->translatedName(),
                 'product_url' => route('store.product', ['product' => $product->id]),
                 'image_url' => $product->storefront_image_url,
                 'price' => $price,

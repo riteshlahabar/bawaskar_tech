@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(LanguageSeeder::class);
+
         $admin = User::query()->updateOrCreate(['email'=>'admin@turnkeyinfotech.com'],[
             'name'=>'Bawaskar Administrator','mobile'=>'9000000001','password'=>Hash::make('123456'),'role'=>User::ROLE_ADMIN,'status'=>'active','email_verified_at'=>now(),
         ]);

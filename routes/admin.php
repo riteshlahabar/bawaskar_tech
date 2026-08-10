@@ -72,6 +72,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'expenses'=>ExpenseController::class,'leaves'=>LeaveController::class,'salary'=>SalaryController::class,'targets'=>TargetController::class,'assets'=>AssetController::class,
             'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
+        Route::post('products/translate', [ProductController::class, 'translate'])->name('products.translate');
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');
         Route::post('attendance/bulk', [AttendanceController::class, 'bulkStore'])->name('attendance.bulk.store');
         foreach ($resources as $uri => $controller) {
@@ -94,3 +95,4 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');
     });
 });
+

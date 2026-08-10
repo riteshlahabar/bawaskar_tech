@@ -99,7 +99,7 @@
                 <div class="dropdown-column col-xl-3">
                     <h5 class="dropdown-header">Featured Products</h5>
                     @forelse($navFeaturedProducts->take(6) as $product)
-                        <a class="dropdown-item" href="{{ route('store.product', ['product' => $product->getKey()]) }}">{{ $product->name }}</a>
+                        <a class="dropdown-item" href="{{ route('store.product', ['product' => $product->getKey()]) }}">{{ $product->translatedName() }}</a>
                     @empty
                         <a class="dropdown-item" href="{{ $shopUrl }}">All Products</a>
                     @endforelse

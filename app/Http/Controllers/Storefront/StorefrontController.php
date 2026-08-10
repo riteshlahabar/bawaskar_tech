@@ -543,7 +543,7 @@ class StorefrontController extends Controller
     private function storefrontProductQuery(string $audience = 'customer'): Builder
     {
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($audience);
     }
 
@@ -642,4 +642,6 @@ class StorefrontController extends Controller
         return $query;
     }
 }
+
+
 

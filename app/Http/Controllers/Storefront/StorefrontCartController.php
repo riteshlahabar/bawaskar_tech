@@ -14,6 +14,8 @@ class StorefrontCartController extends Controller
 {
     public function add(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
             return $response;
         }
@@ -24,16 +26,18 @@ class StorefrontCartController extends Controller
         ]);
 
         $product = Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->findOrFail($validated['product_id']);
 
         $storefrontSession->addToCart($request, $product, (float) $validated['quantity']);
 
-        return $this->cartResponse($request, $storefrontSession, $product->name.' added to cart.');
+        return $this->cartResponse($request, $storefrontSession, $product->translatedName().' added to cart.');
     }
 
     public function update(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
             return $response;
         }
@@ -50,6 +54,8 @@ class StorefrontCartController extends Controller
 
     public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
             return $response;
         }
@@ -61,6 +67,8 @@ class StorefrontCartController extends Controller
 
     public function clear(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
             return $response;
         }
@@ -70,6 +78,14 @@ class StorefrontCartController extends Controller
         return $this->cartResponse($request, $storefrontSession, 'Cart cleared successfully.');
     }
 
+    private function applyStoreLocale(Request $request): void
+    {
+        $locale = (string) $request->session()->get('store_locale', 'en');
+
+        if ($locale !== '') {
+            app()->setLocale($locale);
+        }
+    }
     private function guestRedirectResponse(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse|null
     {
         $user = $storefrontSession->user($request);
@@ -118,7 +134,7 @@ class StorefrontCartController extends Controller
 
                         return [
                             'id' => $product->id,
-                            'name' => $product->name,
+                            'name' => $product->translatedName(),
                             'product_url' => route('store.product', ['product' => $product->id]),
                             'remove_url' => route('store.cart.remove', ['productId' => $product->id]),
                             'image_url' => $product->storefront_image_url,
@@ -142,3 +158,4 @@ class StorefrontCartController extends Controller
         return back()->with('success', $message);
     }
 }
+

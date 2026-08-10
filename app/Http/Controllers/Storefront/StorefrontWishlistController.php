@@ -13,6 +13,8 @@ class StorefrontWishlistController extends Controller
 {
     public function add(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
         ]);
@@ -24,12 +26,14 @@ class StorefrontWishlistController extends Controller
             $request,
             $storefrontSession,
             true,
-            $product->name.' added to wishlist.'
+            $product->translatedName().' added to wishlist.'
         );
     }
 
     public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         $storefrontSession->removeFromWishlist($request, $productId);
 
         return $this->response(
@@ -42,6 +46,8 @@ class StorefrontWishlistController extends Controller
 
     public function toggle(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        $this->applyStoreLocale($request);
+
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
         ]);
@@ -54,15 +60,23 @@ class StorefrontWishlistController extends Controller
             $storefrontSession,
             $inWishlist,
             $inWishlist
-                ? $product->name.' added to wishlist.'
-                : $product->name.' removed from wishlist.'
+                ? $product->translatedName().' added to wishlist.'
+                : $product->translatedName().' removed from wishlist.'
         );
     }
 
+    private function applyStoreLocale(Request $request): void
+    {
+        $locale = (string) $request->session()->get('store_locale', 'en');
+
+        if ($locale !== '') {
+            app()->setLocale($locale);
+        }
+    }
     private function wishlistProduct(int $productId): Product
     {
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->findOrFail($productId);
     }
 
@@ -89,7 +103,7 @@ class StorefrontWishlistController extends Controller
 
                         return [
                             'id' => $product->id,
-                            'name' => $product->name,
+                            'name' => $product->translatedName(),
                             'product_url' => route('store.product', ['product' => $product->id]),
                             'image_url' => $product->storefront_image_url,
                             'price' => $price,
@@ -103,3 +117,4 @@ class StorefrontWishlistController extends Controller
         return back()->with('success', $message);
     }
 }
+

@@ -89,7 +89,7 @@ class StorefrontSessionService
 
         if ($nextQuantity > $product->available_stock + 0.0001) {
             throw ValidationException::withMessages([
-                'quantity' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->name.'.',
+                'quantity' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->translatedName().'.',
             ]);
         }
 
@@ -116,7 +116,7 @@ class StorefrontSessionService
 
             if ($quantity > $product->available_stock + 0.0001) {
                 throw ValidationException::withMessages([
-                    'items' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->name.'.',
+                    'items' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->translatedName().'.',
                 ]);
             }
 
@@ -332,7 +332,7 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
@@ -351,7 +351,7 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category', 'brand', 'unit', 'images', 'inventoryBatches'])
+            ->with(['category', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
@@ -374,3 +374,4 @@ class StorefrontSessionService
         }
     }
 }
+

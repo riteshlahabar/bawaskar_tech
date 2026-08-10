@@ -50,16 +50,17 @@
                             $product = $item['product'];
                             $productUrl = route('store.product', ['product' => $product->id]);
                             $imageUrl = $product->storefront_image_url;
+                            $displayName = $product->translatedName();
                         @endphp
                         <li class="product-box-contain">
                             <div class="drop-cart">
                                 <a href="{{ $productUrl }}" class="drop-image">
-                                    <img src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $product->name }}">
+                                    <img src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $displayName }}">
                                 </a>
 
                                 <div class="drop-contain">
                                     <a href="{{ $productUrl }}">
-                                        <h5>{{ $product->name }}</h5>
+                                        <h5>{{ $displayName }}</h5>
                                     </a>
                                     <h6><span>{{ rtrim(rtrim(number_format((float) $item['quantity'], 3, '.', ''), '0'), '.') }} x</span> Rs. {{ number_format((float) $item['unit_price'], 2) }}</h6>
                                     <form method="POST" action="{{ route('store.cart.remove', ['productId' => $product->id]) }}" data-store-cart-remove-form>
@@ -139,3 +140,4 @@
         </div>
     </li>
 </ul>
+

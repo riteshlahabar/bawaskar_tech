@@ -1,5 +1,6 @@
 @php
     $imageUrl = $product->storefront_image_url;
+    $displayName = $product->translatedName();
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
@@ -15,7 +16,7 @@
 @endif
     <div class="product-image product-image-2">
         <a href="{{ $productUrl }}">
-            <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+            <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
         </a>
 
         <ul class="option">
@@ -47,7 +48,7 @@
         </ul>
 
         <a href="{{ $productUrl }}">
-            <h5 class="name text-title">{{ $product->homepage_title ?: $product->name }}</h5>
+            <h5 class="name text-title">{{ $product->homepage_title ?: $displayName }}</h5>
         </a>
 
         @if($mrp > $price)
@@ -69,3 +70,4 @@
         </div>
     </div>
 </div>
+

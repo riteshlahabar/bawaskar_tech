@@ -1,5 +1,7 @@
 @php
     $imageUrl = $product->storefront_image_url;
+    $displayName = $product->translatedName();
+    $displayDescription = $product->translatedDescription();
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
     $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
@@ -18,7 +20,7 @@
         <div class="product-header">
             <div class="product-image">
                 <a href="{{ $productUrl }}">
-                    <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
+                    <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                 </a>
                 <ul class="product-option">
                     <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
@@ -38,8 +40,8 @@
         <div class="product-footer">
             <div class="product-detail">
                 <span class="span-name">{{ data_get($product, 'category.name') ?: 'Product' }}</span>
-                <a href="{{ $productUrl }}"><h5 class="name">{{ $product->name }}</h5></a>
-                <p class="text-content mt-1 mb-2">{{ str($product->description ?: 'Quality farmer product')->limit(75) }}</p>
+                <a href="{{ $productUrl }}"><h5 class="name">{{ $displayName }}</h5></a>
+                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: 'Quality farmer product')->limit(75) }}</p>
                 <h6 class="unit">{{ $unitName }}</h6>
                 @if($mrp > $price)
                     <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
@@ -70,3 +72,4 @@
         </div>
     </div>
 </div>
+

@@ -21,12 +21,6 @@
         </div>
         @include('admin.shared.table-toolbar')
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button class="btn-close" data-bs-dismiss="alert"></button></div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">{{ $errors->first() }}</div>
-        @endif
 
         <form id="bulkActionForm" method="POST" action="{{ route($module['route'].'.bulk-destroy') }}">
             @csrf

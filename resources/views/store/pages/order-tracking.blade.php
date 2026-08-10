@@ -844,7 +844,10 @@
     <!-- Breadcrumb Section End -->
 
     @php
-        $trackedOrder = $trackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
+        // These aliases keep the tracking page compatible with all previous variable names.
+        $trackedOrder = $trackedOrder ?? $activeTrackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
+        $activeTrackedOrder = $activeTrackedOrder ?? $trackedOrder;
+        $storeTrackedOrder = $storeTrackedOrder ?? $trackedOrder;
     @endphp
 
     <!-- Order Detail Section Start -->

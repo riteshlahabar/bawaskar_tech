@@ -173,6 +173,9 @@ class StorefrontController extends Controller
             'storePrimaryAddress' => $storePrimaryAddress,
             'storeLastOrder' => $storeLastOrder,
             'storeTrackedOrder' => $storeTrackedOrder,
+            // Keep the earlier tracking variable names available to existing views/links.
+            'trackedOrder' => $storeTrackedOrder,
+            'activeTrackedOrder' => $storeTrackedOrder,
         ], $data));
     }
 

@@ -306,7 +306,7 @@
                                                     </li>
 
                                                     <li class="product-box-contain">
-                                                        <a href="{{ route('store.page', ['page'=>'order-tracking']) }}">Recent Order</a>
+                                                        <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}#pills-order">Recent Order</a>
                                                     </li>
 
                                                     <li class="product-box-contain">

@@ -95,7 +95,7 @@
                                 @if($isOutOfStock)
                                     <button class="btn btn-md bg-dark cart-button text-white w-100" disabled>Out of Stock</button>
                                 @else
-                                    <form method="POST" action="{{ route('store.cart.add') }}" class="row g-2 align-items-center">
+                                    <form method="POST" action="{{ route('store.cart.add') }}" class="row g-2 align-items-center" data-store-cart-add>
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                         <div class="col-sm-4">

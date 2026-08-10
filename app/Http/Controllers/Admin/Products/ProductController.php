@@ -75,8 +75,17 @@ class ProductController extends AdminModuleController
         }
 
         $this->openingStockData = $this->extractOpeningStockData($data);
+        $data = $this->normalizeHomepageSectionData($data, $module);
 
-        return $this->normalizeHomepageSectionData($data, $module);
+        if (blank($data['sort_order'] ?? null)) {
+            $data['sort_order'] = 0;
+        }
+
+        if (blank($data['homepage_sort_order'] ?? null)) {
+            $data['homepage_sort_order'] = 0;
+        }
+
+        return $data;
     }
 
     protected function persist(array $data, ?Model $record): Model

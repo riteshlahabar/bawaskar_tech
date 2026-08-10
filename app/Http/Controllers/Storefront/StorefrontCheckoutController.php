@@ -21,7 +21,7 @@ class StorefrontCheckoutController extends Controller
         $user = $storefrontSession->user($request);
 
         if (! $user || ! in_array($user->role, [User::ROLE_CUSTOMER, User::ROLE_DEALER], true)) {
-            return redirect()->route('store.page', ['page' => 'login'])
+            return redirect()->route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'checkout'])])
                 ->with('error', 'Please log in before checkout.');
         }
 

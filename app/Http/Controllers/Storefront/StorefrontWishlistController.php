@@ -73,6 +73,7 @@ class StorefrontWishlistController extends Controller
         string $message
     ): JsonResponse|RedirectResponse {
         $summary = $storefrontSession->wishlistSummary($request);
+        $audience = $storefrontSession->audience($request);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -81,6 +82,21 @@ class StorefrontWishlistController extends Controller
                 'in_wishlist' => $inWishlist,
                 'count' => (int) ($summary['count'] ?? 0),
                 'ids' => array_values(array_map('intval', $summary['ids'] ?? [])),
+                'items' => collect($summary['items'] ?? collect())
+                    ->take(3)
+                    ->map(function (Product $product) use ($audience): array {
+                        $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
+
+                        return [
+                            'id' => $product->id,
+                            'name' => $product->name,
+                            'product_url' => route('store.product', ['product' => $product->id]),
+                            'image_url' => $product->storefront_image_url,
+                            'price' => $price,
+                        ];
+                    })
+                    ->values()
+                    ->all(),
             ]);
         }
 

@@ -1,4 +1,4 @@
-﻿@php
+@php
     $wishlistItems = collect(data_get($storeWishlist ?? [], 'items', collect()));
     $audience = $storeAudience ?? 'customer';
 @endphp
@@ -59,7 +59,7 @@
                                     </div>
                                 @else
                                     <div class="add-to-cart-box bg-white mt-2">
-                                        <form method="POST" action="{{ route('store.cart.add') }}">
+                                        <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             <input type="hidden" name="quantity" value="1">

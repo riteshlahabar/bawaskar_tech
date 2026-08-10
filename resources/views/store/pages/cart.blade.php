@@ -794,6 +794,13 @@
     @php($cartItems = collect(data_get($storeCart, 'items', collect())))
     <section class="cart-section section-b-space">
         <div class="container-fluid-lg">
+            @if(! $storeUser)
+                <div class="row g-sm-5 g-3 mb-3">
+                    <div class="col-12">
+                        <div class="alert alert-warning mb-0">Please <a href="{{ route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'cart'])]) }}">log in</a> to add products and continue checkout.</div>
+                    </div>
+                </div>
+            @endif
             @if($cartItems->isEmpty())
                 <div class="row g-sm-5 g-3">
                     <div class="col-12">
@@ -1147,7 +1154,7 @@
 
             <div class="sub-footer section-small-space">
                 <div class="reserve">
-                    <h6 class="text-content">Ã‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
+                    <h6 class="text-content">ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
                 </div>
 
                 <div class="payment">

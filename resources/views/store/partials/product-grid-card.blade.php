@@ -1,4 +1,4 @@
-﻿@php
+@php
     $imageUrl = $product->storefront_image_url;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
@@ -58,7 +58,7 @@
                     @if($isOutOfStock)
                         <button class="btn btn-add-cart addcart-button" disabled>Out of Stock</button>
                     @else
-                        <form method="POST" action="{{ route('store.cart.add') }}">
+                        <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="quantity" value="1">

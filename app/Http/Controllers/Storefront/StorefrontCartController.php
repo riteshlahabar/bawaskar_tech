@@ -4,14 +4,20 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Product;
+use App\Models\User;
 use App\Services\StorefrontSessionService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class StorefrontCartController extends Controller
 {
-    public function add(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function add(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+            return $response;
+        }
+
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
             'quantity' => ['required', 'numeric', 'min:0.001'],
@@ -23,11 +29,15 @@ class StorefrontCartController extends Controller
 
         $storefrontSession->addToCart($request, $product, (float) $validated['quantity']);
 
-        return back()->with('success', $product->name.' added to cart.');
+        return $this->cartResponse($request, $storefrontSession, $product->name.' added to cart.');
     }
 
-    public function update(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function update(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+            return $response;
+        }
+
         $validated = $request->validate([
             'items' => ['required', 'array'],
             'items.*' => ['nullable', 'numeric', 'min:0'],
@@ -35,20 +45,82 @@ class StorefrontCartController extends Controller
 
         $storefrontSession->updateCart($request, $validated['items']);
 
-        return back()->with('success', 'Cart updated successfully.');
+        return $this->cartResponse($request, $storefrontSession, 'Cart updated successfully.');
     }
 
-    public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+            return $response;
+        }
+
         $storefrontSession->removeFromCart($request, $productId);
 
-        return back()->with('success', 'Item removed from cart.');
+        return $this->cartResponse($request, $storefrontSession, 'Item removed from cart.');
     }
 
-    public function clear(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function clear(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
+        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+            return $response;
+        }
+
         $storefrontSession->clearCart($request);
 
-        return back()->with('success', 'Cart cleared successfully.');
+        return $this->cartResponse($request, $storefrontSession, 'Cart cleared successfully.');
+    }
+
+    private function guestRedirectResponse(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse|null
+    {
+        $user = $storefrontSession->user($request);
+        if ($user && in_array($user->role, [User::ROLE_CUSTOMER, User::ROLE_DEALER], true)) {
+            return null;
+        }
+
+        $redirectTo = (string) ($request->headers->get('referer') ?: route('store.page', ['page' => 'cart']));
+        $loginUrl = route('store.page', ['page' => 'login', 'redirect_to' => $redirectTo]);
+        $message = 'Please log in before adding products to cart.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'requires_login' => true,
+                'message' => $message,
+                'login_url' => $loginUrl,
+            ], 401);
+        }
+
+        return redirect()->to($loginUrl)->with('error', $message);
+    }
+
+    private function cartResponse(Request $request, StorefrontSessionService $storefrontSession, string $message): JsonResponse|RedirectResponse
+    {
+        $summary = $storefrontSession->cartSummary($request);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'count' => (float) ($summary['count'] ?? 0),
+                'subtotal' => (float) ($summary['subtotal'] ?? 0),
+                'gst_total' => (float) ($summary['gst_total'] ?? 0),
+                'grand_total' => (float) ($summary['grand_total'] ?? 0),
+                'items' => collect($summary['items'] ?? collect())
+                    ->take(3)
+                    ->map(fn (array $item): array => [
+                        'id' => $item['product']->id,
+                        'name' => $item['product']->name,
+                        'product_url' => route('store.product', ['product' => $item['product']->id]),
+                        'image_url' => $item['product']->storefront_image_url,
+                        'quantity' => (float) $item['quantity'],
+                        'unit_price' => (float) $item['unit_price'],
+                        'line_total' => (float) $item['line_total'],
+                    ])
+                    ->values()
+                    ->all(),
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 }

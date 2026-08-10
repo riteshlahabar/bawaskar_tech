@@ -125,6 +125,7 @@ class StorefrontController extends Controller
         $storeOrders = $storeUser ? $this->storeOrders($storeUser) : collect();
         $storePrimaryAddress = $storeUser?->addresses->firstWhere('is_default', true) ?: $storeUser?->addresses->first();
         $storeLastOrder = $this->lastStoreOrder($request, $storeUser);
+        $storeTrackedOrder = $this->trackedStoreOrder($request, $storeUser, $storeLastOrder);
 
         try {
             $categories = $data['categories'] ?? Category::query()
@@ -171,6 +172,7 @@ class StorefrontController extends Controller
             'storeOrders' => $storeOrders,
             'storePrimaryAddress' => $storePrimaryAddress,
             'storeLastOrder' => $storeLastOrder,
+            'storeTrackedOrder' => $storeTrackedOrder,
         ], $data));
     }
 
@@ -574,16 +576,10 @@ class StorefrontController extends Controller
 
     private function storeOrders(User $user): Collection
     {
-        $query = StoreOrder::query()
-            ->with(['items.product.images', 'invoice', 'dispatches', 'salesman']);
-
-        if ($user->role === User::ROLE_DEALER) {
-            $query->where('dealer_id', $user->id);
-        } else {
-            $query->where('customer_id', $user->id);
-        }
-
-        return $query->latest()->limit(10)->get();
+        return $this->storeOrdersQuery($user)
+            ->latest()
+            ->limit(10)
+            ->get();
     }
 
     private function lastStoreOrder(Request $request, ?User $user): ?StoreOrder
@@ -597,6 +593,40 @@ class StorefrontController extends Controller
             return null;
         }
 
+        return $this->storeOrdersQuery($user)->find($orderId);
+    }
+
+    private function trackedStoreOrder(Request $request, ?User $user, ?StoreOrder $lastOrder): ?StoreOrder
+    {
+        if (! $user) {
+            return null;
+        }
+
+        $query = $this->storeOrdersQuery($user);
+        $requestedOrder = trim((string) $request->query('order'));
+
+        if ($requestedOrder !== '') {
+            $trackedOrder = (clone $query)
+                ->where(function (Builder $builder) use ($requestedOrder): void {
+                    $builder->where('order_no', $requestedOrder);
+
+                    if (ctype_digit($requestedOrder)) {
+                        $builder->orWhereKey((int) $requestedOrder);
+                    }
+                })
+                ->latest()
+                ->first();
+
+            if ($trackedOrder) {
+                return $trackedOrder;
+            }
+        }
+
+        return $lastOrder ?: $query->latest()->first();
+    }
+
+    private function storeOrdersQuery(User $user): Builder
+    {
         $query = StoreOrder::query()
             ->with(['items.product.images', 'invoice', 'dispatches', 'salesman']);
 
@@ -606,7 +636,6 @@ class StorefrontController extends Controller
             $query->where('customer_id', $user->id);
         }
 
-        return $query->find($orderId);
+        return $query;
     }
 }
-

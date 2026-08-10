@@ -822,124 +822,151 @@
     </section>
     <!-- Breadcrumb Section End -->
 
+    @php
+         =  ??  ?? ->first();
+    @endphp
+    @php
+        $trackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
+    @endphp
+
     <!-- Order Detail Section Start -->
     <section class="order-detail">
         <div class="container-fluid-lg">
-            <div class="row g-sm-4 g-3">
-                <div class="col-xxl-3 col-xl-4 col-lg-6">
-                    <div class="order-image">
-                        <img src="{{ asset('fastkart-store/images/vegetable/product/6.png') }}" class="img-fluid blur-up lazyload" alt="">
-                    </div>
-                </div>
-
-                <div class="col-xxl-9 col-xl-8 col-lg-6">
-                    <div class="row g-sm-4 g-3">
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i data-feather="package" class="text-content"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">Tracking Code</h5>
-                                    <h2 class="theme-color">MH4285UY</h2>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i data-feather="truck" class="text-content"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">Service</h5>
-                                    <img src="{{ asset('fastkart-store/images/inner-page/brand-name.svg') }}"
-                                        class="img-fluid blur-up lazyload" alt="">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i class="text-content" data-feather="info"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">Package Info</h5>
-                                    <h4>Letter</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i class="text-content" data-feather="crosshair"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">From</h5>
-                                    <h4>STR. Smardan 9, Bucuresti, romania.</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i class="text-content" data-feather="map-pin"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">Destination</h5>
-                                    <h4>Flokagata 24, 105 Reykjavik, Iceland</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-4 col-sm-6">
-                            <div class="order-details-contain">
-                                <div class="order-tracking-icon">
-                                    <i class="text-content" data-feather="calendar"></i>
-                                </div>
-
-                                <div class="order-details-name">
-                                    <h5 class="text-content">Estimated Time</h5>
-                                    <h4>7 Frb, 05:05pm</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 overflow-hidden">
-                            <ol class="progtrckr">
-                                <li class="progtrckr-done">
-                                    <h5>Order Processing</h5>
-                                    <h6>05:43 AM</h6>
-                                </li>
-                                <li class="progtrckr-done">
-                                    <h5>Pre-Production</h5>
-                                    <h6>01:21 PM</h6>
-                                </li>
-                                <li class="progtrckr-done">
-                                    <h5>In Production</h5>
-                                    <h6>Processing</h6>
-                                </li>
-                                <li class="progtrckr-todo">
-                                    <h5>Shipped</h5>
-                                    <h6>Pending</h6>
-                                </li>
-                                <li class="progtrckr-todo">
-                                    <h5>Delivered</h5>
-                                    <h6>Pending</h6>
-                                </li>
-                            </ol>
+            @if(! $storeUser)
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-warning store-tracking-empty mb-0">
+                            Please <a href="{{ route('store.page', ['page' => 'login']) }}">login</a> to track your live order status.
                         </div>
                     </div>
                 </div>
-            </div>
+            @elseif($storeOrders->isEmpty() || ! $trackedOrder)
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-light store-tracking-empty mb-0">
+                            No order found for tracking yet. <a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">Continue shopping</a>.
+                        </div>
+                    </div>
+                </div>
+            @else
+                @php
+                    $firstItem = $trackedOrder->items->first();
+                    $trackedProduct = $firstItem?->product;
+                    $trackedImage = optional($trackedProduct?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
+                    $latestDispatch = $trackedOrder->dispatches->sortByDesc(fn ($dispatch) => $dispatch->delivered_at?->timestamp ?? $dispatch->dispatched_at?->timestamp ?? $dispatch->created_at?->timestamp ?? 0)->first();
+                    $trackingCode = $latestDispatch?->tracking_no ?: ($latestDispatch?->dispatch_no ?: $trackedOrder->order_no);
+                    $courierName = $latestDispatch?->courier_name ?: 'Bawaskar Delivery Desk';
+                    $packageInfo = $trackedOrder->items->count().' item(s) | Rs. '.number_format((float) $trackedOrder->grand_total, 2);
+                    $originLabel = 'Dr. Bawaskar Technology Warehouse';
+                    $destinationLabel = collect([
+                        $trackedOrder->contact_name,
+                        $trackedOrder->address_line1,
+                        $trackedOrder->address_line2,
+                        trim(collect([$trackedOrder->city, $trackedOrder->state])->filter()->implode(', ')),
+                        $trackedOrder->pincode,
+                    ])->filter(fn ($value) => filled($value))->implode(', ');
+                    $statusLabel = ucwords(str_replace('_', ' ', (string) ($trackedOrder->status ?: 'pending')));
+                    $paymentLabel = ucwords(str_replace('_', ' ', (string) ($trackedOrder->payment_status ?: 'pending')));
+                    $statusStepMap = [
+                        'salesman_review' => 1,
+                        'admin_review' => 2,
+                        'approved' => 2,
+                        'packing' => 3,
+                        'dispatched' => 4,
+                        'delivered' => 5,
+                    ];
+                    $currentStep = $trackedOrder->status === 'cancelled' ? 1 : ($statusStepMap[$trackedOrder->status] ?? 1);
+                    $progressSteps = [
+                        ['label' => 'Order Placed', 'time' => $trackedOrder->created_at?->format('d M Y, h:i A') ?: 'Pending'],
+                        ['label' => 'Reviewed', 'time' => in_array((string) $trackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true) ? (($trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
+                        ['label' => 'Packed', 'time' => in_array((string) $trackedOrder->status, ['packing', 'dispatched', 'delivered'], true) ? (($trackedOrder->updated_at ?: $trackedOrder->approved_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
+                        ['label' => 'Dispatched', 'time' => $latestDispatch?->dispatched_at?->format('d M Y, h:i A') ?: 'Pending'],
+                        ['label' => 'Delivered', 'time' => $latestDispatch?->delivered_at?->format('d M Y, h:i A') ?: 'Pending'],
+                    ];
+                    $trackingHistory = [
+                        ['label' => 'Order Placed', 'moment' => $trackedOrder->created_at, 'location' => 'Storefront Checkout'],
+                    ];
+                    if (in_array((string) $trackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true)) {
+                        $trackingHistory[] = ['label' => 'Sales/Admin Review Completed', 'moment' => $trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at, 'location' => 'Order Review Desk'];
+                    }
+                    if (in_array((string) $trackedOrder->status, ['packing', 'dispatched', 'delivered'], true)) {
+                        $trackingHistory[] = ['label' => 'Packed For Dispatch', 'moment' => $trackedOrder->updated_at ?: $trackedOrder->approved_at ?: $trackedOrder->created_at, 'location' => $originLabel];
+                    }
+                    if ($latestDispatch?->dispatched_at) {
+                        $trackingHistory[] = ['label' => 'Dispatched', 'moment' => $latestDispatch->dispatched_at, 'location' => $courierName];
+                    }
+                    if ($latestDispatch?->delivered_at) {
+                        $trackingHistory[] = ['label' => 'Delivered', 'moment' => $latestDispatch->delivered_at, 'location' => $destinationLabel ?: 'Delivery Address'];
+                    }
+                    if ($trackedOrder->status === 'cancelled') {
+                        $trackingHistory[] = ['label' => 'Order Cancelled', 'moment' => $trackedOrder->updated_at ?: $trackedOrder->created_at, 'location' => 'Order Management Desk'];
+                    }
+                @endphp
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="summery-box store-tracking-selector">
+                            <div class="summery-header">
+                                <h3>Track Live Order</h3>
+                                <h5 class="ms-auto theme-color">{{ $storeOrders->count() }} Recent Orders</h5>
+                            </div>
+                            <form action="{{ route('store.page', ['page' => 'order-tracking']) }}" method="GET" class="row g-3 align-items-end">
+                                <div class="col-lg-8 col-md-7">
+                                    <label for="tracked-order" class="form-label">Select Order</label>
+                                    <select id="tracked-order" name="order" class="form-select">
+                                        @foreach($storeOrders as $orderOption)
+                                            <option value="{{ $orderOption->order_no }}" @selected($orderOption->id === $trackedOrder->id)>
+                                                {{ $orderOption->order_no }} - {{ $orderOption->created_at?->format('d M Y') ?: 'N/A' }} - Rs. {{ number_format((float) $orderOption->grand_total, 2) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-5">
+                                    <button type="submit" class="btn theme-bg-color text-white w-100">View Tracking</button>
+                                </div>
+                            </form>
+                            <p class="store-tracking-note mb-0">Current status: <strong>{{ $statusLabel }}</strong> | Payment: <strong>{{ $paymentLabel }}</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-sm-4 g-3">
+                    <div class="col-xxl-3 col-xl-4 col-lg-6">
+                        <div class="order-image">
+                            <img src="{{ $trackedImage }}" class="img-fluid blur-up lazyload" alt="{{ $trackedProduct?->name ?: 'Tracked order item' }}">
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-9 col-xl-8 col-lg-6">
+                        <div class="row g-sm-4 g-3">
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i data-feather="package" class="text-content"></i></div><div class="order-details-name"><h5 class="text-content">Tracking Code</h5><h2 class="theme-color">{{ $trackingCode }}</h2></div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i data-feather="truck" class="text-content"></i></div><div class="order-details-name"><h5 class="text-content">Service</h5><h4>{{ $courierName }}</h4>@if($latestDispatch?->tracking_url)<a href="{{ $latestDispatch->tracking_url }}" target="_blank" rel="noopener" class="store-order-inline-link">Open courier tracking</a>@endif</div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="info"></i></div><div class="order-details-name"><h5 class="text-content">Package Info</h5><h4>{{ $packageInfo }}</h4></div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="crosshair"></i></div><div class="order-details-name"><h5 class="text-content">From</h5><h4>{{ $originLabel }}</h4></div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="map-pin"></i></div><div class="order-details-name"><h5 class="text-content">Destination</h5><h4>{{ $destinationLabel ?: 'Address not available' }}</h4></div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="calendar"></i></div><div class="order-details-name"><h5 class="text-content">Last Update</h5><h4>{{ ($latestDispatch?->delivered_at ?: $latestDispatch?->dispatched_at ?: $trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Pending' }}</h4></div></div></div>
+
+                            <div class="col-12 overflow-hidden">
+                                <ol class="progtrckr">
+                                    @foreach($progressSteps as $index => $step)
+                                        @php $stepNumber = $index + 1; $stepClass = $stepNumber <= $currentStep ? 'progtrckr-done' : 'progtrckr-todo'; @endphp
+                                        <li class="{{ $stepClass }}{{ $stepNumber === $currentStep ? ' store-progress-current' : '' }}">
+                                            <h5>{{ $step['label'] }}</h5>
+                                            <h6>{{ $step['time'] }}</h6>
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            </div>
+
+                            @if($trackedOrder->status === 'cancelled')
+                                <div class="col-12">
+                                    <div class="alert alert-danger mb-0">This order was cancelled. Please contact support if you need help with a replacement or refund.</div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
     <!-- Order Detail Section End -->
@@ -947,51 +974,34 @@
     <!-- Order Table Section Start -->
     <section class="order-table-section section-b-space">
         <div class="container-fluid-lg">
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table order-tab-table">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Location</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Order Placed</td>
-                                    <td>26 Sep 2021</td>
-                                    <td>12:00 AM</td>
-                                    <td>California</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Preparing to Ship</td>
-                                    <td>03 Oct 2021</td>
-                                    <td>12:00 AM</td>
-                                    <td>Canada</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Shipped</td>
-                                    <td>04 Oct 2021</td>
-                                    <td>12:00 AM</td>
-                                    <td>America</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Delivered</td>
-                                    <td>10 Nav 2021</td>
-                                    <td>12:00 AM</td>
-                                    <td>Germany</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            @if($storeUser && $trackedOrder)
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table order-tab-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($trackingHistory as $history)
+                                        <tr>
+                                            <td>{{ $history['label'] }}</td>
+                                            <td>{{ $history['moment']?->format('d M Y') ?: 'Pending' }}</td>
+                                            <td>{{ $history['moment']?->format('h:i A') ?: 'Pending' }}</td>
+                                            <td>{{ $history['location'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </section>
     <!-- Order Table Section End -->

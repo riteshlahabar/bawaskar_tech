@@ -299,3 +299,40 @@
 .top-header .navbar-top .web-logo{flex:0 0 260px;min-width:260px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:72px!important;height:72px!important;max-width:72px!important;min-width:72px!important;object-fit:contain!important;flex:0 0 72px!important}.top-header .bawaskar-store-logo{gap:8px;font-size:18px}.top-header .bawaskar-store-logo small{font-size:9px}@media(max-width:1399px){.top-header .navbar-top .web-logo{flex-basis:240px;min-width:240px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:64px!important;height:64px!important;max-width:64px!important;min-width:64px!important;flex-basis:64px!important}.top-header .bawaskar-store-logo{font-size:17px}}@media(max-width:575px){.top-header .navbar-top .web-logo{min-width:0;flex:0 0 auto;max-width:210px}.top-header .navbar-top .web-logo .bawaskar-store-logo-img{width:42px!important;height:42px!important;max-width:42px!important;min-width:42px!important;flex-basis:42px!important}}
 /* Checkout validation and order success polish */
 .store-checkout-error-alert{border-radius:12px;padding:16px 18px}.store-checkout-error-alert h5{font-size:18px;margin:0}.store-checkout-error-list{padding-left:18px;display:grid;gap:4px}.store-checkout-field-error{font-size:13px;font-weight:500;margin-top:6px}.store-order-success-hero{margin-bottom:12px}.store-order-success-card{background:#fff;border:1px solid #ececec;border-radius:16px;padding:28px;box-shadow:0 12px 30px rgba(34,34,34,.06)}.store-order-success-message{max-width:640px;margin-left:auto;margin-right:auto;line-height:1.7}.store-order-hero-meta{display:flex;flex-wrap:wrap;gap:20px 30px}.store-order-hero-meta span{display:block;font-size:13px;color:#7e7e7e;margin-bottom:4px}.store-order-hero-meta strong{font-size:16px;color:#222}.store-order-status-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.store-order-hero-actions{display:flex;flex-wrap:wrap;gap:12px}.store-order-pill{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}.store-order-pill.is-success{background:rgba(13,164,135,.12);color:#0da487}.store-order-pill.is-warning{background:rgba(255,179,33,.16);color:#a66900}.store-order-pill.is-danger{background:rgba(255,114,114,.14);color:#d64545}@media(max-width:575px){.store-order-hero-actions{flex-direction:column}.store-order-hero-actions .btn{width:100%}.store-order-hero-meta{display:grid;gap:12px;justify-content:center}}
+/* Storefront order tracking live data */
+.store-tracking-selector .summery-header {
+    align-items: center;
+}
+
+.store-tracking-note {
+    color: #4a5568;
+    font-size: 14px;
+    margin-top: 14px;
+}
+
+.store-tracking-empty {
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.store-order-inline-link {
+    color: var(--theme-color);
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.store-progress-current h5,
+.store-progress-current h6 {
+    color: var(--theme-color);
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .store-tracking-selector .summery-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+}

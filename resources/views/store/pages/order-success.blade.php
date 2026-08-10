@@ -684,33 +684,47 @@
     <section class="breadcrumb-section pt-0">
         <div class="container-fluid-lg">
             @if($storeLastOrder)
-                <div class="row">
-                    <div class="col-12">
-                        <div class="order-success">
-                            <div class="row g-sm-4 g-3">
-                                <div class="col-xxl-3 col-lg-4"></div>
-                                <div class="col-xxl-6 col-lg-8">
-                                    <div class="order-image-contain">
-                                        <div class="order-image">
-                                            <div class="checkmark">
-                                                <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
-                                                <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
-                                                <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
-                                                <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
-                                                <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
-                                                <svg class="checkmark__check" height="36" viewBox="0 0 48 36" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M47.248 3.9L43.906.667a2.428 2.428 0 0 0-3.344 0l-23.63 23.09-9.554-9.338a2.432 2.432 0 0 0-3.345 0L.692 17.654a2.236 2.236 0 0 0 .002 3.233l14.567 14.175c.926.894 2.42.894 3.342.01L47.248 7.128c.922-.89.922-2.34 0-3.23"></path></svg>
-                                                <svg class="checkmark__background" height="115" viewBox="0 0 120 115" width="120" xmlns="http://www.w3.org/2000/svg"><path d="M107.332 72.938c-1.798 5.557 4.564 15.334 1.21 19.96-3.387 4.674-14.646 1.605-19.298 5.003-4.61 3.368-5.163 15.074-10.695 16.878-5.344 1.743-12.628-7.35-18.545-7.35-5.922 0-13.206 9.088-18.543 7.345-5.538-1.804-6.09-13.515-10.696-16.877-4.657-3.398-15.91-.334-19.297-5.002-3.356-4.627 3.006-14.404 1.208-19.962C10.93 67.576 0 63.442 0 57.5c0-5.943 10.93-10.076 12.668-15.438 1.798-5.557-4.564-15.334-1.21-19.96 3.387-4.674 14.646-1.605 19.298-5.003C35.366 13.73 35.92 2.025 41.45.22c5.344-1.743 12.628 7.35 18.545 7.35 5.922 0 13.206-9.088 18.543-7.345 5.538 1.804 6.09 13.515 10.696 16.877 4.657 3.398 15.91.334 19.297 5.002 3.356 4.627-3.006 14.404-1.208 19.962C109.07 47.424 120 51.562 120 57.5c0 5.943-10.93 10.076-12.668 15.438z"></path></svg>
-                                            </div>
-                                        </div>
-                                        <div class="order-contain">
-                                            <h3 class="theme-color">Order Success</h3>
-                                            <h5 class="text-content">Your order has been placed successfully and is now recorded in the live ecommerce flow.</h5>
-                                            <h6>Order No: {{ $storeLastOrder->order_no }}</h6>
-                                            <h6>Placed On: {{ $storeLastOrder->created_at?->format('d M Y, h:i A') ?: 'N/A' }}</h6>
-                                        </div>
+                @php
+                    $orderMessage = session('success') ?: 'Your order has been placed successfully and is now moving through the live ecommerce flow.';
+                    $statusLabel = ucwords(str_replace('_', ' ', (string) ($storeLastOrder->status ?: 'pending')));
+                    $paymentMethodLabel = ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_method ?: 'cod')));
+                    $paymentStatusLabel = ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_status ?: 'pending')));
+                    $statusClass = in_array((string) $storeLastOrder->status, ['approved', 'packing', 'dispatched', 'delivered', 'completed'], true) ? 'is-success' : (in_array((string) $storeLastOrder->status, ['cancelled', 'rejected'], true) ? 'is-danger' : 'is-warning');
+                    $paymentClass = in_array((string) $storeLastOrder->payment_status, ['paid', 'confirmed'], true) ? 'is-success' : (in_array((string) $storeLastOrder->payment_status, ['failed', 'rejected'], true) ? 'is-danger' : 'is-warning');
+                @endphp
+                <div class="row justify-content-center">
+                    <div class="col-xxl-8 col-lg-10">
+                        <div class="order-success store-order-success-hero">
+                            <div class="order-image-contain store-order-success-card">
+                                <div class="order-image">
+                                    <div class="checkmark">
+                                        <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
+                                        <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
+                                        <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
+                                        <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
+                                        <svg class="star" height="19" viewBox="0 0 19 19" width="19" xmlns="http://www.w3.org/2000/svg"><path d="M8.296.747c.532-.972 1.393-.973 1.925 0l2.665 4.872 4.876 2.66c.974.532.975 1.393 0 1.926l-4.875 2.666-2.664 4.876c-.53.972-1.39.973-1.924 0l-2.664-4.876L.76 10.206c-.972-.532-.973-1.393 0-1.925l4.872-2.66L8.296.746z"></path></svg>
+                                        <svg class="checkmark__check" height="36" viewBox="0 0 48 36" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M47.248 3.9L43.906.667a2.428 2.428 0 0 0-3.344 0l-23.63 23.09-9.554-9.338a2.432 2.432 0 0 0-3.345 0L.692 17.654a2.236 2.236 0 0 0 .002 3.233l14.567 14.175c.926.894 2.42.894 3.342.01L47.248 7.128c.922-.89.922-2.34 0-3.23"></path></svg>
+                                        <svg class="checkmark__background" height="115" viewBox="0 0 120 115" width="120" xmlns="http://www.w3.org/2000/svg"><path d="M107.332 72.938c-1.798 5.557 4.564 15.334 1.21 19.96-3.387 4.674-14.646 1.605-19.298 5.003-4.61 3.368-5.163 15.074-10.695 16.878-5.344 1.743-12.628-7.35-18.545-7.35-5.922 0-13.206 9.088-18.543 7.345-5.538-1.804-6.09-13.515-10.696-16.877-4.657-3.398-15.91-.334-19.297-5.002-3.356-4.627 3.006-14.404 1.208-19.962C10.93 67.576 0 63.442 0 57.5c0-5.943 10.93-10.076 12.668-15.438 1.798-5.557-4.564-15.334-1.21-19.96 3.387-4.674 14.646-1.605 19.298-5.003C35.366 13.73 35.92 2.025 41.45.22c5.344-1.743 12.628 7.35 18.545 7.35 5.922 0 13.206-9.088 18.543-7.345 5.538 1.804 6.09 13.515 10.696 16.877 4.657 3.398 15.91.334 19.297 5.002 3.356 4.627-3.006 14.404-1.208 19.962C109.07 47.424 120 51.562 120 57.5c0 5.943-10.93 10.076-12.668 15.438z"></path></svg>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4"></div>
+                                <div class="order-contain">
+                                    <span class="store-order-pill is-success mb-3">Order Confirmed</span>
+                                    <h3 class="theme-color mb-2">Thank you, your order is placed successfully.</h3>
+                                    <p class="text-content store-order-success-message mb-3">{{ $orderMessage }}</p>
+                                    <div class="store-order-hero-meta justify-content-center">
+                                        <div><span>Order No</span><strong>{{ $storeLastOrder->order_no }}</strong></div>
+                                        <div><span>Placed On</span><strong>{{ $storeLastOrder->created_at?->format('d M Y, h:i A') ?: 'N/A' }}</strong></div>
+                                        <div><span>Payment Mode</span><strong>{{ $paymentMethodLabel }}</strong></div>
+                                    </div>
+                                    <div class="store-order-status-row mt-3">
+                                        <span class="store-order-pill {{ $statusClass }}">{{ $statusLabel }}</span>
+                                        <span class="store-order-pill {{ $paymentClass }}">{{ $paymentStatusLabel }}</span>
+                                    </div>
+                                    <div class="store-order-hero-actions justify-content-center mt-4">
+                                        <a href="{{ route('store.page', ['page' => 'order-tracking']) }}" class="btn theme-bg-color text-white">Track Order</a>
+                                        <a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}" class="btn btn-md cart-button">Continue Shopping</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -735,7 +749,7 @@
                                         @foreach($storeLastOrder->items as $item)
                                             @php $product = $item->product; $imageUrl = optional($product?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs'; @endphp
                                             <tr>
-                                                <td class="product-detail"><div class="product border-0"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="product-image"><img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product?->name ?: 'Order item' }}"></a><div class="product-detail"><ul><li class="name"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ $product?->name ?: 'Product removed' }}</a></li><li class="text-content">Sold By: Dr. Bawaskar Technology</li><li class="text-content">Quantity - {{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }} {{ $unitName }}</li></ul></div></div></td>
+                                                <td class="product-detail"><div class="product border-0"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="product-image"><img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $product?->name ?: 'Order item' }}"></a><div class="product-detail"><ul><li class="name"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ $product?->name ?: 'Product removed' }}</a></li><li class="text-content">SKU: {{ $product?->sku ?: 'Not available' }}</li><li class="text-content">Quantity - {{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }} {{ $unitName }}</li></ul></div></div></td>
                                                 <td class="price"><h4 class="table-title text-content">Price</h4><h6 class="theme-color">Rs. {{ number_format((float) $item->unit_price, 2) }}</h6></td>
                                                 <td class="quantity"><h4 class="table-title text-content">Qty</h4><h4 class="text-title">{{ rtrim(rtrim(number_format((float) $item->quantity, 3, '.', ''), '0'), '.') }}</h4></td>
                                                 <td class="subtotal"><h4 class="table-title text-content">Total</h4><h5>Rs. {{ number_format((float) $item->line_total, 2) }}</h5></td>
@@ -750,7 +764,7 @@
                         <div class="row g-4">
                             <div class="col-lg-12 col-sm-6"><div class="summery-box"><div class="summery-header"><h3>Price Details</h3><h5 class="ms-auto theme-color">({{ $storeLastOrder->items->count() }} Items)</h5></div><ul class="summery-contain"><li><h4>Subtotal</h4><h4 class="price">Rs. {{ number_format((float) $storeLastOrder->subtotal, 2) }}</h4></li><li><h4>GST Total</h4><h4 class="price theme-color">Rs. {{ number_format((float) $storeLastOrder->gst_total, 2) }}</h4></li><li><h4>Discount</h4><h4 class="price text-danger">Rs. {{ number_format((float) $storeLastOrder->discount_total, 2) }}</h4></li></ul><ul class="summery-total"><li class="list-total"><h4>Total (INR)</h4><h4 class="price">Rs. {{ number_format((float) $storeLastOrder->grand_total, 2) }}</h4></li></ul></div></div>
                             <div class="col-lg-12 col-sm-6"><div class="summery-box"><div class="summery-header d-block"><h3>Shipping Address</h3></div><ul class="summery-contain pb-0 border-bottom-0"><li class="d-block"><h4>{{ $storeLastOrder->contact_name }}</h4><h4 class="mt-2">{{ $storeLastOrder->address_line1 }}{{ $storeLastOrder->address_line2 ? ', '.$storeLastOrder->address_line2 : '' }}</h4><h4 class="mt-2">{{ $storeLastOrder->city }}, {{ $storeLastOrder->state }} - {{ $storeLastOrder->pincode }}</h4><h4 class="mt-2">{{ $storeLastOrder->contact_mobile }}</h4></li><li class="pb-0"><h4>Order Tracking:</h4><h4 class="price theme-color"><a href="{{ route('store.page', ['page' => 'order-tracking']) }}" class="text-danger">Track Order</a></h4></li></ul><ul class="summery-total"><li class="list-total border-top-0 pt-2"><h4 class="fw-bold">{{ ucfirst($storeLastOrder->address_type ?: 'shipping') }}</h4></li></ul></div></div>
-                            <div class="col-12"><div class="summery-box"><div class="summery-header d-block"><h3>Payment Method</h3></div><ul class="summery-contain pb-0 border-bottom-0"><li class="d-block pt-0"><p class="text-content">Payment Mode: {{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_method ?: 'cod'))) }}</p><p class="text-content">Payment Status: {{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_status ?: 'pending'))) }}</p><p class="text-content">Order Status: {{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->status ?: 'pending'))) }}</p></li></ul></div></div>
+                            <div class="col-12"><div class="summery-box"><div class="summery-header d-block"><h3>Payment Method</h3></div><ul class="summery-contain pb-0 border-bottom-0"><li class="d-block pt-0"><p class="text-content mb-2">Payment Mode: <span class="text-title">{{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_method ?: 'cod'))) }}</span></p><p class="text-content mb-2">Payment Status: <span class="text-title">{{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->payment_status ?: 'pending'))) }}</span></p><p class="text-content mb-0">Order Status: <span class="text-title">{{ ucwords(str_replace('_', ' ', (string) ($storeLastOrder->status ?: 'pending'))) }}</span></p>@if($storeLastOrder->notes)<p class="text-content mt-3 mb-0">Order Notes: {{ $storeLastOrder->notes }}</p>@endif</li></ul></div></div>
                         </div>
                     </div>
                 </div>

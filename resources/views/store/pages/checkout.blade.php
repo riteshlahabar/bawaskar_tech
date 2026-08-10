@@ -717,6 +717,16 @@
             @else
                 <form method="POST" action="{{ route('store.checkout.place-order') }}">
                     @csrf
+                    @if($errors->any())
+                        <div class="alert alert-danger store-checkout-error-alert mb-4" role="alert">
+                            <h5 class="mb-2">Please complete the required checkout details.</h5>
+                            <ul class="mb-0 store-checkout-error-list">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="row g-sm-4 g-3">
                         <div class="col-lg-8">
                             <div class="left-sidebar-checkout">
@@ -748,14 +758,62 @@
                                                         </div>
                                                     @endif
                                                     <div class="row g-3">
-                                                        <div class="col-md-6"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="contact_name" id="contact_name" value="{{ old('contact_name', $address?->name ?: $storeUser->name) }}" placeholder="Contact Name"><label for="contact_name">Contact Name</label></div></div>
-                                                        <div class="col-md-6"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="contact_mobile" id="contact_mobile" value="{{ old('contact_mobile', $address?->mobile ?: $storeUser->mobile) }}" placeholder="Contact Mobile"><label for="contact_mobile">Contact Mobile</label></div></div>
-                                                        <div class="col-md-4"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="address_type" id="address_type" value="{{ old('address_type', $address?->type ?: 'shipping') }}" placeholder="Address Type"><label for="address_type">Address Type</label></div></div>
-                                                        <div class="col-md-8"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="address_line1" id="address_line1" value="{{ old('address_line1', $address?->address_line1) }}" placeholder="Address Line 1"><label for="address_line1">Address Line 1</label></div></div>
-                                                        <div class="col-12"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="address_line2" id="address_line2" value="{{ old('address_line2', $address?->address_line2) }}" placeholder="Address Line 2"><label for="address_line2">Address Line 2</label></div></div>
-                                                        <div class="col-md-4"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="city" id="city" value="{{ old('city', $address?->city) }}" placeholder="City"><label for="city">City</label></div></div>
-                                                        <div class="col-md-4"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="state" id="state" value="{{ old('state', $address?->state) }}" placeholder="State"><label for="state">State</label></div></div>
-                                                        <div class="col-md-4"><div class="form-floating theme-form-floating"><input type="text" class="form-control" name="pincode" id="pincode" value="{{ old('pincode', $address?->pincode) }}" placeholder="Pincode"><label for="pincode">Pincode</label></div></div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('contact_name') is-invalid @enderror" name="contact_name" id="contact_name" value="{{ old('contact_name', $address?->name ?: $storeUser->name) }}" placeholder="Contact Name">
+                                                                <label for="contact_name">Contact Name</label>
+                                                            </div>
+                                                            @error('contact_name')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('contact_mobile') is-invalid @enderror" name="contact_mobile" id="contact_mobile" value="{{ old('contact_mobile', $address?->mobile ?: $storeUser->mobile) }}" placeholder="Contact Mobile">
+                                                                <label for="contact_mobile">Contact Mobile</label>
+                                                            </div>
+                                                            @error('contact_mobile')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('address_type') is-invalid @enderror" name="address_type" id="address_type" value="{{ old('address_type', $address?->type ?: 'shipping') }}" placeholder="Address Type">
+                                                                <label for="address_type">Address Type</label>
+                                                            </div>
+                                                            @error('address_type')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('address_line1') is-invalid @enderror" name="address_line1" id="address_line1" value="{{ old('address_line1', $address?->address_line1) }}" placeholder="Address Line 1">
+                                                                <label for="address_line1">Address Line 1</label>
+                                                            </div>
+                                                            @error('address_line1')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('address_line2') is-invalid @enderror" name="address_line2" id="address_line2" value="{{ old('address_line2', $address?->address_line2) }}" placeholder="Address Line 2">
+                                                                <label for="address_line2">Address Line 2</label>
+                                                            </div>
+                                                            @error('address_line2')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('city') is-invalid @enderror" name="city" id="city" value="{{ old('city', $address?->city) }}" placeholder="City">
+                                                                <label for="city">City</label>
+                                                            </div>
+                                                            @error('city')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('state') is-invalid @enderror" name="state" id="state" value="{{ old('state', $address?->state) }}" placeholder="State">
+                                                                <label for="state">State</label>
+                                                            </div>
+                                                            @error('state')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-floating theme-form-floating">
+                                                                <input type="text" class="form-control @error('pincode') is-invalid @enderror" name="pincode" id="pincode" value="{{ old('pincode', $address?->pincode) }}" placeholder="Pincode">
+                                                                <label for="pincode">Pincode</label>
+                                                            </div>
+                                                            @error('pincode')<div class="invalid-feedback d-block store-checkout-field-error">{{ $message }}</div>@enderror
+                                                        </div>
                                                         <div class="col-12"><div class="form-check custom-form-check"><input class="form-check-input" type="checkbox" name="save_as_default" id="save_as_default" value="1" {{ old('save_as_default', $address?->is_default) ? 'checked' : '' }}><label class="form-check-label" for="save_as_default">Save as default address</label></div></div>
                                                     </div>
                                                 </div>
@@ -792,11 +850,14 @@
                                                             <div class="accordion-header"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"><div class="custom-form-check form-check mb-0"><label class="form-check-label" for="bank_transfer"><input class="form-check-input mt-0" type="radio" name="payment_method" id="bank_transfer" value="bank_transfer" {{ old('payment_method') === 'bank_transfer' ? 'checked' : '' }}> Bank Transfer</label></div></div></div>
                                                             <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"><div class="accordion-body"><p class="cod-review">Use this for NEFT / RTGS / IMPS style payment confirmation after order placement.</p></div></div>
                                                         </div>
-                                                        <div class="accordion-item">
-                                                            <div class="accordion-header"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"><div class="custom-form-check form-check mb-0"><label class="form-check-label" for="credit"><input class="form-check-input mt-0" type="radio" name="payment_method" id="credit" value="credit" {{ old('payment_method') === 'credit' ? 'checked' : '' }}> Dealer Credit</label></div></div></div>
-                                                            <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"><div class="accordion-body"><p class="cod-review">Dealer credit can be used for approved dealer accounts and remains subject to account verification.</p></div></div>
-                                                        </div>
+                                                        @if($storeUser?->role === \App\Models\User::ROLE_DEALER)
+                                                            <div class="accordion-item">
+                                                                <div class="accordion-header"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"><div class="custom-form-check form-check mb-0"><label class="form-check-label" for="credit"><input class="form-check-input mt-0" type="radio" name="payment_method" id="credit" value="credit" {{ old('payment_method') === 'credit' ? 'checked' : '' }}> Dealer Credit</label></div></div></div>
+                                                                <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"><div class="accordion-body"><p class="cod-review">Dealer credit can be used for approved dealer accounts and remains subject to account verification.</p></div></div>
+                                                            </div>
+                                                        @endif
                                                     </div>
+                                                    @error('payment_method')<div class="invalid-feedback d-block store-checkout-field-error mt-2">{{ $message }}</div>@enderror
                                                     <div class="mt-4"><div class="form-floating theme-form-floating"><textarea class="form-control" name="notes" id="notes" placeholder="Order Notes" style="height: 120px">{{ old('notes') }}</textarea><label for="notes">Order Notes</label></div></div>
                                                 </div>
                                             </div>

@@ -117,13 +117,16 @@
                                     @elseif($type === 'image_multiple')
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple @required($isRequired && ! $record)>
                                         @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
-                                            <div class="d-flex flex-wrap gap-2 mt-2">
-                                                @foreach($record->images as $img)
-                                                    <a href="{{ asset($img->path) }}" target="_blank">
-                                                        <img src="{{ asset($img->path) }}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
-                                                    </a>
-                                                @endforeach
-                                            </div>
+                                            @php($galleryPreviewImages = $record->images->where('is_primary', false))
+                                            @if($galleryPreviewImages->isNotEmpty())
+                                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                                    @foreach($galleryPreviewImages as $img)
+                                                        <a href="{{ asset($img->path) }}" target="_blank">
+                                                            <img src="{{ asset($img->path) }}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         @endif
                                     @elseif(in_array($type, ['file', 'image'], true))
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}" @required($isRequired && ! $record)>

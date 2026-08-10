@@ -140,6 +140,18 @@ class ProductController extends AdminModuleController
 
         return $data;
     }
+    protected function formData(Model $record, array $module): array
+    {
+        $data = parent::formData($record, $module);
+
+        $primaryImage = $record->relationLoaded('images')
+            ? $record->images->firstWhere('is_primary', true)
+            : $record->images()->where('is_primary', true)->first();
+
+        $data['primary_image'] = $primaryImage?->path;
+
+        return $data;
+    }
 
     private function extractOpeningStockData(array &$data): ?array
     {

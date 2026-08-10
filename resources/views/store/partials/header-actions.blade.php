@@ -101,7 +101,7 @@
                 <i data-feather="user"></i>
             </div>
             <div class="delivery-detail">
-                <h6>Hello,</h6>
+                <h6>{{ $storeUser ? $headerUserRole : 'Hello,' }}</h6>
                 <h5>{{ $storeUser?->name ?: 'My Account' }}</h5>
             </div>
         </div>
@@ -114,6 +114,9 @@
                     </li>
                     <li class="product-box-contain">
                         <a href="{{ route('store.page', ['page' => 'order-success']) }}">Recent Order</a>
+                    </li>
+                    <li class="product-box-contain">
+                        <a href="{{ route('store.page', ['page' => 'order-tracking']) }}">Track Order</a>
                     </li>
                     <li class="product-box-contain">
                         <form method="POST" action="{{ route('store.auth.logout') }}">

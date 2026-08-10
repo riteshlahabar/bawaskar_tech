@@ -285,31 +285,52 @@
                                             </div>
                                         </div>
                                     </li>
+                                    @php($headerUserRole = $storeUser?->role === 'dealer' ? 'Dealer' : 'Customer')
                                     <li class="right-side onhover-dropdown">
                                         <div class="delivery-login-box">
                                             <div class="delivery-icon">
                                                 <i data-feather="user"></i>
                                             </div>
                                             <div class="delivery-detail">
-                                                <h6>Hello,</h6>
-                                                <h5>My Account</h5>
+                                                <h6>{{ $storeUser ? $headerUserRole : 'Hello,' }}</h6>
+                                                <h5>{{ $storeUser?->name ?: 'My Account' }}</h5>
                                             </div>
                                         </div>
 
                                         <div class="onhover-div onhover-div-login">
                                             <ul class="user-box-name">
-                                                <li class="product-box-contain">
-                                                    <i></i>
-                                                    <a href="{{ route('store.page', ['page'=>'login']) }}">Log In</a>
-                                                </li>
+                                                @if($storeUser)
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}">{{ $headerUserRole }} Dashboard</a>
+                                                    </li>
 
-                                                <li class="product-box-contain">
-                                                    <a href="{{ route('store.page', ['page'=>'sign-up']) }}">Register</a>
-                                                </li>
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'order-success']) }}">Recent Order</a>
+                                                    </li>
 
-                                                <li class="product-box-contain">
-                                                    <a href="{{ route('store.page', ['page'=>'forgot']) }}">Forgot Password</a>
-                                                </li>
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'order-tracking']) }}">Track Order</a>
+                                                    </li>
+
+                                                    <li class="product-box-contain">
+                                                        <form method="POST" action="{{ route('store.auth.logout') }}">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-link p-0 text-start text-decoration-none">Logout</button>
+                                                        </form>
+                                                    </li>
+                                                @else
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'login']) }}">Log In</a>
+                                                    </li>
+
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'sign-up']) }}">Register</a>
+                                                    </li>
+
+                                                    <li class="product-box-contain">
+                                                        <a href="{{ route('store.page', ['page'=>'forgot']) }}">Forgot Password</a>
+                                                    </li>
+                                                @endif
                                             </ul>
                                         </div>
                                     </li>

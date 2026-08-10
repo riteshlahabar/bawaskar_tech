@@ -145,6 +145,22 @@
     min-height: 42px
 }
 
+input[type="file"].form-control {
+    padding: 0;
+    line-height: 42px;
+    overflow: hidden
+}
+
+input[type="file"].form-control::file-selector-button {
+    height: 100%;
+    margin-right: 12px;
+    padding: 0 14px;
+    border: 0;
+    border-right: 1px solid #e2e5ea;
+    background: #f7f8fa;
+    color: #4a5568
+}
+
 .form-control:focus,
 .form-select:focus {
     border-color: var(--theme-color);

@@ -266,3 +266,30 @@
     line-height: 1;
 }
 
+
+/* Keep full product image visible inside top selling cards */
+.product-box-4 .product-image.product-image-2 {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.product-box-4 .product-image.product-image-2 > a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-box-4 .product-image.product-image-2 img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain !important;
+    object-position: center;
+}

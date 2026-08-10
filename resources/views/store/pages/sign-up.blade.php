@@ -181,7 +181,7 @@
                                         <span class="input-group-text">
                                             <i data-feather="search" class="font-light"></i>
                                         </span>
-                                        <input type="text" class="form-control search-type" placeholder="Search for products">
+                                        <input type="text" class="form-control search-type" placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
                                         <span class="input-group-text close-search">
                                             <i data-feather="x" class="font-light"></i>
                                         </span>
@@ -207,7 +207,7 @@
 
                             <div class="category-dropdown">
                                 <div class="category-title">
-                                    <h5>Categories</h5>
+                                    <h5>{{ web_t('nav.categories', 'Categories') }}</h5>
                                     <button type="button" class="btn p-0 close-button text-content">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
@@ -639,7 +639,7 @@
             <li class="active">
                 <a href="{{ route('store.home') }}">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>{{ web_t('nav.home', 'Home') }}</span>
                 </a>
             </li>
 
@@ -653,7 +653,7 @@
             <li>
                 <a href="{{ route('store.page', ['page'=>'search']) }}" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>{{ web_t('header.search', 'Search') }}</span>
                 </a>
             </li>
 

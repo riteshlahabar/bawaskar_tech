@@ -115,7 +115,7 @@
                                     <span class="input-group-text">
                                         <i data-feather="search" class="font-light"></i>
                                     </span>
-                                    <input type="text" class="form-control search-type" placeholder="Search for products">
+                                    <input type="text" class="form-control search-type" placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
                                     <span class="input-group-text close-search">
                                         <i data-feather="x" class="font-light"></i>
                                     </span>
@@ -128,7 +128,7 @@
                                         <button class="btn location-button" data-bs-toggle="modal"
                                             data-bs-target="#locationModal">
                                             <i class="iconly-Location icli"></i>
-                                            <span>Location</span>
+                                            <span>{{ web_t('header.location', 'Location') }}</span>
                                             <i class="fa-solid fa-angle-down down-arrow"></i>
                                         </button>
                                     </div>
@@ -138,8 +138,8 @@
                                             <i class="iconly-Search icli"></i>
                                         </button>
                                         <input type="text" class="form-control"
-                                            placeholder="Search for products">
-                                        <button class="btn search-button" type="button">Search</button>
+                                            placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
+                                        <button class="btn search-button" type="button">{{ web_t('header.search', 'Search') }}</button>
                                     </div>
 
                                     @include('store.partials.language-selector')
@@ -154,7 +154,7 @@
                                     </div>
                                     <div class="support-number">
                                         <h2>(123) 456 7890</h2>
-                                        <h4>24/7 Support Center</h4>
+                                        <h4>{{ web_t('header.support_center', '24/7 Support Center') }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -280,7 +280,7 @@
                                 </div>
 
                                 <div class="mobile-name">
-                                    <h4>Download App</h4>
+                                    <h4>{{ web_t('header.download_app', 'Download App') }}</h4>
                                 </div>
                             </a>
                         </div>
@@ -297,7 +297,7 @@
             <li class="active">
                 <a href="{{ route('store.home') }}">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>{{ web_t('nav.home', 'Home') }}</span>
                 </a>
             </li>
 
@@ -311,7 +311,7 @@
             <li>
                 <a href="{{ route('store.page', ['page'=>'search']) }}" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>{{ web_t('header.search', 'Search') }}</span>
                 </a>
             </li>
 
@@ -3714,10 +3714,10 @@
                             @forelse($footerLinks->get('about', collect()) as $footerLink)
                                 <li><a href="{{ $footerLink->url ?: route('store.home') }}" class="light-text">{{ $footerLink->title }}</a></li>
                             @empty
-                                <li><a href="{{ route('store.page', ['page'=>'about-us']) }}" class="light-text">About Us</a></li>
-                                <li><a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="light-text">Contact Us</a></li>
-                                <li><a href="{{ route('store.home') }}" class="light-text">Terms & Conditions</a></li>
-                                <li><a href="{{ route('store.home') }}" class="light-text">Careers</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'about-us']) }}" class="light-text">{{ web_t('nav.about_us', 'About Us') }}</a></li>
+                                <li><a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="light-text">{{ web_t('nav.contact_us', 'Contact Us') }}</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">{{ web_t('footer.terms_conditions', 'Terms & Conditions') }}</a></li>
+                                <li><a href="{{ route('store.home') }}" class="light-text">{{ web_t('footer.careers', 'Careers') }}</a></li>
                                 <li><a href="{{ route('store.home') }}" class="light-text">Latest Blog</a></li>
                             @endforelse
                         </ul>
@@ -3742,7 +3742,7 @@
 
                     <div class="col-xxl-2 col-xl-4 col-sm-6">
                         <div class="footer-title">
-                            <h4 class="text-white">Categories</h4>
+                            <h4 class="text-white">{{ web_t('nav.categories', 'Categories') }}</h4>
                         </div>
                         <ul class="footer-list footer-list-light footer-contact">
                             @forelse($footerLinks->get('categories', collect()) as $footerLink)
@@ -3958,8 +3958,8 @@
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Choose your Delivery Location</h5>
-                    <p class="mt-1 text-content">Enter your address and we will specify the offer for your area.</p>
+                    <h5 class="modal-title" id="exampleModalLabel">{{ web_t('location.choose_delivery_location', 'Choose your Delivery Location') }}</h5>
+                    <p class="mt-1 text-content">{{ web_t('location.offer_area_note', 'Enter your address and we will specify the offer for your area.') }}</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -3972,7 +3972,7 @@
                         </div>
 
                         <div class="disabled-box">
-                            <h6>Select a Location</h6>
+                            <h6>{{ web_t('location.select_location', 'Select a Location') }}</h6>
                         </div>
 
                         <ul class="location-select custom-height">
@@ -4173,4 +4173,5 @@
 </body>
 
 </html>
+
 

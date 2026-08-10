@@ -190,7 +190,7 @@
                                         <span class="input-group-text">
                                             <i data-feather="search" class="font-light"></i>
                                         </span>
-                                        <input type="text" class="form-control search-type" placeholder="Search for products">
+                                        <input type="text" class="form-control search-type" placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
                                         <span class="input-group-text close-search">
                                             <i data-feather="x" class="font-light"></i>
                                         </span>
@@ -355,7 +355,7 @@
 
                             <div class="category-dropdown">
                                 <div class="category-title">
-                                    <h5>Categories</h5>
+                                    <h5>{{ web_t('nav.categories', 'Categories') }}</h5>
                                     <button type="button" class="btn p-0 close-button text-content">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
@@ -787,7 +787,7 @@
             <li class="active">
                 <a href="{{ route('store.home') }}">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>{{ web_t('nav.home', 'Home') }}</span>
                 </a>
             </li>
 
@@ -801,7 +801,7 @@
             <li>
                 <a href="{{ route('store.page', ['page'=>'search']) }}" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>{{ web_t('header.search', 'Search') }}</span>
                 </a>
             </li>
 
@@ -908,7 +908,7 @@
 
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                         <div class="footer-title">
-                            <h4>Categories</h4>
+                            <h4>{{ web_t('nav.categories', 'Categories') }}</h4>
                         </div>
 
                         <div class="footer-contain">
@@ -943,19 +943,19 @@
                         <div class="footer-contain">
                             <ul>
                                 <li>
-                                    <a href="{{ route('store.home') }}" class="text-content">Home</a>
+                                    <a href="{{ route('store.home') }}" class="text-content">{{ web_t('nav.home', 'Home') }}</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="text-content">Shop</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('store.page', ['page'=>'about-us']) }}" class="text-content">About Us</a>
+                                    <a href="{{ route('store.page', ['page'=>'about-us']) }}" class="text-content">{{ web_t('nav.about_us', 'About Us') }}</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('store.home') }}" class="text-content">Blog</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="text-content">Contact Us</a>
+                                    <a href="{{ route('store.page', ['page'=>'contact-us']) }}" class="text-content">{{ web_t('nav.contact_us', 'Contact Us') }}</a>
                                 </li>
                             </ul>
                         </div>
@@ -981,7 +981,7 @@
                                     <a href="{{ route('store.page', ['page'=>'wishlist']) }}" class="text-content">Your Wishlist</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('store.page', ['page'=>'search']) }}" class="text-content">Search</a>
+                                    <a href="{{ route('store.page', ['page'=>'search']) }}" class="text-content">{{ web_t('header.search', 'Search') }}</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('store.page', ['page'=>'faq']) }}" class="text-content">FAQ</a>
@@ -992,7 +992,7 @@
 
                     <div class="col-xl-3 col-lg-4 col-sm-6">
                         <div class="footer-title">
-                            <h4>Contact Us</h4>
+                            <h4>{{ web_t('nav.contact_us', 'Contact Us') }}</h4>
                         </div>
 
                         <div class="footer-contact">
@@ -1042,7 +1042,7 @@
 
             <div class="sub-footer section-small-space">
                 <div class="reserve">
-                    <h6 class="text-content">Ã‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
+                    <h6 class="text-content">Ãƒâ€šÃ‚Â©2022 Bawaskar Farmer Store All rights reserved</h6>
                 </div>
 
                 <div class="payment">
@@ -1126,7 +1126,7 @@
                                 <div class="product-detail">
                                     <h4>Product Details :</h4>
                                     <p>Candy canes sugar plum tart cotton candy chupa chups sugar plum chocolate I love.
-                                        Caramels marshmallow icing dessert candy canes I love soufflÃƒÂ© I love toffee.
+                                        Caramels marshmallow icing dessert candy canes I love soufflÃƒÆ’Ã‚Â© I love toffee.
                                         Marshmallow pie sweet sweet roll sesame snaps tiramisu jelly bear claw. Bonbon
                                         muffin I love carrot cake sugar plum dessert bonbon.</p>
                                 </div>

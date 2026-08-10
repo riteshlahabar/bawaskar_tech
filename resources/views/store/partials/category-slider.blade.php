@@ -28,7 +28,7 @@
     <div>
         <div class="category-box-list">
             <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="category-name">
-                <h4>Products</h4>
+                <h4>{{ web_t('nav.products', 'Products') }}</h4>
                 <h6>0 items</h6>
             </a>
             <div class="category-box-view">

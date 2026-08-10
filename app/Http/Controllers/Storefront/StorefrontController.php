@@ -639,3 +639,4 @@ class StorefrontController extends Controller
         return $query;
     }
 }
+

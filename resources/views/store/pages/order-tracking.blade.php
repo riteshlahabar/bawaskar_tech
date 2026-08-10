@@ -844,7 +844,7 @@
     <!-- Breadcrumb Section End -->
 
     @php
-        $activeTrackedOrder = $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
+        $trackedOrder = $trackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first();
     @endphp
 
     <!-- Order Detail Section Start -->
@@ -858,7 +858,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif($storeOrders->isEmpty() || ! $activeTrackedOrder)
+            @elseif($storeOrders->isEmpty() || ! ($trackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first()))
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-light store-tracking-empty mb-0">
@@ -868,23 +868,23 @@
                 </div>
             @else
                 @php
-                    $firstItem = $activeTrackedOrder->items->first();
+                    $firstItem = $trackedOrder->items->first();
                     $trackedProduct = $firstItem?->product;
                     $trackedImage = optional($trackedProduct?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png');
-                    $latestDispatch = $activeTrackedOrder->dispatches->sortByDesc(fn ($dispatch) => $dispatch->delivered_at?->timestamp ?? $dispatch->dispatched_at?->timestamp ?? $dispatch->created_at?->timestamp ?? 0)->first();
-                    $trackingCode = $latestDispatch?->tracking_no ?: ($latestDispatch?->dispatch_no ?: $activeTrackedOrder->order_no);
+                    $latestDispatch = $trackedOrder->dispatches->sortByDesc(fn ($dispatch) => $dispatch->delivered_at?->timestamp ?? $dispatch->dispatched_at?->timestamp ?? $dispatch->created_at?->timestamp ?? 0)->first();
+                    $trackingCode = $latestDispatch?->tracking_no ?: ($latestDispatch?->dispatch_no ?: $trackedOrder->order_no);
                     $courierName = $latestDispatch?->courier_name ?: 'Bawaskar Delivery Desk';
-                    $packageInfo = $activeTrackedOrder->items->count().' item(s) | Rs. '.number_format((float) $activeTrackedOrder->grand_total, 2);
+                    $packageInfo = $trackedOrder->items->count().' item(s) | Rs. '.number_format((float) $trackedOrder->grand_total, 2);
                     $originLabel = 'Dr. Bawaskar Technology Warehouse';
                     $destinationLabel = collect([
-                        $activeTrackedOrder->contact_name,
-                        $activeTrackedOrder->address_line1,
-                        $activeTrackedOrder->address_line2,
-                        trim(collect([$activeTrackedOrder->city, $activeTrackedOrder->state])->filter()->implode(', ')),
-                        $activeTrackedOrder->pincode,
+                        $trackedOrder->contact_name,
+                        $trackedOrder->address_line1,
+                        $trackedOrder->address_line2,
+                        trim(collect([$trackedOrder->city, $trackedOrder->state])->filter()->implode(', ')),
+                        $trackedOrder->pincode,
                     ])->filter(fn ($value) => filled($value))->implode(', ');
-                    $statusLabel = ucwords(str_replace('_', ' ', (string) ($activeTrackedOrder->status ?: 'pending')));
-                    $paymentLabel = ucwords(str_replace('_', ' ', (string) ($activeTrackedOrder->payment_status ?: 'pending')));
+                    $statusLabel = ucwords(str_replace('_', ' ', (string) ($trackedOrder->status ?: 'pending')));
+                    $paymentLabel = ucwords(str_replace('_', ' ', (string) ($trackedOrder->payment_status ?: 'pending')));
                     $statusStepMap = [
                         'salesman_review' => 1,
                         'admin_review' => 2,
@@ -893,22 +893,22 @@
                         'dispatched' => 4,
                         'delivered' => 5,
                     ];
-                    $currentStep = $activeTrackedOrder->status === 'cancelled' ? 1 : ($statusStepMap[$activeTrackedOrder->status] ?? 1);
+                    $currentStep = $trackedOrder->status === 'cancelled' ? 1 : ($statusStepMap[$trackedOrder->status] ?? 1);
                     $progressSteps = [
-                        ['label' => 'Order Placed', 'time' => $activeTrackedOrder->created_at?->format('d M Y, h:i A') ?: 'Pending'],
-                        ['label' => 'Reviewed', 'time' => in_array((string) $activeTrackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true) ? (($activeTrackedOrder->approved_at ?: $activeTrackedOrder->updated_at ?: $activeTrackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
-                        ['label' => 'Packed', 'time' => in_array((string) $activeTrackedOrder->status, ['packing', 'dispatched', 'delivered'], true) ? (($activeTrackedOrder->updated_at ?: $activeTrackedOrder->approved_at ?: $activeTrackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
+                        ['label' => 'Order Placed', 'time' => $trackedOrder->created_at?->format('d M Y, h:i A') ?: 'Pending'],
+                        ['label' => 'Reviewed', 'time' => in_array((string) $trackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true) ? (($trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
+                        ['label' => 'Packed', 'time' => in_array((string) $trackedOrder->status, ['packing', 'dispatched', 'delivered'], true) ? (($trackedOrder->updated_at ?: $trackedOrder->approved_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Completed') : 'Pending'],
                         ['label' => 'Dispatched', 'time' => $latestDispatch?->dispatched_at?->format('d M Y, h:i A') ?: 'Pending'],
                         ['label' => 'Delivered', 'time' => $latestDispatch?->delivered_at?->format('d M Y, h:i A') ?: 'Pending'],
                     ];
                     $trackingHistory = [
-                        ['label' => 'Order Placed', 'moment' => $activeTrackedOrder->created_at, 'location' => 'Storefront Checkout'],
+                        ['label' => 'Order Placed', 'moment' => $trackedOrder->created_at, 'location' => 'Storefront Checkout'],
                     ];
-                    if (in_array((string) $activeTrackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true)) {
-                        $trackingHistory[] = ['label' => 'Sales/Admin Review Completed', 'moment' => $activeTrackedOrder->approved_at ?: $activeTrackedOrder->updated_at ?: $activeTrackedOrder->created_at, 'location' => 'Order Review Desk'];
+                    if (in_array((string) $trackedOrder->status, ['admin_review', 'approved', 'packing', 'dispatched', 'delivered'], true)) {
+                        $trackingHistory[] = ['label' => 'Sales/Admin Review Completed', 'moment' => $trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at, 'location' => 'Order Review Desk'];
                     }
-                    if (in_array((string) $activeTrackedOrder->status, ['packing', 'dispatched', 'delivered'], true)) {
-                        $trackingHistory[] = ['label' => 'Packed For Dispatch', 'moment' => $activeTrackedOrder->updated_at ?: $activeTrackedOrder->approved_at ?: $activeTrackedOrder->created_at, 'location' => $originLabel];
+                    if (in_array((string) $trackedOrder->status, ['packing', 'dispatched', 'delivered'], true)) {
+                        $trackingHistory[] = ['label' => 'Packed For Dispatch', 'moment' => $trackedOrder->updated_at ?: $trackedOrder->approved_at ?: $trackedOrder->created_at, 'location' => $originLabel];
                     }
                     if ($latestDispatch?->dispatched_at) {
                         $trackingHistory[] = ['label' => 'Dispatched', 'moment' => $latestDispatch->dispatched_at, 'location' => $courierName];
@@ -916,8 +916,8 @@
                     if ($latestDispatch?->delivered_at) {
                         $trackingHistory[] = ['label' => 'Delivered', 'moment' => $latestDispatch->delivered_at, 'location' => $destinationLabel ?: 'Delivery Address'];
                     }
-                    if ($activeTrackedOrder->status === 'cancelled') {
-                        $trackingHistory[] = ['label' => 'Order Cancelled', 'moment' => $activeTrackedOrder->updated_at ?: $activeTrackedOrder->created_at, 'location' => 'Order Management Desk'];
+                    if ($trackedOrder->status === 'cancelled') {
+                        $trackingHistory[] = ['label' => 'Order Cancelled', 'moment' => $trackedOrder->updated_at ?: $trackedOrder->created_at, 'location' => 'Order Management Desk'];
                     }
                 @endphp
 
@@ -933,7 +933,7 @@
                                     <label for="tracked-order" class="form-label">Select Order</label>
                                     <select id="tracked-order" name="order" class="form-select">
                                         @foreach($storeOrders as $orderOption)
-                                            <option value="{{ $orderOption->order_no }}" @selected($orderOption->id === $activeTrackedOrder->id)>
+                                            <option value="{{ $orderOption->order_no }}" @selected($orderOption->id === $trackedOrder->id)>
                                                 {{ $orderOption->order_no }} - {{ $orderOption->created_at?->format('d M Y') ?: 'N/A' }} - Rs. {{ number_format((float) $orderOption->grand_total, 2) }}
                                             </option>
                                         @endforeach
@@ -962,7 +962,7 @@
                             <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="info"></i></div><div class="order-details-name"><h5 class="text-content">Package Info</h5><h4>{{ $packageInfo }}</h4></div></div></div>
                             <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="crosshair"></i></div><div class="order-details-name"><h5 class="text-content">From</h5><h4>{{ $originLabel }}</h4></div></div></div>
                             <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="map-pin"></i></div><div class="order-details-name"><h5 class="text-content">Destination</h5><h4>{{ $destinationLabel ?: 'Address not available' }}</h4></div></div></div>
-                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="calendar"></i></div><div class="order-details-name"><h5 class="text-content">Last Update</h5><h4>{{ ($latestDispatch?->delivered_at ?: $latestDispatch?->dispatched_at ?: $activeTrackedOrder->approved_at ?: $activeTrackedOrder->updated_at ?: $activeTrackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Pending' }}</h4></div></div></div>
+                            <div class="col-xl-4 col-sm-6"><div class="order-details-contain"><div class="order-tracking-icon"><i class="text-content" data-feather="calendar"></i></div><div class="order-details-name"><h5 class="text-content">Last Update</h5><h4>{{ ($latestDispatch?->delivered_at ?: $latestDispatch?->dispatched_at ?: $trackedOrder->approved_at ?: $trackedOrder->updated_at ?: $trackedOrder->created_at)?->format('d M Y, h:i A') ?: 'Pending' }}</h4></div></div></div>
 
                             <div class="col-12 overflow-hidden">
                                 <ol class="progtrckr">
@@ -976,7 +976,7 @@
                                 </ol>
                             </div>
 
-                            @if($activeTrackedOrder->status === 'cancelled')
+                            @if($trackedOrder->status === 'cancelled')
                                 <div class="col-12">
                                     <div class="alert alert-danger mb-0">This order was cancelled. Please contact support if you need help with a replacement or refund.</div>
                                 </div>
@@ -992,7 +992,7 @@
     <!-- Order Table Section Start -->
     <section class="order-table-section section-b-space">
         <div class="container-fluid-lg">
-            @if($storeUser && $activeTrackedOrder)
+            @if($storeUser && ($trackedOrder ?? $storeTrackedOrder ?? $storeLastOrder ?? $storeOrders->first()))
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
@@ -1562,5 +1562,7 @@
 </body>
 
 </html>
+
+
 
 

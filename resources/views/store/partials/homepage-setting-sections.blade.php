@@ -232,7 +232,7 @@
                                             </div>
                                         </div>
                                         @if($entryCoupon($entry))
-                                            <div class="bank-footer bank-footer-1">
+                                            <div class="bank-footer {{ $loop->iteration === 2 ? 'bank-footer-2' : 'bank-footer-1' }}">
                                                 <h4>{{ web_t('coupon.code', 'Code') }} : <input value="{{ $entryCoupon($entry) }}" readonly></h4>
                                                 <button class="bank-coupon btn">{{ web_t('coupon.copy_code', 'Copy Code') }}</button>
                                             </div>

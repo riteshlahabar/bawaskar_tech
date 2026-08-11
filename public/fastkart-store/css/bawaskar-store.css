@@ -476,3 +476,13 @@
 .store-topbar-dropdown-down {
     display: block;
 }
+/* Make the second bank offer coupon strip blue. */
+.bank-section .slick-slide:nth-child(2) .bank-footer-2,
+.bank-section .bank-footer-2 {
+    background: linear-gradient(90deg, #0756b8 0%, #1f83ff 100%) !important;
+}
+
+.bank-section .bank-footer-2 .bank-coupon {
+    background-color: rgba(255, 255, 255, .16) !important;
+    color: #fff !important;
+}

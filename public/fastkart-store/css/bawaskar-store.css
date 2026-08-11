@@ -458,3 +458,22 @@
     color: #7a8494;
     margin-left: 12px;
 }
+.store-topbar-language,
+.store-topbar-currency {
+    position: relative;
+}
+
+.store-topbar-language .dropdown-menu,
+.store-topbar-currency .dropdown-menu {
+    top: 100% !important;
+    bottom: auto !important;
+    right: 0 !important;
+    left: auto !important;
+    transform: none !important;
+    margin-top: 8px !important;
+    z-index: 1060;
+}
+
+.store-topbar-dropdown-down {
+    display: block;
+}

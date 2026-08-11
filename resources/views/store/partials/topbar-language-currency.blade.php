@@ -5,7 +5,7 @@
 
 <li>
     <div class="dropdown theme-form-select store-topbar-language">
-        <button class="btn dropdown-toggle" type="button" id="select-language" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn dropdown-toggle" type="button" id="select-language" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
             <span class="store-india-flag" aria-hidden="true"></span>
             <span>{{ $currentLanguage?->name ?? 'English' }}</span>
         </button>
@@ -30,7 +30,7 @@
 </li>
 <li>
     <div class="dropdown theme-form-select store-topbar-currency">
-        <button class="btn dropdown-toggle" type="button" id="select-currency" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn dropdown-toggle" type="button" id="select-currency" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
             <span>INR</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end sm-dropdown-menu">

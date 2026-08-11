@@ -275,31 +275,31 @@
 
 /* Fill product images inside storefront cards */
 .product-box-4 .product-image.product-image-2 {
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: calc(100% + 32px);
+    height: 190px;
+    margin: -16px -16px 0;
     padding: 0;
     overflow: hidden;
+    border-radius: 7px 7px 0 0;
+    background-color: #f8f8f8;
 }
 
 .product-box-4 .product-image.product-image-2 > a {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
 }
 
 .product-box-4 .product-image.product-image-2 img {
     display: block;
     width: 100% !important;
     height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     margin: 0 !important;
     object-fit: cover !important;
     object-position: center;
+    transform: scale(1.08);
 }
 
 /* Match inner page header logo size with home page header */

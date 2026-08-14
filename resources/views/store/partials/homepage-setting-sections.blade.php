@@ -301,24 +301,23 @@
                 $stripImage = $stripImage ?: ($entry ? $entryImage($entry, 'main') : null);
             @endphp
 
-            @if($entry)
+            <?php if ($entry) { ?>
                 <section class="offer-section" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        @if($stripImage)
+                        <?php if ($stripImage) { ?>
                             <a href="{{ $entryUrl($entry) }}" class="d-block">
                                 <img src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
                             </a>
-                        @else
+                        <?php } else { ?>
                             <div class="offer-box hover-effect" style="{{ $entryBg($entry) ? 'background-color: '.$entryBg($entry).';' : '' }} {{ $entryColor($entry) ? 'color: '.$entryColor($entry).';' : '' }}">
                                 <h2>{{ $entryTitle($entry, $section->title) }} <span>{{ $entryDiscount($entry) }}</span></h2>
                                 <button class="btn theme-bg-color text-white" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }}</button>
                             </div>
-                        @endif
+                        <?php } ?>
                     </div>
                 </section>
-            @endif
+            <?php } ?>
             @break
-
         @case('blog_section')
             @if($entries->isNotEmpty())
                 <section class="blog-section" id="home-section-{{ $section->section_key }}">

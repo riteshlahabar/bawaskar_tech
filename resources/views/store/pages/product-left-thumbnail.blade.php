@@ -1788,21 +1788,28 @@
 
                         <!-- Banner Section -->
                         <div class="ratio_156 pt-25">
-                            <div class="home-contain">
-                                <img src="{{ asset('fastkart-store/images/vegetable/banner/8.jpg') }}" class="bg-img blur-up lazyload"
-                                    alt="">
-                                <div class="home-detail p-top-left home-p-medium">
-                                    <div>
-                                        <h6 class="text-yellow home-banner">Seafood</h6>
-                                        <h3 class="text-uppercase fw-normal"><span
-                                                class="theme-color fw-bold">Freshes</span> Products</h3>
-                                        <h3 class="fw-light">every hour</h3>
-                                        <button onclick="location.href = 'shop-left-sidebar.html';"
-                                            class="btn btn-animation btn-md fw-bold mend-auto">Shop Now <i
-                                                class="fa-solid fa-arrow-right icon"></i></button>
+                            @if($storeProduct?->detail_sidebar_banner_image)
+                                <a href="{{ $storeProduct->detail_sidebar_banner_url ?: 'javascript:void(0)' }}" class="home-contain d-block">
+                                    <img src="{{ asset($storeProduct->detail_sidebar_banner_image) }}" class="bg-img blur-up lazyload"
+                                        alt="{{ $storeProduct->translatedName() }}">
+                                </a>
+                            @else
+                                <div class="home-contain">
+                                    <img src="{{ asset('fastkart-store/images/vegetable/banner/8.jpg') }}" class="bg-img blur-up lazyload"
+                                        alt="">
+                                    <div class="home-detail p-top-left home-p-medium">
+                                        <div>
+                                            <h6 class="text-yellow home-banner">Seafood</h6>
+                                            <h3 class="text-uppercase fw-normal"><span
+                                                    class="theme-color fw-bold">Freshes</span> Products</h3>
+                                            <h3 class="fw-light">every hour</h3>
+                                            <button onclick="location.href = 'shop-left-sidebar.html';"
+                                                class="btn btn-animation btn-md fw-bold mend-auto">Shop Now <i
+                                                    class="fa-solid fa-arrow-right icon"></i></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>

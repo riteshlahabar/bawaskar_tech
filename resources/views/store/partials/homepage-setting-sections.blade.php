@@ -282,7 +282,7 @@
             @break
 
         @case('strip_offer_banner')
-            @php($entry = $entries->first())
+            @php($entry = $items->first() ?: $products->first())
             @if($entry)
                 @php($stripImage = $entryImage($entry, 'main'))
                 <section class="offer-section" id="home-section-{{ $section->section_key }}">

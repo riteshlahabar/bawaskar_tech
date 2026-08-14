@@ -2,7 +2,7 @@
     $displayCategories = collect($categories)->values();
 @endphp
 
-@forelse($displayCategories as $category)
+@foreach($displayCategories as $category)
     @php
         $categoryUrl = route('store.category', ['category' => $category->slug]);
         $categoryImage = $category->storefront_image_url;
@@ -24,23 +24,5 @@
             </div>
         </div>
     </div>
-@empty
-    <div>
-        <div class="category-box-list">
-            <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="category-name">
-                <h4>{{ web_t('nav.products', 'Products') }}</h4>
-                <h6>0 items</h6>
-            </a>
-            <div class="category-box-view">
-                <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}">
-                    <img src="{{ asset('fastkart-store/images/grocery/category/1.png') }}" class="img-fluid blur-up lazyload" alt="Products">
-                </a>
-                <button onclick="location.href='{{ route('store.page', ['page'=>'shop-left-sidebar']) }}';" class="btn shop-button">
-                    <span>Shop Now</span>
-                    <i class="fas fa-angle-right"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-@endforelse
+@endforeach
 

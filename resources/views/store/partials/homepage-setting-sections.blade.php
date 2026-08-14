@@ -55,7 +55,7 @@
             }
         }
 
-        return $path ? asset($path) : asset($fallback);
+        return $path ? asset($path) : null;
     };
 
     $entryUrl = function ($entry) use ($isProduct) {
@@ -117,7 +117,7 @@
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="home-contain rounded-0 p-0">
-                                        <img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/banner/1.jpg') }}" class="img-fluid bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                        <img src="{{ $entryImage($entry, 'main') }}" class="img-fluid bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                         <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                             <div class="container-fluid-lg">
                                                 @if($entrySubtitle($entry))<h6 class="ls-expanded theme-color text-uppercase">{{ $entrySubtitle($entry) }}</h6>@endif
@@ -143,7 +143,7 @@
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="banner-contain-3 hover-effect">
-                                        <a href="{{ $entryUrl($entry) }}"><img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/banner/2.jpg') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
+                                        <a href="{{ $entryUrl($entry) }}"><img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
                                         <div class="banner-detail p-center-left w-75 banner-p-sm mend-auto">
                                             @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
                                             <h4 class="fw-bold mb-0">{{ $entryTitle($entry, $section->title) }}</h4>
@@ -219,7 +219,7 @@
                                         <div class="bank-header">
                                             <div class="bank-left w-100">
                                                 <div class="bank-image">
-                                                    <img src="{{ $entryImage($entry, 'logo', 'fastkart-store/images/grocery/bank/name/1.png') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                    <img src="{{ $entryImage($entry, 'logo') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
                                                 </div>
                                                 <div class="bank-name">
                                                     <h2>{{ $entryTitle($entry, $section->title) }}</h2>
@@ -228,7 +228,7 @@
                                                 </div>
                                             </div>
                                             <div class="bank-right w-100">
-                                                <img src="{{ $entryImage($entry, 'offer', 'fastkart-store/images/grocery/bank/price/1.svg') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                <img src="{{ $entryImage($entry, 'offer') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
                                             </div>
                                         </div>
                                         @if($entryCoupon($entry))
@@ -270,7 +270,7 @@
                                 <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($section->layout_type === 'two_column_banner' ? 'col-md-6' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6')) }}">
                                     <div class="banner-contain hover-effect">
                                         <a href="{{ $entryUrl($entry) }}">
-                                            <img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/banner/6.jpg') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                            <img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                         </a>
                                     </div>
                                 </div>
@@ -299,14 +299,14 @@
             @if($entries->isNotEmpty())
                 <section class="blog-section" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
-                        <div class="title"><h2>{{ storefront_public_t($section->title ?: 'Featured Blog', 'homepage_section') }}</h2></div>
+                        @if($section->title)<div class="title"><h2>{{ storefront_public_t($section->title, 'homepage_section') }}</h2></div>@endif
                         <div class="slider-3-blog arrow-slider slick-height">
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="blog-box ratio_50">
                                         <div class="blog-box-image">
                                             <a href="{{ $entryUrl($entry) }}">
-                                                <img src="{{ $entryImage($entry, 'main', 'fastkart-store/images/grocery/blog/1.jpg') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                <img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                             </a>
                                         </div>
                                         <div class="blog-detail">

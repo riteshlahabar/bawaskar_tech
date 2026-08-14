@@ -14,24 +14,7 @@ class StorefrontSeeder extends Seeder
 {
     public function run(): void
     {
-        $banners = [
-            ['placement'=>'hero_main','title'=>'Premium Quality Dry Fruits','subtitle'=>'Weekend Special offer','description'=>'Fresh & Top Quality Dry Fruits are available here!','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/1.jpg','sort_order'=>1],
-            ['placement'=>'promo_small','title'=>'Summer Ice Cream','subtitle'=>'50% Discount','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/2.jpg','sort_order'=>1],
-            ['placement'=>'promo_small','title'=>'Fruits Juice Series','subtitle'=>'Today Special','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/3.jpg','sort_order'=>2],
-            ['placement'=>'promo_small','title'=>'Eat Healthy Be Healthy','subtitle'=>'Combo Offer','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/4.jpg','sort_order'=>3],
-            ['placement'=>'promo_small','title'=>'As Fresh As Fruit','subtitle'=>'Amazing Deals','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/5.jpg','sort_order'=>4],
-            ['placement'=>'bank_offer','title'=>'GET 10% OFF','subtitle'=>'When you spend $20','description'=>'Valid for 30 days','button_text'=>'Copy Code','button_url'=>'MULTICART','image_path'=>'fastkart-store/images/grocery/bank/price/1.svg','sort_order'=>1],
-            ['placement'=>'middle_promo','title'=>'Fresh Fruits','subtitle'=>'Weekend Special','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/8.png','sort_order'=>1],
-            ['placement'=>'footer_promo','title'=>'Healthy Food','subtitle'=>'Fresh Grocery','button_text'=>'Shop Now','button_url'=>'/shop-left-sidebar','image_path'=>'fastkart-store/images/grocery/banner/9.jpg','sort_order'=>1],
-        ];
-
-        foreach ($banners as $banner) {
-            StorefrontBanner::query()->updateOrCreate(
-                ['placement' => $banner['placement'], 'sort_order' => $banner['sort_order']],
-                $banner + ['is_active' => true]
-            );
-        }
-
+        // Banners are managed from admin. Do not seed Fastkart demo banners.
         $sections = [
             ['section_key'=>'shop_by_categories','title'=>'Shop By Categories','section_type'=>'category','source_type'=>'category','product_limit'=>12,'sort_order'=>1],
             ['section_key'=>'fruits_vegetables','title'=>'Fruits & Vegetables','section_type'=>'product','source_type'=>'manual','product_limit'=>12,'sort_order'=>2],
@@ -51,16 +34,7 @@ class StorefrontSeeder extends Seeder
                 $section + ['is_active' => true]
             );
         }
-
-        $demoProduct = Product::query()->first();
-        if ($demoProduct) {
-            StorefrontSection::query()->where('section_type', 'product')->get()->each(function (StorefrontSection $section) use ($demoProduct): void {
-                StorefrontSectionProduct::query()->updateOrCreate(
-                    ['section_id' => $section->id, 'product_id' => $demoProduct->id],
-                    ['sort_order' => 1, 'is_active' => true]
-                );
-            });
-        }
+        // Products are assigned to homepage sections from admin. Do not auto-fill sections with demo data.
 
         $services = [
             ['title'=>'Free Shipping','subtitle'=>'Free Shipping world wide','icon_path'=>'fastkart-store/svg/svg/service-icon-4.svg#shipping','sort_order'=>1],

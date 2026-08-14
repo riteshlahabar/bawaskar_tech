@@ -488,5 +488,7 @@
 }
 
 .special-offer-box {
+    background-image: none !important;
+    background-color: #f8f8f8;
     height: 100%;
 }

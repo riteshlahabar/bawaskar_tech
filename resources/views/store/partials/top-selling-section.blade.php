@@ -36,7 +36,7 @@
             <div class="row g-sm-4 g-3">
                 @if($dealProduct)
                     <div class="col-xxl-4 col-lg-5 order-lg-2">
-                        <div class="special-offer-box wow fadeInUp">
+                        <div class="product-bg-image special-offer-box wow fadeInUp">
                             <div class="product-title product-warning">
                                 <h2>{{ web_t('offer.special_offer', 'Special Offer') }}</h2>
                             </div>

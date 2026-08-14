@@ -113,6 +113,17 @@
                     </div>
                 </div>
             </div>
+            @if($product->detail_sidebar_banner_image)
+                <div class="col-xxl-3 col-xl-4 col-lg-5">
+                    <div class="right-sidebar-box detail-sidebar-banner-box">
+                        <div class="ratio_156">
+                            <a href="{{ $product->detail_sidebar_banner_url ?: 'javascript:void(0)' }}" class="home-contain d-block">
+                                <img src="{{ asset($product->detail_sidebar_banner_image) }}" class="bg-img blur-up lazyload" alt="{{ $displayName }}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </section>

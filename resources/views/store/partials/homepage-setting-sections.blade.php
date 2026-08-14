@@ -284,13 +284,24 @@
         @case('strip_offer_banner')
             @php
                 $stripEntries = $items->concat($products);
-                $entry = $stripEntries
-                    ->filter(fn($stripEntry) => filled($entryImage($stripEntry, 'main')))
-                    ->sortByDesc(fn($stripEntry) => optional($stripEntry->updated_at)->timestamp ?: (int) ($stripEntry->id ?? 0))
-                    ->first() ?: $items->first() ?: $products->first();
+                $entry = null;
+                $stripImage = null;
+
+                foreach ($stripEntries->sortByDesc('id') as $stripEntry) {
+                    $image = $entryImage($stripEntry, 'main');
+
+                    if (filled($image)) {
+                        $entry = $stripEntry;
+                        $stripImage = $image;
+                        break;
+                    }
+                }
+
+                $entry = $entry ?: $items->first() ?: $products->first();
+                $stripImage = $stripImage ?: ($entry ? $entryImage($entry, 'main') : null);
             @endphp
+
             @if($entry)
-                @php($stripImage = $entryImage($entry, 'main'))
                 <section class="offer-section" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
                         @if($stripImage)

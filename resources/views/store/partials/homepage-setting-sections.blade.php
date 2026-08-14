@@ -282,7 +282,13 @@
             @break
 
         @case('strip_offer_banner')
-            @php($entry = $items->first() ?: $products->first())
+            @php
+                $stripEntries = $items->concat($products);
+                $entry = $stripEntries
+                    ->filter(fn($stripEntry) => filled($entryImage($stripEntry, 'main')))
+                    ->sortByDesc(fn($stripEntry) => optional($stripEntry->updated_at)->timestamp ?: (int) ($stripEntry->id ?? 0))
+                    ->first() ?: $items->first() ?: $products->first();
+            @endphp
             @if($entry)
                 @php($stripImage = $entryImage($entry, 'main'))
                 <section class="offer-section" id="home-section-{{ $section->section_key }}">

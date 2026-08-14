@@ -16,7 +16,7 @@
     $dealInWishlist = $dealProduct ? in_array($dealProduct->id, array_map('intval', $storeWishlistProductIds ?? []), true) : false;
 
     if ($dealProduct) {
-        $dealImage = $dealProduct->storefront_deal_image_url;
+        $dealImage = $dealProduct->storefront_image_url;
         $dealDisplayName = $dealProduct->translatedName();
         $dealUrl = route('store.product', ['product' => $dealProduct->id]);
         $dealPrice = (float) ($audience === 'dealer' ? $dealProduct->dealer_price : $dealProduct->customer_price);
@@ -55,6 +55,29 @@
 
                                 <div class="top-selling-slider product-arrow">
                                     <div>
+                                        <div class="product-image">
+                                            <a href="{{ $dealUrl }}">
+                                                <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealDisplayName }}">
+                                            </a>
+
+                                            <ul class="option">
+                                                <li data-bs-toggle="tooltip" data-bs-placement="top" title="Quick View">
+                                                    <a href="{{ $dealUrl }}">
+                                                        <i class="iconly-Show icli"></i>
+                                                    </a>
+                                                </li>
+                                                <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <a href="{{ route('store.page', ['page' => 'wishlist']) }}"
+                                                       class="notifi-wishlist store-wishlist-toggle {{ $dealInWishlist ? 'is-active active' : '' }}"
+                                                       data-store-wishlist-toggle
+                                                       data-product-id="{{ $dealProduct->id }}"
+                                                       data-in-wishlist="{{ $dealInWishlist ? '1' : '0' }}"
+                                                       aria-pressed="{{ $dealInWishlist ? 'true' : 'false' }}">
+                                                        <i class="iconly-Heart icli"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
 
                                         <div class="product-detail text-center">
                                             <ul class="rating justify-content-center">

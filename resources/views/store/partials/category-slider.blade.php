@@ -14,9 +14,11 @@
                 <h6>{{ (int) ($category->products_count ?? 0) }} items</h6>
             </a>
             <div class="category-box-view">
-                <a href="{{ $categoryUrl }}">
-                    <img src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->storefront_name }}">
-                </a>
+                @if($categoryImage)
+                    <a href="{{ $categoryUrl }}">
+                        <img src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->storefront_name }}">
+                    </a>
+                @endif
                 <button onclick="location.href='{{ $categoryUrl }}';" class="btn shop-button">
                     <span>Shop Now</span>
                     <i class="fas fa-angle-right"></i>

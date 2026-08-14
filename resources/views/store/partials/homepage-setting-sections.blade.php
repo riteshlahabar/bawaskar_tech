@@ -107,6 +107,42 @@
         $entries = $products->isNotEmpty() ? $products : $items;
     @endphp
 
+    <?php if ((string) $section->section_type === 'strip_offer_banner') {
+        $stripEntries = $items->concat($products);
+        $entry = null;
+        $stripImage = null;
+
+        foreach ($stripEntries->sortByDesc('id') as $stripEntry) {
+            $image = $entryImage($stripEntry, 'main');
+
+            if (filled($image)) {
+                $entry = $stripEntry;
+                $stripImage = $image;
+                break;
+            }
+        }
+
+        $entry = $entry ?: $items->first() ?: $products->first();
+        $stripImage = $stripImage ?: ($entry ? $entryImage($entry, 'main') : null);
+    ?>
+        <?php if ($entry) { ?>
+            <section class="offer-section" id="home-section-{{ $section->section_key }}">
+                <div class="container-fluid-lg">
+                    <?php if ($stripImage) { ?>
+                        <a href="{{ $entryUrl($entry) }}" class="d-block">
+                            <img src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
+                        </a>
+                    <?php } else { ?>
+                        <div class="offer-box hover-effect" style="{{ $entryBg($entry) ? 'background-color: '.$entryBg($entry).';' : '' }} {{ $entryColor($entry) ? 'color: '.$entryColor($entry).';' : '' }}">
+                            <h2>{{ $entryTitle($entry, $section->title) }} <span>{{ $entryDiscount($entry) }}</span></h2>
+                            <button class="btn theme-bg-color text-white" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }}</button>
+                        </div>
+                    <?php } ?>
+                </div>
+            </section>
+        <?php } ?>
+    <?php continue; } ?>
+
     @switch($section->section_type)
 
         @case('hero_slider')
@@ -281,43 +317,6 @@
             @endif
             @break
 
-        @case('strip_offer_banner')
-            @php
-                $stripEntries = $items->concat($products);
-                $entry = null;
-                $stripImage = null;
-
-                foreach ($stripEntries->sortByDesc('id') as $stripEntry) {
-                    $image = $entryImage($stripEntry, 'main');
-
-                    if (filled($image)) {
-                        $entry = $stripEntry;
-                        $stripImage = $image;
-                        break;
-                    }
-                }
-
-                $entry = $entry ?: $items->first() ?: $products->first();
-                $stripImage = $stripImage ?: ($entry ? $entryImage($entry, 'main') : null);
-            @endphp
-
-            <?php if ($entry) { ?>
-                <section class="offer-section" id="home-section-{{ $section->section_key }}">
-                    <div class="container-fluid-lg">
-                        <?php if ($stripImage) { ?>
-                            <a href="{{ $entryUrl($entry) }}" class="d-block">
-                                <img src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
-                            </a>
-                        <?php } else { ?>
-                            <div class="offer-box hover-effect" style="{{ $entryBg($entry) ? 'background-color: '.$entryBg($entry).';' : '' }} {{ $entryColor($entry) ? 'color: '.$entryColor($entry).';' : '' }}">
-                                <h2>{{ $entryTitle($entry, $section->title) }} <span>{{ $entryDiscount($entry) }}</span></h2>
-                                <button class="btn theme-bg-color text-white" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }}</button>
-                            </div>
-                        <?php } ?>
-                    </div>
-                </section>
-            <?php } ?>
-            @break
         @case('blog_section')
             @if($entries->isNotEmpty())
                 <section class="blog-section" id="home-section-{{ $section->section_key }}">

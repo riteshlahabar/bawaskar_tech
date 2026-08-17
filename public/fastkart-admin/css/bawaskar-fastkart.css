@@ -735,3 +735,49 @@ input[type="file"].form-control::file-selector-button {
 .admin-row-action-menu .dropdown-divider {
     margin: 6px 0;
 }
+/* Keep one-row admin tables tall enough for action dropdowns and show row count controls. */
+.admin-table-responsive {
+    min-height: 320px;
+}
+
+.admin-table-card .dropdown-menu.show {
+    z-index: 1080;
+}
+
+.admin-table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.admin-table-result-meta {
+    color: #6c757d;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-table-per-page-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-table-per-page-form .form-select {
+    width: 92px;
+    height: 34px !important;
+    padding: 4px 30px 4px 10px !important;
+}
+
+.admin-table-links {
+    margin-left: auto;
+}
+
+.admin-table-links nav,
+.admin-table-links .pagination {
+    margin-bottom: 0;
+}

@@ -8,6 +8,12 @@
     if (is_string($submenuTitle) && $submenuTitle !== '') {
         $submenuSingular = preg_replace('/^Row\s+\d+\s*-\s*/i', '', $submenuTitle);
     }
+
+    $perPageOptions = [10, 25, 50, 100, 500];
+    $currentPerPage = (int) request()->integer('per_page', 10);
+    if (! in_array($currentPerPage, $perPageOptions, true)) {
+        $currentPerPage = 10;
+    }
 @endphp
 <div class="card admin-table-card" data-table-key="{{ $module['key'] }}">
     <div class="card-body pt-3">
@@ -29,7 +35,7 @@
                 @if(is_scalar($value))<input type="hidden" name="{{ $key }}" value="{{ $value }}">@endif
             @endforeach
 
-            <div class="table-responsive">
+            <div class="table-responsive admin-table-responsive">
                 <table class="table table-hover align-middle mb-0 admin-data-table">
                     <thead class="table-light">
                         <tr>
@@ -178,7 +184,26 @@
             @endif
         @endforeach
 
-        <div class="mt-3">{{ $records->links() }}</div>
+        <div class="admin-table-pagination mt-3">
+            <div class="admin-table-result-meta">
+                Showing {{ $records->firstItem() ?? 0 }} to {{ $records->lastItem() ?? 0 }} of {{ $records->total() }} results
+            </div>
+            <form method="GET" class="admin-table-per-page-form">
+                @foreach(request()->except(['page', 'per_page']) as $key => $value)
+                    @if(is_scalar($value))<input type="hidden" name="{{ $key }}" value="{{ $value }}">@endif
+                @endforeach
+                <label class="form-label mb-0" for="adminPerPage{{ $module['key'] }}">Show</label>
+                <select id="adminPerPage{{ $module['key'] }}" name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach($perPageOptions as $option)
+                        <option value="{{ $option }}" @selected($currentPerPage === $option)>{{ $option }}</option>
+                    @endforeach
+                </select>
+                <span>rows</span>
+            </form>
+            <div class="admin-table-links">
+                {{ $records->links() }}
+            </div>
+        </div>
     </div>
 </div>
 

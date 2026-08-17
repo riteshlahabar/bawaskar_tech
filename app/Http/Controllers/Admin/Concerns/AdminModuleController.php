@@ -267,7 +267,9 @@ abstract class AdminModuleController extends Controller
     {
         $module = $this->module();
         [$column, $direction] = $module['sort'] ?? ['id', 'desc'];
-        $perPage = min(max(5, (int) $request->integer('per_page', (int) ($module['per_page'] ?? 20))), 100);
+        $allowedPerPage = [10, 25, 50, 100, 500];
+        $requestedPerPage = (int) $request->integer('per_page', (int) ($module['per_page'] ?? 10));
+        $perPage = in_array($requestedPerPage, $allowedPerPage, true) ? $requestedPerPage : 10;
 
         return $this->filteredRecordsQuery($request, $module)
             ->orderBy($column, $direction)

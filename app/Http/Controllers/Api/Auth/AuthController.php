@@ -70,6 +70,77 @@ class AuthController extends ApiController
         return $this->success(['user' => $user->load('customerProfile'), 'token' => $user->createApiToken('customer-app')], 'Customer logged in.');
     }
 
+    public function registerCustomer(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'mobile' => ['required', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $user = User::query()->where('mobile', $validated['mobile'])->first();
+        $email = $validated['email'] ?? null;
+
+        if ($user && $user->role !== User::ROLE_CUSTOMER) {
+            return $this->fail('This mobile number is already registered for another account type.', 422);
+        }
+
+        if (! $user && $email) {
+            $existingEmailUser = User::query()->where('email', $email)->first();
+            if ($existingEmailUser) {
+                return $this->fail('This email address is already registered.', 422);
+            }
+        }
+
+        if (! $user) {
+            $user = User::query()->create([
+                'name' => $validated['name'],
+                'mobile' => $validated['mobile'],
+                'email' => $email ?: $this->virtualEmail($validated['mobile'], 'customer'),
+                'password' => $validated['password'] ?? Str::password(32),
+                'role' => User::ROLE_CUSTOMER,
+                'status' => 'active',
+            ]);
+        } else {
+            $updates = ['name' => $validated['name'], 'status' => 'active'];
+            if ($email && $email !== $user->email) {
+                $emailTaken = User::query()->where('email', $email)->whereKeyNot($user->id)->exists();
+                if ($emailTaken) {
+                    return $this->fail('This email address is already registered.', 422);
+                }
+                $updates['email'] = $email;
+            }
+            if (! empty($validated['password'])) {
+                $updates['password'] = $validated['password'];
+            }
+            $user->forceFill($updates)->save();
+        }
+
+        CustomerProfile::query()->firstOrCreate(['user_id' => $user->id]);
+
+        return $this->success(['user' => $user->load('customerProfile')], 'Customer registered. Verify OTP to continue.', 201);
+    }
+
+    public function customerLogin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::query()->where('email', $validated['email'])->where('role', User::ROLE_CUSTOMER)->first();
+
+        if (! $user || ! Hash::check($validated['password'], $user->password) || $user->status !== 'active') {
+            return $this->fail('Invalid customer login.', 401);
+        }
+
+        CustomerProfile::query()->firstOrCreate(['user_id' => $user->id]);
+        $user->forceFill(['last_login_at' => now()])->save();
+
+        return $this->success(['user' => $user->load('customerProfile'), 'token' => $user->createApiToken('customer-app')], 'Customer logged in.');
+    }
+
     public function verifyDealerOtp(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -123,6 +194,28 @@ class AuthController extends ApiController
         }
 
         return $this->success(['user' => $user], 'Dealer registered. Admin approval required.', 201);
+    }
+
+    public function dealerLogin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::query()->with('dealerProfile.salesman')->where('email', $validated['email'])->where('role', User::ROLE_DEALER)->first();
+
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+            return $this->fail('Invalid dealer login.', 401);
+        }
+
+        if ($user->status !== 'active' || $user->dealerProfile?->approved_at === null) {
+            return $this->fail('Dealer approval is pending.', 403);
+        }
+
+        $user->forceFill(['last_login_at' => now()])->save();
+
+        return $this->success(['user' => $user, 'token' => $user->createApiToken('dealer-app')], 'Dealer logged in.');
     }
 
     public function salesmanLogin(Request $request): JsonResponse

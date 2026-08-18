@@ -15,7 +15,10 @@ Accept: application/json
 
 - `POST /auth/otp/request`
 - `POST /auth/customer/otp/verify`
+- `POST /auth/customer/register`
+- `POST /auth/customer/login`
 - `POST /auth/dealer/otp/verify`
+- `POST /auth/dealer/login`
 - `POST /auth/salesman/login`
 - `POST /auth/admin/login`
 - `POST /auth/logout`
@@ -42,6 +45,8 @@ Customer orders go directly to admin review.
 
 - `GET /dealer/dashboard`
 - `GET /dealer/profile`
+- `POST /dealer/addresses`
+- `POST /dealer/support`
 - `GET /dealer/statements`
 - `GET /dealer/orders`
 - `POST /dealer/orders`

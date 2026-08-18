@@ -30,10 +30,18 @@ class CatalogController extends ApiController
 
     public function products(Request $request): JsonResponse
     {
-        $audience = $request->string('audience', 'customer')->toString();
+        $requestedAudience = $request->string('audience', 'customer')->toString();
+        $user = $this->user($request);
 
-        if (! in_array($audience, ['customer', 'dealer'], true)) {
-            $user = $this->user($request);
+        if ($requestedAudience === 'dealer') {
+            $isAllowedDealerCatalogUser = $user && in_array($user->role, [User::ROLE_DEALER, User::ROLE_SALESMAN, User::ROLE_ADMIN], true);
+            if (! $isAllowedDealerCatalogUser) {
+                return $this->fail('Dealer catalog requires approved dealer login.', $user ? 403 : 401);
+            }
+            $audience = 'dealer';
+        } elseif ($requestedAudience === 'customer') {
+            $audience = 'customer';
+        } else {
             $audience = $user?->role === User::ROLE_DEALER || $user?->role === User::ROLE_SALESMAN ? 'dealer' : 'customer';
         }
 

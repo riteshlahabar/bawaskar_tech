@@ -20,7 +20,10 @@ $registerBawaskarApi = static function (): void {
     Route::prefix('auth')->group(function (): void {
         Route::post('otp/request', [AuthController::class, 'requestOtp'])->middleware('throttle:otp');
         Route::post('customer/otp/verify', [AuthController::class, 'verifyCustomerOtp'])->middleware('throttle:login');
+        Route::post('customer/login', [AuthController::class, 'customerLogin'])->middleware('throttle:login');
+        Route::post('customer/register', [AuthController::class, 'registerCustomer'])->middleware('throttle:login');
         Route::post('dealer/otp/verify', [AuthController::class, 'verifyDealerOtp'])->middleware('throttle:login');
+        Route::post('dealer/login', [AuthController::class, 'dealerLogin'])->middleware('throttle:login');
         Route::post('salesman/login', [AuthController::class, 'salesmanLogin'])->middleware('throttle:login');
         Route::post('admin/login', [AuthController::class, 'adminLogin'])->middleware('throttle:login');
         Route::post('logout', [AuthController::class, 'logout'])->middleware('throttle:api');
@@ -44,6 +47,8 @@ $registerBawaskarApi = static function (): void {
         Route::prefix('dealer')->group(function (): void {
             Route::get('dashboard', [DealerController::class, 'dashboard']);
             Route::get('profile', [DealerController::class, 'profile']);
+            Route::post('addresses', [DealerController::class, 'storeAddress']);
+            Route::post('support', [DealerController::class, 'support']);
             Route::get('statements', [DealerController::class, 'statements']);
             Route::get('orders', [DealerOrderController::class, 'index']);
             Route::post('orders', [DealerOrderController::class, 'store']);

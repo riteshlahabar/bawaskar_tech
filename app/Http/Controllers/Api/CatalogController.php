@@ -235,6 +235,8 @@ class CatalogController extends ApiController
             'category_name' => $product->category?->storefront_name,
             'unit_name' => $product->unit?->name,
             'image_url' => $product->storefront_image_url,
+            'homepage_image_url' => $this->assetUrl($product->homepage_image_path),
+            'homepage_mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),
             'is_featured' => $product->is_featured,
             'is_trending' => $product->is_trending,
             'is_top_selling' => $product->is_top_selling,

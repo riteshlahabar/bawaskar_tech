@@ -22,7 +22,7 @@ class CatalogController extends ApiController
 
         $categories = Cache::remember($cacheKey, now()->addMinutes($this->catalogCacheMinutes()), function () use ($locale) {
             return Category::query()
-                ->with(['translations' => fn ($query) => $query->where('locale', $locale), 'children'])
+                ->with(['translations' => fn ($query) => $query->where('locale', $locale)])
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->get();
@@ -52,18 +52,11 @@ class CatalogController extends ApiController
         $categories = Category::query()
             ->with('translations')
             ->where('is_active', true)
-            ->where('show_on_homepage', true)
+            ->orderByRaw('CASE WHEN show_on_homepage = 1 THEN 0 ELSE 1 END')
             ->orderBy('homepage_sort_order')
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
-
-        if ($categories->isEmpty()) {
-            $categories = Category::query()
-                ->with('translations')
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->get();
-        }
 
         if ($sections->isEmpty()) {
             return $this->success([

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class ProductController extends AdminModuleController
 {
@@ -206,6 +207,7 @@ class ProductController extends AdminModuleController
             : $record->images()->where('is_primary', true)->first();
 
         $data['primary_image'] = $primaryImage?->path;
+        $data['primary_image_id'] = $primaryImage?->getKey();
 
         $translations = $record->relationLoaded('translations')
             ? $record->translations
@@ -333,6 +335,57 @@ class ProductController extends AdminModuleController
         return filled($this->openingStockData['warehouse_id'] ?? null)
             && filled($this->openingStockData['batch_no'] ?? null)
             && ($this->openingStockData['quantity'] ?? null) !== null;
+    }
+
+    public function destroyImage(Request $request, Product $product, ProductImage $image): JsonResponse
+    {
+        abort_unless((int) $image->product_id === (int) $product->getKey(), 404);
+
+        $path = $image->path;
+        $image->delete();
+        $this->deletePublicUpload($path);
+
+        return response()->json(['message' => 'Image deleted permanently.']);
+    }
+
+    public function destroyFieldImage(Request $request, Product $product): JsonResponse
+    {
+        $validated = $request->validate([
+            'field' => ['required', 'string'],
+        ]);
+
+        $field = $validated['field'];
+        $allowedFields = collect($this->module()['fields'] ?? [])
+            ->filter(fn (array $fieldConfig): bool => in_array($fieldConfig['type'] ?? '', ['file', 'image'], true))
+            ->pluck('name')
+            ->filter()
+            ->reject(fn (string $name): bool => $name === 'primary_image')
+            ->values()
+            ->all();
+
+        abort_unless(in_array($field, $allowedFields, true), 422, 'This image field cannot be deleted.');
+
+        $path = $product->{$field};
+        $product->forceFill([$field => null])->save();
+        $this->deletePublicUpload($path);
+
+        return response()->json(['message' => 'Image deleted permanently.']);
+    }
+
+    private function deletePublicUpload(?string $path): void
+    {
+        $path = trim((string) $path);
+        if ($path === '' || Str::startsWith($path, ['http://', 'https://']) || str_contains($path, '..')) {
+            return;
+        }
+
+        $absolutePath = public_path(ltrim(str_replace('\\', '/', $path), '/'));
+        $publicRoot = realpath(public_path());
+        $realFile = is_file($absolutePath) ? realpath($absolutePath) : false;
+
+        if ($publicRoot && $realFile && Str::startsWith($realFile, $publicRoot)) {
+            @unlink($realFile);
+        }
     }
 
     private function normalizeHomepageSectionData(array $data, array $module): array

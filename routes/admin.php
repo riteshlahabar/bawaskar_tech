@@ -73,6 +73,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
         Route::post('products/translate', [ProductController::class, 'translate'])->name('products.translate');
+        Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
+        Route::delete('products/{product}/field-image', [ProductController::class, 'destroyFieldImage'])->name('products.field-image.destroy');
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');
         Route::post('attendance/bulk', [AttendanceController::class, 'bulkStore'])->name('attendance.bulk.store');
         foreach ($resources as $uri => $controller) {

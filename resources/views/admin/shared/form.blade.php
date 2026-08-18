@@ -136,7 +136,7 @@
                                                 <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2" data-gallery-removal-list>
                                                     @foreach($galleryPreviewImages as $img)
                                                         <div class="admin-gallery-preview-item" data-gallery-preview-item>
-                                                            <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-image-id="{{ $img->id }}" aria-label="Remove image">&times;</button>
+                                                            <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-image-id="{{ $img->id }}" data-delete-url="{{ route('admin.products.images.destroy', [$record->getKey(), $img->id]) }}" aria-label="Delete image">&times;</button>
                                                             <a href="{{ asset($img->path) }}" target="_blank">
                                                                 <img src="{{ asset($img->path) }}" class="admin-gallery-preview-thumb" alt="Gallery image">
                                                             </a>
@@ -148,9 +148,26 @@
                                     @elseif(in_array($type, ['file', 'image'], true))
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}" @required($isRequired && ! $record)>
                                         @if($value)
-                                            <small class="text-muted d-block mt-1">
-                                                Current file: <a href="{{ asset($value) }}" target="_blank">View</a>
-                                            </small>
+                                            @php($deleteUrl = null)
+                                            @php($deleteField = null)
+                                            @if($record && ($module['key'] ?? '') === 'products')
+                                                @if($name === 'primary_image' && ! empty($formData['primary_image_id']))
+                                                    @php($deleteUrl = route('admin.products.images.destroy', [$record->getKey(), $formData['primary_image_id']]))
+                                                @elseif($name !== 'primary_image')
+                                                    @php($deleteUrl = route('admin.products.field-image.destroy', $record->getKey()))
+                                                    @php($deleteField = $name)
+                                                @endif
+                                            @endif
+                                            <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2" data-gallery-removal-list>
+                                                <div class="admin-gallery-preview-item" data-gallery-preview-item>
+                                                    @if($deleteUrl)
+                                                        <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-delete-url="{{ $deleteUrl }}" @if($deleteField) data-image-field="{{ $deleteField }}" @endif aria-label="Delete image">&times;</button>
+                                                    @endif
+                                                    <a href="{{ asset($value) }}" target="_blank">
+                                                        <img src="{{ asset($value) }}" class="admin-gallery-preview-thumb" alt="Current image">
+                                                    </a>
+                                                </div>
+                                            </div>
                                         @endif
                                     @else
                                         <input class="form-control @error($name)is-invalid @enderror" type="{{ $type }}" name="{{ $name }}" value="{{ $type === 'password' ? '' : $value }}" @required($isRequired) step="{{ $field['step'] ?? null }}" placeholder="{{ $field['placeholder'] ?? '' }}">
@@ -246,7 +263,7 @@
             var form = list.closest('form');
             var inputsHost = form ? form.querySelector('[data-gallery-remove-inputs]') : null;
 
-            if (!form || !inputsHost) {
+            if (!form) {
                 return;
             }
 
@@ -260,8 +277,55 @@
 
                 var item = button.closest('[data-gallery-preview-item]');
                 var imageId = button.dataset.imageId || '';
+                var deleteUrl = button.dataset.deleteUrl || '';
+                var token = form.querySelector('input[name="_token"]');
 
-                if (!item || !imageId) {
+                if (!item) {
+                    return;
+                }
+
+                if (deleteUrl) {
+                    if (!window.confirm('Delete this image permanently?')) {
+                        return;
+                    }
+
+                    button.disabled = true;
+
+                    var formData = new FormData();
+                    formData.append('_method', 'DELETE');
+                    if (button.dataset.imageField) {
+                        formData.append('field', button.dataset.imageField);
+                    }
+
+                    fetch(deleteUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': token ? token.value : ''
+                        },
+                        body: formData
+                    })
+                        .then(function (response) {
+                            return response.json().catch(function () {
+                                return {};
+                            }).then(function (payload) {
+                                if (!response.ok) {
+                                    throw payload;
+                                }
+                                return payload;
+                            });
+                        })
+                        .then(function () {
+                            item.remove();
+                        })
+                        .catch(function (error) {
+                            button.disabled = false;
+                            alert(error && error.message ? error.message : 'Image could not be deleted.');
+                        });
+                    return;
+                }
+
+                if (!inputsHost || !imageId) {
                     return;
                 }
 

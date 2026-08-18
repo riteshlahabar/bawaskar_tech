@@ -77,11 +77,7 @@ class CatalogController extends ApiController
                 'layout_type' => $section->layout_type,
                 'source_type' => $section->source_type,
                 'sort_order' => $section->sort_order,
-                'items' => $section->items
-                    ->where('is_active', true)
-                    ->sortBy('sort_order')
-                    ->map(fn ($item): array => $this->serializeHomepageItem($item))
-                    ->values(),
+                'items' => $this->homepageSectionItems($section),
                 'products' => $this->homepageProducts($section, $limit, $audience)
                     ->map(fn (Product $product): array => $this->serializeProduct($product))
                     ->values(),
@@ -278,6 +274,57 @@ class CatalogController extends ApiController
             'background_color' => $item->background_color,
             'text_color' => $item->text_color,
         ];
+    }
+
+    private function homepageSectionItems(ProductHomepageSection $section)
+    {
+        $items = $section->items
+            ->where('is_active', true)
+            ->sortBy('sort_order')
+            ->map(fn ($item): array => $this->serializeHomepageItem($item))
+            ->values();
+
+        if ($items->isNotEmpty()) {
+            return $items;
+        }
+
+        $placement = match ($section->section_type) {
+            'hero_slider' => 'hero_main',
+            'top_small_banners' => 'promo_small',
+            'coupon_section' => 'bank_offer',
+            default => null,
+        };
+
+        if (! $placement) {
+            return $items;
+        }
+
+        return StorefrontBanner::query()
+            ->where('is_active', true)
+            ->where('placement', $placement)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get()
+            ->map(fn (StorefrontBanner $banner): array => [
+                'id' => $banner->id,
+                'slot' => $banner->placement,
+                'title' => $banner->title,
+                'subtitle' => $banner->subtitle,
+                'description' => $banner->description,
+                'highlight_text' => null,
+                'discount_text' => $banner->subtitle,
+                'validity_text' => null,
+                'coupon_code' => null,
+                'button_text' => $banner->button_text,
+                'button_url' => $banner->button_url,
+                'image_url' => $this->assetUrl($banner->image_path),
+                'mobile_image_url' => null,
+                'logo_image_url' => null,
+                'offer_image_url' => null,
+                'background_color' => null,
+                'text_color' => null,
+            ])
+            ->values();
     }
 
     private function legacyHomepageBanners()

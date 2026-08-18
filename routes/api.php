@@ -32,6 +32,7 @@ $registerBawaskarApi = static function (): void {
     Route::middleware('throttle:api')->group(function (): void {
         Route::get('catalog/categories', [CatalogController::class, 'categories']);
         Route::get('catalog/products', [CatalogController::class, 'products']);
+        Route::get('catalog/homepage', [CatalogController::class, 'homepage']);
         Route::get('translations', [CatalogController::class, 'translations']);
 
         Route::prefix('customer')->group(function (): void {

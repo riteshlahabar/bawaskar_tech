@@ -18,14 +18,20 @@ class CatalogController extends ApiController
     public function categories(Request $request): JsonResponse
     {
         $locale = $request->string('locale', 'en')->toString();
-        $cacheKey = 'catalog.categories.'.$this->catalogCacheVersion().'.'.$locale;
+        $audience = $request->string('audience', 'customer')->toString() === 'dealer' ? 'dealer' : 'customer';
+        $cacheKey = 'catalog.categories.'.$this->catalogCacheVersion().'.'.$locale.'.'.$audience.'.array';
 
-        $categories = Cache::remember($cacheKey, now()->addMinutes($this->catalogCacheMinutes()), function () use ($locale) {
+        $categories = Cache::remember($cacheKey, now()->addMinutes($this->catalogCacheMinutes()), function () use ($locale, $audience) {
             return Category::query()
                 ->with(['translations' => fn ($query) => $query->where('locale', $locale)])
+                ->withCount(['products' => fn ($query) => $query->visibleFor($audience)])
                 ->where('is_active', true)
                 ->orderBy('sort_order')
-                ->get();
+                ->orderBy('id')
+                ->get()
+                ->map(fn (Category $category): array => $this->serializeCategory($category))
+                ->values()
+                ->all();
         });
 
         return $this->success(['categories' => $categories]);
@@ -253,6 +259,7 @@ class CatalogController extends ApiController
             'name' => $category->storefront_name,
             'slug' => $category->slug,
             'image_url' => $category->storefront_image_url,
+            'products_count' => (int) ($category->products_count ?? 0),
         ];
     }
 

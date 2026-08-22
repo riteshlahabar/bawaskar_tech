@@ -48,24 +48,53 @@ class AuthController extends ApiController
             'name' => ['nullable', 'string', 'max:255'],
         ]);
 
-        if (! $this->verifyOtp($validated['mobile'], 'customer_login', $validated['otp'])) {
-            return $this->fail('Invalid or expired OTP.', 422);
-        }
+       $existingUser = User::query()
+    ->where('mobile', $validated['mobile'])
+    ->first();
 
-        $user = User::query()->firstOrCreate(
-            ['mobile' => $validated['mobile']],
-            [
-                'name' => $validated['name'] ?? 'Customer',
-                'email' => $this->virtualEmail($validated['mobile'], 'customer'),
-                'password' => Str::password(32),
-                'role' => User::ROLE_CUSTOMER,
-                'status' => 'active',
-                'mobile_verified_at' => now(),
-            ]
-        );
+if (
+    $existingUser &&
+    $existingUser->role !== User::ROLE_CUSTOMER
+) {
+    return $this->fail(
+        'This mobile number is registered for another account type.',
+        422
+    );
+}
 
-        $user->forceFill(['mobile_verified_at' => now(), 'last_login_at' => now(), 'status' => 'active'])->save();
-        CustomerProfile::query()->firstOrCreate(['user_id' => $user->id]);
+if (! $this->verifyOtp(
+    $validated['mobile'],
+    'customer_login',
+    $validated['otp']
+)) {
+    return $this->fail(
+        'Invalid or expired OTP.',
+        422
+    );
+}
+
+$user = $existingUser ?: User::query()->create([
+    'name' => $validated['name'] ?? 'Customer',
+    'mobile' => $validated['mobile'],
+    'email' => $this->virtualEmail(
+        $validated['mobile'],
+        'customer'
+    ),
+    'password' => Str::password(32),
+    'role' => User::ROLE_CUSTOMER,
+    'status' => 'active',
+    'mobile_verified_at' => now(),
+]);
+
+$user->forceFill([
+    'mobile_verified_at' => now(),
+    'last_login_at' => now(),
+    'status' => 'active',
+])->save();
+
+CustomerProfile::query()->firstOrCreate([
+    'user_id' => $user->id,
+]);
 
         return $this->success(['user' => $user->load('customerProfile'), 'token' => $user->createApiToken('customer-app')], 'Customer logged in.');
     }

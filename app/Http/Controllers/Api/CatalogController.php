@@ -130,13 +130,26 @@ class CatalogController extends ApiController
         $cacheKey = 'catalog.products.'.$this->catalogCacheVersion().'.'.sha1(json_encode($filters));
 
         $products = Cache::remember($cacheKey, now()->addMinutes($this->catalogCacheMinutes()), function () use ($filters) {
-            return Product::query()
-                ->with(['category', 'brand', 'unit', 'images'])
+            $paginator = Product::query()
+                ->with(['category.translations', 'brand', 'unit', 'images'])
                 ->visibleFor($filters['audience'])
                 ->when($filters['category_id'], fn ($query) => $query->where('category_id', $filters['category_id']))
-                ->when($filters['search'] !== '', fn ($query) => $query->where('name', 'like', '%'.$filters['search'].'%'))
-                ->latest()
+                ->when($filters['search'] !== '', function ($query) use ($filters): void {
+                    $query->where(function ($searchQuery) use ($filters): void {
+                        $searchQuery->where('name', 'like', '%'.$filters['search'].'%')
+                            ->orWhere('sku', 'like', '%'.$filters['search'].'%');
+                    });
+                })
+                ->storefrontOrder()
                 ->paginate($filters['per_page'], ['*'], 'page', $filters['page']);
+
+            $payload = $paginator->toArray();
+            $payload['data'] = collect($paginator->items())
+                ->map(fn (Product $product): array => $this->serializeProduct($product))
+                ->values()
+                ->all();
+
+            return $payload;
         });
 
         return $this->success(['products' => $products, 'price_type' => $audience === 'dealer' ? 'dealer_price' : 'customer_price']);

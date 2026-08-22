@@ -154,55 +154,184 @@ class SalesmanController extends ApiController
         return $this->success(['order' => $order], 'Dealer order created.', 201);
     }
 
-    public function forwardOrderToAdmin(Request $request, Order $order): JsonResponse
-    {
-        $user = $this->requireUser($request, User::ROLE_SALESMAN);
-        if ($user instanceof JsonResponse) {
-            return $user;
-        }
+    public function forwardOrderToAdmin(
+    Request $request,
+    Order $order
+): JsonResponse {
+    $user = $this->requireUser(
+        $request,
+        User::ROLE_SALESMAN
+    );
 
-        if ((int) $order->salesman_id !== (int) $user->id) {
-            return $this->fail('Order not assigned to this salesman.', 403);
-        }
-
-        $order->update(['status' => 'admin_review']);
-
-        return $this->success(['order' => $order->fresh('items.product')], 'Order forwarded to admin.');
+    if ($user instanceof JsonResponse) {
+        return $user;
     }
 
-    public function collectPayment(Request $request): JsonResponse
-    {
-        $user = $this->requireUser($request, User::ROLE_SALESMAN);
-        if ($user instanceof JsonResponse) {
-            return $user;
-        }
-
-        $validated = $request->validate([
-            'dealer_id' => ['required', 'integer', 'exists:users,id'],
-            'order_id' => ['nullable', 'integer', 'exists:orders,id'],
-            'payment_mode' => ['required', 'string', 'max:40'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'transaction_ref' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        if ((int) User::query()->findOrFail($validated['dealer_id'])->dealerProfile?->salesman_id !== (int) $user->id) {
-            return $this->fail('Dealer is not assigned to this salesman.', 403);
-        }
-
-        $payment = Payment::query()->create([
-            'payment_no' => 'PAY'.now()->format('ymdHis').random_int(100, 999),
-            'order_id' => $validated['order_id'] ?? null,
-            'payer_id' => $validated['dealer_id'],
-            'collected_by' => $user->id,
-            'payment_mode' => $validated['payment_mode'],
-            'status' => 'collected',
-            'amount' => $validated['amount'],
-            'transaction_ref' => $validated['transaction_ref'] ?? null,
-            'paid_at' => now(),
-        ]);
-
-        return $this->success(['payment' => $payment], 'Payment collected.', 201);
+    if (
+        (int) $order->salesman_id !==
+        (int) $user->id
+    ) {
+        return $this->fail(
+            'Order not assigned to this salesman.',
+            403
+        );
     }
+
+    if (
+        $order->status !==
+        'salesman_review'
+    ) {
+        return $this->fail(
+            'Only orders waiting for salesman review can be forwarded to admin.',
+            422
+        );
+    }
+
+    $order->update([
+        'status' => 'admin_review',
+    ]);
+
+    return $this->success(
+        [
+            'order' => $order->fresh(
+                'items.product'
+            ),
+        ],
+        'Order forwarded to admin.'
+    );
+}
+
+   public function collectPayment(
+    Request $request
+): JsonResponse {
+    $user = $this->requireUser(
+        $request,
+        User::ROLE_SALESMAN
+    );
+
+    if ($user instanceof JsonResponse) {
+        return $user;
+    }
+
+    $validated = $request->validate([
+        'dealer_id' => [
+            'required',
+            'integer',
+            'exists:users,id',
+        ],
+
+        'order_id' => [
+            'nullable',
+            'integer',
+            'exists:orders,id',
+        ],
+
+        'payment_mode' => [
+            'required',
+            'string',
+            'max:40',
+        ],
+
+        'amount' => [
+            'required',
+            'numeric',
+            'min:0.01',
+        ],
+
+        'transaction_ref' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+    ]);
+
+    $dealer = User::query()
+        ->where(
+            'role',
+            User::ROLE_DEALER
+        )
+        ->findOrFail(
+            $validated['dealer_id']
+        );
+
+    if (
+        (int) $dealer
+            ->dealerProfile
+            ?->salesman_id !==
+        (int) $user->id
+    ) {
+        return $this->fail(
+            'Dealer is not assigned to this salesman.',
+            403
+        );
+    }
+
+    if (
+        ! empty(
+            $validated['order_id']
+        )
+    ) {
+        $order = Order::query()
+            ->findOrFail(
+                $validated['order_id']
+            );
+
+        if (
+            (int) $order->dealer_id !==
+                (int) $dealer->id ||
+            (int) $order->salesman_id !==
+                (int) $user->id
+        ) {
+            return $this->fail(
+                'Selected order does not belong to this dealer or salesman.',
+                403
+            );
+        }
+    }
+
+    $payment = Payment::query()->create([
+        'payment_no' =>
+            'PAY'
+            .now()->format('ymdHis')
+            .random_int(100, 999),
+
+        'order_id' =>
+            $validated['order_id']
+            ?? null,
+
+        'payer_id' =>
+            $dealer->id,
+
+        'collected_by' =>
+            $user->id,
+
+        'payment_mode' =>
+            $validated[
+                'payment_mode'
+            ],
+
+        'status' =>
+            'collected',
+
+        'amount' =>
+            $validated['amount'],
+
+        'transaction_ref' =>
+            $validated[
+                'transaction_ref'
+            ] ?? null,
+
+        'paid_at' => now(),
+    ]);
+
+    return $this->success(
+        [
+            'payment' => $payment,
+        ],
+        'Payment collected.',
+        201
+    );
+}
 
     public function expenses(Request $request): JsonResponse
     {

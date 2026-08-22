@@ -17,16 +17,44 @@ class OrderService
         return $this->createOrder('customer', $customer, null, null, $items, $notes, $checkoutData);
     }
 
-    public function createForDealer(User $dealer, array $items, ?string $notes = null, array $checkoutData = []): Order
-    {
-        $salesman = $dealer->dealerProfile?->salesman;
+    public function createForDealer(
+    User $dealer,
+    array $items,
+    ?string $notes = null,
+    array $checkoutData = []
+): Order {
+    $salesman =
+        $dealer->dealerProfile
+            ?->salesman;
 
-        if (! $salesman) {
-            throw ValidationException::withMessages(['dealer' => 'Dealer is not assigned to any salesman.']);
-        }
-
-        return $this->createOrder('dealer', null, $dealer, $salesman, $items, $notes, $checkoutData);
+    if (! $salesman) {
+        throw ValidationException::withMessages([
+            'dealer' =>
+                'Dealer is not assigned to any salesman.',
+        ]);
     }
+
+    if (
+        $salesman->role !==
+            User::ROLE_SALESMAN ||
+        $salesman->status !== 'active'
+    ) {
+        throw ValidationException::withMessages([
+            'dealer' =>
+                'Assigned salesman is not active. Please contact admin.',
+        ]);
+    }
+
+    return $this->createOrder(
+        'dealer',
+        null,
+        $dealer,
+        $salesman,
+        $items,
+        $notes,
+        $checkoutData
+    );
+}
 
     public function createBySalesman(User $salesman, User $dealer, array $items, ?string $notes = null, array $checkoutData = []): Order
     {

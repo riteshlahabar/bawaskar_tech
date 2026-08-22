@@ -15,25 +15,40 @@ use Illuminate\Support\Str;
 
 class CatalogController extends ApiController
 {
-    public function categories(Request $request): JsonResponse
+   public function categories(Request $request): JsonResponse
 {
-    $locale = $request->string('locale', 'en')->toString();
-    $audience = $request->string('audience', 'customer')->toString() === 'dealer'
-        ? 'dealer'
-        : 'customer';
+    $locale = $request
+        ->string('locale', 'en')
+        ->toString();
+
+    $audience = $request
+        ->string('audience', 'customer')
+        ->toString() === 'dealer'
+            ? 'dealer'
+            : 'customer';
 
     $cacheKey = 'catalog.categories.'
         .$this->catalogCacheVersion().'.'
         .$locale.'.'
         .$audience.'.array';
 
-    $loadCategories = function () use ($locale, $audience): array {
+    $loadCategories = function () use (
+        $locale,
+        $audience
+    ): array {
         return Category::query()
             ->with([
-                'translations' => fn ($query) => $query->where('locale', $locale),
+                'translations' => fn ($query) =>
+                    $query->where(
+                        'locale',
+                        $locale
+                    ),
             ])
             ->withCount([
-                'products' => fn ($query) => $query->visibleFor($audience),
+                'products' => fn ($query) =>
+                    $query->visibleFor(
+                        $audience
+                    ),
             ])
             ->where('is_active', true)
             ->orderBy('sort_order')
@@ -41,7 +56,9 @@ class CatalogController extends ApiController
             ->get()
             ->map(
                 fn (Category $category): array =>
-                    $this->serializeCategory($category)
+                    $this->serializeCategory(
+                        $category
+                    )
             )
             ->values()
             ->all();
@@ -51,7 +68,9 @@ class CatalogController extends ApiController
         ? $loadCategories()
         : Cache::remember(
             $cacheKey,
-            now()->addMinutes($this->catalogCacheMinutes()),
+            now()->addMinutes(
+                $this->catalogCacheMinutes()
+            ),
             $loadCategories
         );
 
@@ -133,7 +152,7 @@ class CatalogController extends ApiController
     $user = $this->user($request);
 
     if ($requestedAudience === 'dealer') {
-        $isAllowedDealerCatalogUser = $user &&
+        $allowed = $user &&
             in_array(
                 $user->role,
                 [
@@ -144,7 +163,7 @@ class CatalogController extends ApiController
                 true
             );
 
-        if (! $isAllowedDealerCatalogUser) {
+        if (! $allowed) {
             return $this->fail(
                 'Dealer catalog requires approved dealer login.',
                 $user ? 403 : 401
@@ -164,11 +183,30 @@ class CatalogController extends ApiController
 
     $filters = [
         'audience' => $audience,
-        'category_id' => $request->integer('category_id') ?: null,
-        'search' => trim($request->string('search')->toString()),
-        'page' => max(1, $request->integer('page', 1)),
+
+        'category_id' =>
+            $request->integer('category_id')
+                ?: null,
+
+        'search' => trim(
+            $request
+                ->string('search')
+                ->toString()
+        ),
+
+        'page' => max(
+            1,
+            $request->integer('page', 1)
+        ),
+
         'per_page' => min(
-            max(1, $request->integer('per_page', 20)),
+            max(
+                1,
+                $request->integer(
+                    'per_page',
+                    20
+                )
+            ),
             100
         ),
     ];
@@ -177,7 +215,9 @@ class CatalogController extends ApiController
         .$this->catalogCacheVersion().'.'
         .sha1(json_encode($filters));
 
-    $loadProducts = function () use ($filters): array {
+    $loadProducts = function () use (
+        $filters
+    ): array {
         $paginator = Product::query()
             ->with([
                 'category.translations',
@@ -185,30 +225,46 @@ class CatalogController extends ApiController
                 'unit',
                 'images',
             ])
-            ->visibleFor($filters['audience'])
+            ->visibleFor(
+                $filters['audience']
+            )
             ->when(
                 $filters['category_id'],
                 fn ($query) =>
                     $query->where(
                         'category_id',
-                        $filters['category_id']
+                        $filters[
+                            'category_id'
+                        ]
                     )
             )
             ->when(
                 $filters['search'] !== '',
-                function ($query) use ($filters): void {
+                function ($query) use (
+                    $filters
+                ): void {
                     $query->where(
-                        function ($searchQuery) use ($filters): void {
+                        function (
+                            $searchQuery
+                        ) use ($filters): void {
                             $searchQuery
                                 ->where(
                                     'name',
                                     'like',
-                                    '%'.$filters['search'].'%'
+                                    '%'
+                                    .$filters[
+                                        'search'
+                                    ]
+                                    .'%'
                                 )
                                 ->orWhere(
                                     'sku',
                                     'like',
-                                    '%'.$filters['search'].'%'
+                                    '%'
+                                    .$filters[
+                                        'search'
+                                    ]
+                                    .'%'
                                 );
                         }
                     );
@@ -222,12 +278,17 @@ class CatalogController extends ApiController
                 $filters['page']
             );
 
-        $payload = $paginator->toArray();
+        $payload =
+            $paginator->toArray();
 
-        $payload['data'] = collect($paginator->items())
+        $payload['data'] = collect(
+            $paginator->items()
+        )
             ->map(
                 fn (Product $product): array =>
-                    $this->serializeProduct($product)
+                    $this->serializeProduct(
+                        $product
+                    )
             )
             ->values()
             ->all();
@@ -239,15 +300,19 @@ class CatalogController extends ApiController
         ? $loadProducts()
         : Cache::remember(
             $cacheKey,
-            now()->addMinutes($this->catalogCacheMinutes()),
+            now()->addMinutes(
+                $this->catalogCacheMinutes()
+            ),
             $loadProducts
         );
 
     return $this->success([
         'products' => $products,
-        'price_type' => $audience === 'dealer'
-            ? 'dealer_price'
-            : 'customer_price',
+
+        'price_type' =>
+            $audience === 'dealer'
+                ? 'dealer_price'
+                : 'customer_price',
     ]);
 }
 

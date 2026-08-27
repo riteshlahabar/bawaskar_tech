@@ -57,27 +57,21 @@
 
 
                             @if($type === 'product_translation_tools')
-                                <div class="col-12">
-                                    <div class="d-flex flex-wrap align-items-center gap-2 border rounded px-3 py-2 bg-light">
-                                        <button type="button" class="btn btn-sm btn-primary" data-product-auto-translate data-url="{{ route('admin.products.translate') }}">
-                                            Auto Translate
-                                        </button>
-                                        <small class="text-muted">Uses Product Name and Description. You can edit every language before saving.</small>
-                                        <span class="small text-muted d-none" data-product-auto-translate-status></span>
-                                    </div>
-                                </div>
+                                @include('admin.products.partials.translation-tools')
                                 @continue
                             @endif
+
                             @if($type === 'product_variants_repeater')
                                 <div class="col-12">
-                                    @include('admin.shared.product-variants-repeater')
+                                    @include('admin.products.partials.variants.repeater')
                                     @error('variants')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                 </div>
                                 @continue
                             @endif
+
                             @if($type === 'product_media_repeater')
                                 <div class="col-12">
-                                    @include('admin.shared.product-media-repeater')
+                                    @include('admin.products.partials.media.repeater')
                                     @error('media')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                 </div>
                                 @continue
@@ -144,45 +138,36 @@
                                         @if(! empty($field['character_counter']))<small class="text-muted d-block"><span data-character-count>0</span> / {{ $field['maxlength'] ?? 160 }}</small>@endif
                                     @elseif($type === 'image_multiple')
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple @required($isRequired && ! $record)>
-                                        @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
-                                            @php($galleryPreviewImages = $record->images->where('is_primary', false))
-                                            @if($galleryPreviewImages->isNotEmpty())
-                                                <div class="admin-gallery-remove-inputs" data-gallery-remove-inputs></div>
-                                                <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2" data-gallery-removal-list>
-                                                    @foreach($galleryPreviewImages as $img)
-                                                        <div class="admin-gallery-preview-item" data-gallery-preview-item>
-                                                            <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-image-id="{{ $img->id }}" data-delete-url="{{ route('admin.products.images.destroy', [$record->getKey(), $img->id]) }}" aria-label="Delete image">&times;</button>
-                                                            <a href="{{ asset($img->path) }}" target="_blank">
-                                                                <img src="{{ asset($img->path) }}" class="admin-gallery-preview-thumb" alt="Gallery image">
-                                                            </a>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
+
+                                        @if(($module['key'] ?? '') === 'products')
+                                            @include('admin.products.partials.images.gallery-preview')
                                         @endif
+
                                     @elseif(in_array($type, ['file', 'image'], true))
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="{{ $field['accept'] ?? ($type === 'image' ? 'image/*' : '') }}" @required($isRequired && ! $record)>
+
                                         @if($value)
-                                            @php($deleteUrl = null)
-                                            @php($deleteField = null)
-                                            @if($record && ($module['key'] ?? '') === 'products')
-                                                @if($name === 'primary_image' && ! empty($formData['primary_image_id']))
-                                                    @php($deleteUrl = route('admin.products.images.destroy', [$record->getKey(), $formData['primary_image_id']]))
-                                                @elseif($name !== 'primary_image')
-                                                    @php($deleteUrl = route('admin.products.field-image.destroy', $record->getKey()))
-                                                    @php($deleteField = $name)
-                                                @endif
-                                            @endif
-                                            <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2" data-gallery-removal-list>
-                                                <div class="admin-gallery-preview-item" data-gallery-preview-item>
-                                                    @if($deleteUrl)
-                                                        <button type="button" class="admin-gallery-remove-btn" data-gallery-remove-button data-delete-url="{{ $deleteUrl }}" @if($deleteField) data-image-field="{{ $deleteField }}" @endif aria-label="Delete image">&times;</button>
-                                                    @endif
-                                                    <a href="{{ asset($value) }}" target="_blank">
-                                                        <img src="{{ asset($value) }}" class="admin-gallery-preview-thumb" alt="Current image">
-                                                    </a>
+
+                                            @if(($module['key'] ?? '') === 'products')
+
+                                                @include('admin.products.partials.images.current-preview')
+
+                                            @else
+
+                                                <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2">
+                                                    <div class="admin-gallery-preview-item">
+                                                        <a href="{{ asset($value) }}" target="_blank">
+                                                            <img
+                                                                src="{{ asset($value) }}"
+                                                                class="admin-gallery-preview-thumb"
+                                                                alt="Current image"
+                                                            >
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                            @endif
+
                                         @endif
                                     @else
                                         <input class="form-control @error($name)is-invalid @enderror" type="{{ $type }}" name="{{ $name }}" value="{{ $type === 'password' ? '' : $value }}" @required($isRequired) step="{{ $field['step'] ?? null }}" placeholder="{{ $field['placeholder'] ?? '' }}">
@@ -273,243 +258,6 @@
     }
 
 
-    function initGalleryImageRemoval() {
-        document.querySelectorAll('[data-gallery-removal-list]').forEach(function (list) {
-            var form = list.closest('form');
-            var inputsHost = form ? form.querySelector('[data-gallery-remove-inputs]') : null;
-
-            if (!form) {
-                return;
-            }
-
-            list.addEventListener('click', function (event) {
-                var button = event.target.closest('[data-gallery-remove-button]');
-                if (!button) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                var item = button.closest('[data-gallery-preview-item]');
-                var imageId = button.dataset.imageId || '';
-                var deleteUrl = button.dataset.deleteUrl || '';
-                var token = form.querySelector('input[name="_token"]');
-
-                if (!item) {
-                    return;
-                }
-
-                if (deleteUrl) {
-                    if (!window.confirm('Delete this image permanently?')) {
-                        return;
-                    }
-
-                    button.disabled = true;
-
-                    var formData = new FormData();
-                    formData.append('_method', 'DELETE');
-                    if (button.dataset.imageField) {
-                        formData.append('field', button.dataset.imageField);
-                    }
-
-                    fetch(deleteUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': token ? token.value : ''
-                        },
-                        body: formData
-                    })
-                        .then(function (response) {
-                            return response.json().catch(function () {
-                                return {};
-                            }).then(function (payload) {
-                                if (!response.ok) {
-                                    throw payload;
-                                }
-                                return payload;
-                            });
-                        })
-                        .then(function () {
-                            item.remove();
-                        })
-                        .catch(function (error) {
-                            button.disabled = false;
-                            alert(error && error.message ? error.message : 'Image could not be deleted.');
-                        });
-                    return;
-                }
-
-                if (!inputsHost || !imageId) {
-                    return;
-                }
-
-                var existingInput = Array.from(inputsHost.querySelectorAll('input[name="remove_gallery_image_ids[]"]')).find(function (input) {
-                    return input.value === imageId;
-                });
-
-                if (!existingInput) {
-                    var hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'remove_gallery_image_ids[]';
-                    hiddenInput.value = imageId;
-                    inputsHost.appendChild(hiddenInput);
-                }
-
-                item.remove();
-            });
-        });
-    }
-    function initProductAutoTranslate() {
-        document.querySelectorAll('[data-product-auto-translate]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                var form = button.closest('form');
-                if (!form) {
-                    return;
-                }
-
-                var status = form.querySelector('[data-product-auto-translate-status]');
-                var token = form.querySelector('input[name="_token"]');
-                var nameInput = form.elements.namedItem('name');
-                var descriptionInput = form.elements.namedItem('description');
-                var name = nameInput ? nameInput.value.trim() : '';
-                var description = descriptionInput ? descriptionInput.value.trim() : '';
-
-                if (!name) {
-                    if (status) {
-                        status.classList.remove('d-none', 'text-success');
-                        status.classList.add('text-danger');
-                        status.textContent = 'Enter Product Name first.';
-                    }
-                    return;
-                }
-
-                button.disabled = true;
-                if (status) {
-                    status.classList.remove('d-none', 'text-danger', 'text-success');
-                    status.textContent = 'Translating...';
-                }
-
-                fetch(button.dataset.url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': token ? token.value : ''
-                    },
-                    body: JSON.stringify({ name: name, description: description })
-                })
-                    .then(function (response) {
-                        return response.json().then(function (payload) {
-                            if (!response.ok) {
-                                throw payload;
-                            }
-                            return payload;
-                        });
-                    })
-                    .then(function (payload) {
-                        var translations = payload.translations || {};
-                        ['hi', 'mr', 'gu', 'kn', 'te'].forEach(function (locale) {
-                            var localeTranslation = translations[locale] || {};
-                            var nameField = form.elements.namedItem('translation_' + locale + '_name');
-                            var descriptionField = form.elements.namedItem('translation_' + locale + '_description');
-
-                            if (nameField && localeTranslation.name) {
-                                nameField.value = localeTranslation.name;
-                            }
-
-                            if (descriptionField && localeTranslation.description) {
-                                descriptionField.value = localeTranslation.description;
-                            }
-                        });
-
-                        if (status) {
-                            status.classList.remove('d-none', 'text-danger');
-                            status.classList.add('text-success');
-                            status.textContent = 'Translation filled. Review and save product.';
-                        }
-                    })
-                    .catch(function (error) {
-                        var message = error && (error.message || error.error) ? (error.message || error.error) : 'Auto translation failed. Enter translations manually.';
-                        if (status) {
-                            status.classList.remove('d-none', 'text-success');
-                            status.classList.add('text-danger');
-                            status.textContent = message;
-                        }
-                    })
-                    .finally(function () {
-                        button.disabled = false;
-                    });
-            });
-        });
-    }
-    function initProductRepeaters() {
-        document.querySelectorAll('[data-product-variants-repeater], [data-product-media-repeater]').forEach(function (repeater) {
-            var rowsHost = repeater.querySelector('[data-repeater-rows]');
-            var template = repeater.querySelector('[data-repeater-template]');
-            var addButton = repeater.querySelector('[data-add-repeater-row]');
-            var nextIndex = rowsHost ? rowsHost.children.length : 0;
-
-            function updateVariantTotals(row) {
-                if (!row || !row.matches('[data-product-variant-row]')) return;
-                var units = parseFloat((row.querySelector('[data-units-per-case]') || {}).value || 0);
-                var mrp = parseFloat((row.querySelector('[data-variant-mrp]') || {}).value || 0);
-                var dealer = parseFloat((row.querySelector('[data-variant-dealer-price]') || {}).value || 0);
-                var mrpTarget = row.querySelector('[data-case-mrp]');
-                var dealerTarget = row.querySelector('[data-case-dealer]');
-                if (mrpTarget) mrpTarget.textContent = (units * mrp).toFixed(2);
-                if (dealerTarget) dealerTarget.textContent = (units * dealer).toFixed(2);
-            }
-
-            function syncMediaFields(row) {
-                if (!row || !row.matches('[data-product-media-row]')) return;
-                var source = row.querySelector('[data-media-source]');
-                var uploadField = row.querySelector('[data-media-upload-field]');
-                var youtubeField = row.querySelector('[data-media-youtube-field]');
-                var isYoutube = source && source.value === 'youtube';
-                if (uploadField) uploadField.style.display = isYoutube ? 'none' : '';
-                if (youtubeField) youtubeField.style.display = isYoutube ? '' : 'none';
-            }
-
-            function initialiseRow(row) {
-                updateVariantTotals(row);
-                syncMediaFields(row);
-            }
-
-            if (addButton && template && rowsHost) {
-                addButton.addEventListener('click', function () {
-                    var html = template.innerHTML.replaceAll('__INDEX__', String(nextIndex++));
-                    rowsHost.insertAdjacentHTML('beforeend', html);
-                    initialiseRow(rowsHost.lastElementChild);
-                });
-            }
-
-            repeater.addEventListener('click', function (event) {
-                var removeButton = event.target.closest('[data-remove-repeater-row]');
-                if (removeButton) {
-                    var row = removeButton.closest('[data-product-variant-row], [data-product-media-row]');
-                    if (row) row.remove();
-                }
-            });
-
-            repeater.addEventListener('change', function (event) {
-                var row = event.target.closest('[data-product-variant-row], [data-product-media-row]');
-                if (event.target.matches('[data-main-display-pack]') && event.target.checked) {
-                    repeater.querySelectorAll('[data-main-display-pack]').forEach(function (checkbox) {
-                        if (checkbox !== event.target) checkbox.checked = false;
-                    });
-                }
-                initialiseRow(row);
-            });
-
-            repeater.addEventListener('input', function (event) {
-                updateVariantTotals(event.target.closest('[data-product-variant-row]'));
-            });
-
-            rowsHost.querySelectorAll('[data-product-variant-row], [data-product-media-row]').forEach(initialiseRow);
-        });
-    }
-
     function initCharacterCounters() {
         document.querySelectorAll('[data-character-counter]').forEach(function (field) {
             var target = field.parentElement.querySelector('[data-character-count]');
@@ -545,20 +293,18 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
             initConditionalAdminFields();
-            initGalleryImageRemoval();
-            initProductAutoTranslate();
-            initProductRepeaters();
             initCharacterCounters();
         });
     } else {
         initConditionalAdminFields();
-        initGalleryImageRemoval();
-        initProductAutoTranslate();
-        initProductRepeaters();
         initCharacterCounters();
     }
 })();
 </script>
+
+@if(($module['key'] ?? '') === 'products')
+    @include('admin.products.partials.scripts')
+@endif
 @endsection
 
 

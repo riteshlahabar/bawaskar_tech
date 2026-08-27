@@ -28,6 +28,8 @@ use App\Http\Controllers\Admin\Payments\PaymentController;
 use App\Http\Controllers\Admin\Pricing\PricingController;
 use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
 use App\Http\Controllers\Admin\Products\ProductController;
+use App\Http\Controllers\Admin\Products\ProductImageController;
+use App\Http\Controllers\Admin\Products\ProductTranslationController;
 use App\Http\Controllers\Admin\ProductHomepageSections\ProductHomepageSectionController;
 use App\Http\Controllers\Admin\ProductHomepageSectionItems\ProductHomepageSectionItemController;
 use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
@@ -72,11 +74,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'expenses'=>ExpenseController::class,'leaves'=>LeaveController::class,'salary'=>SalaryController::class,'targets'=>TargetController::class,'assets'=>AssetController::class,
             'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
-        Route::post('products/translate', [ProductController::class, 'translate'])->name('products.translate');
+        Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
         Route::put('settings/company', [CompanySettingController::class, 'update'])->name('company-settings.update');
-        Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
-        Route::delete('products/{product}/field-image', [ProductController::class, 'destroyFieldImage'])->name('products.field-image.destroy');
+        Route::delete('products/{product}/images/{image}', [ProductImageController::class, 'destroy'])->name('products.images.destroy');
+        Route::delete('products/{product}/field-image', [ProductImageController::class, 'destroyField'])->name('products.field-image.destroy');
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');
         Route::post('attendance/bulk', [AttendanceController::class, 'bulkStore'])->name('attendance.bulk.store');
         foreach ($resources as $uri => $controller) {

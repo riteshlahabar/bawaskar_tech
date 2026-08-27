@@ -16,7 +16,37 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $bindings = [
+            \App\Contracts\Catalog\Product\ProductValidationContract::class => \App\Services\Catalog\Product\ProductValidationService::class,
+            \App\Contracts\Catalog\Product\ProductInputContract::class => \App\Services\Catalog\Product\ProductInputService::class,
+            \App\Contracts\Catalog\Product\ProductWorkflowContract::class => \App\Services\Catalog\Product\ProductWorkflowService::class,
+            \App\Contracts\Catalog\Product\ProductFormContract::class => \App\Services\Catalog\Product\ProductFormService::class,
+            \App\Contracts\Catalog\Product\ProductImageContract::class => \App\Services\Catalog\Product\ProductImageService::class,
+            \App\Contracts\Catalog\Product\ProductVariantContract::class => \App\Services\Catalog\Product\ProductVariantService::class,
+            \App\Contracts\Catalog\Product\ProductMediaContract::class => \App\Services\Catalog\Product\ProductMediaService::class,
+            \App\Contracts\Catalog\Product\ProductStockContract::class => \App\Services\Catalog\Product\ProductStockService::class,
+            \App\Contracts\Catalog\Product\ProductTranslationContract::class => \App\Services\Catalog\Product\ProductTranslationService::class,
+            \App\Contracts\Catalog\Product\TextTranslatorContract::class => \App\Services\Catalog\Product\GoogleTextTranslator::class,
+            \App\Contracts\Catalog\Product\ProductRepositoryContract::class => \App\Repositories\Catalog\EloquentProductRepository::class,
+            \App\Contracts\Files\PublicUploadContract::class => \App\Services\Files\PublicUploadService::class,
+        ];
+
+        foreach ($bindings as $contract => $implementation) {
+            $this->app->bind($contract, $implementation);
+        }        $this->app->bind(
+            \App\Contracts\Catalog\TextTranslatorContract::class,
+            \App\Services\Catalog\GoogleTextTranslator::class
+        );
+
+        $this->app->bind(
+            \App\Contracts\Catalog\ProductTranslationRepositoryContract::class,
+            \App\Repositories\Catalog\EloquentProductTranslationRepository::class
+        );
+
+        $this->app->bind(
+            \App\Contracts\Catalog\ProductTranslationServiceContract::class,
+            \App\Services\Catalog\ProductTranslationService::class
+        );
     }
 
     /**

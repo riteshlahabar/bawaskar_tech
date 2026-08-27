@@ -29,6 +29,20 @@ class AppServiceProvider extends ServiceProvider
             \App\Contracts\Catalog\Product\TextTranslatorContract::class => \App\Services\Catalog\Product\GoogleTextTranslator::class,
             \App\Contracts\Catalog\Product\ProductRepositoryContract::class => \App\Repositories\Catalog\EloquentProductRepository::class,
             \App\Contracts\Files\PublicUploadContract::class => \App\Services\Files\PublicUploadService::class,
+
+            // Order module - SOLID contracts
+            \App\Contracts\Sales\Orders\OrderWorkflowContract::class => \App\Services\Sales\Orders\OrderWorkflowService::class,
+            \App\Contracts\Sales\Orders\OrderLineBuilderContract::class => \App\Services\Sales\Orders\OrderLineBuilderService::class,
+            \App\Contracts\Sales\Orders\OrderLineQuantityContract::class => \App\Services\Sales\Orders\OrderLineQuantityService::class,
+            \App\Contracts\Sales\Orders\OrderPricingContract::class => \App\Services\Sales\Orders\OrderPricingService::class,
+            \App\Contracts\Sales\Orders\StockAvailabilityContract::class => \App\Services\Sales\Orders\EloquentStockAvailabilityService::class,
+            \App\Contracts\Sales\Orders\StockReservationContract::class => \App\Services\Sales\Orders\EloquentStockReservationService::class,
+            \App\Contracts\Sales\Orders\OrderNumberGeneratorContract::class => \App\Services\Sales\Orders\TimestampOrderNumberGenerator::class,
+            \App\Contracts\Sales\Orders\OrderRepositoryContract::class => \App\Repositories\Sales\Orders\EloquentOrderRepository::class,
+            \App\Contracts\Sales\Orders\OrderProductResolverContract::class => \App\Repositories\Sales\Orders\EloquentOrderProductResolver::class,
+            \App\Contracts\Sales\Orders\DealerOrderContextContract::class => \App\Services\Sales\Orders\DealerOrderContextService::class,
+            \App\Contracts\Sales\Orders\OrderCheckoutMapperContract::class => \App\Services\Sales\Orders\OrderCheckoutMapper::class,
+            \App\Contracts\Support\TransactionManagerContract::class => \App\Services\Support\LaravelTransactionManager::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

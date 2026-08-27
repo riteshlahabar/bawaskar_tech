@@ -16,7 +16,7 @@ use App\Models\Finance\Payment;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Order;
 use App\Models\User;
-use App\Services\OrderService;
+use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -133,7 +133,7 @@ class SalesmanController extends ApiController
         return $this->success(['orders' => $orders]);
     }
 
-    public function storeDealerOrder(Request $request, OrderService $orders): JsonResponse
+    public function storeDealerOrder(Request $request, OrderWorkflowContract $orders): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_SALESMAN);
         if ($user instanceof JsonResponse) {

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\User;
-use App\Services\OrderService;
+use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Services\StorefrontSessionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class StorefrontCheckoutController extends Controller
     public function placeOrder(
         Request $request,
         StorefrontSessionService $storefrontSession,
-        OrderService $orders
+        OrderWorkflowContract $orders
     ): RedirectResponse {
         $user = $storefrontSession->user($request);
 

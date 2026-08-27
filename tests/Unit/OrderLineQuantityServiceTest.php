@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Catalog\ProductVariant;
-use App\Services\OrderLineQuantityService;
+use App\Services\Sales\Orders\OrderLineQuantityService;
 use PHPUnit\Framework\TestCase;
 
 class OrderLineQuantityServiceTest extends TestCase

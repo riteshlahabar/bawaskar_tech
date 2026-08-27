@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Order;
 use App\Models\User;
-use App\Services\OrderService;
+use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,7 +27,7 @@ class CustomerOrderController extends ApiController
         return $this->success(['orders' => $orders]);
     }
 
-    public function store(Request $request, OrderService $orders): JsonResponse
+    public function store(Request $request, OrderWorkflowContract $orders): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_CUSTOMER);
         if ($user instanceof JsonResponse) {

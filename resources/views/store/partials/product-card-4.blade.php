@@ -3,13 +3,14 @@
     $displayName = $product->translatedName();
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
-    $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
-    $mrp = (float) $product->mrp;
+    $mainVariant = $product->mainVariant();
+    $price = $mainVariant ? $mainVariant->priceFor($audience) : (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
+    $mrp = (float) ($mainVariant?->mrp ?? $product->mrp);
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
-    $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
+    $unitName = $mainVariant?->display_name ?: (data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs');
     $categoryName = data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product');
-    $availableStock = (float) $product->available_stock;
-    $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
+    $availableStock = $mainVariant ? (float) $mainVariant->available_stock : (float) $product->available_stock;
+    $lowStockAlert = (float) optional($mainVariant?->inventoryBatches->first() ?: $product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
     $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
     $cardOuterClass = trim((string) ($cardOuterClass ?? ''));
@@ -71,6 +72,7 @@
                     <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        @if($mainVariant)<input type="hidden" name="variant_id" value="{{ $mainVariant->id }}">@endif
                         <input type="hidden" name="quantity" value="1">
                         <button type="submit" class="add-button addcart-button btn buy-button text-light">
                             <i class="fa-solid fa-plus"></i>

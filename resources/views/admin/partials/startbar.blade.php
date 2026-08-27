@@ -11,7 +11,7 @@
     $icons = [
         'dashboard-erp'=>'home','dashboard-hrms'=>'activity','dealers'=>'shopping-bag','customers'=>'users','salesmen'=>'user-check','couriers'=>'truck',
         'customer-sales'=>'user','dealer-sales'=>'briefcase','customer-orders'=>'shopping-cart','dealer-orders'=>'shopping-cart','customer-proforma-invoices'=>'file-text','dealer-proforma-invoices'=>'file-text','customer-invoices'=>'file','dealer-invoices'=>'file','customer-dispatches'=>'truck','dealer-dispatches'=>'truck','customer-returns'=>'rotate-ccw','dealer-returns'=>'rotate-ccw',
-        'products'=>'box','product-variants'=>'layers','product-related-products'=>'link-2','product-types'=>'tag','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar','homepage-settings'=>'layout',
+        'products'=>'box','product-related-products'=>'link-2','product-types'=>'tag','categories'=>'list','brands'=>'award','units'=>'sliders','inventory'=>'package','warehouses'=>'home','batches'=>'calendar','homepage-settings'=>'layout',
         'storefront-banners'=>'image','storefront-sections'=>'grid','storefront-section-products'=>'shopping-cart','storefront-service-blocks'=>'truck','storefront-footer-links'=>'link',
         'sf-row-1-main-banner'=>'layout','sf-row-2-small-banners'=>'layout','sf-row-3-shop-categories'=>'layout',
         'sf-row-4-product-section'=>'layout','sf-row-4-heading'=>'type','sf-row-4-products'=>'shopping-cart',
@@ -29,7 +29,7 @@
         'sf-row-16-blog'=>'layout',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
         'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor',
-        'notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
+        'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
     ];
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','systemMenu'=>'settings'];
 @endphp

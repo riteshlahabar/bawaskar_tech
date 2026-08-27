@@ -1,15 +1,16 @@
 @php
     $imageUrl = $product->storefront_image_url;
     $displayName = $product->translatedName();
-    $displayDescription = $product->translatedDescription();
+    $displayDescription = $product->short_description;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
-    $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
-    $mrp = (float) $product->mrp;
+    $mainVariant = $product->mainVariant();
+    $price = $mainVariant ? $mainVariant->priceFor($audience) : (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
+    $mrp = (float) ($mainVariant?->mrp ?? $product->mrp);
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
-    $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
-    $availableStock = (float) $product->available_stock;
-    $lowStockAlert = (float) optional($product->inventoryBatches->first())->low_stock_alert;
+    $unitName = $mainVariant?->display_name ?: (data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs');
+    $availableStock = $mainVariant ? (float) $mainVariant->available_stock : (float) $product->available_stock;
+    $lowStockAlert = (float) optional($mainVariant?->inventoryBatches->first() ?: $product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;
     $isLowStock = ! $isOutOfStock && $lowStockAlert > 0 && $availableStock <= $lowStockAlert;
     $isInWishlist = in_array($product->id, array_map('intval', $storeWishlistProductIds ?? []), true);
@@ -41,7 +42,7 @@
             <div class="product-detail">
                 <span class="span-name">{{ data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product') }}</span>
                 <a href="{{ $productUrl }}"><h5 class="name">{{ $displayName }}</h5></a>
-                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: web_t('product.quality_farmer_product', 'Quality farmer product'))->limit(75) }}</p>
+                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: web_t('product.quality_farmer_product', 'Quality farmer product'))->limit(80) }}</p>
                 <h6 class="unit">{{ storefront_public_t($unitName, 'unit') }}</h6>
                 @if($mrp > $price)
                     <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
@@ -63,6 +64,7 @@
                         <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            @if($mainVariant)<input type="hidden" name="variant_id" value="{{ $mainVariant->id }}">@endif
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit" class="btn btn-add-cart addcart-button">{{ web_t('product.add_to_cart', 'Add To Cart') }}</button>
                         </form>

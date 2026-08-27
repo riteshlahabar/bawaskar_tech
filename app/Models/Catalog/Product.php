@@ -28,6 +28,9 @@ class Product extends Model
         'customer_price',
         'dealer_price',
         'description',
+        'benefits',
+        'usage_instructions',
+        'crop_information',
         'short_description',
         'detail_banner_image',
         'detail_banner_url',
@@ -255,6 +258,22 @@ class Product extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(ProductMedia::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function mainVariant(): ?ProductVariant
+    {
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->where('is_active', true)->get();
+
+        $activeVariants = $variants->where('is_active', true);
+
+        return $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first();
     }
 
     public function relatedProductLinks(): HasMany

@@ -2,13 +2,14 @@
 
 namespace App\Models\Inventory;
 
+use App\Models\Catalog\ProductVariant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockMovement extends Model
 {
-    protected $fillable = ['inventory_batch_id', 'movement_type', 'quantity', 'reference_type', 'reference_id', 'created_by'];
+    protected $fillable = ['inventory_batch_id', 'product_variant_id', 'movement_type', 'quantity', 'reference_type', 'reference_id', 'created_by'];
 
     protected function casts(): array
     {
@@ -23,5 +24,10 @@ class StockMovement extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 }

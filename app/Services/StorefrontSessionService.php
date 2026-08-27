@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductVariant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -72,7 +73,7 @@ class StorefrontSessionService
         $request->session()->regenerateToken();
     }
 
-    public function addToCart(Request $request, Product $product, float $quantity): void
+    public function addToCart(Request $request, Product $product, float $quantity, ?ProductVariant $variant = null): void
     {
         $quantity = round($quantity, 3);
 
@@ -84,52 +85,80 @@ class StorefrontSessionService
 
         $this->assertVisibleForAudience($product, $this->audience($request));
 
-        $cart = $this->cart($request);
-        $nextQuantity = round(((float) ($cart[$product->id] ?? 0)) + $quantity, 3);
+        $variant = $variant ?: $product->mainVariant();
+        if ($variant && ((int) $variant->product_id !== (int) $product->id || ! $variant->is_active)) {
+            throw ValidationException::withMessages(['variant_id' => 'The selected size/pack is not available.']);
+        }
 
-        if ($nextQuantity > $product->available_stock + 0.0001) {
+        $cart = $this->cart($request);
+        $lineKey = $this->cartLineKey($product->id, $variant?->id);
+        $nextQuantity = round(((float) data_get($cart, $lineKey.'.quantity', 0)) + $quantity, 3);
+        $unitQuantity = $this->unitQuantity($request, $nextQuantity, $variant);
+        $availableStock = $this->availableStock($product, $variant);
+
+        if ($unitQuantity > $availableStock + 0.0001) {
             throw ValidationException::withMessages([
-                'quantity' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->translatedName().'.',
+                'quantity' => 'Only '.number_format($availableStock, 3).' retail packs are available for '.$product->translatedName().'.',
             ]);
         }
 
-        $cart[$product->id] = $nextQuantity;
+        $cart[$lineKey] = [
+            'product_id' => (int) $product->id,
+            'variant_id' => $variant?->id,
+            'quantity' => $nextQuantity,
+        ];
         $this->storeCart($request, $cart);
     }
 
     public function updateCart(Request $request, array $items): void
     {
-        $products = $this->productsForCart($request, $items);
+        $currentCart = $this->cart($request);
+        $products = $this->productsForCart($request, $currentCart);
         $cart = [];
 
-        foreach ($items as $productId => $quantity) {
+        foreach ($items as $lineKey => $quantity) {
             $quantity = round((float) $quantity, 3);
 
             if ($quantity <= 0) {
                 continue;
             }
 
-            $product = $products->get((int) $productId);
-            if (! $product) {
+            $entry = $currentCart[(string) $lineKey] ?? null;
+            if (! is_array($entry)) {
                 continue;
             }
 
-            if ($quantity > $product->available_stock + 0.0001) {
+            $product = $products->get((int) $entry['product_id']);
+            $variant = $product ? $this->variantForEntry($product, $entry) : null;
+            if (! $product || (! empty($entry['variant_id']) && ! $variant)) continue;
+
+            $unitQuantity = $this->unitQuantity($request, $quantity, $variant);
+            $availableStock = $this->availableStock($product, $variant);
+
+            if ($unitQuantity > $availableStock + 0.0001) {
                 throw ValidationException::withMessages([
-                    'items' => 'Only '.number_format($product->available_stock, 3).' quantity is available for '.$product->translatedName().'.',
+                    'items' => 'Only '.number_format($availableStock, 3).' retail packs are available for '.$product->translatedName().'.',
                 ]);
             }
 
-            $cart[$product->id] = $quantity;
+            $cart[(string) $lineKey] = [
+                'product_id' => (int) $product->id,
+                'variant_id' => $variant?->id,
+                'quantity' => $quantity,
+            ];
         }
 
         $this->storeCart($request, $cart);
     }
 
-    public function removeFromCart(Request $request, int $productId): void
+    public function removeFromCart(Request $request, string $lineKey): void
     {
         $cart = $this->cart($request);
-        unset($cart[$productId]);
+        unset($cart[$lineKey]);
+
+        if (ctype_digit($lineKey)) {
+            unset($cart[$this->cartLineKey((int) $lineKey, null)]);
+        }
         $this->storeCart($request, $cart);
     }
 
@@ -187,12 +216,24 @@ class StorefrontSessionService
 
         $cart = [];
 
-        foreach ($stored as $productId => $quantity) {
-            $productId = (int) $productId;
-            $quantity = round((float) $quantity, 3);
+        foreach ($stored as $storedKey => $storedValue) {
+            if (is_array($storedValue)) {
+                $productId = (int) ($storedValue['product_id'] ?? 0);
+                $variantId = (int) ($storedValue['variant_id'] ?? 0) ?: null;
+                $quantity = round((float) ($storedValue['quantity'] ?? 0), 3);
+            } else {
+                $productId = (int) $storedKey;
+                $variantId = null;
+                $quantity = round((float) $storedValue, 3);
+            }
 
             if ($productId > 0 && $quantity > 0) {
-                $cart[$productId] = $quantity;
+                $lineKey = $this->cartLineKey($productId, $variantId);
+                $cart[$lineKey] = [
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => $quantity,
+                ];
             }
         }
 
@@ -230,28 +271,51 @@ class StorefrontSessionService
         $hasIssues = false;
         $items = collect();
 
-        foreach ($cart as $productId => $quantity) {
-            $product = $products->get((int) $productId);
+        foreach ($cart as $lineKey => $entry) {
+            $product = $products->get((int) $entry['product_id']);
             if (! $product) {
                 $hasIssues = true;
                 continue;
             }
 
-            $unitPrice = $this->resolveUnitPrice($product, $audience);
-            $lineBase = round($unitPrice * $quantity, 2);
-            $gstAmount = round($lineBase * ((float) $product->gst_percent / 100), 2);
-            $availableStock = (float) $product->available_stock;
-            $itemHasIssue = $availableStock + 0.0001 < $quantity;
+            $variant = $this->variantForEntry($product, $entry);
+            if (! empty($entry['variant_id']) && ! $variant) {
+                $hasIssues = true;
+                continue;
+            }
+
+            $quantity = (float) $entry['quantity'];
+            $unitsPerCase = $variant ? max(1, (float) $variant->units_per_case) : 1.0;
+            $unitQuantity = $audience === 'dealer' ? round($quantity * $unitsPerCase, 3) : $quantity;
+            $unitPrice = $this->resolveUnitPrice($product, $audience, $variant);
+            $priceTotal = round($unitPrice * $unitQuantity, 2);
+            $gstPercent = (float) $product->gst_percent;
+            if ($variant) {
+                $lineTotal = $priceTotal;
+                $lineBase = $gstPercent > 0 ? round($lineTotal / (1 + ($gstPercent / 100)), 2) : $lineTotal;
+                $gstAmount = round($lineTotal - $lineBase, 2);
+            } else {
+                $lineBase = $priceTotal;
+                $gstAmount = round($lineBase * ($gstPercent / 100), 2);
+                $lineTotal = round($lineBase + $gstAmount, 2);
+            }
+            $availableStock = $this->availableStock($product, $variant);
+            $itemHasIssue = $availableStock + 0.0001 < $unitQuantity;
 
             $items->push([
+                'line_key' => (string) $lineKey,
                 'product' => $product,
+                'variant' => $variant,
                 'quantity' => $quantity,
+                'unit_quantity' => $unitQuantity,
+                'units_per_case' => $unitsPerCase,
                 'unit_price' => $unitPrice,
                 'line_base' => $lineBase,
                 'gst_amount' => $gstAmount,
-                'line_total' => $lineBase + $gstAmount,
+                'line_total' => $lineTotal,
                 'available_stock' => $availableStock,
                 'has_issue' => $itemHasIssue,
+                'quantity_label' => $audience === 'dealer' && $variant ? 'case(s)' : 'retail pack(s)',
             ]);
 
             $subtotal += $lineBase;
@@ -291,7 +355,10 @@ class StorefrontSessionService
         return collect($this->cartSummary($request)['items'])
             ->map(fn (array $item): array => [
                 'product_id' => $item['product']->id,
-                'quantity' => $item['quantity'],
+                'variant_id' => $item['variant']?->id,
+                'quantity' => $item['unit_quantity'],
+                'pack_quantity' => $item['quantity'],
+                'units_per_case' => $item['units_per_case'],
             ])
             ->values()
             ->all();
@@ -322,7 +389,7 @@ class StorefrontSessionService
     private function productsForCart(Request $request, array $cart): Collection
     {
         $productIds = collect($cart)
-            ->keys()
+            ->pluck('product_id')
             ->map(fn ($id): int => (int) $id)
             ->filter()
             ->values();
@@ -332,7 +399,7 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches', 'variants.inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
@@ -351,16 +418,47 @@ class StorefrontSessionService
         }
 
         return Product::query()
-            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches', 'variants.inventoryBatches'])
             ->visibleFor($this->audience($request))
             ->whereKey($productIds)
             ->get()
             ->keyBy('id');
     }
 
-    private function resolveUnitPrice(Product $product, string $audience): float
+    private function resolveUnitPrice(Product $product, string $audience, ?ProductVariant $variant = null): float
     {
+        if ($variant) {
+            return $variant->priceFor($audience);
+        }
+
         return (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
+    }
+
+    private function cartLineKey(int $productId, ?int $variantId): string
+    {
+        return $productId.':'.($variantId ?: 0);
+    }
+
+    private function variantForEntry(Product $product, array $entry): ?ProductVariant
+    {
+        $variantId = (int) ($entry['variant_id'] ?? 0);
+        if ($variantId <= 0) return null;
+
+        return $product->variants->firstWhere('id', $variantId);
+    }
+
+    private function unitQuantity(Request $request, float $quantity, ?ProductVariant $variant): float
+    {
+        if ($this->audience($request) !== 'dealer' || ! $variant) {
+            return round($quantity, 3);
+        }
+
+        return round($quantity * max(1, (float) $variant->units_per_case), 3);
+    }
+
+    private function availableStock(Product $product, ?ProductVariant $variant): float
+    {
+        return $variant ? (float) $variant->available_stock : (float) $product->available_stock;
     }
 
     private function assertVisibleForAudience(Product $product, string $audience): void

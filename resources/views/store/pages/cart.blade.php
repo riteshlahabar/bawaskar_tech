@@ -781,13 +781,14 @@
                                                     $imageUrl = $product->storefront_image_url;
                                                     $productUrl = route('store.product', ['product' => $product->id]);
                                                     $displayName = $product->translatedName();
-                                                    $mrp = (float) $product->mrp;
+                                                    $variant = $item['variant'];
+                                                    $mrp = (float) ($variant?->mrp ?? $product->mrp);
                                                     $unitPrice = (float) $item['unit_price'];
                                                     $quantity = (float) $item['quantity'];
+                                                    $unitQuantity = (float) $item['unit_quantity'];
                                                     $lineTotal = (float) $item['line_total'];
                                                     $hasDiscount = $mrp > $unitPrice;
-                                                    $unitName = data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs';
-                                                    $savings = max(0, ($mrp * $quantity) - $item['line_base']);
+                                                    $savings = max(0, ($mrp * $unitQuantity) - ($variant ? $lineTotal : (float) $item['line_base']));
                                                 ?>
                                                 <tr class="product-box-contain" data-product-id="{{ $product->id }}">
                                                     <td class="product-detail">
@@ -804,11 +805,20 @@
                                                                         <span class="text-title">Category:</span> {{ data_get($product, 'category.name') ?: 'Product' }}
                                                                     </li>
                                                                     <li class="text-content">
-                                                                        <span class="text-title">Quantity</span> - {{ number_format($quantity, 3) }} {{ $unitName }}
+                                                                        <span class="text-title">Size / Pack:</span> {{ $variant?->display_name ?: 'Standard Pack' }}
+                                                                    </li>
+                                                                    <li class="text-content">
+                                                                        <span class="text-title">Quantity</span> - {{ number_format($quantity, 3) }} {{ $item['quantity_label'] }}
+                                                                        @if(($storeAudience ?? 'customer') === 'dealer' && $variant)
+                                                                            ({{ number_format((float) $item['units_per_case'], 0) }} retail packs per case; {{ number_format($unitQuantity, 3) }} total packs)
+                                                                        @endif
                                                                     </li>
                                                                     <li>
                                                                         <h5 class="text-content d-inline-block">Price :</h5>
-                                                                        <span>Rs. {{ number_format($unitPrice, 2) }}</span>
+                                                                        <span>Rs. {{ number_format($unitPrice, 2) }} per retail pack</span>
+                                                                        @if(($storeAudience ?? 'customer') === 'dealer' && $variant)
+                                                                            <span class="text-content"> / Rs. {{ number_format($unitPrice * (float) $item['units_per_case'], 2) }} per case</span>
+                                                                        @endif
                                                                         <?php if ($hasDiscount): ?>
                                                                             <span class="text-content">Rs. {{ number_format($mrp, 2) }}</span>
                                                                         <?php endif; ?>
@@ -820,13 +830,13 @@
                                                                     <?php endif; ?>
                                                                     <?php if ($item['has_issue']): ?>
                                                                         <li>
-                                                                            <h6 class="text-danger">Available stock: {{ number_format((float) $item['available_stock'], 3) }}</h6>
+                                                                            <h6 class="text-danger">Available stock: {{ number_format((float) $item['available_stock'], 3) }} retail packs</h6>
                                                                         </li>
                                                                     <?php endif; ?>
                                                                     <li class="quantity-price-box">
                                                                         <div class="cart_qty">
                                                                             <div class="input-group">
-                                                                                <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $quantity }}">
+                                                                                <input class="form-control input-number qty-input" type="number" min="0" step="1" name="items[{{ $item['line_key'] }}]" value="{{ $quantity }}">
                                                                             </div>
                                                                         </div>
                                                                     </li>
@@ -840,6 +850,9 @@
                                                     <td class="price">
                                                         <h4 class="table-title text-content">Price</h4>
                                                         <h5>Rs. {{ number_format($unitPrice, 2) }}</h5>
+                                                        @if(($storeAudience ?? 'customer') === 'dealer' && $variant)
+                                                            <h6 class="theme-color">Rs. {{ number_format($unitPrice * (float) $item['units_per_case'], 2) }} / case</h6>
+                                                        @endif
                                                         <?php if ($hasDiscount): ?>
                                                             <h6 class="text-content"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>
                                                         <?php endif; ?>
@@ -852,7 +865,7 @@
                                                         <div class="quantity-price">
                                                             <div class="cart_qty">
                                                                 <div class="input-group">
-                                                                    <input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[{{ $product->id }}]" value="{{ $quantity }}">
+                                                                    <input class="form-control input-number qty-input" type="number" min="0" step="1" name="items[{{ $item['line_key'] }}]" value="{{ $quantity }}">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -863,7 +876,7 @@
                                                     </td>
                                                     <td class="save-remove">
                                                         <h4 class="table-title text-content">Action</h4>
-                                                        <button type="submit" formaction="{{ route('store.cart.remove', ['productId' => $product->id]) }}" class="remove close_button border-0 bg-transparent">Remove</button>
+                                                        <button type="submit" formaction="{{ route('store.cart.remove', ['lineKey' => $item['line_key']]) }}" class="remove close_button border-0 bg-transparent">Remove</button>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

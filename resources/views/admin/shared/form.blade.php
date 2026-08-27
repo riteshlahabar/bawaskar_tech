@@ -2,7 +2,7 @@
 @section('title', $pageTitle)
 @section('content')
 @php
-    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple'], true));
+    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple', 'product_media_repeater'], true));
     $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
     $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
     $optionAttributes = $optionAttributes ?? [];
@@ -68,6 +68,20 @@
                                 </div>
                                 @continue
                             @endif
+                            @if($type === 'product_variants_repeater')
+                                <div class="col-12">
+                                    @include('admin.shared.product-variants-repeater')
+                                    @error('variants')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                                </div>
+                                @continue
+                            @endif
+                            @if($type === 'product_media_repeater')
+                                <div class="col-12">
+                                    @include('admin.shared.product-media-repeater')
+                                    @error('media')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                                </div>
+                                @continue
+                            @endif
                             @continue(empty($field['name']))
                             @php($name = $field['name'] ?? '')
                             @php($value = old($name, $formData[$name] ?? ($field['default'] ?? null)))
@@ -126,7 +140,8 @@
                                             @endforeach
                                         </select>
                                     @elseif($type === 'textarea')
-                                        <textarea rows="{{ $field['rows'] ?? 4 }}" class="form-control @error($name)is-invalid @enderror" name="{{ $name }}" @required($isRequired)>{{ $value }}</textarea>
+                                        <textarea rows="{{ $field['rows'] ?? 4 }}" class="form-control @error($name)is-invalid @enderror" name="{{ $name }}" @if(! empty($field['maxlength'])) maxlength="{{ $field['maxlength'] }}" @endif @if(! empty($field['character_counter'])) data-character-counter @endif @required($isRequired)>{{ $value }}</textarea>
+                                        @if(! empty($field['character_counter']))<small class="text-muted d-block"><span data-character-count>0</span> / {{ $field['maxlength'] ?? 160 }}</small>@endif
                                     @elseif($type === 'image_multiple')
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}[]" accept="image/*" multiple @required($isRequired && ! $record)>
                                         @if($record && method_exists($record, 'images') && $record->relationLoaded('images'))
@@ -428,6 +443,83 @@
             });
         });
     }
+    function initProductRepeaters() {
+        document.querySelectorAll('[data-product-variants-repeater], [data-product-media-repeater]').forEach(function (repeater) {
+            var rowsHost = repeater.querySelector('[data-repeater-rows]');
+            var template = repeater.querySelector('[data-repeater-template]');
+            var addButton = repeater.querySelector('[data-add-repeater-row]');
+            var nextIndex = rowsHost ? rowsHost.children.length : 0;
+
+            function updateVariantTotals(row) {
+                if (!row || !row.matches('[data-product-variant-row]')) return;
+                var units = parseFloat((row.querySelector('[data-units-per-case]') || {}).value || 0);
+                var mrp = parseFloat((row.querySelector('[data-variant-mrp]') || {}).value || 0);
+                var dealer = parseFloat((row.querySelector('[data-variant-dealer-price]') || {}).value || 0);
+                var mrpTarget = row.querySelector('[data-case-mrp]');
+                var dealerTarget = row.querySelector('[data-case-dealer]');
+                if (mrpTarget) mrpTarget.textContent = (units * mrp).toFixed(2);
+                if (dealerTarget) dealerTarget.textContent = (units * dealer).toFixed(2);
+            }
+
+            function syncMediaFields(row) {
+                if (!row || !row.matches('[data-product-media-row]')) return;
+                var source = row.querySelector('[data-media-source]');
+                var uploadField = row.querySelector('[data-media-upload-field]');
+                var youtubeField = row.querySelector('[data-media-youtube-field]');
+                var isYoutube = source && source.value === 'youtube';
+                if (uploadField) uploadField.style.display = isYoutube ? 'none' : '';
+                if (youtubeField) youtubeField.style.display = isYoutube ? '' : 'none';
+            }
+
+            function initialiseRow(row) {
+                updateVariantTotals(row);
+                syncMediaFields(row);
+            }
+
+            if (addButton && template && rowsHost) {
+                addButton.addEventListener('click', function () {
+                    var html = template.innerHTML.replaceAll('__INDEX__', String(nextIndex++));
+                    rowsHost.insertAdjacentHTML('beforeend', html);
+                    initialiseRow(rowsHost.lastElementChild);
+                });
+            }
+
+            repeater.addEventListener('click', function (event) {
+                var removeButton = event.target.closest('[data-remove-repeater-row]');
+                if (removeButton) {
+                    var row = removeButton.closest('[data-product-variant-row], [data-product-media-row]');
+                    if (row) row.remove();
+                }
+            });
+
+            repeater.addEventListener('change', function (event) {
+                var row = event.target.closest('[data-product-variant-row], [data-product-media-row]');
+                if (event.target.matches('[data-main-display-pack]') && event.target.checked) {
+                    repeater.querySelectorAll('[data-main-display-pack]').forEach(function (checkbox) {
+                        if (checkbox !== event.target) checkbox.checked = false;
+                    });
+                }
+                initialiseRow(row);
+            });
+
+            repeater.addEventListener('input', function (event) {
+                updateVariantTotals(event.target.closest('[data-product-variant-row]'));
+            });
+
+            rowsHost.querySelectorAll('[data-product-variant-row], [data-product-media-row]').forEach(initialiseRow);
+        });
+    }
+
+    function initCharacterCounters() {
+        document.querySelectorAll('[data-character-counter]').forEach(function (field) {
+            var target = field.parentElement.querySelector('[data-character-count]');
+            var sync = function () {
+                if (target) target.textContent = String(field.value.length);
+            };
+            field.addEventListener('input', sync);
+            sync();
+        });
+    }
     function initConditionalAdminFields() {
         document.querySelectorAll('.admin-form-card form').forEach(function (form) {
             var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
@@ -455,11 +547,15 @@
             initConditionalAdminFields();
             initGalleryImageRemoval();
             initProductAutoTranslate();
+            initProductRepeaters();
+            initCharacterCounters();
         });
     } else {
         initConditionalAdminFields();
         initGalleryImageRemoval();
         initProductAutoTranslate();
+        initProductRepeaters();
+        initCharacterCounters();
     }
 })();
 </script>

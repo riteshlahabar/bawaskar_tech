@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanySetting;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
@@ -62,13 +63,15 @@ class StorefrontController extends Controller
             'unit',
             'images',
             'inventoryBatches',
-            'variants' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
+            'media' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
+            'variants' => fn ($query) => $query->with('inventoryBatches')->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
             'relatedProductLinks.relatedProduct.category.translations',
             'relatedProductLinks.relatedProduct.brand',
             'relatedProductLinks.relatedProduct.unit',
             'relatedProductLinks.relatedProduct.images',
             'relatedProductLinks.relatedProduct.translations',
             'relatedProductLinks.relatedProduct.inventoryBatches',
+            'relatedProductLinks.relatedProduct.variants.inventoryBatches',
         ]);
 
         $relatedProducts = $product->relatedProductLinks
@@ -88,9 +91,18 @@ class StorefrontController extends Controller
                 ->get();
         }
 
+        $trendingProducts = $this->storefrontProductQuery($audience)
+            ->where('is_trending', true)
+            ->whereKeyNot($product->getKey())
+            ->storefrontOrder()
+            ->limit(4)
+            ->get();
+
         return $this->render($request, 'product-left-thumbnail', [
             'storeProduct' => $product,
             'relatedProducts' => $relatedProducts,
+            'trendingProducts' => $trendingProducts,
+            'companySetting' => CompanySetting::query()->first(),
         ]);
     }
 
@@ -544,7 +556,7 @@ class StorefrontController extends Controller
     private function storefrontProductQuery(string $audience = 'customer'): Builder
     {
         return Product::query()
-            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches', 'variants.inventoryBatches'])
             ->visibleFor($audience);
     }
 
@@ -632,7 +644,7 @@ class StorefrontController extends Controller
     private function storeOrdersQuery(User $user): Builder
     {
         $query = StoreOrder::query()
-            ->with(['items.product.images', 'items.product.translations', 'invoice', 'dispatches', 'salesman']);
+            ->with(['items.product.images', 'items.product.translations', 'items.variant', 'invoice', 'dispatches', 'salesman']);
 
         if ($user->role === User::ROLE_DEALER) {
             $query->where('dealer_id', $user->id);

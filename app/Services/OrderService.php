@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductVariant;
 use App\Models\Inventory\InventoryBatch;
 use App\Models\Inventory\StockMovement;
 use App\Models\Sales\Order;
@@ -113,7 +114,7 @@ class OrderService
                 'grand_total' => $subtotal + $gstTotal,
             ])->save();
 
-            return $order->load('items.product', 'dealer.dealerProfile', 'salesman', 'customer');
+            return $order->load('items.product', 'items.variant', 'dealer.dealerProfile', 'salesman', 'customer');
         });
     }
 
@@ -123,27 +124,58 @@ class OrderService
 
         foreach ($items as $item) {
             $productId = (int) $item['product_id'];
+            $variantId = (int) ($item['variant_id'] ?? 0) ?: null;
             $quantity = (float) $item['quantity'];
-            $requested[$productId] = ($requested[$productId] ?? 0) + $quantity;
+            $key = $productId.':'.($variantId ?: 0);
+            if (! isset($requested[$key])) {
+                $requested[$key] = [
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => 0.0,
+                    'pack_quantity' => 0.0,
+                    'units_per_case' => max(1, (float) ($item['units_per_case'] ?? 1)),
+                ];
+            }
+            $requested[$key]['quantity'] += $quantity;
+            $requested[$key]['pack_quantity'] += (float) ($item['pack_quantity'] ?? $quantity);
         }
 
         $lineItems = [];
 
-        foreach ($requested as $productId => $quantity) {
-            $product = Product::query()->visibleFor($type)->findOrFail($productId);
-            $this->ensureStockAvailable($product, $quantity);
+        foreach ($requested as $requestLine) {
+            $product = Product::query()->visibleFor($type)->findOrFail($requestLine['product_id']);
+            $variant = $requestLine['variant_id']
+                ? ProductVariant::query()->where('product_id', $product->id)->where('is_active', true)->findOrFail($requestLine['variant_id'])
+                : null;
+            $quantity = (float) $requestLine['quantity'];
+            $this->ensureStockAvailable($product, $quantity, $variant);
 
-            $unitPrice = (float) ($type === 'dealer' ? $product->dealer_price : $product->customer_price);
-            $lineBase = round($quantity * $unitPrice, 2);
-            $gstAmount = round($lineBase * ((float) $product->gst_percent / 100), 2);
+            $unitPrice = $variant
+                ? $variant->priceFor($type)
+                : (float) ($type === 'dealer' ? $product->dealer_price : $product->customer_price);
+            $priceTotal = round($quantity * $unitPrice, 2);
+            $gstPercent = (float) $product->gst_percent;
+            if ($variant) {
+                $lineTotal = $priceTotal;
+                $lineBase = $gstPercent > 0 ? round($lineTotal / (1 + ($gstPercent / 100)), 2) : $lineTotal;
+                $gstAmount = round($lineTotal - $lineBase, 2);
+            } else {
+                $lineBase = $priceTotal;
+                $gstAmount = round($lineBase * ($gstPercent / 100), 2);
+                $lineTotal = round($lineBase + $gstAmount, 2);
+            }
 
             $lineItems[] = [
                 'product_id' => $product->id,
+                'product_variant_id' => $variant?->id,
+                'variant_name' => $variant?->display_name,
                 'quantity' => $quantity,
+                'pack_quantity' => (float) $requestLine['pack_quantity'],
+                'units_per_case' => (float) $requestLine['units_per_case'],
                 'unit_price' => $unitPrice,
                 'gst_percent' => $product->gst_percent,
                 'gst_amount' => $gstAmount,
-                'line_total' => $lineBase + $gstAmount,
+                'line_total' => $lineTotal,
                 'line_base' => $lineBase,
             ];
         }
@@ -151,7 +183,7 @@ class OrderService
         return $lineItems;
     }
 
-    private function ensureStockAvailable(Product $product, float $requestedQuantity): void
+    private function ensureStockAvailable(Product $product, float $requestedQuantity, ?ProductVariant $variant = null): void
     {
         if (! filter_var(env('ENFORCE_STOCK_ON_ORDER', true), FILTER_VALIDATE_BOOL)) {
             return;
@@ -159,6 +191,7 @@ class OrderService
 
         $available = (float) InventoryBatch::query()
             ->where('product_id', $product->id)
+            ->when($variant, fn ($query) => $query->where('product_variant_id', $variant->id), fn ($query) => $query->whereNull('product_variant_id'))
             ->where(function ($query): void {
                 $query->whereNull('expiry_date')->orWhereDate('expiry_date', '>=', today());
             })
@@ -206,6 +239,11 @@ class OrderService
 
             $batches = InventoryBatch::query()
                 ->where('product_id', $lineItem['product_id'])
+                ->when(
+                    $lineItem['product_variant_id'] ?? null,
+                    fn ($query, $variantId) => $query->where('product_variant_id', $variantId),
+                    fn ($query) => $query->whereNull('product_variant_id')
+                )
                 ->where(function ($query): void {
                     $query->whereNull('expiry_date')->orWhereDate('expiry_date', '>=', today());
                 })
@@ -233,6 +271,7 @@ class OrderService
 
                 StockMovement::query()->create([
                     'inventory_batch_id' => $batch->id,
+                    'product_variant_id' => $lineItem['product_variant_id'] ?? null,
                     'movement_type' => 'reserved',
                     'quantity' => $reservedQuantity,
                     'reference_type' => Order::class,

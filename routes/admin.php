@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
 use App\Http\Controllers\Admin\Reports\ReportController;
 use App\Http\Controllers\Admin\Returns\ReturnController;
 use App\Http\Controllers\Admin\Salary\SalaryController;
+use App\Http\Controllers\Admin\Settings\CompanySettingController;
 use App\Http\Controllers\Admin\SalesDocuments\SalesDocumentController;
 use App\Http\Controllers\Admin\Salesmen\SalesmanController;
 use App\Http\Controllers\Admin\Support\SupportController;
@@ -46,7 +47,6 @@ use App\Http\Controllers\Admin\Imports\CommonImportController;
 use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
 use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
 use App\Http\Controllers\Admin\ProductRelatedProducts\ProductRelatedProductController;
-use App\Http\Controllers\Admin\ProductVariants\ProductVariantController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -64,7 +64,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'product-variants'=>ProductVariantController::class,'product-related-products'=>ProductRelatedProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
+            'products'=>ProductController::class,'product-related-products'=>ProductRelatedProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
             'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
             'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,
             'internal-expenses'=>InternalExpenseController::class,'expense-categories'=>ExpenseCategoryController::class,'expense-subcategories'=>ExpenseSubcategoryController::class,
@@ -73,6 +73,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
         ];
         Route::post('products/translate', [ProductController::class, 'translate'])->name('products.translate');
+        Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
+        Route::put('settings/company', [CompanySettingController::class, 'update'])->name('company-settings.update');
         Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
         Route::delete('products/{product}/field-image', [ProductController::class, 'destroyFieldImage'])->name('products.field-image.destroy');
         Route::get('attendance/bulk', [AttendanceController::class, 'bulk'])->name('attendance.bulk');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductVariant;
 use App\Models\User;
 use App\Services\StorefrontSessionService;
 use Illuminate\Http\JsonResponse;
@@ -22,14 +23,21 @@ class StorefrontCartController extends Controller
 
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
+            'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'quantity' => ['required', 'numeric', 'min:0.001'],
         ]);
 
         $product = Product::query()
-            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches'])
+            ->with(['category.translations', 'brand', 'unit', 'images', 'translations', 'inventoryBatches', 'variants.inventoryBatches'])
             ->findOrFail($validated['product_id']);
 
-        $storefrontSession->addToCart($request, $product, (float) $validated['quantity']);
+        $variant = null;
+        if (! empty($validated['variant_id'])) {
+            $variant = $product->variants->firstWhere('id', (int) $validated['variant_id']);
+            abort_unless($variant instanceof ProductVariant && $variant->is_active, 422, 'Selected size/pack is not available.');
+        }
+
+        $storefrontSession->addToCart($request, $product, (float) $validated['quantity'], $variant);
 
         return $this->cartResponse($request, $storefrontSession, $product->translatedName().' added to cart.');
     }
@@ -52,7 +60,7 @@ class StorefrontCartController extends Controller
         return $this->cartResponse($request, $storefrontSession, 'Cart updated successfully.');
     }
 
-    public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function remove(Request $request, string $lineKey, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
@@ -60,7 +68,7 @@ class StorefrontCartController extends Controller
             return $response;
         }
 
-        $storefrontSession->removeFromCart($request, $productId);
+        $storefrontSession->removeFromCart($request, $lineKey);
 
         return $this->cartResponse($request, $storefrontSession, 'Item removed from cart.');
     }
@@ -125,23 +133,33 @@ class StorefrontCartController extends Controller
                 'items' => collect($summary['items'] ?? collect())
                     ->map(function (array $item): array {
                         $product = $item['product'];
-                        $mrp = (float) $product->mrp;
+                        $variant = $item['variant'];
+                        $mrp = (float) ($variant?->mrp ?? $product->mrp);
                         $unitPrice = (float) $item['unit_price'];
                         $quantity = (float) $item['quantity'];
                         $lineBase = (float) $item['line_base'];
                         $lineTotal = (float) $item['line_total'];
-                        $savings = max(0, ($mrp * $quantity) - $lineBase);
+                        $unitQuantity = (float) $item['unit_quantity'];
+                        $savings = max(0, ($mrp * $unitQuantity) - ($variant ? $lineTotal : $lineBase));
 
                         return [
-                            'id' => $product->id,
+                            'id' => $item['line_key'],
+                            'line_key' => $item['line_key'],
+                            'product_id' => $product->id,
+                            'variant_id' => $variant?->id,
                             'name' => $product->translatedName(),
                             'product_url' => route('store.product', ['product' => $product->id]),
-                            'remove_url' => route('store.cart.remove', ['productId' => $product->id]),
+                            'remove_url' => route('store.cart.remove', ['lineKey' => $item['line_key']]),
                             'image_url' => $product->storefront_image_url,
                             'category_name' => data_get($product, 'category.name') ?: 'Product',
                             'unit_name' => data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs',
                             'quantity' => $quantity,
+                            'quantity_label' => $item['quantity_label'],
+                            'unit_quantity' => $unitQuantity,
+                            'units_per_case' => (float) $item['units_per_case'],
+                            'variant_name' => $variant?->display_name,
                             'unit_price' => $unitPrice,
+                            'case_price' => round($unitPrice * (float) $item['units_per_case'], 2),
                             'mrp' => $mrp,
                             'line_base' => $lineBase,
                             'line_total' => $lineTotal,

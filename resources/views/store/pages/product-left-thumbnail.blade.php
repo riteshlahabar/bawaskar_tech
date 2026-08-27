@@ -3056,6 +3056,7 @@
     <!-- Tap to top and theme setting button end -->
 
     <!-- Sticky Cart Box Start -->
+    @if(!$storeProduct)
     <div class="sticky-bottom-cart">
         <div class="container-fluid-lg">
             <div class="row">
@@ -3102,6 +3103,7 @@
             </div>
         </div>
     </div>
+    @endif
     <!-- Sticky Cart Box End -->
 
     <!-- Review Modal Start -->

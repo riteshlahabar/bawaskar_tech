@@ -7,7 +7,6 @@ use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductHomepageSectionItem;
 use App\Models\Catalog\ProductRelatedProduct;
 use App\Models\Catalog\ProductType;
-use App\Models\Catalog\ProductVariant;
 use App\Models\Catalog\Unit;
 use App\Models\Communication\AppTranslation;
 use App\Models\Communication\Language;
@@ -69,7 +68,6 @@ return [
         ]],
         ['label'=>'Products & Inventory','id'=>'productInventoryMenu','icon'=>'iconoir-box','items'=>[
             ['key'=>'products','label'=>'Products','route'=>'admin.products.index','icon'=>'iconoir-box-iso'],
-            ['key'=>'product-variants','label'=>'Product Variants','route'=>'admin.product-variants.index','icon'=>'iconoir-settings-profiles'],
             ['key'=>'product-related-products','label'=>'Related Products','route'=>'admin.product-related-products.index','icon'=>'iconoir-link'],
             ['key'=>'product-types','label'=>'Product Types','route'=>'admin.product-types.index','icon'=>'iconoir-list'],
             ['key'=>'categories','label'=>'Category','route'=>'admin.categories.index','icon'=>'iconoir-list-select'],
@@ -83,7 +81,7 @@ return [
         ['label'=>'HRMS','items'=>[
             ['key'=>'timesheet','label'=>'Timesheet','id'=>'timesheetMenu','icon'=>'iconoir-calendar','children'=>[['key'=>'attendance','label'=>'Attendance','route'=>'admin.attendance.index','icon'=>'iconoir-check-circle'],['key'=>'leaves','label'=>'Leave','route'=>'admin.leaves.index','icon'=>'iconoir-calendar-minus'],['key'=>'bulk-attendance','label'=>'Bulk Attendance','route'=>'admin.attendance.bulk','icon'=>'iconoir-table-rows']]],['key'=>'dealer-visits','label'=>'Dealer Visits','route'=>'admin.dealer-visits.index','icon'=>'iconoir-map-pin'],['key'=>'tour-plans','label'=>'Tour Plans','route'=>'admin.tour-plans.index','icon'=>'iconoir-route'],['key'=>'expenses','label'=>'Expenses','route'=>'admin.expenses.index','icon'=>'iconoir-receive-dollars'],['key'=>'salary','label'=>'Salary & Payroll','route'=>'admin.salary.index','icon'=>'iconoir-coins'],['key'=>'targets','label'=>'Targets & Commission','route'=>'admin.targets.index','icon'=>'iconoir-target'],['key'=>'assets','label'=>'Salesman Assets','route'=>'admin.assets.index','icon'=>'iconoir-laptop'],]],
         ['label'=>'System','id'=>'systemMenu','icon'=>'iconoir-settings','items'=>[
-            ['key'=>'notifications','label'=>'Notifications','route'=>'admin.notifications.index','icon'=>'iconoir-bell'],['key'=>'email-templates','label'=>'Email Templates','route'=>'admin.email-templates.index','icon'=>'iconoir-mail'],['key'=>'languages','label'=>'Languages','route'=>'admin.languages.index','icon'=>'iconoir-language'],['key'=>'translations','label'=>'Translations','route'=>'admin.translations.index','icon'=>'iconoir-language'],['key'=>'support','label'=>'Support','route'=>'admin.support.index','icon'=>'iconoir-headset-help'],['key'=>'reports','label'=>'Reports','route'=>'admin.reports.index','icon'=>'iconoir-stats-report'],]],
+            ['key'=>'company-settings','label'=>'Seller / Company Information','route'=>'admin.company-settings.edit','icon'=>'iconoir-building'],['key'=>'notifications','label'=>'Notifications','route'=>'admin.notifications.index','icon'=>'iconoir-bell'],['key'=>'email-templates','label'=>'Email Templates','route'=>'admin.email-templates.index','icon'=>'iconoir-mail'],['key'=>'languages','label'=>'Languages','route'=>'admin.languages.index','icon'=>'iconoir-language'],['key'=>'translations','label'=>'Translations','route'=>'admin.translations.index','icon'=>'iconoir-language'],['key'=>'support','label'=>'Support','route'=>'admin.support.index','icon'=>'iconoir-headset-help'],['key'=>'reports','label'=>'Reports','route'=>'admin.reports.index','icon'=>'iconoir-stats-report'],]],
     ],
     'modules' => [
         'salesmen'=>[
@@ -144,7 +142,7 @@ return [
         ],
 
         'products'=>[
-            'label'=>'Products','group'=>'Catalog','description'=>'Add product once. Homepage, category page, top selling, related products and detail page use this same product data.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','translations','variants','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
+            'label'=>'Products','group'=>'Catalog','description'=>'Add product, optional size/pack variants, stock, gallery and videos from this single form.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','media','translations','variants.inventoryBatches','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'homepageSection.title','label'=>'Section Title'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_top_selling','label'=>'Top Selling','type'=>'boolean'],['key'=>'is_deal_timer_product','label'=>'Timer Deal','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
                 ['type'=>'section_heading','label'=>'1. Basic Information'],
@@ -156,16 +154,19 @@ return [
                 ['name'=>'unit_id','label'=>'Select Unit','type'=>'select','option_model'=>Unit::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:units,id']],
                 ['name'=>'sku','label'=>'SKU','rules'=>['required','string','max:80','unique:products,sku,{id}']],
                 ['name'=>'hsn_code','label'=>'HSN Code','rules'=>['nullable','string','max:40']],
-                ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rows'=>2,'rules'=>['nullable','string']],
+                ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rows'=>2,'maxlength'=>160,'character_counter'=>true,'rules'=>['nullable','string','max:160'],'help'=>'Maximum 160 characters. Product cards show up to 80 characters.'],
                 ['name'=>'sort_order','label'=>'Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0'],'help'=>'Controls the overall listing order of this product.'],
 
-                ['type'=>'section_heading','label'=>'2. Pricing & Tax'],
+                ['type'=>'section_heading','label'=>'2. Pricing & Tax (For Product Without Variants)'],
                 ['name'=>'gst_percent','label'=>'GST %','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0','max:100'],'help'=>'Enter GST percent. Use 0 if GST is not applicable.'],
-                ['name'=>'mrp','label'=>'MRP / Old Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
-                ['name'=>'dealer_price','label'=>'Dealer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
-                ['name'=>'customer_price','label'=>'Customer Price','type'=>'number','step'=>'0.01','rules'=>['required','numeric','min:0']],
+                ['name'=>'mrp','label'=>'MRP / Old Price','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0'],'help'=>'Leave 0 when Variant Details are used; Main Display Pack prices will be used.'],
+                ['name'=>'dealer_price','label'=>'Dealer Rate per Retail Pack (GST Inclusive)','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],
+                ['name'=>'customer_price','label'=>'Customer Price per Retail Pack','type'=>'number','step'=>'0.01','rules'=>['nullable','numeric','min:0']],
 
-                ['type'=>'section_heading','label'=>'3. Add Stock','create_only'=>true],
+                ['type'=>'section_heading','label'=>'3. Variant Details (Optional)'],
+                ['name'=>'variants','label'=>'Size / Pack Variants','type'=>'product_variants_repeater','col'=>'col-12','rules'=>['nullable','array'],'help'=>'Use + Add Another Size / Pack for 100 ML, 250 ML, 1 LTR, etc. Dealer quantity 1 means one full case; customer quantity 1 means one retail pack.'],
+
+                ['type'=>'section_heading','label'=>'4. Opening Stock / Batch (Product Without Variants)','create_only'=>true],
                 ['name'=>'opening_stock_warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_label'=>'name','rules'=>['nullable','exists:warehouses,id'],'create_only'=>true,'force_required_indicator'=>true,'help'=>'Add the first stock entry while creating this product.'],
                 ['name'=>'opening_stock_batch_no','label'=>'Batch No','rules'=>['nullable','string','max:80'],'create_only'=>true,'force_required_indicator'=>true],
                 ['name'=>'opening_stock_manufacturing_date','label'=>'Manufacturing Date','type'=>'date','rules'=>['nullable','date'],'create_only'=>true],
@@ -175,32 +176,33 @@ return [
                 ['name'=>'opening_stock_reserved_quantity','label'=>'Reserved Quantity','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['nullable','numeric','min:0'],'create_only'=>true],
                 ['name'=>'opening_stock_low_stock_alert','label'=>'Low Stock Alert','type'=>'number','step'=>'0.001','default'=>0,'rules'=>['nullable','numeric','min:0'],'create_only'=>true],
 
-                ['type'=>'section_heading','label'=>'4. Images & Gallery'],
+                ['type'=>'section_heading','label'=>'5. Images & Gallery'],
                 ['name'=>'primary_image','label'=>'Main Product Image - 500 x 500 px for cards / 750 x 750 px for detail','type'=>'image','upload_dir'=>'uploads/products','rules'=>['nullable','image','max:5120']],
                 ['name'=>'gallery_images','label'=>'Product Gallery Images - 150 x 150 px thumbnails','type'=>'image_multiple','upload_dir'=>'uploads/products/gallery','rules'=>['nullable','array']],
 
-                ['type'=>'section_heading','label'=>'5. Product Detail Tabs'],
+                ['type'=>'section_heading','label'=>'6. Product Videos'],
+                ['name'=>'media','label'=>'Gallery Videos','type'=>'product_media_repeater','col'=>'col-12','rules'=>['nullable','array'],'help'=>'Add multiple uploaded MP4/WebM videos or YouTube URLs. Videos appear in the same product gallery.'],
+
+                ['type'=>'section_heading','label'=>'7. Description'],
                 ['name'=>'description','label'=>'Description','type'=>'textarea','col'=>'col-12','rows'=>5,'rules'=>['nullable','string']],
+                ['name'=>'benefits','label'=>'Benefits','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+                ['name'=>'usage_instructions','label'=>'Usage Instructions','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+                ['name'=>'crop_information','label'=>'Crop Information','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'8. Additional Information'],
                 ['name'=>'additional_info','label'=>'Additional Info','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'9. Care Instructions'],
                 ['name'=>'care_instructions','label'=>'Care Instructions','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
+
+                ['type'=>'section_heading','label'=>'10. Manufacturer Details'],
                 ['name'=>'manufacturer_details','label'=>'Manufacturer Details','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
 
-                ['type'=>'section_heading','label'=>'6. Detail Page Banners'],
+                ['type'=>'section_heading','label'=>'11. Detail Page Description Banner'],
                 ['name'=>'detail_banner_image','label'=>'Detail Middle Banner - 1199 x 97 px','type'=>'image','upload_dir'=>'uploads/products/detail-banners','rules'=>['nullable','image','max:5120']],
                 ['name'=>'detail_banner_url','label'=>'Detail Middle Banner Link','rules'=>['nullable','string','max:255']],
-                ['name'=>'detail_sidebar_banner_image','label'=>'Detail Sidebar Banner - 375 x 586 px','type'=>'image','upload_dir'=>'uploads/products/detail-sidebar-banners','rules'=>['nullable','image','max:5120']],
-                ['name'=>'detail_sidebar_banner_url','label'=>'Detail Sidebar Banner Link','rules'=>['nullable','string','max:255']],
 
-                ['type'=>'section_heading','label'=>'7. Seller / Manufacturer Info'],
-                ['name'=>'seller_name','label'=>'Seller / Company Name','rules'=>['nullable','string','max:255']],
-                ['name'=>'seller_logo','label'=>'Seller Logo','type'=>'image','upload_dir'=>'uploads/products/sellers','rules'=>['nullable','image','max:2048']],
-                ['name'=>'seller_description','label'=>'Seller Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string']],
-                ['name'=>'seller_address','label'=>'Seller Address','rules'=>['nullable','string','max:255']],
-                ['name'=>'seller_contact','label'=>'Seller Contact','rules'=>['nullable','string','max:80']],
-                ['name'=>'manufacturer_title','label'=>'Manufacturer Title','rules'=>['nullable','string','max:255']],
-                ['name'=>'manufacturer_description','label'=>'Manufacturer Description','type'=>'textarea','col'=>'col-12','rows'=>4,'rules'=>['nullable','string']],
-
-                ['type'=>'section_heading','label'=>'8. Deal Timer / Stock Display'],
+                ['type'=>'section_heading','label'=>'12. Deal Timer / Stock Display'],
                 ['name'=>'sale_badge_text','label'=>'Sale Badge Text','rules'=>['nullable','string','max:80']],
                 ['name'=>'sold_quantity','label'=>'Sold Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
                 ['name'=>'total_quantity','label'=>'Total Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
@@ -209,7 +211,7 @@ return [
                 ['name'=>'offer_end_at','label'=>'Offer End Date & Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:offer_start_at']],
                 ['name'=>'is_offer_active','label'=>'Offer Timer Active','type'=>'checkbox','rules'=>['boolean'],'help'=>'Turns the countdown offer timer on for this product.'],
 
-                ['type'=>'section_heading','label'=>'9. Product Language Translations'],
+                ['type'=>'section_heading','label'=>'13. Product Language Translations'],
                 ['type'=>'product_translation_tools','label'=>'Auto Translate from Product Name & Description'],
                 ['name'=>'translation_hi_name','label'=>'Hindi Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Hindi product name'],
                 ['name'=>'translation_hi_description','label'=>'Hindi Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Hindi description'],
@@ -222,7 +224,7 @@ return [
                 ['name'=>'translation_te_name','label'=>'Telugu Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Telugu product name'],
                 ['name'=>'translation_te_description','label'=>'Telugu Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Telugu description'],
 
-                ['type'=>'section_heading','label'=>'10. Homepage / Display Flags'],
+                ['type'=>'section_heading','label'=>'14. Homepage / Display Flags'],
                 ['name'=>'show_on_homepage','label'=>'Allow product on homepage product rows','type'=>'checkbox','rules'=>['boolean'],'help'=>'Allows this product to appear in homepage product sections.'],
                 ['name'=>'is_featured','label'=>'Featured Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Marks this product as featured for highlighted listings.'],
                 ['name'=>'is_top_selling','label'=>'Top Selling Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Uses this product in top-selling product collections.'],
@@ -234,7 +236,7 @@ return [
                 ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','rules'=>['boolean'],'help'=>'Makes this product visible in the public customer storefront.'],
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean'],'help'=>'Keeps this product enabled for use in the system.'],
 
-                ['type'=>'section_heading','label'=>'11. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
+                ['type'=>'section_heading','label'=>'15. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
                 ['name'=>'homepage_title','label'=>'Homepage Title','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','coupon_section','strip_offer_banner','blog_section','service_section']],
                 ['name'=>'homepage_subtitle','label'=>'Homepage Subtitle','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','blog_section','service_section']],
                 ['name'=>'homepage_description','label'=>'Homepage Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','blog_section']],
@@ -254,7 +256,7 @@ return [
                 ['name'=>'homepage_text_color','label'=>'Homepage Text Color','rules'=>['nullable','string','max:30'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['strip_offer_banner']],
                 ['name'=>'homepage_sort_order','label'=>'Homepage Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
 
-                ['type'=>'section_heading','label'=>'12. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
+                ['type'=>'section_heading','label'=>'16. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
                 ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'display_only'=>true],
                 ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255'],'display_only'=>true],
             ],
@@ -360,20 +362,6 @@ return [
                 ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
             ],
         ],
-        'product-variants'=>[
-            'label'=>'Product Variants','group'=>'Catalog','singular'=>'Product Variant','model'=>ProductVariant::class,'with'=>['product'],'search'=>['group_name','value'],'status_column'=>'is_active','status_options'=>$active,
-            'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'group_name','label'=>'Group'],['key'=>'value','label'=>'Value'],['key'=>'price_difference','label'=>'Price Difference','type'=>'money'],['key'=>'stock_quantity','label'=>'Variant Stock'],['key'=>'is_default','label'=>'Default','type'=>'boolean'],['key'=>'sort_order','label'=>'Sort'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
-            'fields'=>[
-                ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
-                ['name'=>'group_name','label'=>'Variant Group','default'=>'Weight','rules'=>['required','string','max:80']],
-                ['name'=>'value','label'=>'Variant Value','rules'=>['required','string','max:120']],
-                ['name'=>'price_difference','label'=>'Price Difference','type'=>'number','step'=>'0.01','default'=>0,'rules'=>['nullable','numeric','min:-999999']],
-                ['name'=>'stock_quantity','label'=>'Variant Stock','type'=>'number','step'=>'0.001','rules'=>['nullable','numeric','min:0']],
-                ['name'=>'is_default','label'=>'Default Variant','type'=>'checkbox','rules'=>['boolean']],
-                ['name'=>'sort_order','label'=>'Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0']],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','rules'=>['boolean']],
-            ],
-        ],
         'product-related-products'=>[
             'label'=>'Related Products','group'=>'Catalog','singular'=>'Related Product','model'=>ProductRelatedProduct::class,'with'=>['product','relatedProduct'],'search'=>[],
             'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'relatedProduct.name','label'=>'Related Product'],['key'=>'sort_order','label'=>'Sort']],
@@ -395,9 +383,10 @@ return [
         ],
         
         'inventory'=>[
-            'label'=>'Stock','group'=>'Inventory','singular'=>'Stock Record','model'=>InventoryBatch::class,'with'=>['product','warehouse'],'search'=>['batch_no'],'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'batch_no','label'=>'Batch'],['key'=>'quantity','label'=>'Quantity'],['key'=>'reserved_quantity','label'=>'Reserved'],['key'=>'low_stock_alert','label'=>'Low Stock Level'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date']],
+            'label'=>'Stock','group'=>'Inventory','singular'=>'Stock Record','model'=>InventoryBatch::class,'with'=>['product','variant','warehouse'],'search'=>['batch_no'],'columns'=>[['key'=>'product.name','label'=>'Product'],['key'=>'variant.value','label'=>'Size / Pack'],['key'=>'warehouse.name','label'=>'Warehouse'],['key'=>'batch_no','label'=>'Batch'],['key'=>'quantity','label'=>'Retail Pack Quantity'],['key'=>'reserved_quantity','label'=>'Reserved'],['key'=>'low_stock_alert','label'=>'Low Stock Level'],['key'=>'expiry_date','label'=>'Expiry','type'=>'date']],
             'fields'=>[
                 ['name'=>'product_id','label'=>'Product','type'=>'select','option_model'=>Product::class,'option_label'=>'name','rules'=>['required','exists:products,id']],
+                ['name'=>'product_variant_id','label'=>'Size / Pack Variant','type'=>'select','option_model'=>\App\Models\Catalog\ProductVariant::class,'option_label'=>'value','rules'=>['nullable','exists:product_variants,id'],'help'=>'Select a variant when this product has Size / Pack variants. Quantity is entered in retail packs/bottles.'],
                 ['name'=>'warehouse_id','label'=>'Warehouse','type'=>'select','option_model'=>Warehouse::class,'option_label'=>'name','rules'=>['required','exists:warehouses,id']],
                 ['name'=>'batch_no','label'=>'Batch Number','rules'=>['nullable','string','max:80']],
                 ['name'=>'manufacturing_date','label'=>'Manufacturing Date','type'=>'date','rules'=>['nullable','date']],

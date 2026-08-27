@@ -21,7 +21,7 @@ Route::post('/store/register', [StorefrontAuthController::class, 'register'])->n
 Route::post('/store/logout', [StorefrontAuthController::class, 'logout'])->name('store.auth.logout');
 Route::post('/cart/add', [StorefrontCartController::class, 'add'])->name('store.cart.add');
 Route::post('/cart/update', [StorefrontCartController::class, 'update'])->name('store.cart.update');
-Route::post('/cart/remove/{productId}', [StorefrontCartController::class, 'remove'])->name('store.cart.remove');
+Route::post('/cart/remove/{lineKey}', [StorefrontCartController::class, 'remove'])->where('lineKey', '[0-9:]+')->name('store.cart.remove');
 Route::post('/cart/clear', [StorefrontCartController::class, 'clear'])->name('store.cart.clear');
 Route::post('/wishlist/add', [StorefrontWishlistController::class, 'add'])->name('store.wishlist.add');
 Route::post('/wishlist/remove/{productId}', [StorefrontWishlistController::class, 'remove'])->name('store.wishlist.remove');

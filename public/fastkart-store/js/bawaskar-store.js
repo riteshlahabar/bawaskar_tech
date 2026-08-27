@@ -118,7 +118,8 @@
                 return;
             }
             list.innerHTML = previewItems.map(function (item) {
-                return '<li class="product-box-contain"><div class="drop-cart"><a href="' + escapeHtml(item.product_url) + '" class="drop-image"><img src="' + escapeHtml(item.image_url) + '" class="blur-up lazyload" alt="' + escapeHtml(item.name) + '"></a><div class="drop-contain"><a href="' + escapeHtml(item.product_url) + '"><h5>' + escapeHtml(item.name) + '</h5></a><h6><span>' + escapeHtml(formatQty(item.quantity)) + ' x</span> ' + escapeHtml(formatPrice(item.unit_price)) + '</h6><form method="POST" action="' + escapeHtml(item.remove_url || '#') + '" data-store-cart-remove-form><input type="hidden" name="_token" value="' + escapeHtml(csrfToken) + '"><button type="submit" class="close-button close_button"><i class="fa-solid fa-xmark"></i></button></form></div></div></li>';
+                var shownRate = item.quantity_label === 'case(s)' ? item.case_price : item.unit_price;
+                return '<li class="product-box-contain"><div class="drop-cart"><a href="' + escapeHtml(item.product_url) + '" class="drop-image"><img src="' + escapeHtml(item.image_url) + '" class="blur-up lazyload" alt="' + escapeHtml(item.name) + '"></a><div class="drop-contain"><a href="' + escapeHtml(item.product_url) + '"><h5>' + escapeHtml(item.name) + (item.variant_name ? ' - ' + escapeHtml(item.variant_name) : '') + '</h5></a><h6><span>' + escapeHtml(formatQty(item.quantity)) + ' ' + escapeHtml(item.quantity_label || '') + ' x</span> ' + escapeHtml(formatPrice(shownRate)) + '</h6><form method="POST" action="' + escapeHtml(item.remove_url || '#') + '" data-store-cart-remove-form><input type="hidden" name="_token" value="' + escapeHtml(csrfToken) + '"><button type="submit" class="close-button close_button"><i class="fa-solid fa-xmark"></i></button></form></div></div></li>';
             }).join('');
         });
     }
@@ -186,11 +187,12 @@
                             '<ul>' +
                                 '<li class="name"><a href="' + escapeHtml(item.product_url) + '">' + escapeHtml(item.name) + '</a></li>' +
                                 '<li class="text-content"><span class="text-title">Category:</span> ' + escapeHtml(item.category_name || 'Product') + '</li>' +
-                                '<li class="text-content"><span class="text-title">Quantity</span> - ' + escapeHtml(formatQty(item.quantity)) + ' ' + escapeHtml(item.unit_name || 'pcs') + '</li>' +
-                                '<li><h5 class="text-content d-inline-block">Price :</h5> <span>' + escapeHtml(formatPrice(item.unit_price)) + '</span>' + (hasDiscount ? ' <span class="text-content">' + escapeHtml(formatPrice(item.mrp)) + '</span>' : '') + '</li>' +
+                                (item.variant_name ? '<li class="text-content"><span class="text-title">Size / Pack:</span> ' + escapeHtml(item.variant_name) + '</li>' : '') +
+                                '<li class="text-content"><span class="text-title">Quantity</span> - ' + escapeHtml(formatQty(item.quantity)) + ' ' + escapeHtml(item.quantity_label || 'retail pack(s)') + (Number(item.units_per_case || 1) > 1 ? ' (' + escapeHtml(formatQty(item.units_per_case)) + ' retail packs per case)' : '') + '</li>' +
+                                '<li><h5 class="text-content d-inline-block">Price :</h5> <span>' + escapeHtml(formatPrice(item.unit_price)) + ' per retail pack</span>' + (Number(item.units_per_case || 1) > 1 ? ' <span class="text-content">/ ' + escapeHtml(formatPrice(item.case_price)) + ' per case</span>' : '') + (hasDiscount ? ' <span class="text-content">' + escapeHtml(formatPrice(item.mrp)) + '</span>' : '') + '</li>' +
                                 (savings > 0 ? '<li><h5 class="saving theme-color">Saving : ' + escapeHtml(formatPrice(savings)) + '</h5></li>' : '') +
-                                (item.has_issue ? '<li><h6 class="text-danger">Available stock: ' + escapeHtml(formatQty(availableStock)) + '</h6></li>' : '') +
-                                '<li class="quantity-price-box"><div class="cart_qty"><div class="input-group"><input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[' + escapeHtml(item.id) + ']" value="' + escapeHtml(formatQty(item.quantity)) + '"></div></div></li>' +
+                                (item.has_issue ? '<li><h6 class="text-danger">Available stock: ' + escapeHtml(formatQty(availableStock)) + ' retail packs</h6></li>' : '') +
+                                '<li class="quantity-price-box"><div class="cart_qty"><div class="input-group"><input class="form-control input-number qty-input" type="number" min="0" step="1" name="items[' + escapeHtml(item.line_key || item.id) + ']" value="' + escapeHtml(formatQty(item.quantity)) + '"></div></div></li>' +
                                 '<li><h5>Total: ' + escapeHtml(formatPrice(item.line_total)) + '</h5></li>' +
                             '</ul>' +
                         '</div>' +
@@ -198,13 +200,14 @@
                 '</td>' +
                 '<td class="price">' +
                     '<h4 class="table-title text-content">Price</h4>' +
-                    '<h5>' + escapeHtml(formatPrice(item.unit_price)) + '</h5>' +
+                    '<h5>' + escapeHtml(formatPrice(item.unit_price)) + ' / retail pack</h5>' +
+                    (Number(item.units_per_case || 1) > 1 ? '<h6 class="theme-color">' + escapeHtml(formatPrice(item.case_price)) + ' / case</h6>' : '') +
                     (hasDiscount ? '<h6 class="text-content"><del>' + escapeHtml(formatPrice(item.mrp)) + '</del></h6>' : '') +
                     (savings > 0 ? '<h6 class="theme-color">You Save : ' + escapeHtml(formatPrice(savings)) + '</h6>' : '') +
                 '</td>' +
                 '<td class="quantity">' +
                     '<h4 class="table-title text-content">Qty</h4>' +
-                    '<div class="quantity-price"><div class="cart_qty"><div class="input-group"><input class="form-control input-number qty-input" type="number" min="0" step="0.001" name="items[' + escapeHtml(item.id) + ']" value="' + escapeHtml(formatQty(item.quantity)) + '"></div></div></div>' +
+                    '<div class="quantity-price"><div class="cart_qty"><div class="input-group"><input class="form-control input-number qty-input" type="number" min="0" step="1" name="items[' + escapeHtml(item.line_key || item.id) + ']" value="' + escapeHtml(formatQty(item.quantity)) + '"></div></div></div>' +
                 '</td>' +
                 '<td class="subtotal"><h4 class="table-title text-content">Total</h4><h5>' + escapeHtml(formatPrice(item.line_total)) + '</h5></td>' +
                 '<td class="save-remove"><h4 class="table-title text-content">Action</h4><button type="submit" formaction="' + escapeHtml(item.remove_url || '#') + '" class="remove close_button border-0 bg-transparent">Remove</button></td>' +

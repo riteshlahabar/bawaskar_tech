@@ -66,8 +66,10 @@ class SalesDocumentController extends Controller
 
         $contact = $order->order_type === 'dealer' ? $order->dealer : $order->customer;
         $items = $order->items->map(fn ($item): array => [
-            'name' => $item->product?->name ?? 'Product',
-            'quantity' => $item->quantity,
+            'name' => ($item->product?->name ?? 'Product')
+                .($item->variant_name ? ' - '.$item->variant_name : '')
+                .($order->order_type === 'dealer' && $item->variant_name ? ' ('.rtrim(rtrim(number_format((float) $item->units_per_case, 3, '.', ''), '0'), '.').' per case)' : ''),
+            'quantity' => $item->pack_quantity ?? $item->quantity,
             'unit_price' => $item->unit_price,
             'gst_percent' => $item->gst_percent,
             'gst_amount' => $item->gst_amount,
@@ -96,21 +98,21 @@ class SalesDocumentController extends Controller
 
     private function orderData(int|string $id): array
     {
-        $order = Order::query()->with(['items.product', 'customer', 'dealer.dealerProfile', 'salesman'])->findOrFail($id);
+        $order = Order::query()->with(['items.product', 'items.variant', 'customer', 'dealer.dealerProfile', 'salesman'])->findOrFail($id);
 
         return ['Sale Order', $order, $order, $order->order_no, $order->created_at, null, $order->status];
     }
 
     private function proformaData(int|string $id): array
     {
-        $proforma = ProformaInvoice::query()->with(['order.items.product', 'order.customer', 'order.dealer.dealerProfile', 'order.salesman'])->findOrFail($id);
+        $proforma = ProformaInvoice::query()->with(['order.items.product', 'order.items.variant', 'order.customer', 'order.dealer.dealerProfile', 'order.salesman'])->findOrFail($id);
 
         return ['Proforma Invoice', $proforma, $proforma->order, $proforma->proforma_no, $proforma->proforma_date, $proforma->valid_until, $proforma->status];
     }
 
     private function invoiceData(int|string $id): array
     {
-        $invoice = Invoice::query()->with(['order.items.product', 'order.customer', 'order.dealer.dealerProfile', 'order.salesman'])->findOrFail($id);
+        $invoice = Invoice::query()->with(['order.items.product', 'order.items.variant', 'order.customer', 'order.dealer.dealerProfile', 'order.salesman'])->findOrFail($id);
 
         return ['Sale Invoice', $invoice, $invoice->order, $invoice->invoice_no, $invoice->invoice_date, null, 'issued'];
     }

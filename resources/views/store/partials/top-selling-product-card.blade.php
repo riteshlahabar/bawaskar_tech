@@ -3,8 +3,9 @@
     $displayName = $product->translatedName();
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
-    $price = (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
-    $mrp = (float) $product->mrp;
+    $mainVariant = $product->mainVariant();
+    $price = $mainVariant ? $mainVariant->priceFor($audience) : (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
+    $mrp = (float) ($mainVariant?->mrp ?? $product->mrp);
     $wowDelay = trim((string) ($wowDelay ?? ''));
     $isInWishlist = in_array($product->id, array_map('intval', $storeWishlistProductIds ?? []), true);
 @endphp
@@ -62,6 +63,7 @@
             <form method="POST" action="{{ route('store.cart.add') }}" data-store-cart-add>
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
+                @if($mainVariant)<input type="hidden" name="variant_id" value="{{ $mainVariant->id }}">@endif
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit" class="add-button addcart-button btn buy-button text-light">
                     <i class="fa-solid fa-plus"></i>

@@ -244,7 +244,7 @@ class ProductController extends AdminModuleController
         }
 
         $this->syncVariants($product);
-        $this->syncMedia($product, $module);
+        $this->syncMedia($product, $this->module());
 
         $this->syncTranslations($product);
 

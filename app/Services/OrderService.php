@@ -13,6 +13,11 @@ use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
+    public function __construct(
+        private readonly OrderLineQuantityService $quantities
+    ) {
+    }
+
     public function createForCustomer(User $customer, array $items, ?string $notes = null, array $checkoutData = []): Order
     {
         return $this->createOrder('customer', $customer, null, null, $items, $notes, $checkoutData);
@@ -118,71 +123,279 @@ class OrderService
         });
     }
 
-    private function buildLineItems(string $type, array $items): array
-    {
+    private function buildLineItems(
+        string $type,
+        array $items
+    ): array {
         $requested = [];
+        $products = [];
 
         foreach ($items as $item) {
-            $productId = (int) $item['product_id'];
-            $variantId = (int) ($item['variant_id'] ?? 0) ?: null;
-            $quantity = (float) $item['quantity'];
-            $key = $productId.':'.($variantId ?: 0);
+            $productId =
+                (int) $item['product_id'];
+
+            if (! isset($products[$productId])) {
+                $products[$productId] =
+                    Product::query()
+                        ->visibleFor($type)
+                        ->findOrFail(
+                            $productId
+                        );
+            }
+
+            $product =
+                $products[$productId];
+
+            $requestedVariantId =
+                (int) (
+                    $item['variant_id']
+                    ?? 0
+                ) ?: null;
+
+            $variant =
+                $this->resolveVariant(
+                    $product,
+                    $requestedVariantId
+                );
+
+            $normalized =
+                $this->quantities
+                    ->normalize(
+                        $type,
+                        $item,
+                        $variant
+                    );
+
+            $key =
+                $product->id
+                .':'
+                .($variant?->id ?: 0);
+
             if (! isset($requested[$key])) {
                 $requested[$key] = [
-                    'product_id' => $productId,
-                    'variant_id' => $variantId,
-                    'quantity' => 0.0,
-                    'pack_quantity' => 0.0,
-                    'units_per_case' => max(1, (float) ($item['units_per_case'] ?? 1)),
+                    'product' =>
+                        $product,
+
+                    'variant' =>
+                        $variant,
+
+                    'quantity' =>
+                        0.0,
+
+                    'pack_quantity' =>
+                        0.0,
+
+                    'units_per_case' =>
+                        (float)
+                        $normalized[
+                            'units_per_case'
+                        ],
                 ];
             }
-            $requested[$key]['quantity'] += $quantity;
-            $requested[$key]['pack_quantity'] += (float) ($item['pack_quantity'] ?? $quantity);
+
+            $requested[$key]['quantity'] +=
+                (float)
+                $normalized['quantity'];
+
+            $requested[$key]['pack_quantity'] +=
+                (float)
+                $normalized['pack_quantity'];
         }
 
         $lineItems = [];
 
         foreach ($requested as $requestLine) {
-            $product = Product::query()->visibleFor($type)->findOrFail($requestLine['product_id']);
-            $variant = $requestLine['variant_id']
-                ? ProductVariant::query()->where('product_id', $product->id)->where('is_active', true)->findOrFail($requestLine['variant_id'])
-                : null;
-            $quantity = (float) $requestLine['quantity'];
-            $this->ensureStockAvailable($product, $quantity, $variant);
+            /** @var Product $product */
+            $product =
+                $requestLine['product'];
 
+            /** @var ProductVariant|null $variant */
+            $variant =
+                $requestLine['variant'];
+
+            $quantity = round(
+                (float)
+                $requestLine['quantity'],
+                3
+            );
+
+            $packQuantity = round(
+                (float)
+                $requestLine['pack_quantity'],
+                3
+            );
+
+            $unitsPerCase =
+                (float)
+                $requestLine[
+                    'units_per_case'
+                ];
+
+            $this->ensureStockAvailable(
+                $product,
+                $quantity,
+                $variant
+            );
+
+            /*
+             * Variant dealer/customer rates are stored
+             * per retail pack.
+             *
+             * Dealer quantity has already been converted
+             * from cases to retail packs above.
+             */
             $unitPrice = $variant
                 ? $variant->priceFor($type)
-                : (float) ($type === 'dealer' ? $product->dealer_price : $product->customer_price);
-            $priceTotal = round($quantity * $unitPrice, 2);
-            $gstPercent = (float) $product->gst_percent;
+                : (float) (
+                    $type === 'dealer'
+                        ? $product->dealer_price
+                        : $product->customer_price
+                );
+
+            $priceTotal = round(
+                $quantity * $unitPrice,
+                2
+            );
+
+            $gstPercent =
+                (float)
+                $product->gst_percent;
+
             if ($variant) {
-                $lineTotal = $priceTotal;
-                $lineBase = $gstPercent > 0 ? round($lineTotal / (1 + ($gstPercent / 100)), 2) : $lineTotal;
-                $gstAmount = round($lineTotal - $lineBase, 2);
-            } else {
-                $lineBase = $priceTotal;
-                $gstAmount = round($lineBase * ($gstPercent / 100), 2);
-                $lineTotal = round($lineBase + $gstAmount, 2);
+                $lineTotal =
+                    $priceTotal;
+
+                $lineBase =
+                    $gstPercent > 0
+                        ? round(
+                            $lineTotal
+                            / (
+                                1
+                                + (
+                                    $gstPercent
+                                    / 100
+                                )
+                            ),
+                            2
+                        )
+                        : $lineTotal;
+
+                $gstAmount = round(
+                    $lineTotal
+                    - $lineBase,
+                    2
+                );
+            }
+            else {
+                $lineBase =
+                    $priceTotal;
+
+                $gstAmount = round(
+                    $lineBase
+                    * (
+                        $gstPercent
+                        / 100
+                    ),
+                    2
+                );
+
+                $lineTotal = round(
+                    $lineBase
+                    + $gstAmount,
+                    2
+                );
             }
 
             $lineItems[] = [
-                'product_id' => $product->id,
-                'product_variant_id' => $variant?->id,
-                'variant_name' => $variant?->display_name,
-                'quantity' => $quantity,
-                'pack_quantity' => (float) $requestLine['pack_quantity'],
-                'units_per_case' => (float) $requestLine['units_per_case'],
-                'unit_price' => $unitPrice,
-                'gst_percent' => $product->gst_percent,
-                'gst_amount' => $gstAmount,
-                'line_total' => $lineTotal,
-                'line_base' => $lineBase,
+                'product_id' =>
+                    $product->id,
+
+                'product_variant_id' =>
+                    $variant?->id,
+
+                'variant_name' =>
+                    $variant?->display_name,
+
+                // Actual retail packs reserved from stock.
+                'quantity' =>
+                    $quantity,
+
+                // Customer packs / Dealer cases.
+                'pack_quantity' =>
+                    $packQuantity,
+
+                'units_per_case' =>
+                    $unitsPerCase,
+
+                'unit_price' =>
+                    $unitPrice,
+
+                'gst_percent' =>
+                    $product->gst_percent,
+
+                'gst_amount' =>
+                    $gstAmount,
+
+                'line_total' =>
+                    $lineTotal,
+
+                'line_base' =>
+                    $lineBase,
             ];
         }
 
         return $lineItems;
     }
 
+    private function resolveVariant(
+        Product $product,
+        ?int $variantId
+    ): ?ProductVariant {
+        if ($variantId) {
+            $variant =
+                ProductVariant::query()
+                    ->where(
+                        'product_id',
+                        $product->id
+                    )
+                    ->where(
+                        'is_active',
+                        true
+                    )
+                    ->find($variantId);
+
+            if (! $variant) {
+                throw ValidationException::withMessages([
+                    'items' =>
+                        'Selected product variant is invalid or inactive.',
+                ]);
+            }
+
+            return $variant;
+        }
+
+        /*
+         * If mobile app does not explicitly send variant_id,
+         * use the Main Display Pack/default variant.
+         */
+        return ProductVariant::query()
+            ->where(
+                'product_id',
+                $product->id
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->orderByDesc(
+                'is_default'
+            )
+            ->orderBy(
+                'sort_order'
+            )
+            ->orderBy('id')
+            ->first();
+    }
     private function ensureStockAvailable(Product $product, float $requestedQuantity, ?ProductVariant $variant = null): void
     {
         if (! filter_var(env('ENFORCE_STOCK_ON_ORDER', true), FILTER_VALIDATE_BOOL)) {

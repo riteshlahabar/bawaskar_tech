@@ -19,7 +19,7 @@ class DealerOrderController extends ApiController
         }
 
         $orders = Order::query()
-            ->with('items.product', 'invoice', 'dispatches', 'salesman')
+            ->with('items.product', 'items.variant', 'invoice', 'dispatches', 'salesman')
             ->where('dealer_id', $user->id)
             ->latest()
             ->paginate($request->integer('per_page', 20));
@@ -37,6 +37,7 @@ class DealerOrderController extends ApiController
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
+            'items.*.variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.001'],
             'notes' => ['nullable', 'string'],
         ]);
@@ -57,6 +58,6 @@ class DealerOrderController extends ApiController
             return $this->fail('Order not found.', 404);
         }
 
-        return $this->success(['order' => $order->load('items.product', 'invoice', 'dispatches', 'salesman')]);
+        return $this->success(['order' => $order->load('items.product', 'items.variant', 'invoice', 'dispatches', 'salesman')]);
     }
 }

@@ -19,7 +19,7 @@ class CustomerOrderController extends ApiController
         }
 
         $orders = Order::query()
-            ->with('items.product', 'invoice', 'dispatches')
+            ->with('items.product', 'items.variant', 'invoice', 'dispatches')
             ->where('customer_id', $user->id)
             ->latest()
             ->paginate($request->integer('per_page', 20));
@@ -45,6 +45,12 @@ class CustomerOrderController extends ApiController
         'required',
         'integer',
         'exists:products,id',
+    ],
+
+    'items.*.variant_id' => [
+        'nullable',
+        'integer',
+        'exists:product_variants,id',
     ],
 
     'items.*.quantity' => [
@@ -169,6 +175,6 @@ $order = $orders->createForCustomer(
             return $this->fail('Order not found.', 404);
         }
 
-        return $this->success(['order' => $order->load('items.product', 'invoice', 'dispatches')]);
+        return $this->success(['order' => $order->load('items.product', 'items.variant', 'invoice', 'dispatches')]);
     }
 }

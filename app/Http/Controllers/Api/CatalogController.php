@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
+use App\Models\Catalog\ProductMedia;
+use App\Models\Catalog\ProductVariant;
 use App\Models\Communication\AppTranslation;
 use App\Models\Storefront\StorefrontBanner;
 use App\Models\User;
@@ -224,6 +226,11 @@ class CatalogController extends ApiController
                 'brand',
                 'unit',
                 'images',
+                'variants' => fn ($query) => $query
+                    ->where('is_active', true)
+                    ->with('inventoryBatches'),
+                'media' => fn ($query) => $query
+                    ->where('is_active', true),
             ])
             ->visibleFor(
                 $filters['audience']
@@ -400,6 +407,8 @@ class CatalogController extends ApiController
 
     private function serializeProduct(Product $product): array
     {
+        $mainVariant = $product->mainVariant();
+
         return [
             'id' => $product->id,
             'name' => $product->storefront_name,
@@ -423,6 +432,146 @@ class CatalogController extends ApiController
             'is_top_selling' => $product->is_top_selling,
             'is_new_arrival' => $product->is_new_arrival,
             'is_offer_product' => $product->is_offer_product,
+
+            'main_variant_id' => $mainVariant?->id,
+
+            'variants' => $product->variants
+                ->where('is_active', true)
+                ->map(
+                    fn (ProductVariant $variant): array =>
+                        $this->serializeVariant(
+                            $product,
+                            $variant
+                        )
+                )
+                ->values()
+                ->all(),
+
+            'media' => $product->media
+                ->where('is_active', true)
+                ->map(
+                    fn (ProductMedia $media): array =>
+                        $this->serializeMedia($media)
+                )
+                ->values()
+                ->all(),
+        ];
+    }
+
+    private function serializeVariant(
+        Product $product,
+        ProductVariant $variant
+    ): array {
+        $unitsPerCase = max(
+            1.0,
+            (float) $variant->units_per_case
+        );
+
+        $dealerPrice = (float) (
+            $variant->dealer_price
+            ?? $product->dealer_price
+            ?? 0
+        );
+
+        $customerPrice = (float) (
+            $variant->customer_price
+            ?? $product->customer_price
+            ?? 0
+        );
+
+        $mrp = (float) (
+            $variant->mrp
+            ?? $product->mrp
+            ?? 0
+        );
+
+        $availableStock = max(
+            0.0,
+            (float) $variant->available_stock
+        );
+
+        return [
+            'id' => $variant->id,
+            'name' => $variant->display_name,
+            'value' => $variant->value,
+
+            'size_value' =>
+                $variant->size_value !== null
+                    ? (float) $variant->size_value
+                    : null,
+
+            'size_unit' => $variant->size_unit,
+            'variant_sku' => $variant->variant_sku,
+
+            'units_per_case' => $unitsPerCase,
+
+            'mrp' => $mrp,
+
+            // Dealer rate is stored per retail pack.
+            'dealer_price' => $dealerPrice,
+
+            // Qty 1 for dealer = one full case.
+            'dealer_case_price' =>
+                round(
+                    $dealerPrice * $unitsPerCase,
+                    2
+                ),
+
+            'customer_price' =>
+                $customerPrice,
+
+            'available_stock' =>
+                round(
+                    $availableStock,
+                    3
+                ),
+
+            'available_cases' =>
+                (int) floor(
+                    (
+                        $availableStock
+                        + 0.000001
+                    )
+                    / $unitsPerCase
+                ),
+
+            'is_default' =>
+                (bool) $variant->is_default,
+
+            'sort_order' =>
+                (int) $variant->sort_order,
+        ];
+    }
+
+    private function serializeMedia(
+        ProductMedia $media
+    ): array {
+        return [
+            'id' => $media->id,
+
+            'source_type' =>
+                $media->source_type,
+
+            'url' =>
+                $media->url,
+
+            'youtube_url' =>
+                $media->youtube_url,
+
+            'embed_url' =>
+                $media->embed_url,
+
+            'thumbnail_url' =>
+                $media->thumbnail_url,
+
+            'title' =>
+                $media->title,
+
+            'language' =>
+                $media->language,
+
+            'sort_order' =>
+                (int) $media->sort_order,
         ];
     }
 

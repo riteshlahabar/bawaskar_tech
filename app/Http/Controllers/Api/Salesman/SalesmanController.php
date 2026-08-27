@@ -128,7 +128,7 @@ class SalesmanController extends ApiController
             return $user;
         }
 
-        $orders = Order::query()->with('dealer.dealerProfile', 'items.product', 'dispatches')->where('salesman_id', $user->id)->latest()->paginate($request->integer('per_page', 20));
+        $orders = Order::query()->with('dealer.dealerProfile', 'items.product', 'items.variant', 'dispatches')->where('salesman_id', $user->id)->latest()->paginate($request->integer('per_page', 20));
 
         return $this->success(['orders' => $orders]);
     }
@@ -144,6 +144,7 @@ class SalesmanController extends ApiController
             'dealer_id' => ['required', 'integer', 'exists:users,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
+            'items.*.variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.001'],
             'notes' => ['nullable', 'string'],
         ]);

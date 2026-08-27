@@ -21,6 +21,16 @@ return [
         'user-dashboard',
         'wishlist',
     ],
+    'product_type_labels' => [
+        'medicine' => 'Medicine',
+        'fertilizer' => 'Fertilizer',
+        'seed' => 'Seeds',
+        'seeds' => 'Seeds',
+        'veterinary' => 'Veterinary Products',
+        'veterinary_products' => 'Veterinary Products',
+        'equipment' => 'Equipment',
+        'other' => 'Other',
+    ],
     'invoice_templates' => ['invoice-1', 'invoice-2', 'invoice-3'],
     'email_templates' => [
         'abandonment-email',

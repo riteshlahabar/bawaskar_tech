@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\Catalog\CategoryCatalogController;
+use App\Http\Controllers\Api\Catalog\HomepageCatalogController;
+use App\Http\Controllers\Api\Catalog\ProductCatalogController;
+use App\Http\Controllers\Api\Catalog\TranslationCatalogController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Customer\CustomerOrderController;
 use App\Http\Controllers\Api\Dealer\DealerController;
@@ -30,10 +33,10 @@ $registerBawaskarApi = static function (): void {
     });
 
     Route::middleware('throttle:api')->group(function (): void {
-        Route::get('catalog/categories', [CatalogController::class, 'categories']);
-        Route::get('catalog/products', [CatalogController::class, 'products']);
-        Route::get('catalog/homepage', [CatalogController::class, 'homepage']);
-        Route::get('translations', [CatalogController::class, 'translations']);
+        Route::get('catalog/categories', [CategoryCatalogController::class, 'index']);
+        Route::get('catalog/products', [ProductCatalogController::class, 'index']);
+        Route::get('catalog/homepage', [HomepageCatalogController::class, 'index']);
+        Route::get('translations', [TranslationCatalogController::class, 'index']);
 
         Route::prefix('customer')->group(function (): void {
             Route::get('dashboard', [CustomerController::class, 'dashboard']);

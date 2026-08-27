@@ -6,26 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\User;
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
-use App\Services\StorefrontSessionService;
+use App\Contracts\Storefront\Session\StorefrontCartContract;
+use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
+use App\Contracts\Storefront\Session\StorefrontOrderSessionContract;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class StorefrontCheckoutController extends Controller
 {
+    public function __construct(
+        private readonly StorefrontIdentitySessionContract $identity,
+        private readonly StorefrontCartContract $cart,
+        private readonly StorefrontOrderSessionContract $orderSession
+    ) {
+    }
+
     public function placeOrder(
         Request $request,
-        StorefrontSessionService $storefrontSession,
         OrderWorkflowContract $orders
     ): RedirectResponse {
-        $user = $storefrontSession->user($request);
+        $user = $this->identity->user($request);
 
         if (! $user || ! in_array($user->role, [User::ROLE_CUSTOMER, User::ROLE_DEALER], true)) {
             return redirect()->route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'checkout'])])
                 ->with('error', 'Please log in before checkout.');
         }
 
-        $cartSummary = $storefrontSession->cartSummary($request);
+        $cartSummary = $this->cart->summary($request);
         if (collect($cartSummary['items'])->isEmpty()) {
             return redirect()->route('store.page', ['page' => 'cart'])
                 ->with('error', 'Your cart is empty.');
@@ -102,13 +110,13 @@ class StorefrontCheckoutController extends Controller
             'payment_status' => $validated['payment_method'] === 'cod' ? 'pending' : 'awaiting_confirmation',
         ];
 
-        $items = $storefrontSession->checkoutItems($request);
+        $items = $this->cart->checkoutItems($request);
         $order = $user->role === User::ROLE_DEALER
             ? $orders->createForDealer($user, $items, $validated['notes'] ?? null, $checkoutData)
             : $orders->createForCustomer($user, $items, $validated['notes'] ?? null, $checkoutData);
 
-        $storefrontSession->setLastOrderId($request, $order->id);
-        $storefrontSession->clearCart($request);
+        $this->orderSession->setLastOrderId($request, $order->id);
+        $this->cart->clear($request);
 
         return redirect()->route('store.page', ['page' => 'order-success'])
             ->with('success', 'Order placed successfully.');

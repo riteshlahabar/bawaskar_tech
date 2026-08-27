@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
+use App\Contracts\Storefront\Session\StorefrontWishlistContract;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Product;
-use App\Services\StorefrontSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class StorefrontWishlistController extends Controller
 {
-    public function add(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function __construct(
+        private readonly StorefrontIdentitySessionContract $identity,
+        private readonly StorefrontWishlistContract $wishlist
+    ) {
+    }
+
+    public function add(Request $request): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
@@ -20,31 +27,29 @@ class StorefrontWishlistController extends Controller
         ]);
 
         $product = $this->wishlistProduct((int) $validated['product_id']);
-        $storefrontSession->addToWishlist($request, $product);
+        $this->wishlist->add($request, $product);
 
         return $this->response(
             $request,
-            $storefrontSession,
             true,
             $product->translatedName().' added to wishlist.'
         );
     }
 
-    public function remove(Request $request, int $productId, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function remove(Request $request, int $productId): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
-        $storefrontSession->removeFromWishlist($request, $productId);
+        $this->wishlist->remove($request, $productId);
 
         return $this->response(
             $request,
-            $storefrontSession,
             false,
             'Item removed from wishlist.'
         );
     }
 
-    public function toggle(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function toggle(Request $request): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
@@ -53,11 +58,10 @@ class StorefrontWishlistController extends Controller
         ]);
 
         $product = $this->wishlistProduct((int) $validated['product_id']);
-        $inWishlist = $storefrontSession->toggleWishlist($request, $product);
+        $inWishlist = $this->wishlist->toggle($request, $product);
 
         return $this->response(
             $request,
-            $storefrontSession,
             $inWishlist,
             $inWishlist
                 ? $product->translatedName().' added to wishlist.'
@@ -82,12 +86,11 @@ class StorefrontWishlistController extends Controller
 
     private function response(
         Request $request,
-        StorefrontSessionService $storefrontSession,
         bool $inWishlist,
         string $message
     ): JsonResponse|RedirectResponse {
-        $summary = $storefrontSession->wishlistSummary($request);
-        $audience = $storefrontSession->audience($request);
+        $summary = $this->wishlist->summary($request);
+        $audience = $this->identity->audience($request);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([

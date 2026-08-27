@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Contracts\Storefront\Session\StorefrontCartContract;
+use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductVariant;
 use App\Models\User;
-use App\Services\StorefrontSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class StorefrontCartController extends Controller
 {
-    public function add(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function __construct(
+        private readonly StorefrontIdentitySessionContract $identity,
+        private readonly StorefrontCartContract $cart
+    ) {
+    }
+
+    public function add(Request $request): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
-        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+        if ($response = $this->guestRedirectResponse($request)) {
             return $response;
         }
 
@@ -37,16 +44,16 @@ class StorefrontCartController extends Controller
             abort_unless($variant instanceof ProductVariant && $variant->is_active, 422, 'Selected size/pack is not available.');
         }
 
-        $storefrontSession->addToCart($request, $product, (float) $validated['quantity'], $variant);
+        $this->cart->add($request, $product, (float) $validated['quantity'], $variant);
 
-        return $this->cartResponse($request, $storefrontSession, $product->translatedName().' added to cart.');
+        return $this->cartResponse($request, $product->translatedName().' added to cart.');
     }
 
-    public function update(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function update(Request $request): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
-        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+        if ($response = $this->guestRedirectResponse($request)) {
             return $response;
         }
 
@@ -55,35 +62,35 @@ class StorefrontCartController extends Controller
             'items.*' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        $storefrontSession->updateCart($request, $validated['items']);
+        $this->cart->update($request, $validated['items']);
 
-        return $this->cartResponse($request, $storefrontSession, 'Cart updated successfully.');
+        return $this->cartResponse($request, 'Cart updated successfully.');
     }
 
-    public function remove(Request $request, string $lineKey, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function remove(Request $request, string $lineKey): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
-        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+        if ($response = $this->guestRedirectResponse($request)) {
             return $response;
         }
 
-        $storefrontSession->removeFromCart($request, $lineKey);
+        $this->cart->remove($request, $lineKey);
 
-        return $this->cartResponse($request, $storefrontSession, 'Item removed from cart.');
+        return $this->cartResponse($request, 'Item removed from cart.');
     }
 
-    public function clear(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse
+    public function clear(Request $request): JsonResponse|RedirectResponse
     {
         $this->applyStoreLocale($request);
 
-        if ($response = $this->guestRedirectResponse($request, $storefrontSession)) {
+        if ($response = $this->guestRedirectResponse($request)) {
             return $response;
         }
 
-        $storefrontSession->clearCart($request);
+        $this->cart->clear($request);
 
-        return $this->cartResponse($request, $storefrontSession, 'Cart cleared successfully.');
+        return $this->cartResponse($request, 'Cart cleared successfully.');
     }
 
     private function applyStoreLocale(Request $request): void
@@ -94,9 +101,9 @@ class StorefrontCartController extends Controller
             app()->setLocale($locale);
         }
     }
-    private function guestRedirectResponse(Request $request, StorefrontSessionService $storefrontSession): JsonResponse|RedirectResponse|null
+    private function guestRedirectResponse(Request $request): JsonResponse|RedirectResponse|null
     {
-        $user = $storefrontSession->user($request);
+        $user = $this->identity->user($request);
         if ($user && in_array($user->role, [User::ROLE_CUSTOMER, User::ROLE_DEALER], true)) {
             return null;
         }
@@ -117,9 +124,9 @@ class StorefrontCartController extends Controller
         return redirect()->to($loginUrl)->with('error', $message);
     }
 
-    private function cartResponse(Request $request, StorefrontSessionService $storefrontSession, string $message): JsonResponse|RedirectResponse
+    private function cartResponse(Request $request, string $message): JsonResponse|RedirectResponse
     {
-        $summary = $storefrontSession->cartSummary($request);
+        $summary = $this->cart->summary($request);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([

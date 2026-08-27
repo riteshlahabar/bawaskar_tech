@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerProfile;
 use App\Models\DealerProfile;
 use App\Models\User;
-use App\Services\StorefrontSessionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +14,12 @@ use Illuminate\Validation\Rule;
 
 class StorefrontAuthController extends Controller
 {
-    public function login(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function __construct(
+        private readonly StorefrontIdentitySessionContract $identity
+    ) {
+    }
+
+    public function login(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'role' => ['required', Rule::in([User::ROLE_CUSTOMER, User::ROLE_DEALER])],
@@ -63,13 +68,13 @@ class StorefrontAuthController extends Controller
         }
 
         $user->forceFill(['last_login_at' => now()])->save();
-        $storefrontSession->login($request, $user);
+        $this->identity->login($request, $user);
 
         return redirect()->to($request->input('redirect_to', route('store.page', ['page' => 'user-dashboard'])))
             ->with('success', 'Welcome back, '.$user->name.'.');
     }
 
-    public function register(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'role' => ['required', Rule::in([User::ROLE_CUSTOMER, User::ROLE_DEALER])],
@@ -142,9 +147,9 @@ class StorefrontAuthController extends Controller
         ])->with('success', $successMessage);
     }
 
-    public function logout(Request $request, StorefrontSessionService $storefrontSession): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
-        $storefrontSession->logout($request);
+        $this->identity->logout($request);
 
         return redirect()->route('store.home')->with('success', 'You have been logged out.');
     }

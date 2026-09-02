@@ -145,13 +145,7 @@ return [
             'label'=>'Products','group'=>'Catalog','description'=>'Add product, required size/pack variants, stock, gallery and videos from this single form.','model'=>Product::class,'with'=>['category','brand','homepageSection','productType','unit','images','media','translations','variants.inventoryBatches','variants.unit','relatedProductLinks.relatedProduct'],'search'=>['name','sku','hsn_code'],'status_column'=>'is_active','status_options'=>$active,
             'columns'=>[['key'=>'images.0.path','label'=>'Image','type'=>'image'],['key'=>'sku','label'=>'SKU'],['key'=>'name','label'=>'Product'],['key'=>'productType.name','label'=>'Product Type'],['key'=>'category.name','label'=>'Category'],['key'=>'brand.name','label'=>'Brand'],['key'=>'homepageSection.title','label'=>'Section Title'],['key'=>'unit.short_name','label'=>'Unit'],['key'=>'dealer_price','label'=>'Dealer Price','type'=>'money'],['key'=>'customer_price','label'=>'Customer Price','type'=>'money'],['key'=>'is_top_selling','label'=>'Top Selling','type'=>'boolean'],['key'=>'is_deal_timer_product','label'=>'Timer Deal','type'=>'boolean'],['key'=>'is_active','label'=>'Status','type'=>'boolean']],
             'fields'=>[
-                ['type'=>'section_heading','label'=>'1. Visibility & Status'],
-                ['name'=>'is_visible_to_dealers','label'=>'Visible to Dealers','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Makes this product visible in dealer-facing listings and orders.'],
-                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Keeps this product enabled for use in the system.'],
-                ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Makes this product visible in the public customer storefront.'],
-                ['name'=>'show_on_homepage','label'=>'Allow product on homepage product rows','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Allows this product to appear in homepage product sections.'],
-
-                ['type'=>'section_heading','label'=>'2. Basic Information'],
+                ['type'=>'section_heading','label'=>'1. Basic Information'],
                 ['name'=>'name','label'=>'Product Name','rules'=>['required','string','max:255']],
                 ['name'=>'category_id','label'=>'Category','type'=>'select','option_model'=>Category::class,'rules'=>['nullable','exists:categories,id']],
                 ['name'=>'homepage_section_id','label'=>'Homepage Section Title','type'=>'select','option_model'=>ProductHomepageSection::class,'option_where'=>['is_active'=>true],'option_label'=>'title','option_attributes'=>['section_type'=>'section_type','layout_type'=>'layout_type'],'rules'=>['nullable','exists:product_homepage_sections,id'],'help'=>'Select any Homepage Settings section. Product will display according to selected section type.'],
@@ -159,18 +153,22 @@ return [
                 ['name'=>'product_type_id','label'=>'Product Type','type'=>'select','option_model'=>ProductType::class,'option_where'=>['is_active'=>true],'rules'=>['nullable','exists:product_types,id']],
                 ['name'=>'short_description','label'=>'Short Description','type'=>'textarea','col'=>'col-12','rows'=>2,'maxlength'=>160,'character_counter'=>true,'rules'=>['nullable','string','max:160'],'help'=>'Maximum 160 characters. Product cards show up to 80 characters.'],
                 ['name'=>'sort_order','label'=>'Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0'],'help'=>'Controls the overall listing order of this product.'],
+                ['name'=>'is_visible_to_dealers','label'=>'Visible to Dealers','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Makes this product visible in dealer-facing listings and orders.'],
+                ['name'=>'is_active','label'=>'Active','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Keeps this product enabled for use in the system.'],
+                ['name'=>'is_visible_to_customers','label'=>'Visible to Customers','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Makes this product visible in the public customer storefront.'],
+                ['name'=>'show_on_homepage','label'=>'Allow product on homepage product rows','type'=>'checkbox','default'=>1,'rules'=>['boolean'],'help'=>'Allows this product to appear in homepage product sections.'],
 
-                ['type'=>'section_heading','label'=>'3. Variant Details (Required)'],
+                ['type'=>'section_heading','label'=>'2. Variant Details (Required)'],
                 ['name'=>'variants','label'=>'Size / Pack Variants','type'=>'product_variants_repeater','col'=>'col-12','rules'=>['required','array','min:1'],'help'=>'At least one active variant and exactly one Main Product are required. Price, tax, unit, SKU, HSN and opening stock are maintained inside each variant.'],
 
-                ['type'=>'section_heading','label'=>'4. Images & Gallery'],
+                ['type'=>'section_heading','label'=>'3. Images & Gallery'],
                 ['name'=>'primary_image','label'=>'Main Product Image - 500 x 500 px for cards / 750 x 750 px for detail','type'=>'image','upload_dir'=>'uploads/products','rules'=>['nullable','image','max:5120']],
                 ['name'=>'gallery_images','label'=>'Product Gallery Images - 150 x 150 px thumbnails','type'=>'image_multiple','upload_dir'=>'uploads/products/gallery','rules'=>['nullable','array']],
 
-                ['type'=>'section_heading','label'=>'5. Product Videos'],
+                ['type'=>'section_heading','label'=>'4. Product Videos'],
                 ['name'=>'media','label'=>'Gallery Videos','type'=>'product_media_repeater','col'=>'col-12','rules'=>['nullable','array'],'help'=>'Add multiple uploaded MP4/WebM videos or YouTube URLs. Videos appear in the same product gallery.'],
 
-                ['type'=>'section_heading','label'=>'6. Deal Timer / Stock Display'],
+                ['type'=>'section_heading','label'=>'5. Deal Timer / Stock Display'],
                 ['name'=>'sale_badge_text','label'=>'Sale Badge Text','rules'=>['nullable','string','max:80']],
                 ['name'=>'sold_quantity','label'=>'Sold Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
                 ['name'=>'total_quantity','label'=>'Total Quantity','type'=>'number','rules'=>['nullable','integer','min:0']],
@@ -179,7 +177,7 @@ return [
                 ['name'=>'offer_end_at','label'=>'Offer End Date & Time','type'=>'datetime-local','rules'=>['nullable','date','after_or_equal:offer_start_at']],
                 ['name'=>'is_offer_active','label'=>'Offer Timer Active','type'=>'checkbox','rules'=>['boolean'],'help'=>'Turns the countdown offer timer on for this product.'],
 
-                ['type'=>'section_heading','label'=>'7. Product Language Translations'],
+                ['type'=>'section_heading','label'=>'6. Product Language Translations'],
                 ['type'=>'product_translation_tools','label'=>'Auto Translate from Product Name & Description'],
                 ['name'=>'translation_hi_name','label'=>'Hindi Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Hindi product name'],
                 ['name'=>'translation_hi_description','label'=>'Hindi Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Hindi description'],
@@ -192,7 +190,7 @@ return [
                 ['name'=>'translation_te_name','label'=>'Telugu Product Name','rules'=>['nullable','string','max:255'],'placeholder'=>'Auto translate or enter Telugu product name'],
                 ['name'=>'translation_te_description','label'=>'Telugu Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'placeholder'=>'Auto translate or enter Telugu description'],
 
-                ['type'=>'section_heading','label'=>'8. Homepage / Display Flags'],
+                ['type'=>'section_heading','label'=>'7. Homepage / Display Flags'],
                 ['name'=>'is_featured','label'=>'Featured Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Marks this product as featured for highlighted listings.'],
                 ['name'=>'is_top_selling','label'=>'Top Selling Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Uses this product in top-selling product collections.'],
                 ['name'=>'is_trending','label'=>'Trending Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Marks this product for trending product sections.'],
@@ -200,7 +198,7 @@ return [
                 ['name'=>'is_offer_product','label'=>'Offer Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Includes this product in offer-based product groups.'],
                 ['name'=>'is_deal_timer_product','label'=>'Deal Timer Product','type'=>'checkbox','rules'=>['boolean'],'help'=>'Uses this product as the special offer card in Top Selling Items.'],
 
-                ['type'=>'section_heading','label'=>'9. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
+                ['type'=>'section_heading','label'=>'8. Homepage Display Fields','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
                 ['name'=>'homepage_title','label'=>'Homepage Title','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','coupon_section','strip_offer_banner','blog_section','service_section']],
                 ['name'=>'homepage_subtitle','label'=>'Homepage Subtitle','rules'=>['nullable','string','max:255'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','blog_section','service_section']],
                 ['name'=>'homepage_description','label'=>'Homepage Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','blog_section']],
@@ -220,11 +218,11 @@ return [
                 ['name'=>'homepage_text_color','label'=>'Homepage Text Color','rules'=>['nullable','string','max:30'],'visibility_field'=>'homepage_section_id','show_for_section_types'=>['strip_offer_banner']],
                 ['name'=>'homepage_sort_order','label'=>'Homepage Section Product Sort Order','type'=>'number','default'=>0,'rules'=>['nullable','integer','min:0'],'help'=>'Controls only this product position inside the selected homepage section. It does not change the normal catalog listing order.','visibility_field'=>'homepage_section_id','show_for_section_types'=>['hero_slider','top_small_banners','product_section','coupon_section','top_selling_section','offer_section','strip_offer_banner','service_section','blog_section']],
 
-                ['type'=>'section_heading','label'=>'10. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
+                ['type'=>'section_heading','label'=>'9. SEO','display_only'=>true],                ['name'=>'meta_title','label'=>'Meta Title','rules'=>['nullable','string','max:255'],'display_only'=>true],
                 ['name'=>'meta_description','label'=>'Meta Description','type'=>'textarea','col'=>'col-12','rows'=>3,'rules'=>['nullable','string'],'display_only'=>true],
                 ['name'=>'meta_keywords','label'=>'Meta Keywords','rules'=>['nullable','string','max:255'],'display_only'=>true],
 
-                ['type'=>'section_heading','label'=>'11. Bottom Details'],
+                ['type'=>'section_heading','label'=>'10. Bottom Details'],
                 ['type'=>'product_bottom_details','label'=>'Bottom Details','groups'=>[
                     'description'=>'Description',
                     'additional_information'=>'Additional Information',

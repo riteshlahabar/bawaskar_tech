@@ -193,7 +193,7 @@ class CommonImportController extends Controller
             }
         }
 
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $entry = str_replace('\\', '/', $zip->getNameIndex($i));

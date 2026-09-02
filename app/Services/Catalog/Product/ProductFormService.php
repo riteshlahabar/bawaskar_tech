@@ -6,7 +6,7 @@ use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductMediaContract;
 use App\Contracts\Catalog\Product\ProductTranslationContract;
-use App\Contracts\Catalog\Product\ProductVariantContract;
+use App\Contracts\Catalog\Product\ProductVariantFormDataContract;
 use App\Contracts\Catalog\Product\ProductVariantUnitContract;
 use App\Models\Catalog\Product;
 use App\Models\Inventory\Warehouse;
@@ -16,7 +16,7 @@ final class ProductFormService implements ProductFormContract
     public function __construct(
         private readonly ProductImageContract $images,
         private readonly ProductTranslationContract $translations,
-        private readonly ProductVariantContract $variants,
+        private readonly ProductVariantFormDataContract $variants,
         private readonly ProductMediaContract $media,
         private readonly ProductVariantUnitContract $units,
     ) {
@@ -28,7 +28,7 @@ final class ProductFormService implements ProductFormContract
             $data,
             $this->images->formData($product),
             $this->translations->formData($product),
-            ['variants' => $this->variants->formData($product)],
+            ['variants' => $this->variants->rowsFor($product)],
             ['media' => $this->media->formData($product)],
         );
     }

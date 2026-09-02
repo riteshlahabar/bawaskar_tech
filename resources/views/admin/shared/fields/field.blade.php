@@ -1,5 +1,4 @@
 @php
-    use App\Support\Admin\Forms\AdminFormFields;
 
     $children = $children ?? [];
     $type = $field['type'] ?? 'text';
@@ -19,7 +18,7 @@
         ]
         : [];
 
-    $customView = AdminFormFields::customView($type);
+    $customView = $fieldViews->resolve($type);
 @endphp
 
 @if($type === 'section_heading')

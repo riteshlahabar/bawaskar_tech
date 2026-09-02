@@ -304,6 +304,7 @@ CustomerProfile::query()->firstOrCreate([
             ->where('purpose', $purpose)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
+            ->where('attempts', '<', (int) config('erp_auth.otp.max_attempts', 5))
             ->latest()
             ->first();
 

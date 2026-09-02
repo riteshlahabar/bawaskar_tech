@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
             \App\Contracts\Catalog\Product\ProductFormContract::class => \App\Services\Catalog\Product\ProductFormService::class,
             \App\Contracts\Catalog\Product\ProductImageContract::class => \App\Services\Catalog\Product\ProductImageService::class,
             \App\Contracts\Catalog\Product\ProductVariantContract::class => \App\Services\Catalog\Product\ProductVariantService::class,
+            \App\Contracts\Catalog\Product\ProductVariantFormDataContract::class => \App\Services\Catalog\Product\ProductVariantFormDataService::class,
             \App\Contracts\Catalog\Product\ProductVariantUnitContract::class => \App\Services\Catalog\Product\ProductVariantUnitService::class,
             \App\Contracts\Catalog\Product\ProductSkuContract::class => \App\Services\Catalog\Product\ProductSkuService::class,
             \App\Contracts\Catalog\Product\ProductVariantProjectionContract::class => \App\Services\Catalog\Product\ProductVariantProjectionService::class,
@@ -32,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
             \App\Contracts\Catalog\Product\TextTranslatorContract::class => \App\Services\Catalog\Product\GoogleTextTranslator::class,
             \App\Contracts\Catalog\Product\ProductRepositoryContract::class => \App\Repositories\Catalog\EloquentProductRepository::class,
             \App\Contracts\Files\PublicUploadContract::class => \App\Services\Files\PublicUploadService::class,
+            \App\Contracts\Auth\ApiTokenGuardContract::class => \App\Services\Auth\ApiTokenGuard::class,
+            \App\Contracts\Admin\FormFieldTreeContract::class => \App\Support\Admin\Forms\FormFieldTree::class,
+            \App\Contracts\Admin\FormFieldViewContract::class => \App\Support\Admin\Forms\ConfigFormFieldViews::class,
 
             // Order module - SOLID contracts
             \App\Contracts\Sales\Orders\OrderWorkflowContract::class => \App\Services\Sales\Orders\OrderWorkflowService::class,
@@ -72,6 +76,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        // The shared admin form and its field partials get the layout services
+        // handed to them, so the Blade templates hold no static calls.
+        \Illuminate\Support\Facades\View::composer('admin.shared.form', function ($view): void {
+            $tree = app(\App\Contracts\Admin\FormFieldTreeContract::class);
+            $module = $view->getData()['module'] ?? [];
+
+            $view->with([
+                'fieldTree' => $tree,
+                'fieldViews' => app(\App\Contracts\Admin\FormFieldViewContract::class),
+                'fieldNodes' => $tree->build($module['fields'] ?? []),
+            ]);
+        });
         RateLimiter::for('api', function (Request $request): Limit {
             $key = $request->bearerToken()
                 ? 'token:'.hash('sha256', $request->bearerToken())

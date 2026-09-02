@@ -2,13 +2,11 @@
 @section('title', $pageTitle)
 @section('content')
 @php
-    use App\Support\Admin\Forms\AdminFormFields;
-
+    // $fieldTree, $fieldViews and $fieldNodes are supplied by the view composer.
     $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple', 'product_media_repeater'], true));
     $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
     $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
     $optionAttributes = $optionAttributes ?? [];
-    $fieldNodes = AdminFormFields::tree($module['fields'] ?? []);
 @endphp
 <div class="row admin-form-row">
     <div class="col-12">
@@ -38,7 +36,7 @@
 
                     <div class="row g-3">
                         @foreach($fieldNodes as $node)
-                            @continue(! AdminFormFields::shouldRender($node['field'], (bool) $record))
+                            @continue(! $fieldTree->shouldRender($node['field'], (bool) $record))
                             @include('admin.shared.fields.field', ['field' => $node['field'], 'children' => $node['children']])
                         @endforeach
                     </div>

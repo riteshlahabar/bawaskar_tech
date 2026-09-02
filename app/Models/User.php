@@ -55,9 +55,18 @@ class User extends Authenticatable
             'name' => $name,
             'token_hash' => hash('sha256', $plainTextToken),
             'abilities' => $abilities,
+            'expires_at' => now()->addDays((int) config('erp_auth.token.lifetime_days', 30)),
         ]);
 
         return $plainTextToken;
+    }
+
+    /**
+     * Called when the password changes so a token stolen earlier stops working.
+     */
+    public function revokeApiTokens(): void
+    {
+        $this->apiTokens()->delete();
     }
 
     public function hasRole(string $role): bool

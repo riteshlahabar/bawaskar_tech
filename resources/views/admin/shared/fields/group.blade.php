@@ -1,8 +1,7 @@
 @php
-    use App\Support\Admin\Forms\AdminFormFields;
 
-    $children = collect($children ?? [])->filter(fn (array $child): bool => AdminFormFields::shouldRender($child, (bool) $record));
-    $groups = AdminFormFields::groups($field);
+    $children = collect($children ?? [])->filter(fn (array $child): bool => $fieldTree->shouldRender($child, (bool) $record));
+    $groups = $fieldTree->groups($field);
     $ungrouped = $children->reject(fn (array $child): bool => isset($groups[$child['render_group'] ?? '']));
 @endphp
 

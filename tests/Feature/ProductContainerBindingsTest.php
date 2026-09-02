@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductSkuContract;
 use App\Contracts\Catalog\Product\ProductVariantContract;
+use App\Contracts\Catalog\Product\ProductVariantFormDataContract;
 use App\Contracts\Catalog\Product\ProductVariantProjectionContract;
 use App\Contracts\Catalog\Product\ProductVariantUnitContract;
 use App\Contracts\Catalog\Product\ProductWorkflowContract;
@@ -25,6 +26,7 @@ class ProductContainerBindingsTest extends TestCase
             ProductWorkflowContract::class,
             ProductFormContract::class,
             ProductVariantContract::class,
+            ProductVariantFormDataContract::class,
             ProductVariantUnitContract::class,
             ProductVariantProjectionContract::class,
             ProductSkuContract::class,

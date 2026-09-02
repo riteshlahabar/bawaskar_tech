@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Auth\ApiToken;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,33 +19,21 @@ class ApiController extends Controller
         return response()->json(['success' => false, 'message' => $message, 'errors' => $errors], $status);
     }
 
+    /**
+     * The api.auth middleware has already resolved the bearer token and put the
+     * user on the request, so this only re-checks the role. Reading it back
+     * rather than resolving again keeps the controller free of any dependency
+     * and fails closed: a route without the middleware has no user here.
+     */
     protected function user(Request $request, ?string $role = null): ?User
     {
-        $bearer = $request->bearerToken();
+        $user = $request->user();
 
-        if (! $bearer) {
+        if (! $user instanceof User || $user->status !== 'active') {
             return null;
         }
 
-        $apiToken = ApiToken::query()
-            ->with('user')
-            ->where('token_hash', hash('sha256', $bearer))
-            ->where(function ($query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->first();
-
-        if (! $apiToken || ! $apiToken->user || $apiToken->user->status !== 'active') {
-            return null;
-        }
-
-        if ($role && $apiToken->user->role !== $role) {
-            return null;
-        }
-
-        $apiToken->forceFill(['last_used_at' => now()])->save();
-
-        return $apiToken->user;
+        return ($role === null || $user->role === $role) ? $user : null;
     }
 
     protected function requireUser(Request $request, ?string $role = null): User|JsonResponse

@@ -13,13 +13,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'api.auth' => \App\Http\Middleware\AuthenticateApiToken::class,
+        ]);
         $middleware->redirectGuestsTo(fn (Request $request): ?string => $request->is('admin*') ? route('admin.login') : null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // The uploader is a domain service and raises its own exception; the
+        // HTTP status for it is decided here, at the edge.
+        $exceptions->render(function (\App\Exceptions\Files\UnsupportedUploadException $e, Request $request) {
+            return $request->is('api/*')
+                ? response()->json(['success' => false, 'message' => $e->getMessage(), 'errors' => []], 422)
+                : back()->withInput()->with('error', $e->getMessage());
+        });
     })->create();
 
 

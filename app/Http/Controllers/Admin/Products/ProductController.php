@@ -6,6 +6,7 @@ use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
 use App\Contracts\Catalog\Product\ProductValidationContract;
 use App\Contracts\Catalog\Product\ProductWorkflowContract;
+use App\Contracts\Files\PublicUploadContract;
 use App\Data\Catalog\ProductSaveData;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Product;
@@ -21,11 +22,13 @@ final class ProductController extends AdminModuleController
     protected string $moduleKey = 'products';
 
     public function __construct(
+        PublicUploadContract $uploads,
         private readonly ProductValidationContract $validation,
         private readonly ProductInputContract $input,
         private readonly ProductWorkflowContract $workflow,
         private readonly ProductFormContract $form,
     ) {
+        parent::__construct($uploads);
     }
 
     protected function rules(array $module, ?Model $record = null): array

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Concerns;
 
+use App\Contracts\Files\PublicUploadContract;
 use App\Http\Controllers\Controller;
 use App\Support\Admin\SimplePdfExporter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -20,6 +21,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 abstract class AdminModuleController extends Controller
 {
     protected string $moduleKey;
+
+    public function __construct(protected readonly PublicUploadContract $uploads)
+    {
+    }
 
     public function index(Request $request): View
     {
@@ -410,23 +415,16 @@ abstract class AdminModuleController extends Controller
         return $validated;
     }
 
+    /**
+     * Delegates to the injected uploader so the extension allow list that keeps
+     * executable and script bearing files out of the public root lives in one
+     * place instead of being duplicated per caller.
+     */
     protected function storePublicUpload(UploadedFile $file, array $module, array $field): string
     {
-        $directory = trim((string) ($field['upload_dir'] ?? 'uploads/'.$module['key']), '/\\');
-        $directory = str_replace('\\', '/', $directory);
+        $directory = str_replace('\\', '/', trim((string) ($field['upload_dir'] ?? 'uploads/'.$module['key']), '/\\'));
 
-        abort_if($directory === '' || str_contains($directory, '..'), 422, 'Invalid upload directory.');
-
-        $publicDirectory = public_path($directory);
-        if (! is_dir($publicDirectory)) {
-            mkdir($publicDirectory, 0755, true);
-        }
-
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
-        $filename = now()->format('YmdHis').'-'.Str::random(16).'.'.$extension;
-        $file->move($publicDirectory, $filename);
-
-        return $directory.'/'.$filename;
+        return $this->uploads->store($file, $directory);
     }
 
     protected function persist(array $data, ?Model $record): Model
@@ -580,6 +578,3 @@ abstract class AdminModuleController extends Controller
         return $attributes;
     }
 }
-
-
-

@@ -20,8 +20,8 @@ Route::get('/email-preview/{template}', [StorefrontPreviewController::class, 'em
 Route::get('/category/{category:slug}', [StorefrontCategoryController::class, 'show'])->name('store.category');
 Route::get('/product/{product}', [StorefrontProductController::class, 'show'])->name('store.product');
 
-Route::post('/store/login', [StorefrontAuthController::class, 'login'])->name('store.auth.login');
-Route::post('/store/register', [StorefrontAuthController::class, 'register'])->name('store.auth.register');
+Route::post('/store/login', [StorefrontAuthController::class, 'login'])->middleware('throttle:login')->name('store.auth.login');
+Route::post('/store/register', [StorefrontAuthController::class, 'register'])->middleware('throttle:login')->name('store.auth.register');
 Route::post('/store/logout', [StorefrontAuthController::class, 'logout'])->name('store.auth.logout');
 Route::post('/cart/add', [StorefrontCartController::class, 'add'])->name('store.cart.add');
 Route::post('/cart/update', [StorefrontCartController::class, 'update'])->name('store.cart.update');

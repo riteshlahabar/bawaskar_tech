@@ -2,18 +2,16 @@
 
 namespace Tests\Unit;
 
-use App\Contracts\Catalog\Product\ProductStockContract;
-use App\Contracts\Catalog\Product\ProductVariantProjectionContract;
 use App\Contracts\Catalog\Product\ProductVariantUnitContract;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductVariant;
-use App\Services\Catalog\Product\ProductVariantService;
+use App\Services\Catalog\Product\ProductVariantFormDataService;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
 class ProductVariantFormDataTest extends TestCase
 {
-    private function service(): ProductVariantService
+    private function service(): ProductVariantFormDataService
     {
         $units = new class implements ProductVariantUnitContract
         {
@@ -33,11 +31,7 @@ class ProductVariantFormDataTest extends TestCase
             }
         };
 
-        return new ProductVariantService(
-            $this->createStub(ProductStockContract::class),
-            $units,
-            $this->createStub(ProductVariantProjectionContract::class),
-        );
+        return new ProductVariantFormDataService($units);
     }
 
     private function product(array $attributes): Product
@@ -62,7 +56,7 @@ class ProductVariantFormDataTest extends TestCase
         ]);
         $product->setRelation('variants', new Collection());
 
-        $rows = $this->service()->formData($product);
+        $rows = $this->service()->rowsFor($product);
 
         $this->assertCount(1, $rows, 'An empty repeater would hide the prices the product already has.');
         $this->assertSame(600.0, (float) $rows[0]['mrp']);
@@ -89,7 +83,7 @@ class ProductVariantFormDataTest extends TestCase
             ]),
         ]));
 
-        $rows = $this->service()->formData($product);
+        $rows = $this->service()->rowsFor($product);
 
         $this->assertCount(1, $rows);
         $this->assertSame(300.0, (float) $rows[0]['mrp']);
@@ -110,7 +104,7 @@ class ProductVariantFormDataTest extends TestCase
             ]),
         ]));
 
-        $rows = $this->service()->formData($product);
+        $rows = $this->service()->rowsFor($product);
 
         $this->assertCount(1, $rows);
         $this->assertSame(500.0, (float) $rows[0]['mrp']);

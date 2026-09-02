@@ -38,7 +38,7 @@ $registerBawaskarApi = static function (): void {
         Route::get('catalog/homepage', [HomepageCatalogController::class, 'index']);
         Route::get('translations', [TranslationCatalogController::class, 'index']);
 
-        Route::prefix('customer')->group(function (): void {
+        Route::prefix('customer')->middleware('api.auth:customer')->group(function (): void {
             Route::get('dashboard', [CustomerController::class, 'dashboard']);
             Route::get('profile', [CustomerController::class, 'profile']);
             Route::post('addresses', [CustomerController::class, 'storeAddress']);
@@ -48,7 +48,7 @@ $registerBawaskarApi = static function (): void {
             Route::get('orders/{order}', [CustomerOrderController::class, 'show']);
         });
 
-        Route::prefix('dealer')->group(function (): void {
+        Route::prefix('dealer')->middleware('api.auth:dealer')->group(function (): void {
             Route::get('dashboard', [DealerController::class, 'dashboard']);
             Route::get('profile', [DealerController::class, 'profile']);
             Route::post('addresses', [DealerController::class, 'storeAddress']);
@@ -59,7 +59,7 @@ $registerBawaskarApi = static function (): void {
             Route::get('orders/{order}', [DealerOrderController::class, 'show']);
         });
 
-        Route::prefix('salesman')->group(function (): void {
+        Route::prefix('salesman')->middleware('api.auth:salesman')->group(function (): void {
             Route::get('dashboard', [SalesmanController::class, 'dashboard']);
             Route::get('dealers', [SalesmanController::class, 'dealers']);
             Route::post('attendance/check-in', [SalesmanController::class, 'checkIn']);
@@ -81,7 +81,7 @@ $registerBawaskarApi = static function (): void {
             Route::get('deliveries', [SalesmanController::class, 'deliveries']);
         });
 
-        Route::prefix('admin')->group(function (): void {
+        Route::prefix('admin')->middleware('api.auth:admin')->group(function (): void {
             Route::get('dashboard', [AdminController::class, 'dashboard']);
             Route::post('salesmen', [AdminController::class, 'createSalesman']);
             Route::get('dealers', [AdminController::class, 'dealers']);

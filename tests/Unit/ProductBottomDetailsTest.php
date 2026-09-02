@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Casts\KeyValueRows;
 use App\Models\Catalog\Product;
 use App\Rules\Catalog\SingleMainVariant;
-use App\Support\Admin\Forms\AdminFormFields;
+use App\Support\Admin\Forms\FormFieldTree;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -13,7 +13,7 @@ class ProductBottomDetailsTest extends TestCase
 {
     public function test_bottom_details_children_are_nested_under_their_container(): void
     {
-        $nodes = AdminFormFields::tree([
+        $nodes = (new FormFieldTree())->build([
             ['type' => 'section_heading', 'label' => '11. Bottom Details'],
             ['type' => 'product_bottom_details', 'label' => 'Bottom Details', 'groups' => ['description' => 'Description']],
             ['name' => 'description', 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
@@ -30,7 +30,7 @@ class ProductBottomDetailsTest extends TestCase
 
     public function test_a_field_naming_an_unknown_container_stays_at_the_top_level(): void
     {
-        $nodes = AdminFormFields::tree([
+        $nodes = (new FormFieldTree())->build([
             ['name' => 'description', 'render_inside' => 'not_registered'],
         ]);
 
@@ -40,10 +40,10 @@ class ProductBottomDetailsTest extends TestCase
 
     public function test_display_only_and_create_only_fields_are_skipped(): void
     {
-        $this->assertFalse(AdminFormFields::shouldRender(['name' => 'meta_title', 'display_only' => true], false));
-        $this->assertFalse(AdminFormFields::shouldRender(['name' => 'password', 'create_only' => true], true));
-        $this->assertTrue(AdminFormFields::shouldRender(['name' => 'password', 'create_only' => true], false));
-        $this->assertTrue(AdminFormFields::shouldRender(['name' => 'name'], true));
+        $this->assertFalse((new FormFieldTree())->shouldRender(['name' => 'meta_title', 'display_only' => true], false));
+        $this->assertFalse((new FormFieldTree())->shouldRender(['name' => 'password', 'create_only' => true], true));
+        $this->assertTrue((new FormFieldTree())->shouldRender(['name' => 'password', 'create_only' => true], false));
+        $this->assertTrue((new FormFieldTree())->shouldRender(['name' => 'name'], true));
     }
 
     public function test_additional_information_rows_survive_a_save_and_load_round_trip(): void

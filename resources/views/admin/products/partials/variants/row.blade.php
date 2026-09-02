@@ -3,6 +3,7 @@
     $index = $index ?? '__INDEX__';
     $isDefault = filter_var($row['is_default'] ?? false, FILTER_VALIDATE_BOOL);
     $isActive = ! array_key_exists('is_active', $row) || filter_var($row['is_active'], FILTER_VALIDATE_BOOL);
+    $variantUnits = $variantUnits ?? [];
 @endphp
 <div class="border rounded p-3 mb-3 bg-light" data-product-variant-row>
     <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $row['id'] ?? '' }}">
@@ -16,39 +17,32 @@
             <input class="form-control" type="number" min="0.001" step="0.001" name="variants[{{ $index }}][size_value]" value="{{ $row['size_value'] ?? '' }}" required>
         </div>
         <div class="col-md-2">
-            <label class="form-label">Unit <span class="text-danger">*</span></label>
-            <select class="form-select" name="variants[{{ $index }}][size_unit]" required>
+            <label class="form-label">Select Unit <span class="text-danger">*</span></label>
+            <select class="form-select" name="variants[{{ $index }}][unit_id]" required>
                 <option value="">Select Unit</option>
-                @foreach(['ML'=>'ML','LTR'=>'LTR','GM'=>'GM','KG'=>'KG','PCS'=>'PCS'] as $key => $label)
-                    <option value="{{ $key }}" @selected(($row['size_unit'] ?? '') === $key)>{{ $label }}</option>
+                @foreach($variantUnits as $unitId => $unitLabel)
+                    <option value="{{ $unitId }}" @selected((string) ($row['unit_id'] ?? '') === (string) $unitId)>{{ $unitLabel }}</option>
                 @endforeach
             </select>
+            @if($variantUnits === [])
+                <small class="text-danger">Add units under Products &amp; Inventory &rarr; Unit first.</small>
+            @endif
         </div>
         <div class="col-md-2">
             <label class="form-label">Variant SKU</label>
             <input class="form-control" type="text" maxlength="100" name="variants[{{ $index }}][variant_sku]" value="{{ $row['variant_sku'] ?? '' }}">
         </div>
         <div class="col-md-2">
-            <label class="form-label">Units in One Case <span class="text-danger">*</span></label>
-            <input class="form-control" type="number" min="1" step="1" name="variants[{{ $index }}][units_per_case]" value="{{ $row['units_per_case'] ?? 1 }}" data-units-per-case required>
+            <label class="form-label">HSN Code</label>
+            <input class="form-control" type="text" maxlength="40" name="variants[{{ $index }}][hsn_code]" value="{{ $row['hsn_code'] ?? '' }}">
         </div>
         <div class="col-md-2">
-            <label class="form-label">Sort Order</label>
-            <input class="form-control" type="number" min="0" step="1" name="variants[{{ $index }}][sort_order]" value="{{ $row['sort_order'] ?? 0 }}">
+            <label class="form-label">GST %</label>
+            <input class="form-control" type="number" min="0" max="100" step="0.01" name="variants[{{ $index }}][gst_percent]" value="{{ $row['gst_percent'] ?? '' }}">
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <div>
-                <input type="hidden" name="variants[{{ $index }}][is_active]" value="0">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" name="variants[{{ $index }}][is_active]" value="1" id="variant-active-{{ $index }}" @checked($isActive)>
-                    <label class="form-check-label" for="variant-active-{{ $index }}">Active</label>
-                </div>
-                <input type="hidden" name="variants[{{ $index }}][is_default]" value="0">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="variants[{{ $index }}][is_default]" value="1" id="variant-default-{{ $index }}" data-main-display-pack @checked($isDefault)>
-                    <label class="form-check-label" for="variant-default-{{ $index }}">Main Display Pack</label>
-                </div>
-            </div>
+        <div class="col-md-2">
+            <label class="form-label">Units in One Case <span class="text-danger">*</span></label>
+            <input class="form-control" type="number" min="1" step="1" name="variants[{{ $index }}][units_per_case]" value="{{ $row['units_per_case'] ?? 1 }}" data-units-per-case required>
         </div>
 
         <div class="col-md-4">
@@ -65,6 +59,25 @@
             <label class="form-label">Customer Price per Retail Pack <span class="text-danger">*</span></label>
             <input class="form-control" type="number" min="0" step="0.01" name="variants[{{ $index }}][customer_price]" value="{{ $row['customer_price'] ?? '' }}" required>
             <small class="text-muted">Customer quantity 1 = one retail pack.</small>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Sort Order</label>
+            <input class="form-control" type="number" min="0" step="1" name="variants[{{ $index }}][sort_order]" value="{{ $row['sort_order'] ?? 0 }}">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <div>
+                <input type="hidden" name="variants[{{ $index }}][is_active]" value="0">
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="variants[{{ $index }}][is_active]" value="1" id="variant-active-{{ $index }}" @checked($isActive)>
+                    <label class="form-check-label" for="variant-active-{{ $index }}">Active</label>
+                </div>
+                <input type="hidden" name="variants[{{ $index }}][is_default]" value="0">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="variants[{{ $index }}][is_default]" value="1" id="variant-default-{{ $index }}" data-main-display-pack @checked($isDefault)>
+                    <label class="form-check-label" for="variant-default-{{ $index }}">Main Product (Main Display Pack)</label>
+                </div>
+            </div>
         </div>
 
         <div class="col-12"><hr class="my-0"><small class="text-muted">Optional opening stock for this size. Stock quantity is always entered in retail packs/bottles.</small></div>

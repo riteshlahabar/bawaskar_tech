@@ -5,6 +5,7 @@ namespace App\Services\Catalog\Product;
 use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductMediaContract;
 use App\Contracts\Catalog\Product\ProductRepositoryContract;
+use App\Contracts\Catalog\Product\ProductSkuContract;
 use App\Contracts\Catalog\Product\ProductStockContract;
 use App\Contracts\Catalog\Product\ProductTranslationContract;
 use App\Contracts\Catalog\Product\ProductVariantContract;
@@ -21,13 +22,20 @@ final class ProductWorkflowService implements ProductWorkflowContract
         private readonly ProductVariantContract $variants,
         private readonly ProductMediaContract $media,
         private readonly ProductTranslationContract $translations,
+        private readonly ProductSkuContract $sku,
     ) {
     }
 
     public function save(ProductSaveData $data, ?Product $product = null): Product
     {
         $creating = $product === null;
-        $product = $this->products->save($data->product, $product);
+        $attributes = $data->product;
+
+        if ($creating && blank($attributes['sku'] ?? null)) {
+            $attributes['sku'] = $this->sku->generate($attributes['name'] ?? null);
+        }
+
+        $product = $this->products->save($attributes, $product);
 
         $this->images->sync($product, $data->primaryImagePath, $data->galleryImagePaths, $data->removeGalleryImageIds);
         if ($creating) {

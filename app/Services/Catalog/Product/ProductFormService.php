@@ -7,6 +7,7 @@ use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductMediaContract;
 use App\Contracts\Catalog\Product\ProductTranslationContract;
 use App\Contracts\Catalog\Product\ProductVariantContract;
+use App\Contracts\Catalog\Product\ProductVariantUnitContract;
 use App\Models\Catalog\Product;
 use App\Models\Inventory\Warehouse;
 
@@ -17,6 +18,7 @@ final class ProductFormService implements ProductFormContract
         private readonly ProductTranslationContract $translations,
         private readonly ProductVariantContract $variants,
         private readonly ProductMediaContract $media,
+        private readonly ProductVariantUnitContract $units,
     ) {
     }
 
@@ -34,6 +36,8 @@ final class ProductFormService implements ProductFormContract
     public function augmentOptions(array $options): array
     {
         $options['variant_warehouses'] = Warehouse::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all();
+        $options['variant_units'] = $this->units->options();
+
         return $options;
     }
 }

@@ -34,6 +34,7 @@ class Product extends Model
         'short_description',
         'detail_banner_image',
         'detail_banner_url',
+        'detail_banner_position',
         'detail_sidebar_banner_image',
         'detail_sidebar_banner_url',
         'seller_name',
@@ -41,8 +42,6 @@ class Product extends Model
         'seller_description',
         'seller_address',
         'seller_contact',
-        'manufacturer_title',
-        'manufacturer_description',
         'sale_badge_text',
         'sold_quantity',
         'total_quantity',
@@ -57,7 +56,6 @@ class Product extends Model
         'storefront_banner_image',
         'additional_info',
         'care_instructions',
-        'manufacturer_details',
         'is_offer_active',
         'offer_start_at',
         'offer_end_at',
@@ -93,6 +91,7 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'additional_info' => \App\Casts\KeyValueRows::class,
         'gst_percent' => 'decimal:2',
         'mrp' => 'decimal:2',
         'customer_price' => 'decimal:2',

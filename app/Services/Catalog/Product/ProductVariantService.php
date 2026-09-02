@@ -4,13 +4,18 @@ namespace App\Services\Catalog\Product;
 
 use App\Contracts\Catalog\Product\ProductStockContract;
 use App\Contracts\Catalog\Product\ProductVariantContract;
+use App\Contracts\Catalog\Product\ProductVariantProjectionContract;
+use App\Contracts\Catalog\Product\ProductVariantUnitContract;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductVariant;
 
 final class ProductVariantService implements ProductVariantContract
 {
-    public function __construct(private readonly ProductStockContract $stock)
-    {
+    public function __construct(
+        private readonly ProductStockContract $stock,
+        private readonly ProductVariantUnitContract $units,
+        private readonly ProductVariantProjectionContract $projection,
+    ) {
     }
 
     public function sync(Product $product, array $variants): void
@@ -21,7 +26,10 @@ final class ProductVariantService implements ProductVariantContract
 
         foreach ($variants as $index => $row) {
             $sizeValue = (float) ($row['size_value'] ?? 0);
-            if ($sizeValue <= 0 || blank($row['size_unit'] ?? null)) {
+            $unitId = filled($row['unit_id'] ?? null) ? (int) $row['unit_id'] : null;
+            $sizeUnit = $this->units->shortNameFor($unitId) ?? strtoupper(trim((string) ($row['size_unit'] ?? '')));
+
+            if ($sizeValue <= 0 || blank($sizeUnit)) {
                 continue;
             }
 
@@ -30,13 +38,16 @@ final class ProductVariantService implements ProductVariantContract
                 ? $product->variants()->whereKey($variantId)->firstOrFail()
                 : new ProductVariant(['product_id' => $product->id]);
 
-            $displayValue = rtrim(rtrim(number_format($sizeValue, 3, '.', ''), '0'), '.').' '.strtoupper((string) $row['size_unit']);
+            $displayValue = rtrim(rtrim(number_format($sizeValue, 3, '.', ''), '0'), '.').' '.$sizeUnit;
             $variant->fill([
                 'group_name' => 'Packing Size',
                 'value' => $displayValue,
+                'unit_id' => $unitId,
                 'size_value' => $sizeValue,
-                'size_unit' => strtoupper((string) $row['size_unit']),
+                'size_unit' => $sizeUnit,
                 'variant_sku' => filled($row['variant_sku'] ?? null) ? trim((string) $row['variant_sku']) : null,
+                'hsn_code' => filled($row['hsn_code'] ?? null) ? trim((string) $row['hsn_code']) : null,
+                'gst_percent' => (float) ($row['gst_percent'] ?? 0),
                 'units_per_case' => max(1, (int) ($row['units_per_case'] ?? 1)),
                 'mrp' => (float) ($row['mrp'] ?? 0),
                 'dealer_price' => (float) ($row['dealer_price'] ?? 0),
@@ -64,12 +75,35 @@ final class ProductVariantService implements ProductVariantContract
         if ($mainVariant) {
             $product->variants()->where('id', '<>', $mainVariant->id)->update(['is_default' => false]);
             $mainVariant->forceFill(['is_default' => true])->save();
-            $product->forceFill([
-                'mrp' => $mainVariant->mrp,
-                'dealer_price' => $mainVariant->dealer_price,
-                'customer_price' => $mainVariant->customer_price,
-            ])->save();
+            $this->mirrorMainVariantToProduct($product, $mainVariant);
         }
+    }
+
+    /**
+     * Price, unit, SKU, HSN and GST are now entered per variant, but orders,
+     * invoices, the cart totals and the product listing still read the product
+     * level columns. Mirroring the main variant keeps those consumers correct
+     * without rewriting every sales service.
+     */
+    private function mirrorMainVariantToProduct(Product $product, ProductVariant $variant): void
+    {
+        $projected = $this->projection->fromVariant($variant);
+
+        $mirrored = [
+            'mrp' => $projected['mrp'],
+            'dealer_price' => $projected['dealer_price'],
+            'customer_price' => $projected['customer_price'],
+            'gst_percent' => $projected['gst_percent'],
+            'unit_id' => $projected['unit_id'] ?? $product->unit_id,
+        ];
+
+        // products.sku is unique and identifies the product itself, so only the
+        // HSN code follows the variant here.
+        if (filled($projected['hsn_code'])) {
+            $mirrored['hsn_code'] = $projected['hsn_code'];
+        }
+
+        $product->forceFill($mirrored)->save();
     }
 
     public function formData(Product $product): array
@@ -78,11 +112,19 @@ final class ProductVariantService implements ProductVariantContract
 
         return $variants->where('is_active', true)->map(function (ProductVariant $variant): array {
             preg_match('/^([0-9.]+)\s*([A-Za-z]+)?/', (string) $variant->value, $legacySize);
+            $sizeUnit = $variant->size_unit ?: strtoupper((string) ($legacySize[2] ?? ''));
+
             return [
                 'id' => $variant->id,
+                'unit_id' => $variant->unit_id ?? $this->units->idForShortName($sizeUnit),
                 'size_value' => $variant->size_value ?: ($legacySize[1] ?? null),
-                'size_unit' => $variant->size_unit ?: strtoupper((string) ($legacySize[2] ?? '')),
+                'size_unit' => $sizeUnit,
                 'variant_sku' => $variant->variant_sku,
+                // Products created before HSN/GST moved into the variant keep
+                // those values at product level, so fall back to them and the
+                // next save carries them onto the variant.
+                'hsn_code' => $variant->hsn_code ?: $variant->product?->hsn_code,
+                'gst_percent' => $variant->gst_percent ?? $variant->product?->gst_percent,
                 'units_per_case' => $variant->units_per_case ?: 1,
                 'mrp' => $variant->mrp ?? $variant->product?->mrp,
                 'dealer_price' => $variant->dealer_price ?? $variant->product?->dealer_price,

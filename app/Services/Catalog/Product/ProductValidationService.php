@@ -4,17 +4,20 @@ namespace App\Services\Catalog\Product;
 
 use App\Contracts\Catalog\Product\ProductValidationContract;
 use App\Models\Catalog\Product;
+use App\Rules\Catalog\SingleMainVariant;
 
 final class ProductValidationService implements ProductValidationContract
 {
     public function extend(array $rules, ?Product $product = null): array
     {
         $rules = array_merge($rules, [
-            'variants' => ['nullable', 'array'],
+            'variants' => ['required', 'array', 'min:1', new SingleMainVariant()],
             'variants.*.id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'variants.*.unit_id' => ['required', 'integer', 'exists:units,id'],
             'variants.*.size_value' => ['required', 'numeric', 'min:0.001'],
-            'variants.*.size_unit' => ['required', 'in:ML,LTR,GM,KG,PCS'],
             'variants.*.variant_sku' => ['nullable', 'string', 'max:100', 'distinct'],
+            'variants.*.hsn_code' => ['nullable', 'string', 'max:40'],
+            'variants.*.gst_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'variants.*.units_per_case' => ['required', 'integer', 'min:1'],
             'variants.*.mrp' => ['required', 'numeric', 'min:0'],
             'variants.*.dealer_price' => ['required', 'numeric', 'min:0'],
@@ -29,6 +32,9 @@ final class ProductValidationService implements ProductValidationContract
             'variants.*.purchase_price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.opening_stock_quantity' => ['nullable', 'numeric', 'min:0'],
             'variants.*.low_stock_alert' => ['nullable', 'numeric', 'min:0'],
+            'additional_info' => ['nullable', 'array'],
+            'additional_info.*.label' => ['nullable', 'string', 'max:120'],
+            'additional_info.*.value' => ['nullable', 'string', 'max:255'],
             'media' => ['nullable', 'array'],
             'media.*.id' => ['nullable', 'integer', 'exists:product_media,id'],
             'media.*.source_type' => ['required', 'in:upload,youtube'],

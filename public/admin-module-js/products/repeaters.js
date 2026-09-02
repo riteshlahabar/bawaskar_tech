@@ -1,8 +1,10 @@
 (function () {
     'use strict';
 
+    var ROW_SELECTOR = '[data-product-variant-row], [data-product-media-row], [data-product-additional-info-row]';
+
 function initProductRepeaters() {
-        document.querySelectorAll('[data-product-variants-repeater], [data-product-media-repeater]').forEach(function (repeater) {
+        document.querySelectorAll('[data-product-variants-repeater], [data-product-media-repeater], [data-product-additional-info-repeater]').forEach(function (repeater) {
             var rowsHost = repeater.querySelector('[data-repeater-rows]');
             var template = repeater.querySelector('[data-repeater-template]');
             var addButton = repeater.querySelector('[data-add-repeater-row]');
@@ -45,13 +47,13 @@ function initProductRepeaters() {
             repeater.addEventListener('click', function (event) {
                 var removeButton = event.target.closest('[data-remove-repeater-row]');
                 if (removeButton) {
-                    var row = removeButton.closest('[data-product-variant-row], [data-product-media-row]');
+                    var row = removeButton.closest(ROW_SELECTOR);
                     if (row) row.remove();
                 }
             });
 
             repeater.addEventListener('change', function (event) {
-                var row = event.target.closest('[data-product-variant-row], [data-product-media-row]');
+                var row = event.target.closest(ROW_SELECTOR);
                 if (event.target.matches('[data-main-display-pack]') && event.target.checked) {
                     repeater.querySelectorAll('[data-main-display-pack]').forEach(function (checkbox) {
                         if (checkbox !== event.target) checkbox.checked = false;
@@ -64,7 +66,7 @@ function initProductRepeaters() {
                 updateVariantTotals(event.target.closest('[data-product-variant-row]'));
             });
 
-            rowsHost.querySelectorAll('[data-product-variant-row], [data-product-media-row]').forEach(initialiseRow);
+            rowsHost.querySelectorAll(ROW_SELECTOR).forEach(initialiseRow);
         });
     }
 

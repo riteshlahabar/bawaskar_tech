@@ -121,23 +121,45 @@
                     </div>
                 </div>
 
+                @php($additionalInformation = collect($product->additional_info ?? [])->filter(fn (array $row): bool => filled($row['label'] ?? null) || filled($row['value'] ?? null)))
+
                 <div class="col-12">
                     <div class="product-section-box">
                         <ul class="nav nav-tabs custom-nav" id="productDetailTab" role="tablist">
                             <li class="nav-item" role="presentation"><button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button></li>
-                            @if($product->additional_info)<li class="nav-item" role="presentation"><button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Additional info</button></li>@endif
+                            @if($additionalInformation->isNotEmpty())<li class="nav-item" role="presentation"><button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Additional info</button></li>@endif
                             @if($product->care_instructions)<li class="nav-item" role="presentation"><button class="nav-link" id="care-tab" data-bs-toggle="tab" data-bs-target="#care" type="button" role="tab">Care Instructions</button></li>@endif
                         </ul>
                         <div class="tab-content custom-tab" id="productDetailTabContent">
                             <div class="tab-pane fade show active" id="description" role="tabpanel"><div class="product-description">
+                                @include('store.partials.product-detail-description-banner', ['position' => 'before'])
                                 @if($product->description)<div class="nav-desh"><p>{!! nl2br(e($product->translatedDescription())) !!}</p></div>@endif
+                                @include('store.partials.product-detail-description-banner', ['position' => 'middle'])
                                 @if($product->benefits)<div class="nav-desh"><div class="desh-title"><h5>Benefits:</h5></div><p>{!! nl2br(e($product->benefits)) !!}</p></div>@endif
                                 @if($product->usage_instructions)<div class="nav-desh"><div class="desh-title"><h5>Usage Instructions:</h5></div><p>{!! nl2br(e($product->usage_instructions)) !!}</p></div>@endif
                                 @if($product->crop_information)<div class="nav-desh"><div class="desh-title"><h5>Crop Information:</h5></div><p>{!! nl2br(e($product->crop_information)) !!}</p></div>@endif
-                                @if($product->detail_banner_image)<div class="banner-contain nav-desh"><a href="{{ $product->detail_banner_url ?: 'javascript:void(0)' }}"><img src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"></a></div>@endif
-                                @if($product->manufacturer_details)<div class="nav-desh"><div class="desh-title"><h5>{{ $product->manufacturer_title ?: 'From The Manufacturer:' }}</h5></div><p>{!! nl2br(e($product->manufacturer_details)) !!}</p></div>@endif
+                                @include('store.partials.product-detail-description-banner', ['position' => 'after'])
                             </div></div>
-                            @if($product->additional_info)<div class="tab-pane fade" id="info" role="tabpanel"><div class="product-description"><div class="nav-desh"><p>{!! nl2br(e($product->additional_info)) !!}</p></div></div></div>@endif
+                            @if($additionalInformation->isNotEmpty())
+                                <div class="tab-pane fade" id="info" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table info-table">
+                                            <tbody>
+                                                @foreach($additionalInformation as $infoRow)
+                                                    <tr>
+                                                        @if(filled($infoRow['label'] ?? null))
+                                                            <td>{{ $infoRow['label'] }}</td>
+                                                            <td>{{ $infoRow['value'] }}</td>
+                                                        @else
+                                                            <td colspan="2">{{ $infoRow['value'] }}</td>
+                                                        @endif
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
                             @if($product->care_instructions)<div class="tab-pane fade" id="care" role="tabpanel"><div class="information-box"><p>{!! nl2br(e($product->care_instructions)) !!}</p></div></div>@endif
                         </div>
                     </div>

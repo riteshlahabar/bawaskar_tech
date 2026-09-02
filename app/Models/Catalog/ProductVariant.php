@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ProductVariant extends Model
 {
     protected $fillable = [
-        'product_id', 'group_name', 'value', 'size_value', 'size_unit', 'variant_sku',
+        'product_id', 'unit_id', 'group_name', 'value', 'size_value', 'size_unit',
+        'variant_sku', 'hsn_code', 'gst_percent',
         'units_per_case', 'mrp', 'dealer_price', 'customer_price', 'price_difference',
         'stock_quantity', 'is_default', 'sort_order', 'is_active',
     ];
@@ -18,6 +19,7 @@ class ProductVariant extends Model
     protected function casts(): array
     {
         return [
+            'gst_percent' => 'decimal:2',
             'price_difference' => 'decimal:2',
             'stock_quantity' => 'decimal:3',
             'size_value' => 'decimal:3',
@@ -34,6 +36,11 @@ class ProductVariant extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     public function inventoryBatches(): HasMany

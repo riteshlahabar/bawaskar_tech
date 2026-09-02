@@ -781,3 +781,13 @@ input[type="file"].form-control::file-selector-button {
 .admin-table-links .pagination {
     margin-bottom: 0;
 }
+
+/* The Fastkart theme sets .bg-light to white text on a #f4f4f4 background,
+   which makes the labels inside the variant / video repeater boxes invisible.
+   .text-muted and .text-danger keep their own colours. */
+.page-wrapper .bg-light,
+.page-wrapper .bg-light label,
+.page-wrapper .bg-light .form-label,
+.page-wrapper .bg-light .form-check-label {
+    color: #1f2937 !important;
+}

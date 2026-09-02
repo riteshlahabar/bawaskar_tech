@@ -11,19 +11,18 @@ use Closure;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
-class CategoryCatalogServiceTest
-    extends TestCase
+class CategoryCatalogServiceTest extends TestCase
 {
     public function test_service_uses_replaceable_dependencies(): void
     {
         $repository =
-            new class
-            implements CategoryCatalogRepositoryContract {
+            new class implements CategoryCatalogRepositoryContract
+            {
                 public function activeForCatalog(
                     string $locale,
                     string $audience
                 ): Collection {
-                    $category = new Category();
+                    $category = new Category;
                     $category->id = 10;
 
                     return collect([
@@ -33,21 +32,20 @@ class CategoryCatalogServiceTest
             };
 
         $presenter =
-            new class
-            implements CategoryCatalogPresenterContract {
+            new class implements CategoryCatalogPresenterContract
+            {
                 public function present(
                     Category $category
                 ): array {
                     return [
-                        'id' =>
-                            $category->id,
+                        'id' => $category->id,
                     ];
                 }
             };
 
         $cache =
-            new class
-            implements CatalogCacheContract {
+            new class implements CatalogCacheContract
+            {
                 public function version(): int
                 {
                     return 1;

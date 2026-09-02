@@ -11,8 +11,7 @@ final class StorefrontPageController extends Controller
 {
     public function __construct(
         private readonly StorefrontPageRendererContract $pages
-    ) {
-    }
+    ) {}
 
     public function home(Request $request): View
     {

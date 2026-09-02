@@ -40,6 +40,6 @@ class ProductContainerBindingsTest extends TestCase
     {
         // config/admin.php eager loads `variants.unit` for the products module.
         $this->assertTrue(method_exists(ProductVariant::class, 'unit'));
-        $this->assertSame('unit_id', (new ProductVariant())->unit()->getForeignKeyName());
+        $this->assertSame('unit_id', (new ProductVariant)->unit()->getForeignKeyName());
     }
 }

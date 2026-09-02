@@ -18,9 +18,7 @@ final class ZipImportImageExtractor implements ImportImageArchiveContract
 
     private const IMAGE_COLUMNS = ['image_path', 'primary_image', 'product_image', 'gallery_images', 'icon_path'];
 
-    public function __construct(private readonly ImportImagePathContract $paths)
-    {
-    }
+    public function __construct(private readonly ImportImagePathContract $paths) {}
 
     public function extract(?UploadedFile $archive, array $headers, array $rows, string $module): void
     {
@@ -33,7 +31,7 @@ final class ZipImportImageExtractor implements ImportImageArchiveContract
         }
 
         $zipPath = $archive->getRealPath();
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($zipPath) !== true) {
             throw new RuntimeException('Unable to open image ZIP file.');

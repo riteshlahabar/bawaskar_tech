@@ -64,52 +64,120 @@ return new class extends Migration
             $columns = Schema::getColumnListing('categories');
             $has = fn (string $column): bool => in_array($column, $columns, true);
 
-            if (! $has('homepage_title')) $table->string('homepage_title')->nullable();
-            if (! $has('homepage_layout')) $table->string('homepage_layout', 80)->nullable();
-            if (! $has('homepage_product_limit')) $table->unsignedInteger('homepage_product_limit')->default(8);
-            if (! $has('homepage_sort_order')) $table->unsignedInteger('homepage_sort_order')->default(0)->index();
-            if (! $has('show_on_homepage')) $table->boolean('show_on_homepage')->default(false)->index();
-            if (! $has('image_path')) $table->string('image_path')->nullable();
+            if (! $has('homepage_title')) {
+                $table->string('homepage_title')->nullable();
+            }
+            if (! $has('homepage_layout')) {
+                $table->string('homepage_layout', 80)->nullable();
+            }
+            if (! $has('homepage_product_limit')) {
+                $table->unsignedInteger('homepage_product_limit')->default(8);
+            }
+            if (! $has('homepage_sort_order')) {
+                $table->unsignedInteger('homepage_sort_order')->default(0)->index();
+            }
+            if (! $has('show_on_homepage')) {
+                $table->boolean('show_on_homepage')->default(false)->index();
+            }
+            if (! $has('image_path')) {
+                $table->string('image_path')->nullable();
+            }
         });
 
         Schema::table('products', function (Blueprint $table): void {
             $columns = Schema::getColumnListing('products');
             $has = fn (string $column): bool => in_array($column, $columns, true);
 
-            if (! $has('short_description')) $table->text('short_description')->nullable();
-            if (! $has('additional_info')) $table->longText('additional_info')->nullable();
-            if (! $has('care_instructions')) $table->longText('care_instructions')->nullable();
-            if (! $has('manufacturer_details')) $table->longText('manufacturer_details')->nullable();
+            if (! $has('short_description')) {
+                $table->text('short_description')->nullable();
+            }
+            if (! $has('additional_info')) {
+                $table->longText('additional_info')->nullable();
+            }
+            if (! $has('care_instructions')) {
+                $table->longText('care_instructions')->nullable();
+            }
+            if (! $has('manufacturer_details')) {
+                $table->longText('manufacturer_details')->nullable();
+            }
 
-            if (! $has('detail_banner_image')) $table->string('detail_banner_image')->nullable();
-            if (! $has('detail_banner_url')) $table->string('detail_banner_url')->nullable();
-            if (! $has('detail_sidebar_banner_image')) $table->string('detail_sidebar_banner_image')->nullable();
-            if (! $has('detail_sidebar_banner_url')) $table->string('detail_sidebar_banner_url')->nullable();
+            if (! $has('detail_banner_image')) {
+                $table->string('detail_banner_image')->nullable();
+            }
+            if (! $has('detail_banner_url')) {
+                $table->string('detail_banner_url')->nullable();
+            }
+            if (! $has('detail_sidebar_banner_image')) {
+                $table->string('detail_sidebar_banner_image')->nullable();
+            }
+            if (! $has('detail_sidebar_banner_url')) {
+                $table->string('detail_sidebar_banner_url')->nullable();
+            }
 
-            if (! $has('seller_name')) $table->string('seller_name')->nullable();
-            if (! $has('seller_logo')) $table->string('seller_logo')->nullable();
-            if (! $has('seller_description')) $table->text('seller_description')->nullable();
-            if (! $has('seller_address')) $table->string('seller_address')->nullable();
-            if (! $has('seller_contact')) $table->string('seller_contact', 80)->nullable();
+            if (! $has('seller_name')) {
+                $table->string('seller_name')->nullable();
+            }
+            if (! $has('seller_logo')) {
+                $table->string('seller_logo')->nullable();
+            }
+            if (! $has('seller_description')) {
+                $table->text('seller_description')->nullable();
+            }
+            if (! $has('seller_address')) {
+                $table->string('seller_address')->nullable();
+            }
+            if (! $has('seller_contact')) {
+                $table->string('seller_contact', 80)->nullable();
+            }
 
-            if (! $has('manufacturer_title')) $table->string('manufacturer_title')->nullable();
-            if (! $has('manufacturer_description')) $table->longText('manufacturer_description')->nullable();
+            if (! $has('manufacturer_title')) {
+                $table->string('manufacturer_title')->nullable();
+            }
+            if (! $has('manufacturer_description')) {
+                $table->longText('manufacturer_description')->nullable();
+            }
 
-            if (! $has('sale_badge_text')) $table->string('sale_badge_text', 80)->nullable();
-            if (! $has('sold_quantity')) $table->unsignedInteger('sold_quantity')->nullable();
-            if (! $has('total_quantity')) $table->unsignedInteger('total_quantity')->nullable();
-            if (! $has('low_stock_text')) $table->string('low_stock_text')->nullable();
+            if (! $has('sale_badge_text')) {
+                $table->string('sale_badge_text', 80)->nullable();
+            }
+            if (! $has('sold_quantity')) {
+                $table->unsignedInteger('sold_quantity')->nullable();
+            }
+            if (! $has('total_quantity')) {
+                $table->unsignedInteger('total_quantity')->nullable();
+            }
+            if (! $has('low_stock_text')) {
+                $table->string('low_stock_text')->nullable();
+            }
 
-            if (! $has('is_top_selling')) $table->boolean('is_top_selling')->default(false)->index();
-            if (! $has('is_trending')) $table->boolean('is_trending')->default(false)->index();
-            if (! $has('is_new_arrival')) $table->boolean('is_new_arrival')->default(false)->index();
-            if (! $has('is_offer_product')) $table->boolean('is_offer_product')->default(false)->index();
-            if (! $has('is_deal_timer_product')) $table->boolean('is_deal_timer_product')->default(false)->index();
-            if (! $has('show_on_homepage')) $table->boolean('show_on_homepage')->default(true)->index();
+            if (! $has('is_top_selling')) {
+                $table->boolean('is_top_selling')->default(false)->index();
+            }
+            if (! $has('is_trending')) {
+                $table->boolean('is_trending')->default(false)->index();
+            }
+            if (! $has('is_new_arrival')) {
+                $table->boolean('is_new_arrival')->default(false)->index();
+            }
+            if (! $has('is_offer_product')) {
+                $table->boolean('is_offer_product')->default(false)->index();
+            }
+            if (! $has('is_deal_timer_product')) {
+                $table->boolean('is_deal_timer_product')->default(false)->index();
+            }
+            if (! $has('show_on_homepage')) {
+                $table->boolean('show_on_homepage')->default(true)->index();
+            }
 
-            if (! $has('meta_title')) $table->string('meta_title')->nullable();
-            if (! $has('meta_description')) $table->text('meta_description')->nullable();
-            if (! $has('meta_keywords')) $table->string('meta_keywords')->nullable();
+            if (! $has('meta_title')) {
+                $table->string('meta_title')->nullable();
+            }
+            if (! $has('meta_description')) {
+                $table->text('meta_description')->nullable();
+            }
+            if (! $has('meta_keywords')) {
+                $table->string('meta_keywords')->nullable();
+            }
         });
 
         if (! Schema::hasTable('product_variants')) {

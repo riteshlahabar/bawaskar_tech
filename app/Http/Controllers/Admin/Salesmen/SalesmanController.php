@@ -10,9 +10,13 @@ use Illuminate\Http\Request;
 class SalesmanController extends PeopleModuleController
 {
     protected string $moduleKey = 'salesmen';
+
     protected string $role = User::ROLE_SALESMAN;
+
     protected string $profileRelation = 'salesmanProfile';
+
     protected string $profileModel = SalesmanProfile::class;
+
     protected array $profileFields = ['employee_code', 'joining_date', 'basic_salary', 'target_amount', 'territory'];
 
     protected function prepareData(array $validated, Request $request, array $module): array

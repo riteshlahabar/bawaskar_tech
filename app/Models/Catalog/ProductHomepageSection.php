@@ -2,11 +2,11 @@
 
 namespace App\Models\Catalog;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class ProductHomepageSection extends Model
 {
@@ -48,6 +48,7 @@ class ProductHomepageSection extends Model
                 $builder->whereNull('end_at')->orWhere('end_at', '>=', now());
             });
     }
+
     protected static function booted(): void
     {
         static::creating(function (self $section): void {

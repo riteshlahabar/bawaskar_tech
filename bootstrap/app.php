@@ -1,5 +1,8 @@
 <?php
 
+use App\Exceptions\Files\UnsupportedUploadException;
+use App\Http\Middleware\AuthenticateApiToken;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,8 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'api.auth' => \App\Http\Middleware\AuthenticateApiToken::class,
+            'admin' => EnsureAdmin::class,
+            'api.auth' => AuthenticateApiToken::class,
         ]);
         $middleware->redirectGuestsTo(fn (Request $request): ?string => $request->is('admin*') ? route('admin.login') : null);
     })
@@ -26,12 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // The uploader is a domain service and raises its own exception; the
         // HTTP status for it is decided here, at the edge.
-        $exceptions->render(function (\App\Exceptions\Files\UnsupportedUploadException $e, Request $request) {
+        $exceptions->render(function (UnsupportedUploadException $e, Request $request) {
             return $request->is('api/*')
                 ? response()->json(['success' => false, 'message' => $e->getMessage(), 'errors' => []], 422)
                 : back()->withInput()->with('error', $e->getMessage());
         });
     })->create();
-
-
-

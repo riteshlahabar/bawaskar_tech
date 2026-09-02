@@ -11,8 +11,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
 {
     public function __construct(
         private readonly StorefrontNavigationRepositoryContract $navigation
-    ) {
-    }
+    ) {}
 
     public function data(string $audience): array
     {

@@ -11,9 +11,7 @@ final class ProductTranslationService implements ProductTranslationContract
 {
     private const LOCALES = ['hi', 'mr', 'gu', 'kn', 'te'];
 
-    public function __construct(private readonly TextTranslatorContract $translator)
-    {
-    }
+    public function __construct(private readonly TextTranslatorContract $translator) {}
 
     public function translatePayload(string $name, ?string $description): array
     {
@@ -24,6 +22,7 @@ final class ProductTranslationService implements ProductTranslationContract
                 'description' => filled($description) ? $this->translator->translate((string) $description, 'en', $locale) : '',
             ];
         }
+
         return $translations;
     }
 
@@ -39,6 +38,7 @@ final class ProductTranslationService implements ProductTranslationContract
             ];
             unset($data[$nameKey], $data[$descriptionKey]);
         }
+
         return $translations;
     }
 
@@ -50,6 +50,7 @@ final class ProductTranslationService implements ProductTranslationContract
 
             if ($name === '' && $description === '') {
                 ProductTranslation::query()->where('product_id', $product->getKey())->where('locale', $locale)->delete();
+
                 continue;
             }
 
@@ -69,6 +70,7 @@ final class ProductTranslationService implements ProductTranslationContract
             $data['translation_'.$locale.'_name'] = $translation?->name;
             $data['translation_'.$locale.'_description'] = $translation?->description;
         }
+
         return $data;
     }
 }

@@ -11,8 +11,7 @@ final class TranslationCatalogController extends ApiController
 {
     public function __construct(
         private readonly TranslationCatalogContract $catalog
-    ) {
-    }
+    ) {}
 
     public function index(TranslationCatalogRequest $request): JsonResponse
     {

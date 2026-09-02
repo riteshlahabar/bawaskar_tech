@@ -27,6 +27,5 @@ final class AdminModuleServices
         public readonly ModuleFormDataContract $formData,
         public readonly ModuleInputContract $input,
         public readonly ModuleExportContract $export,
-    ) {
-    }
+    ) {}
 }

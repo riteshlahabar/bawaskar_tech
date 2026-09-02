@@ -18,8 +18,7 @@ final class StorefrontCartStorageService implements StorefrontCartStorageContrac
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontSessionProductRepositoryContract $products,
         private readonly StorefrontSessionProductRulesContract $rules
-    ) {
-    }
+    ) {}
 
     public function add(
         Request $request,

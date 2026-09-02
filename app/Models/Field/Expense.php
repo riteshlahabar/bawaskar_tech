@@ -19,6 +19,7 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class, 'salesman_id');
     }
+
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');

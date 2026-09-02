@@ -23,15 +23,15 @@ class StorefrontHomepageServiceTest extends TestCase
         $section->id = 10;
         $section->setRelation('items', collect());
 
-        $product = new Product();
+        $product = new Product;
         $product->id = 20;
 
-        $repository = new class($section, $product) implements StorefrontHomepageRepositoryContract {
+        $repository = new class($section, $product) implements StorefrontHomepageRepositoryContract
+        {
             public function __construct(
                 private readonly ProductHomepageSection $section,
                 private readonly Product $product
-            ) {
-            }
+            ) {}
 
             public function homepageSections(): Collection
             {

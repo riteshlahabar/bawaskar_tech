@@ -22,8 +22,7 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
         private readonly StorefrontNavigationContract $navigation,
         private readonly StorefrontLanguageContract $languages,
         private readonly StorefrontOrderContextContract $orders
-    ) {
-    }
+    ) {}
 
     public function render(Request $request, string $page, array $data = []): View
     {

@@ -13,6 +13,7 @@ class EnsureAdmin
     {
         if (! $request->user() || $request->user()->role !== User::ROLE_ADMIN || $request->user()->status !== 'active') {
             auth()->logout();
+
             return redirect()->route('admin.login')->with('error', 'Please sign in with an active administrator account.');
         }
 

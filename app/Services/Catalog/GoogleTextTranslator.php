@@ -43,8 +43,7 @@ class GoogleTextTranslator implements TextTranslatorContract
 
         return collect($segments)
             ->map(
-                fn ($segment): string =>
-                    (string) ($segment[0] ?? '')
+                fn ($segment): string => (string) ($segment[0] ?? '')
             )
             ->implode('');
     }

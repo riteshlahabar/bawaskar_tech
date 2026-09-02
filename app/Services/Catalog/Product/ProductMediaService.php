@@ -10,9 +10,7 @@ use Illuminate\Http\UploadedFile;
 
 final class ProductMediaService implements ProductMediaContract
 {
-    public function __construct(private readonly PublicUploadContract $uploads)
-    {
-    }
+    public function __construct(private readonly PublicUploadContract $uploads) {}
 
     public function sync(Product $product, array $mediaRows): void
     {
@@ -61,6 +59,7 @@ final class ProductMediaService implements ProductMediaContract
     public function formData(Product $product): array
     {
         $media = $product->relationLoaded('media') ? $product->media : $product->media()->get();
+
         return $media->where('is_active', true)->map(fn (ProductMedia $item): array => [
             'id' => $item->id,
             'source_type' => $item->source_type,

@@ -30,8 +30,7 @@ class CommonImportController extends Controller
         private readonly ImportRowReaderContract $reader,
         private readonly ImportRunnerContract $runner,
         private readonly ImportSampleContract $samples,
-    ) {
-    }
+    ) {}
 
     public function store(Request $request, string $module): RedirectResponse
     {

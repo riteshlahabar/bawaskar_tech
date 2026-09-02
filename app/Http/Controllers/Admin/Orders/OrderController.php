@@ -85,19 +85,22 @@ class OrderController extends AdminModuleController
 
     public function changeStatus(Request $request, int|string $id): RedirectResponse
     {
-        $data = $request->validate(['status' => ['required', Rule::in(['salesman_review','admin_review','approved','packing','dispatched','delivered','cancelled'])]]);
+        $data = $request->validate(['status' => ['required', Rule::in(['salesman_review', 'admin_review', 'approved', 'packing', 'dispatched', 'delivered', 'cancelled'])]]);
         $order = Order::with('items')->findOrFail($id);
         DB::transaction(function () use ($order, $data): void {
             $updates = ['status' => $data['status']];
-            if ($data['status'] === 'approved') { $updates += ['approved_by' => auth()->id(), 'approved_at' => now()]; }
+            if ($data['status'] === 'approved') {
+                $updates += ['approved_by' => auth()->id(), 'approved_at' => now()];
+            }
             $order->update($updates);
             if ($data['status'] === 'approved') {
                 Invoice::firstOrCreate(['order_id' => $order->id], [
-                    'invoice_no' => 'INV'.now()->format('ymdHis').str_pad((string)$order->id, 4, '0', STR_PAD_LEFT),
+                    'invoice_no' => 'INV'.now()->format('ymdHis').str_pad((string) $order->id, 4, '0', STR_PAD_LEFT),
                     'invoice_date' => now()->toDateString(), 'grand_total' => $order->grand_total,
                 ]);
             }
         });
+
         return back()->with('success', 'Order status updated.');
     }
 

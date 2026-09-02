@@ -11,8 +11,7 @@ final class StorefrontLanguageController extends Controller
 {
     public function __construct(
         private readonly StorefrontLanguageContract $languages
-    ) {
-    }
+    ) {}
 
     public function update(Request $request, string $locale): RedirectResponse
     {

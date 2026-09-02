@@ -10,6 +10,5 @@ final readonly class ResolvedOrderProduct
     public function __construct(
         public Product $product,
         public ?ProductVariant $variant
-    ) {
-    }
+    ) {}
 }

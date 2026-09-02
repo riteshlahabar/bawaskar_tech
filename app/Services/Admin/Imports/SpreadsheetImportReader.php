@@ -74,7 +74,7 @@ final class SpreadsheetImportReader implements ImportFileReaderContract
             throw new RuntimeException('ZipArchive extension is required for XLSX import. Save the Excel file as CSV and import again.');
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($path) !== true) {
             throw new RuntimeException('Unable to open XLSX file.');

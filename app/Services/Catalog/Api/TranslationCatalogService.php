@@ -12,8 +12,7 @@ final class TranslationCatalogService implements TranslationCatalogContract
     public function __construct(
         private readonly TranslationCatalogRepositoryContract $translations,
         private readonly CatalogCacheContract $cache
-    ) {
-    }
+    ) {}
 
     public function translations(string $locale): Collection
     {

@@ -24,8 +24,7 @@ final class OrderWorkflowService implements OrderWorkflowContract
         private readonly DealerOrderContextContract $dealers,
         private readonly OrderCheckoutMapperContract $checkout,
         private readonly TransactionManagerContract $transactions
-    ) {
-    }
+    ) {}
 
     public function createForCustomer(
         User $customer,

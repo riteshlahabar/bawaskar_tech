@@ -14,8 +14,7 @@ final class ProductCatalogController extends ApiController
     public function __construct(
         private readonly ProductCatalogContract $catalog,
         private readonly CatalogAudienceContract $audiences
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {

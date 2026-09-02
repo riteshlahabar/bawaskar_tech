@@ -11,7 +11,7 @@ final class ProductValidationService implements ProductValidationContract
     public function extend(array $rules, ?Product $product = null): array
     {
         $rules = array_merge($rules, [
-            'variants' => ['required', 'array', 'min:1', new SingleMainVariant()],
+            'variants' => ['required', 'array', 'min:1', new SingleMainVariant],
             'variants.*.id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'variants.*.unit_id' => ['required', 'integer', 'exists:units,id'],
             'variants.*.size_value' => ['required', 'numeric', 'min:0.001'],

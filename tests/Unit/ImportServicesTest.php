@@ -15,12 +15,12 @@ class ImportServicesTest extends TestCase
 {
     private function mapper(): ImportRowMapper
     {
-        return new ImportRowMapper(new ImportRowReader(), new ImportImagePathNormalizer());
+        return new ImportRowMapper(new ImportRowReader, new ImportImagePathNormalizer);
     }
 
     public function test_headers_are_normalised_so_any_capitalisation_matches(): void
     {
-        $reader = new ImportRowReader();
+        $reader = new ImportRowReader;
 
         $this->assertSame('product_name', $reader->header('Product Name'));
         $this->assertSame('hsn_code', $reader->header('HSN-Code'));
@@ -33,7 +33,7 @@ class ImportServicesTest extends TestCase
 
     public function test_first_filled_skips_blank_columns(): void
     {
-        $reader = new ImportRowReader();
+        $reader = new ImportRowReader;
         $row = ['product_sku' => '  ', 'sku' => 'PES001'];
 
         $this->assertSame('PES001', $reader->firstFilled($row, ['product_sku', 'sku']));
@@ -43,7 +43,7 @@ class ImportServicesTest extends TestCase
     #[DataProvider('imagePathProvider')]
     public function test_image_paths_are_confined_to_the_uploads_folder(string $input, string $module, string $expected): void
     {
-        $this->assertSame($expected, (new ImportImagePathNormalizer())->normalize($input, $module));
+        $this->assertSame($expected, (new ImportImagePathNormalizer)->normalize($input, $module));
     }
 
     public static function imagePathProvider(): array
@@ -61,7 +61,7 @@ class ImportServicesTest extends TestCase
 
     public function test_gallery_cells_split_on_pipe_and_semicolon_and_deduplicate(): void
     {
-        $paths = (new ImportImagePathNormalizer())->galleryPaths('a.jpg|b.jpg;a.jpg| ');
+        $paths = (new ImportImagePathNormalizer)->galleryPaths('a.jpg|b.jpg;a.jpg| ');
 
         $this->assertSame([
             'uploads/products/import/a.jpg',
@@ -124,7 +124,7 @@ class ImportServicesTest extends TestCase
         $path = tempnam(sys_get_temp_dir(), 'imp').'.csv';
         file_put_contents($path, "\xEF\xBB\xBFname,mrp\nPesticide,500\n\n");
 
-        $rows = (new SpreadsheetImportReader())->rows($path, 'csv');
+        $rows = (new SpreadsheetImportReader)->rows($path, 'csv');
         unlink($path);
 
         $this->assertSame([['name', 'mrp'], ['Pesticide', '500']], $rows, 'Blank lines are dropped and the BOM stripped.');
@@ -132,7 +132,7 @@ class ImportServicesTest extends TestCase
 
     public function test_sample_headers_put_the_friendly_columns_first(): void
     {
-        $headers = (new ImportSampleBuilder())->headers('products', [
+        $headers = (new ImportSampleBuilder)->headers('products', [
             'fields' => [['name' => 'sku'], ['name' => 'name'], ['type' => 'section_heading']],
         ]);
 
@@ -144,7 +144,7 @@ class ImportServicesTest extends TestCase
 
     public function test_the_sample_row_lines_up_with_its_headers(): void
     {
-        $builder = new ImportSampleBuilder();
+        $builder = new ImportSampleBuilder;
         $headers = ['sku', 'name', 'unknown_column'];
 
         $row = $builder->row('products', $headers);

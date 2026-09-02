@@ -18,8 +18,7 @@ final class OrderCheckoutMapper implements OrderCheckoutMapperContract
             'state' => $checkoutData['state'] ?? null,
             'pincode' => $checkoutData['pincode'] ?? null,
             'payment_method' => $checkoutData['payment_method'] ?? null,
-            'payment_status' =>
-                $checkoutData['payment_status'] ?? 'pending',
+            'payment_status' => $checkoutData['payment_status'] ?? 'pending',
         ];
     }
 }

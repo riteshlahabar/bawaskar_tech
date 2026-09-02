@@ -12,9 +12,7 @@ use App\Models\Storefront\StorefrontSectionProduct;
 
 final class ProductImportMedia implements ProductImportMediaContract
 {
-    public function __construct(private readonly ImportImagePathContract $paths)
-    {
-    }
+    public function __construct(private readonly ImportImagePathContract $paths) {}
 
     public function syncPrimaryImage(Product $product, string $path): void
     {

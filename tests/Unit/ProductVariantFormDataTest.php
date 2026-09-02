@@ -54,7 +54,7 @@ class ProductVariantFormDataTest extends TestCase
             'dealer_price' => 480,
             'customer_price' => 550,
         ]);
-        $product->setRelation('variants', new Collection());
+        $product->setRelation('variants', new Collection);
 
         $rows = $this->service()->rowsFor($product);
 

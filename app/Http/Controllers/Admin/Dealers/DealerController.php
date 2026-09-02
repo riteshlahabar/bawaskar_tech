@@ -11,9 +11,13 @@ use Illuminate\Http\Request;
 class DealerController extends PeopleModuleController
 {
     protected string $moduleKey = 'dealers';
+
     protected string $role = User::ROLE_DEALER;
+
     protected string $profileRelation = 'dealerProfile';
+
     protected string $profileModel = DealerProfile::class;
+
     protected array $profileFields = ['salesman_id', 'dealer_code', 'firm_name', 'gst_number', 'credit_limit', 'outstanding_balance'];
 
     public function approve(Request $request, int|string $id): RedirectResponse
@@ -28,6 +32,7 @@ class DealerController extends PeopleModuleController
             'approved_at' => now(),
             'approved_by' => auth()->id(),
         ]);
+
         return back()->with('success', 'Dealer approved and assigned successfully.');
     }
 }

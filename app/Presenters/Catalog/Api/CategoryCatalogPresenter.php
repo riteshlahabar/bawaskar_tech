@@ -9,30 +9,24 @@ use App\Models\Catalog\Category;
  * SRP:
  * Category API response mapping only.
  */
-final class CategoryCatalogPresenter
-    implements CategoryCatalogPresenterContract
+final class CategoryCatalogPresenter implements CategoryCatalogPresenterContract
 {
     public function present(
         Category $category
     ): array {
         return [
-            'id' =>
-                $category->id,
+            'id' => $category->id,
 
-            'name' =>
-                $category->storefront_name,
+            'name' => $category->storefront_name,
 
-            'slug' =>
-                $category->slug,
+            'slug' => $category->slug,
 
-            'image_url' =>
-                $category->storefront_image_url,
+            'image_url' => $category->storefront_image_url,
 
-            'products_count' =>
-                (int) (
-                    $category->products_count
-                    ?? 0
-                ),
+            'products_count' => (int) (
+                $category->products_count
+                ?? 0
+            ),
         ];
     }
 }

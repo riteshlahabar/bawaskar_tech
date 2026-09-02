@@ -23,8 +23,7 @@ final class ProductWorkflowService implements ProductWorkflowContract
         private readonly ProductMediaContract $media,
         private readonly ProductTranslationContract $translations,
         private readonly ProductSkuContract $sku,
-    ) {
-    }
+    ) {}
 
     public function save(ProductSaveData $data, ?Product $product = null): Product
     {

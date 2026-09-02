@@ -16,8 +16,7 @@ final class StorefrontProductController extends Controller
         private readonly StorefrontSessionContextContract $session,
         private readonly StorefrontCatalogContract $catalog,
         private readonly StorefrontPageRendererContract $pages
-    ) {
-    }
+    ) {}
 
     public function show(Request $request, Product $product): View
     {

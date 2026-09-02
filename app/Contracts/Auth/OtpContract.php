@@ -14,8 +14,8 @@ interface OtpContract
     /**
      * Issues a code and stores its hash.
      *
-     * @return array{code: string, debug_code: string|null}  debug_code is null
-     *                                                       in production.
+     * @return array{code: string, debug_code: string|null} debug_code is null
+     *                                                      in production.
      */
     public function issue(string $mobile, string $purpose): array;
 

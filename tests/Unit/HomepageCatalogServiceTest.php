@@ -35,19 +35,19 @@ class HomepageCatalogServiceTest extends TestCase
         $item->id = 11;
         $section->setRelation('items', collect([$item]));
 
-        $category = new Category();
+        $category = new Category;
         $category->id = 12;
 
-        $product = new Product();
+        $product = new Product;
         $product->id = 13;
 
-        $repository = new class($section, $category, $product) implements HomepageCatalogRepositoryContract {
+        $repository = new class($section, $category, $product) implements HomepageCatalogRepositoryContract
+        {
             public function __construct(
                 private readonly ProductHomepageSection $section,
                 private readonly Category $category,
                 private readonly Product $product
-            ) {
-            }
+            ) {}
 
             public function activeSections(): Collection
             {
@@ -78,21 +78,24 @@ class HomepageCatalogServiceTest extends TestCase
             }
         };
 
-        $categoryPresenter = new class implements CategoryCatalogPresenterContract {
+        $categoryPresenter = new class implements CategoryCatalogPresenterContract
+        {
             public function present(Category $category): array
             {
                 return ['id' => $category->id];
             }
         };
 
-        $productPresenter = new class implements ProductCatalogPresenterContract {
+        $productPresenter = new class implements ProductCatalogPresenterContract
+        {
             public function present(Product $product): array
             {
                 return ['id' => $product->id];
             }
         };
 
-        $homepagePresenter = new class implements HomepageCatalogPresenterContract {
+        $homepagePresenter = new class implements HomepageCatalogPresenterContract
+        {
             public function item(ProductHomepageSectionItem $item): array
             {
                 return ['id' => $item->id];

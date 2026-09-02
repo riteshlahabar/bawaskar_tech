@@ -25,30 +25,66 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (! $has('homepage_title')) $table->string('homepage_title')->nullable();
-            if (! $has('homepage_subtitle')) $table->string('homepage_subtitle')->nullable();
-            if (! $has('homepage_description')) $table->text('homepage_description')->nullable();
+            if (! $has('homepage_title')) {
+                $table->string('homepage_title')->nullable();
+            }
+            if (! $has('homepage_subtitle')) {
+                $table->string('homepage_subtitle')->nullable();
+            }
+            if (! $has('homepage_description')) {
+                $table->text('homepage_description')->nullable();
+            }
 
-            if (! $has('homepage_image_path')) $table->string('homepage_image_path')->nullable();
-            if (! $has('homepage_mobile_image_path')) $table->string('homepage_mobile_image_path')->nullable();
-            if (! $has('homepage_logo_image_path')) $table->string('homepage_logo_image_path')->nullable();
-            if (! $has('homepage_offer_image_path')) $table->string('homepage_offer_image_path')->nullable();
+            if (! $has('homepage_image_path')) {
+                $table->string('homepage_image_path')->nullable();
+            }
+            if (! $has('homepage_mobile_image_path')) {
+                $table->string('homepage_mobile_image_path')->nullable();
+            }
+            if (! $has('homepage_logo_image_path')) {
+                $table->string('homepage_logo_image_path')->nullable();
+            }
+            if (! $has('homepage_offer_image_path')) {
+                $table->string('homepage_offer_image_path')->nullable();
+            }
 
-            if (! $has('homepage_highlight_text')) $table->string('homepage_highlight_text')->nullable();
-            if (! $has('homepage_discount_text')) $table->string('homepage_discount_text')->nullable();
-            if (! $has('homepage_validity_text')) $table->string('homepage_validity_text')->nullable();
-            if (! $has('homepage_coupon_code')) $table->string('homepage_coupon_code', 80)->nullable();
+            if (! $has('homepage_highlight_text')) {
+                $table->string('homepage_highlight_text')->nullable();
+            }
+            if (! $has('homepage_discount_text')) {
+                $table->string('homepage_discount_text')->nullable();
+            }
+            if (! $has('homepage_validity_text')) {
+                $table->string('homepage_validity_text')->nullable();
+            }
+            if (! $has('homepage_coupon_code')) {
+                $table->string('homepage_coupon_code', 80)->nullable();
+            }
 
-            if (! $has('homepage_button_text')) $table->string('homepage_button_text')->nullable();
-            if (! $has('homepage_button_url')) $table->string('homepage_button_url')->nullable();
+            if (! $has('homepage_button_text')) {
+                $table->string('homepage_button_text')->nullable();
+            }
+            if (! $has('homepage_button_url')) {
+                $table->string('homepage_button_url')->nullable();
+            }
 
-            if (! $has('homepage_icon_key')) $table->string('homepage_icon_key')->nullable();
-            if (! $has('homepage_slot')) $table->string('homepage_slot', 80)->nullable();
+            if (! $has('homepage_icon_key')) {
+                $table->string('homepage_icon_key')->nullable();
+            }
+            if (! $has('homepage_slot')) {
+                $table->string('homepage_slot', 80)->nullable();
+            }
 
-            if (! $has('homepage_background_color')) $table->string('homepage_background_color', 30)->nullable();
-            if (! $has('homepage_text_color')) $table->string('homepage_text_color', 30)->nullable();
+            if (! $has('homepage_background_color')) {
+                $table->string('homepage_background_color', 30)->nullable();
+            }
+            if (! $has('homepage_text_color')) {
+                $table->string('homepage_text_color', 30)->nullable();
+            }
 
-            if (! $has('homepage_sort_order')) $table->unsignedInteger('homepage_sort_order')->default(0)->index();
+            if (! $has('homepage_sort_order')) {
+                $table->unsignedInteger('homepage_sort_order')->default(0)->index();
+            }
         });
 
         if (Schema::hasTable('product_homepage_sections') && Schema::hasColumn('products', 'homepage_section_id')) {
@@ -85,7 +121,9 @@ return new class extends Migration
             $columns = Schema::getColumnListing('products');
             $has = fn (string $column): bool => in_array($column, $columns, true);
 
-            if ($has('homepage_section_id')) $table->dropConstrainedForeignId('homepage_section_id');
+            if ($has('homepage_section_id')) {
+                $table->dropConstrainedForeignId('homepage_section_id');
+            }
 
             foreach ([
                 'homepage_title',

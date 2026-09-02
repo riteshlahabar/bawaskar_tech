@@ -13,8 +13,7 @@ final class StorefrontOrderContextService implements StorefrontOrderContextContr
     public function __construct(
         private readonly StorefrontOrderRepositoryContract $orders,
         private readonly StorefrontSessionContextContract $session
-    ) {
-    }
+    ) {}
 
     public function context(Request $request, ?User $user): array
     {

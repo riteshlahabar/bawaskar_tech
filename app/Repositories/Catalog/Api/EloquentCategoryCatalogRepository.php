@@ -10,8 +10,7 @@ use Illuminate\Support\Collection;
  * SRP:
  * Category Catalog database queries only.
  */
-final class EloquentCategoryCatalogRepository
-    implements CategoryCatalogRepositoryContract
+final class EloquentCategoryCatalogRepository implements CategoryCatalogRepositoryContract
 {
     public function activeForCatalog(
         string $locale,
@@ -19,17 +18,15 @@ final class EloquentCategoryCatalogRepository
     ): Collection {
         return Category::query()
             ->with([
-                'translations' => fn ($query) =>
-                    $query->where(
-                        'locale',
-                        $locale
-                    ),
+                'translations' => fn ($query) => $query->where(
+                    'locale',
+                    $locale
+                ),
             ])
             ->withCount([
-                'products' => fn ($query) =>
-                    $query->visibleFor(
-                        $audience
-                    ),
+                'products' => fn ($query) => $query->visibleFor(
+                    $audience
+                ),
             ])
             ->where(
                 'is_active',

@@ -15,8 +15,7 @@ class StorefrontWishlistController extends Controller
     public function __construct(
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontWishlistContract $wishlist
-    ) {
-    }
+    ) {}
 
     public function add(Request $request): JsonResponse|RedirectResponse
     {
@@ -77,6 +76,7 @@ class StorefrontWishlistController extends Controller
             app()->setLocale($locale);
         }
     }
+
     private function wishlistProduct(int $productId): Product
     {
         return Product::query()
@@ -120,5 +120,3 @@ class StorefrontWishlistController extends Controller
         return back()->with('success', $message);
     }
 }
-
-

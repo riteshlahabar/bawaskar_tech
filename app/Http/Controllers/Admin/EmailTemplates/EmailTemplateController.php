@@ -19,6 +19,7 @@ class EmailTemplateController extends Controller
     public function show(string $template): View
     {
         abort_unless(in_array($template, config('storefront.email_templates', []), true), 404);
+
         return view('emails.fastkart.'.$template, [
             'recipientName' => 'Customer', 'orderNumber' => 'CO-DEMO-1001',
             'resetUrl' => route('store.page', ['page' => 'forgot']),

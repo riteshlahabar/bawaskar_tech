@@ -15,8 +15,7 @@ final class ProductCatalogService implements ProductCatalogContract
         private readonly ProductCatalogRepositoryContract $products,
         private readonly ProductCatalogPresenterContract $presenter,
         private readonly CatalogCacheContract $cache
-    ) {
-    }
+    ) {}
 
     public function products(ProductCatalogFilters $filters, bool $fresh): array
     {

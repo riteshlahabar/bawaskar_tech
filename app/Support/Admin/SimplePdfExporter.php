@@ -61,7 +61,7 @@ class SimplePdfExporter
             $pageRefs[] = $pageNumber.' 0 R';
             $objects[$pageNumber - 1] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 '.$fontObjectNumber.' 0 R >> >> /Contents '.$streamNumber.' 0 R >>';
             $stream = self::pageStream($page, $index + 1, count($pages));
-            $objects[$streamNumber - 1] = '<< /Length '.strlen($stream).' >>' . "\nstream\n" . $stream . "\nendstream";
+            $objects[$streamNumber - 1] = '<< /Length '.strlen($stream).' >>'."\nstream\n".$stream."\nendstream";
         }
 
         $objects[1] = '<< /Type /Pages /Kids ['.implode(' ', $pageRefs).'] /Count '.count($pageRefs).' >>';

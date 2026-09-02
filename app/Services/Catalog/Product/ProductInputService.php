@@ -16,8 +16,7 @@ final class ProductInputService implements ProductInputContract
     public function __construct(
         private readonly PublicUploadContract $uploads,
         private readonly ProductTranslationContract $translations,
-    ) {
-    }
+    ) {}
 
     public function make(array $prepared, array $input, array $files, array $module): ProductSaveData
     {
@@ -97,6 +96,7 @@ final class ProductInputService implements ProductInputContract
             }
             $stock[$stockKey] = blank($value) ? null : $value;
         }
+
         return $stock;
     }
 
@@ -119,10 +119,17 @@ final class ProductInputService implements ProductInputContract
             $sectionTypes = array_values(array_filter((array) ($field['show_for_section_types'] ?? [])));
             $layoutTypes = array_values(array_filter((array) ($field['show_for_layout_types'] ?? [])));
             $keep = $section !== null;
-            if ($keep && $sectionTypes !== []) $keep = in_array($sectionType, $sectionTypes, true);
-            if ($keep && $layoutTypes !== []) $keep = in_array($layoutType, $layoutTypes, true);
-            if (! $keep) $data[$fieldName] = null;
+            if ($keep && $sectionTypes !== []) {
+                $keep = in_array($sectionType, $sectionTypes, true);
+            }
+            if ($keep && $layoutTypes !== []) {
+                $keep = in_array($layoutType, $layoutTypes, true);
+            }
+            if (! $keep) {
+                $data[$fieldName] = null;
+            }
         }
+
         return $data;
     }
 }

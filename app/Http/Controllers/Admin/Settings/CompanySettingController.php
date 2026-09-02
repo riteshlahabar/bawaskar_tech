@@ -14,7 +14,7 @@ class CompanySettingController extends Controller
     public function edit(): View
     {
         return view('admin.settings.company', [
-            'setting' => CompanySetting::query()->first() ?: new CompanySetting(),
+            'setting' => CompanySetting::query()->first() ?: new CompanySetting,
             'pageTitle' => 'Seller / Company Information',
             'breadcrumbs' => ['Admin', 'System', 'Seller / Company Information'],
         ]);
@@ -44,7 +44,7 @@ class CompanySettingController extends Controller
         ]);
 
         unset($validated['logo']);
-        $setting = CompanySetting::query()->first() ?: new CompanySetting();
+        $setting = CompanySetting::query()->first() ?: new CompanySetting;
 
         if ($request->hasFile('logo')) {
             $directory = public_path('uploads/company');

@@ -6,17 +6,18 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Brands\BrandController;
 use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Collections\CollectionController;
-use App\Http\Controllers\Admin\Customers\CustomerController;
 use App\Http\Controllers\Admin\Couriers\CourierController;
+use App\Http\Controllers\Admin\Customers\CustomerController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\Dealers\DealerController;
 use App\Http\Controllers\Admin\DealerVisits\DealerVisitController;
 use App\Http\Controllers\Admin\Dispatches\DispatchController;
-use App\Http\Controllers\Admin\Expenses\ExpenseController;
 use App\Http\Controllers\Admin\EmailTemplates\EmailTemplateController;
-use App\Http\Controllers\Admin\InternalExpenses\InternalExpenseController;
-use App\Http\Controllers\Admin\ExpenseSubcategories\ExpenseSubcategoryController;
 use App\Http\Controllers\Admin\ExpenseCategories\ExpenseCategoryController;
+use App\Http\Controllers\Admin\Expenses\ExpenseController;
+use App\Http\Controllers\Admin\ExpenseSubcategories\ExpenseSubcategoryController;
+use App\Http\Controllers\Admin\Imports\CommonImportController;
+use App\Http\Controllers\Admin\InternalExpenses\InternalExpenseController;
 use App\Http\Controllers\Admin\Inventory\InventoryController;
 use App\Http\Controllers\Admin\Invoices\InvoiceController;
 use App\Http\Controllers\Admin\Languages\LanguageController;
@@ -26,29 +27,26 @@ use App\Http\Controllers\Admin\Orders\OrderController;
 use App\Http\Controllers\Admin\Outstanding\OutstandingController;
 use App\Http\Controllers\Admin\Payments\PaymentController;
 use App\Http\Controllers\Admin\Pricing\PricingController;
-use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
+use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
+use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
+use App\Http\Controllers\Admin\ProductRelatedProducts\ProductRelatedProductController;
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Admin\Products\ProductImageController;
 use App\Http\Controllers\Admin\Products\ProductTranslationController;
-use App\Http\Controllers\Admin\ProductHomepageSections\ProductHomepageSectionController;
-use App\Http\Controllers\Admin\ProductHomepageSectionItems\ProductHomepageSectionItemController;
 use App\Http\Controllers\Admin\ProductTypes\ProductTypeController;
+use App\Http\Controllers\Admin\ProformaInvoices\ProformaInvoiceController;
 use App\Http\Controllers\Admin\Reports\ReportController;
 use App\Http\Controllers\Admin\Returns\ReturnController;
 use App\Http\Controllers\Admin\Salary\SalaryController;
-use App\Http\Controllers\Admin\Settings\CompanySettingController;
 use App\Http\Controllers\Admin\SalesDocuments\SalesDocumentController;
 use App\Http\Controllers\Admin\Salesmen\SalesmanController;
+use App\Http\Controllers\Admin\Settings\CompanySettingController;
 use App\Http\Controllers\Admin\Support\SupportController;
 use App\Http\Controllers\Admin\Targets\TargetController;
 use App\Http\Controllers\Admin\TourPlans\TourPlanController;
 use App\Http\Controllers\Admin\Translations\TranslationController;
 use App\Http\Controllers\Admin\Units\UnitController;
 use App\Http\Controllers\Admin\Warehouses\WarehouseController;
-use App\Http\Controllers\Admin\Imports\CommonImportController;
-use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
-use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
-use App\Http\Controllers\Admin\ProductRelatedProducts\ProductRelatedProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -65,14 +63,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('dashboard/hrms', [DashboardController::class, 'hrms'])->name('dashboard.hrms');
 
         $resources = [
-            'dealers'=>DealerController::class,'customers'=>CustomerController::class,'salesmen'=>SalesmanController::class,'couriers'=>CourierController::class,
-            'products'=>ProductController::class,'product-related-products'=>ProductRelatedProductController::class,'product-types'=>ProductTypeController::class,'categories'=>CategoryController::class,'brands'=>BrandController::class,'units'=>UnitController::class,'pricing'=>PricingController::class,'inventory'=>InventoryController::class,'warehouses'=>WarehouseController::class,'homepage-settings'=>ProductHomepageSettingController::class,'homepage-setting-items'=>ProductHomepageSettingItemController::class,
-            'orders'=>OrderController::class,'proforma-invoices'=>ProformaInvoiceController::class,'invoices'=>InvoiceController::class,'dispatches'=>DispatchController::class,'returns'=>ReturnController::class,
-            'payments'=>PaymentController::class,'collections'=>CollectionController::class,'outstanding'=>OutstandingController::class,
-            'internal-expenses'=>InternalExpenseController::class,'expense-categories'=>ExpenseCategoryController::class,'expense-subcategories'=>ExpenseSubcategoryController::class,
-            'attendance'=>AttendanceController::class,'dealer-visits'=>DealerVisitController::class,'tour-plans'=>TourPlanController::class,
-            'expenses'=>ExpenseController::class,'leaves'=>LeaveController::class,'salary'=>SalaryController::class,'targets'=>TargetController::class,'assets'=>AssetController::class,
-            'notifications'=>NotificationController::class,'languages'=>LanguageController::class,'translations'=>TranslationController::class,'support'=>SupportController::class,
+            'dealers' => DealerController::class, 'customers' => CustomerController::class, 'salesmen' => SalesmanController::class, 'couriers' => CourierController::class,
+            'products' => ProductController::class, 'product-related-products' => ProductRelatedProductController::class, 'product-types' => ProductTypeController::class, 'categories' => CategoryController::class, 'brands' => BrandController::class, 'units' => UnitController::class, 'pricing' => PricingController::class, 'inventory' => InventoryController::class, 'warehouses' => WarehouseController::class, 'homepage-settings' => ProductHomepageSettingController::class, 'homepage-setting-items' => ProductHomepageSettingItemController::class,
+            'orders' => OrderController::class, 'proforma-invoices' => ProformaInvoiceController::class, 'invoices' => InvoiceController::class, 'dispatches' => DispatchController::class, 'returns' => ReturnController::class,
+            'payments' => PaymentController::class, 'collections' => CollectionController::class, 'outstanding' => OutstandingController::class,
+            'internal-expenses' => InternalExpenseController::class, 'expense-categories' => ExpenseCategoryController::class, 'expense-subcategories' => ExpenseSubcategoryController::class,
+            'attendance' => AttendanceController::class, 'dealer-visits' => DealerVisitController::class, 'tour-plans' => TourPlanController::class,
+            'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
+            'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
@@ -101,4 +99,3 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');
     });
 });
-

@@ -15,23 +15,23 @@ class StorefrontOrderContextServiceTest extends TestCase
 {
     public function test_requested_order_keeps_precedence_over_last_and_latest_orders(): void
     {
-        $recent = new Order();
+        $recent = new Order;
         $recent->id = 1;
-        $last = new Order();
+        $last = new Order;
         $last->id = 10;
-        $tracked = new Order();
+        $tracked = new Order;
         $tracked->id = 11;
-        $latest = new Order();
+        $latest = new Order;
         $latest->id = 12;
 
-        $orders = new class($recent, $last, $tracked, $latest) implements StorefrontOrderRepositoryContract {
+        $orders = new class($recent, $last, $tracked, $latest) implements StorefrontOrderRepositoryContract
+        {
             public function __construct(
                 private readonly Order $recent,
                 private readonly Order $last,
                 private readonly Order $tracked,
                 private readonly Order $latestOrder
-            ) {
-            }
+            ) {}
 
             public function recent(User $user): Collection
             {
@@ -54,7 +54,8 @@ class StorefrontOrderContextServiceTest extends TestCase
             }
         };
 
-        $session = new class implements StorefrontSessionContextContract {
+        $session = new class implements StorefrontSessionContextContract
+        {
             public function user(Request $request): ?User
             {
                 return null;
@@ -81,7 +82,7 @@ class StorefrontOrderContextServiceTest extends TestCase
             }
         };
 
-        $user = new User();
+        $user = new User;
         $user->id = 7;
         $request = Request::create('/order-tracking', 'GET', ['order' => 'SO-11']);
         $result = (new StorefrontOrderContextService($orders, $session))->context($request, $user);

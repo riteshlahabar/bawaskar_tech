@@ -25,9 +25,7 @@ abstract class AdminModuleController extends Controller
 
     protected string $moduleKey;
 
-    public function __construct(protected readonly AdminModuleServices $modules)
-    {
-    }
+    public function __construct(protected readonly AdminModuleServices $modules) {}
 
     public function index(Request $request): View
     {

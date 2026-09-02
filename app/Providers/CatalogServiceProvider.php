@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Contracts\Catalog\Api\CatalogCacheContract;
 use App\Contracts\Catalog\Api\CatalogAudienceContract;
+use App\Contracts\Catalog\Api\CatalogCacheContract;
 use App\Contracts\Catalog\Api\CategoryCatalogContract;
 use App\Contracts\Catalog\Api\HomepageCatalogContract;
 use App\Contracts\Catalog\Api\Presenters\CategoryCatalogPresenterContract;
@@ -33,8 +33,7 @@ use Illuminate\Support\ServiceProvider;
 /**
  * Catalog module dependency registrations.
  */
-final class CatalogServiceProvider
-    extends ServiceProvider
+final class CatalogServiceProvider extends ServiceProvider
 {
     public function register(): void
     {

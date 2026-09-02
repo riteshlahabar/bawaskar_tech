@@ -17,8 +17,7 @@ class StorefrontCartController extends Controller
     public function __construct(
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontCartContract $cart
-    ) {
-    }
+    ) {}
 
     public function add(Request $request): JsonResponse|RedirectResponse
     {
@@ -101,6 +100,7 @@ class StorefrontCartController extends Controller
             app()->setLocale($locale);
         }
     }
+
     private function guestRedirectResponse(Request $request): JsonResponse|RedirectResponse|null
     {
         $user = $this->identity->user($request);
@@ -183,5 +183,3 @@ class StorefrontCartController extends Controller
         return back()->with('success', $message);
     }
 }
-
-

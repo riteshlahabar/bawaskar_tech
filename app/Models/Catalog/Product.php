@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Casts\KeyValueRows;
 use App\Models\Inventory\InventoryBatch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -91,7 +92,7 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'additional_info' => \App\Casts\KeyValueRows::class,
+        'additional_info' => KeyValueRows::class,
         'gst_percent' => 'decimal:2',
         'mrp' => 'decimal:2',
         'customer_price' => 'decimal:2',

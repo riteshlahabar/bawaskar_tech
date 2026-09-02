@@ -15,8 +15,7 @@ final class ProductVariantService implements ProductVariantContract
         private readonly ProductStockContract $stock,
         private readonly ProductVariantUnitContract $units,
         private readonly ProductVariantProjectionContract $projection,
-    ) {
-    }
+    ) {}
 
     public function sync(Product $product, array $variants): void
     {
@@ -68,6 +67,7 @@ final class ProductVariantService implements ProductVariantContract
         $product->variants()->when($keptIds !== [], fn ($query) => $query->whereNotIn('id', $keptIds))->update(['is_active' => false, 'is_default' => false]);
         if ($keptIds === []) {
             $product->variants()->update(['is_active' => false, 'is_default' => false]);
+
             return;
         }
 

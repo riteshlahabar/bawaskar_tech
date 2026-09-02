@@ -11,6 +11,7 @@ final class EloquentProductRepository implements ProductRepositoryContract
     {
         if ($product) {
             $product->fill($data)->save();
+
             return $product;
         }
 

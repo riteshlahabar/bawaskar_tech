@@ -31,7 +31,7 @@ class ApiAuthMiddlewareTest extends TestCase
 
     public function test_a_customer_token_is_refused_on_a_dealer_route(): void
     {
-        $response = (new AuthenticateApiToken(new ApiTokenGuard()))->handle(
+        $response = (new AuthenticateApiToken(new ApiTokenGuard))->handle(
             $this->requestFor($this->user(User::ROLE_CUSTOMER)),
             fn () => response('should not be reached'),
             User::ROLE_DEALER,
@@ -43,7 +43,7 @@ class ApiAuthMiddlewareTest extends TestCase
 
     public function test_a_request_without_a_token_is_refused(): void
     {
-        $response = (new AuthenticateApiToken(new ApiTokenGuard()))->handle(
+        $response = (new AuthenticateApiToken(new ApiTokenGuard))->handle(
             $this->requestFor(null),
             fn () => response('should not be reached'),
             User::ROLE_DEALER,
@@ -57,7 +57,7 @@ class ApiAuthMiddlewareTest extends TestCase
         $dealer = $this->user(User::ROLE_DEALER);
         $seen = null;
 
-        (new AuthenticateApiToken(new ApiTokenGuard()))->handle(
+        (new AuthenticateApiToken(new ApiTokenGuard))->handle(
             $this->requestFor($dealer),
             function (Request $request) use (&$seen) {
                 $seen = $request->user();

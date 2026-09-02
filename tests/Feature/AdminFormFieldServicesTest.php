@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Contracts\Admin\FormFieldTreeContract;
 use App\Contracts\Admin\FormFieldViewContract;
+use Illuminate\Support\ViewErrorBag;
 use Tests\TestCase;
 
 class AdminFormFieldServicesTest extends TestCase
@@ -48,7 +49,7 @@ class AdminFormFieldServicesTest extends TestCase
     {
         // Normally shared by the web middleware; supplied here because the
         // partial is rendered outside a request.
-        view()->share('errors', new \Illuminate\Support\ViewErrorBag());
+        view()->share('errors', new ViewErrorBag);
 
         return view('admin.shared.fields.field', [
             'field' => $field,

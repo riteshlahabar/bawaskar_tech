@@ -16,9 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AuthenticateApiToken
 {
-    public function __construct(private readonly ApiTokenGuardContract $guard)
-    {
-    }
+    public function __construct(private readonly ApiTokenGuardContract $guard) {}
 
     public function handle(Request $request, Closure $next, ?string $role = null): Response
     {

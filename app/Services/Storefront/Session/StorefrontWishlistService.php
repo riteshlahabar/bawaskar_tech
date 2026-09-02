@@ -16,8 +16,7 @@ final class StorefrontWishlistService implements StorefrontWishlistContract
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontSessionProductRepositoryContract $products,
         private readonly StorefrontSessionProductRulesContract $rules
-    ) {
-    }
+    ) {}
 
     public function add(Request $request, Product $product): void
     {

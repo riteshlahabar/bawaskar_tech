@@ -13,6 +13,5 @@ final readonly class ProductSaveData
         public array $translations,
         public array $variants,
         public array $media,
-    ) {
-    }
+    ) {}
 }

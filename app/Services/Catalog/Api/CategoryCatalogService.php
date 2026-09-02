@@ -16,15 +16,13 @@ use App\Models\Catalog\Category;
  * Does not know Eloquent, Cache facade,
  * or concrete presenter implementation.
  */
-final class CategoryCatalogService
-    implements CategoryCatalogContract
+final class CategoryCatalogService implements CategoryCatalogContract
 {
     public function __construct(
         private readonly CategoryCatalogRepositoryContract $categories,
         private readonly CategoryCatalogPresenterContract $presenter,
         private readonly CatalogCacheContract $cache
-    ) {
-    }
+    ) {}
 
     public function categories(
         string $locale,
@@ -41,23 +39,21 @@ final class CategoryCatalogService
         return $this->cache->remember(
             $cacheKey,
             $fresh,
-            fn (): array =>
-                $this->categories
-                    ->activeForCatalog(
-                        $locale,
-                        $audience
-                    )
-                    ->map(
-                        fn (
-                            Category $category
-                        ): array =>
-                            $this->presenter
-                                ->present(
-                                    $category
-                                )
-                    )
-                    ->values()
-                    ->all()
+            fn (): array => $this->categories
+                ->activeForCatalog(
+                    $locale,
+                    $audience
+                )
+                ->map(
+                    fn (
+                        Category $category
+                    ): array => $this->presenter
+                        ->present(
+                            $category
+                        )
+                )
+                ->values()
+                ->all()
         );
     }
 }

@@ -12,9 +12,7 @@ use Illuminate\Support\Str;
 
 final class ProductImportMasters implements ProductImportMastersContract
 {
-    public function __construct(private readonly ImportRowReaderContract $reader)
-    {
-    }
+    public function __construct(private readonly ImportRowReaderContract $reader) {}
 
     public function ensure(array $row): void
     {

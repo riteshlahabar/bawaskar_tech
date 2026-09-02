@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Dealer;
 
+use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Order;
 use App\Models\User;
-use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

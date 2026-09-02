@@ -326,8 +326,7 @@ return new class extends Migration
         }
 
         foreach (
-            ['variant_name', 'pack_quantity', 'units_per_case']
-            as $column
+            ['variant_name', 'pack_quantity', 'units_per_case'] as $column
         ) {
             if (Schema::hasColumn('order_items', $column)) {
                 Schema::table(
@@ -414,8 +413,7 @@ return new class extends Migration
         }
 
         foreach (
-            ['benefits', 'usage_instructions', 'crop_information']
-            as $column
+            ['benefits', 'usage_instructions', 'crop_information'] as $column
         ) {
             if (Schema::hasColumn('products', $column)) {
                 Schema::table(

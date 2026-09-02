@@ -12,9 +12,7 @@ use Illuminate\Support\Str;
 
 final class DealerAuthController extends AuthApiController
 {
-    public function __construct(private readonly OtpContract $otp)
-    {
-    }
+    public function __construct(private readonly OtpContract $otp) {}
 
     public function verifyOtp(Request $request): JsonResponse
     {

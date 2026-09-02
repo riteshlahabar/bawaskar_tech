@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Cache;
  * SRP:
  * Laravel-specific Catalog cache implementation only.
  */
-final class LaravelCatalogCache
-    implements CatalogCacheContract
+final class LaravelCatalogCache implements CatalogCacheContract
 {
     public function version(): int
     {

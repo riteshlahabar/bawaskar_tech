@@ -11,9 +11,9 @@ namespace App\Contracts\Admin;
 interface FormFieldViewContract
 {
     /**
-     * @return array{view: string, wrap: bool}|null  Null when the type has no
-     *                                               custom partial and the
-     *                                               standard control is used.
+     * @return array{view: string, wrap: bool}|null Null when the type has no
+     *                                              custom partial and the
+     *                                              standard control is used.
      */
     public function resolve(string $type): ?array;
 }

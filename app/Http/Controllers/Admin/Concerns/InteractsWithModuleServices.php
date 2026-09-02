@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Concerns;
 
+use App\Support\Admin\Modules\AdminModuleServices;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
  * `rules`, `prepareData`, `persist`, `formData` or `formOptions` and call back
  * into the version here, so the behaviour they extend stays in one place.
  *
- * @property-read \App\Support\Admin\Modules\AdminModuleServices $modules
+ * @property-read AdminModuleServices $modules
  */
 trait InteractsWithModuleServices
 {

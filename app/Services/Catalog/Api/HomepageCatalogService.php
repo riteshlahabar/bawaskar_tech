@@ -21,8 +21,7 @@ final class HomepageCatalogService implements HomepageCatalogContract
         private readonly CategoryCatalogPresenterContract $categories,
         private readonly ProductCatalogPresenterContract $products,
         private readonly HomepageCatalogPresenterContract $presenter
-    ) {
-    }
+    ) {}
 
     public function homepage(string $audience): array
     {

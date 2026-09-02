@@ -15,7 +15,8 @@ class StorefrontIdentitySessionServiceTest extends TestCase
 {
     public function test_role_change_preserves_existing_session_cleanup_behavior(): void
     {
-        $repository = new class implements StorefrontSessionUserRepositoryContract {
+        $repository = new class implements StorefrontSessionUserRepositoryContract
+        {
             public function find(int $userId, string $role): ?User
             {
                 return null;
@@ -28,7 +29,7 @@ class StorefrontIdentitySessionServiceTest extends TestCase
         $request->session()->put(StorefrontSessionKeys::WISHLIST, [1]);
         $request->session()->put(StorefrontSessionKeys::LAST_ORDER_ID, 99);
 
-        $dealer = new User();
+        $dealer = new User;
         $dealer->id = 8;
         $dealer->role = User::ROLE_DEALER;
 

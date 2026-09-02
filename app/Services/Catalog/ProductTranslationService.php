@@ -17,8 +17,7 @@ use App\Models\Catalog\Product;
  * DIP:
  * Depends only on focused contracts.
  */
-class ProductTranslationService
-    implements ProductTranslationServiceContract
+class ProductTranslationService implements ProductTranslationServiceContract
 {
     private const LOCALES = [
         'hi',
@@ -31,8 +30,7 @@ class ProductTranslationService
     public function __construct(
         private readonly TextTranslatorContract $translator,
         private readonly ProductTranslationRepositoryContract $repository
-    ) {
-    }
+    ) {}
 
     public function translatePayload(
         string $name,

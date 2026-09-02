@@ -13,8 +13,7 @@ final class StorefrontCatalogService implements StorefrontCatalogContract
 {
     public function __construct(
         private readonly StorefrontCatalogRepositoryContract $catalog
-    ) {
-    }
+    ) {}
 
     public function categories(string $audience): Collection
     {

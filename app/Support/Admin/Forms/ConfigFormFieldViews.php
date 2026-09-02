@@ -7,9 +7,7 @@ use Illuminate\Contracts\Config\Repository;
 
 final class ConfigFormFieldViews implements FormFieldViewContract
 {
-    public function __construct(private readonly Repository $config)
-    {
-    }
+    public function __construct(private readonly Repository $config) {}
 
     public function resolve(string $type): ?array
     {

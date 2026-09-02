@@ -13,21 +13,21 @@ class StorefrontNavigationServiceTest extends TestCase
 {
     public function test_navigation_keeps_existing_product_type_and_featured_fallback_shape(): void
     {
-        $category = new Category();
+        $category = new Category;
         $category->id = 1;
-        $type = new Product();
+        $type = new Product;
         $type->product_type = 'medicine';
         $type->products_count = 4;
-        $fallback = new Product();
+        $fallback = new Product;
         $fallback->id = 5;
 
-        $repository = new class($category, $type, $fallback) implements StorefrontNavigationRepositoryContract {
+        $repository = new class($category, $type, $fallback) implements StorefrontNavigationRepositoryContract
+        {
             public function __construct(
                 private readonly Category $category,
                 private readonly Product $type,
                 private readonly Product $fallback
-            ) {
-            }
+            ) {}
 
             public function categories(string $audience): Collection
             {

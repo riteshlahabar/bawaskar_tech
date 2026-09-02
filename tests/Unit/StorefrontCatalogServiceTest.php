@@ -16,21 +16,21 @@ class StorefrontCatalogServiceTest extends TestCase
 {
     public function test_product_page_workflow_uses_repository_fallbacks_without_changing_view_keys(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 1;
-        $related = new Product();
+        $related = new Product;
         $related->id = 2;
-        $trending = new Product();
+        $trending = new Product;
         $trending->id = 3;
-        $company = new CompanySetting();
+        $company = new CompanySetting;
 
-        $repository = new class($related, $trending, $company) implements StorefrontCatalogRepositoryContract {
+        $repository = new class($related, $trending, $company) implements StorefrontCatalogRepositoryContract
+        {
             public function __construct(
                 private readonly Product $related,
                 private readonly Product $trending,
                 private readonly CompanySetting $company
-            ) {
-            }
+            ) {}
 
             public function categories(string $audience, int $limit): Collection
             {

@@ -18,7 +18,7 @@ class StorefrontCartSummaryServiceTest extends TestCase
 {
     public function test_dealer_case_pricing_and_checkout_quantities_are_preserved(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 1;
         $product->gst_percent = 18;
 
@@ -34,26 +34,20 @@ class StorefrontCartSummaryServiceTest extends TestCase
         $variant->setRelation('product', $product);
         $product->setRelation('variants', collect([$variant]));
 
-        $storage = new class implements StorefrontCartStorageContract {
+        $storage = new class implements StorefrontCartStorageContract
+        {
             public function add(
                 Request $request,
                 Product $product,
                 float $quantity,
                 ?ProductVariant $variant = null
-            ): void {
-            }
+            ): void {}
 
-            public function update(Request $request, array $items): void
-            {
-            }
+            public function update(Request $request, array $items): void {}
 
-            public function remove(Request $request, string $lineKey): void
-            {
-            }
+            public function remove(Request $request, string $lineKey): void {}
 
-            public function clear(Request $request): void
-            {
-            }
+            public function clear(Request $request): void {}
 
             public function cart(Request $request): array
             {
@@ -67,7 +61,8 @@ class StorefrontCartSummaryServiceTest extends TestCase
             }
         };
 
-        $identity = new class implements StorefrontIdentitySessionContract {
+        $identity = new class implements StorefrontIdentitySessionContract
+        {
             public function user(Request $request): ?User
             {
                 return null;
@@ -78,19 +73,14 @@ class StorefrontCartSummaryServiceTest extends TestCase
                 return 'dealer';
             }
 
-            public function login(Request $request, User $user): void
-            {
-            }
+            public function login(Request $request, User $user): void {}
 
-            public function logout(Request $request): void
-            {
-            }
+            public function logout(Request $request): void {}
         };
 
-        $products = new class($product) implements StorefrontSessionProductRepositoryContract {
-            public function __construct(private readonly Product $product)
-            {
-            }
+        $products = new class($product) implements StorefrontSessionProductRepositoryContract
+        {
+            public function __construct(private readonly Product $product) {}
 
             public function visibleByIds(string $audience, array $productIds): Collection
             {
@@ -102,7 +92,7 @@ class StorefrontCartSummaryServiceTest extends TestCase
             $storage,
             $identity,
             $products,
-            new StorefrontSessionProductRules()
+            new StorefrontSessionProductRules
         );
         $request = Request::create('/cart');
         $summary = $service->summary($request);

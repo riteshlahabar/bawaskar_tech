@@ -11,8 +11,7 @@ final class StorefrontLanguageService implements StorefrontLanguageContract
 {
     public function __construct(
         private readonly StorefrontLanguageRepositoryContract $languages
-    ) {
-    }
+    ) {}
 
     public function data(Request $request): array
     {

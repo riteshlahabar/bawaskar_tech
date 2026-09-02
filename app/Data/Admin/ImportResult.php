@@ -13,8 +13,7 @@ final class ImportResult
         public readonly int $updated = 0,
         public readonly int $failed = 0,
         public readonly ?string $firstError = null,
-    ) {
-    }
+    ) {}
 
     public function summary(): string
     {

@@ -11,8 +11,7 @@ final class StorefrontIdentitySessionService implements StorefrontIdentitySessio
 {
     public function __construct(
         private readonly StorefrontSessionUserRepositoryContract $users
-    ) {
-    }
+    ) {}
 
     public function user(Request $request): ?User
     {

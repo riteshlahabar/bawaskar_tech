@@ -12,13 +12,12 @@ use Illuminate\Http\Request;
 /** SRP: HTTP endpoints for product image deletion only. */
 final class ProductImageController extends Controller
 {
-    public function __construct(private readonly ProductImageContract $images)
-    {
-    }
+    public function __construct(private readonly ProductImageContract $images) {}
 
     public function destroy(Product $product, ProductImage $image): JsonResponse
     {
         $this->images->destroyGalleryImage($product, $image);
+
         return response()->json(['message' => 'Image deleted permanently.']);
     }
 

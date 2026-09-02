@@ -15,8 +15,7 @@ final class OrderLineBuilderService implements OrderLineBuilderContract
         private readonly OrderLineQuantityContract $quantities,
         private readonly OrderPricingContract $pricing,
         private readonly StockAvailabilityContract $stock
-    ) {
-    }
+    ) {}
 
     public function build(string $orderType, array $items): array
     {
@@ -45,8 +44,7 @@ final class OrderLineBuilderService implements OrderLineBuilderContract
                     'variant' => $resolved->variant,
                     'quantity' => 0.0,
                     'pack_quantity' => 0.0,
-                    'units_per_case' =>
-                        (float) $normalized['units_per_case'],
+                    'units_per_case' => (float) $normalized['units_per_case'],
                 ];
             }
 
@@ -85,8 +83,7 @@ final class OrderLineBuilderService implements OrderLineBuilderContract
                     (float) $requestLine['pack_quantity'],
                     3
                 ),
-                'units_per_case' =>
-                    (float) $requestLine['units_per_case'],
+                'units_per_case' => (float) $requestLine['units_per_case'],
                 ...$price,
             ];
         }

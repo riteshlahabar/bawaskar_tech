@@ -9,9 +9,7 @@ use Illuminate\Support\Str;
 
 final class ModuleInput implements ModuleInputContract
 {
-    public function __construct(private readonly PublicUploadContract $uploads)
-    {
-    }
+    public function __construct(private readonly PublicUploadContract $uploads) {}
 
     public function prepare(array $validated, Request $request, array $module): array
     {
@@ -26,6 +24,15 @@ final class ModuleInput implements ModuleInputContract
 
             if ($type === 'checkbox') {
                 $validated[$name] = $request->boolean($name);
+            }
+
+            // A blank optional field arrives as null, but plenty of columns are
+            // NOT NULL with a database default, so writing the null explicitly
+            // fails the insert. Fall back to the default the config declares.
+            if (array_key_exists('default', $field)
+                && array_key_exists($name, $validated)
+                && $validated[$name] === null) {
+                $validated[$name] = $field['default'];
             }
 
             // An empty password field means "keep the current one".

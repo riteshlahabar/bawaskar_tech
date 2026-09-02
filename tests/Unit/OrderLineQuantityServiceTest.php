@@ -15,7 +15,7 @@ class OrderLineQuantityServiceTest extends TestCase
         ]);
 
         $result =
-            (new OrderLineQuantityService())
+            (new OrderLineQuantityService)
                 ->normalize(
                     'customer',
                     ['quantity' => 1],
@@ -40,7 +40,7 @@ class OrderLineQuantityServiceTest extends TestCase
         ]);
 
         $result =
-            (new OrderLineQuantityService())
+            (new OrderLineQuantityService)
                 ->normalize(
                     'dealer',
                     ['quantity' => 1],
@@ -65,7 +65,7 @@ class OrderLineQuantityServiceTest extends TestCase
         ]);
 
         $result =
-            (new OrderLineQuantityService())
+            (new OrderLineQuantityService)
                 ->normalize(
                     'dealer',
                     [

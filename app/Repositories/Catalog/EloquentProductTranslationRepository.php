@@ -9,8 +9,7 @@ use App\Models\Catalog\ProductTranslation;
  * SRP:
  * Contains ProductTranslation database operations only.
  */
-class EloquentProductTranslationRepository
-    implements ProductTranslationRepositoryContract
+class EloquentProductTranslationRepository implements ProductTranslationRepositoryContract
 {
     public function getByProductId(int $productId): array
     {

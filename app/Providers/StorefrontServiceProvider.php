@@ -30,12 +30,6 @@ use App\Repositories\Storefront\EloquentStorefrontNavigationRepository;
 use App\Repositories\Storefront\EloquentStorefrontOrderRepository;
 use App\Repositories\Storefront\Session\EloquentStorefrontSessionProductRepository;
 use App\Repositories\Storefront\Session\EloquentStorefrontSessionUserRepository;
-use App\Services\Storefront\StorefrontCatalogService;
-use App\Services\Storefront\StorefrontHomepageService;
-use App\Services\Storefront\StorefrontLanguageService;
-use App\Services\Storefront\StorefrontNavigationService;
-use App\Services\Storefront\StorefrontOrderContextService;
-use App\Services\Storefront\StorefrontPageRenderer;
 use App\Services\Storefront\Session\StorefrontCartService;
 use App\Services\Storefront\Session\StorefrontCartStorageService;
 use App\Services\Storefront\Session\StorefrontCartSummaryService;
@@ -44,6 +38,12 @@ use App\Services\Storefront\Session\StorefrontOrderSessionService;
 use App\Services\Storefront\Session\StorefrontSessionProductRules;
 use App\Services\Storefront\Session\StorefrontSessionService;
 use App\Services\Storefront\Session\StorefrontWishlistService;
+use App\Services\Storefront\StorefrontCatalogService;
+use App\Services\Storefront\StorefrontHomepageService;
+use App\Services\Storefront\StorefrontLanguageService;
+use App\Services\Storefront\StorefrontNavigationService;
+use App\Services\Storefront\StorefrontOrderContextService;
+use App\Services\Storefront\StorefrontPageRenderer;
 use Illuminate\Support\ServiceProvider;
 
 final class StorefrontServiceProvider extends ServiceProvider

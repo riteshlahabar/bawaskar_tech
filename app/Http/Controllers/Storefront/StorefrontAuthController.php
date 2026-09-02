@@ -16,8 +16,7 @@ class StorefrontAuthController extends Controller
 {
     public function __construct(
         private readonly StorefrontIdentitySessionContract $identity
-    ) {
-    }
+    ) {}
 
     public function login(Request $request): RedirectResponse
     {

@@ -10,8 +10,7 @@ final readonly class ProductCatalogFilters
         public string $search,
         public int $page,
         public int $perPage
-    ) {
-    }
+    ) {}
 
     public function cachePayload(): array
     {

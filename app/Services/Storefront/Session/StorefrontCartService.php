@@ -14,8 +14,7 @@ final class StorefrontCartService implements StorefrontCartContract
     public function __construct(
         private readonly StorefrontCartStorageContract $storage,
         private readonly StorefrontCartSummaryContract $summaries
-    ) {
-    }
+    ) {}
 
     public function add(
         Request $request,

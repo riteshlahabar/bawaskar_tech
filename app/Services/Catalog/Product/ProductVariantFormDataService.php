@@ -10,9 +10,7 @@ use Illuminate\Support\Collection;
 
 final class ProductVariantFormDataService implements ProductVariantFormDataContract
 {
-    public function __construct(private readonly ProductVariantUnitContract $units)
-    {
-    }
+    public function __construct(private readonly ProductVariantUnitContract $units) {}
 
     public function rowsFor(Product $product): array
     {

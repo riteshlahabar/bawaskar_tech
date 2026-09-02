@@ -8,7 +8,7 @@ namespace App\Contracts\Admin\Imports;
 interface ImportFileReaderContract
 {
     /**
-     * @return array<int, array<int, string|null>>  First row is the header row.
+     * @return array<int, array<int, string|null>> First row is the header row.
      */
     public function rows(string $path, string $extension): array;
 }

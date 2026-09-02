@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 /** SRP: HTTP endpoint for product auto-translation only. */
 final class ProductTranslationController extends Controller
 {
-    public function __construct(private readonly ProductTranslationContract $translations)
-    {
-    }
+    public function __construct(private readonly ProductTranslationContract $translations) {}
 
     public function store(Request $request): JsonResponse
     {

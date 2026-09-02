@@ -9,9 +9,7 @@ use App\Models\Catalog\ProductImage;
 
 final class ProductImageService implements ProductImageContract
 {
-    public function __construct(private readonly PublicUploadContract $uploads)
-    {
-    }
+    public function __construct(private readonly PublicUploadContract $uploads) {}
 
     public function sync(Product $product, ?string $primaryImagePath, array $galleryPaths, array $removeGalleryIds): void
     {
@@ -64,6 +62,7 @@ final class ProductImageService implements ProductImageContract
         $primary = $product->relationLoaded('images')
             ? $product->images->firstWhere('is_primary', true)
             : $product->images()->where('is_primary', true)->first();
+
         return ['primary_image' => $primary?->path, 'primary_image_id' => $primary?->getKey()];
     }
 }

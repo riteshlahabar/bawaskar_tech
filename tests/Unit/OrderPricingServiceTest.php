@@ -22,7 +22,7 @@ class OrderPricingServiceTest extends TestCase
             'dealer_price' => 118,
         ]);
 
-        $result = (new OrderPricingService())->calculate(
+        $result = (new OrderPricingService)->calculate(
             'customer',
             $product,
             $variant,
@@ -42,7 +42,7 @@ class OrderPricingServiceTest extends TestCase
             'dealer_price' => 90,
         ]);
 
-        $result = (new OrderPricingService())->calculate(
+        $result = (new OrderPricingService)->calculate(
             'customer',
             $product,
             null,

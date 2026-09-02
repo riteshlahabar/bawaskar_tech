@@ -11,7 +11,8 @@ class ProductTranslationServiceTest extends TestCase
 {
     public function test_translation_service_uses_replaceable_contracts(): void
     {
-        $translator = new class implements TextTranslatorContract {
+        $translator = new class implements TextTranslatorContract
+        {
             public function translate(
                 string $text,
                 string $sourceLocale,
@@ -21,7 +22,8 @@ class ProductTranslationServiceTest extends TestCase
             }
         };
 
-        $repository = new class implements ProductTranslationRepositoryContract {
+        $repository = new class implements ProductTranslationRepositoryContract
+        {
             public array $rows = [];
 
             public function getByProductId(int $productId): array
@@ -72,7 +74,8 @@ class ProductTranslationServiceTest extends TestCase
 
     public function test_translation_input_is_extracted_from_product_data(): void
     {
-        $translator = new class implements TextTranslatorContract {
+        $translator = new class implements TextTranslatorContract
+        {
             public function translate(
                 string $text,
                 string $sourceLocale,
@@ -82,7 +85,8 @@ class ProductTranslationServiceTest extends TestCase
             }
         };
 
-        $repository = new class implements ProductTranslationRepositoryContract {
+        $repository = new class implements ProductTranslationRepositoryContract
+        {
             public function getByProductId(int $productId): array
             {
                 return [];
@@ -91,16 +95,14 @@ class ProductTranslationServiceTest extends TestCase
             public function deleteLocale(
                 int $productId,
                 string $locale
-            ): void {
-            }
+            ): void {}
 
             public function upsert(
                 int $productId,
                 string $locale,
                 string $name,
                 ?string $description
-            ): void {
-            }
+            ): void {}
         };
 
         $service = new ProductTranslationService(

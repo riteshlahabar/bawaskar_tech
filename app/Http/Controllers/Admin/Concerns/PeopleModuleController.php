@@ -11,8 +11,11 @@ use Illuminate\Support\Str;
 abstract class PeopleModuleController extends AdminModuleController
 {
     protected string $role;
+
     protected string $profileRelation;
+
     protected string $profileModel;
+
     protected array $profileFields = [];
 
     protected function recordsQuery(array $module): Builder
@@ -28,18 +31,25 @@ abstract class PeopleModuleController extends AdminModuleController
             $profileId = $record->{$relationName}?->getKey();
             if ($profileId) {
                 foreach ($this->profileFields as $field) {
-                    if (! isset($rules[$field])) continue;
+                    if (! isset($rules[$field])) {
+                        continue;
+                    }
                     $rules[$field] = array_map(static function ($rule) use ($profileId) {
                         if (is_string($rule) && str_starts_with($rule, 'unique:')) {
                             $parts = explode(',', $rule);
-                            if (count($parts) >= 3) $parts[2] = (string) $profileId;
+                            if (count($parts) >= 3) {
+                                $parts[2] = (string) $profileId;
+                            }
+
                             return implode(',', $parts);
                         }
+
                         return $rule;
                     }, $rules[$field]);
                 }
             }
         }
+
         return $rules;
     }
 
@@ -48,7 +58,10 @@ abstract class PeopleModuleController extends AdminModuleController
         return DB::transaction(function () use ($data, $record): Model {
             $profile = [];
             foreach ($this->profileFields as $field) {
-                if (array_key_exists($field, $data)) { $profile[$field] = $data[$field]; unset($data[$field]); }
+                if (array_key_exists($field, $data)) {
+                    $profile[$field] = $data[$field];
+                    unset($data[$field]);
+                }
             }
             $data['role'] = $this->role;
             if (! $record) {
@@ -62,6 +75,7 @@ abstract class PeopleModuleController extends AdminModuleController
                 $profile['user_id'] = $record->id;
                 $this->profileModel::query()->updateOrCreate(['user_id' => $record->id], $profile);
             }
+
             return $record->fresh($this->profileRelation);
         });
     }
@@ -69,7 +83,10 @@ abstract class PeopleModuleController extends AdminModuleController
     protected function formData(Model $record, array $module): array
     {
         $data = parent::formData($record, $module);
-        foreach ($this->profileFields as $field) $data[$field] = data_get($record, $this->profileRelation.'.'.$field);
+        foreach ($this->profileFields as $field) {
+            $data[$field] = data_get($record, $this->profileRelation.'.'.$field);
+        }
+
         return $data;
     }
 }

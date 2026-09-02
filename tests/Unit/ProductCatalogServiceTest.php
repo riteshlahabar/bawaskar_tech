@@ -17,13 +17,12 @@ class ProductCatalogServiceTest extends TestCase
 {
     public function test_service_preserves_pagination_payload_and_cache_identity(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 42;
 
-        $repository = new class($product) implements ProductCatalogRepositoryContract {
-            public function __construct(private readonly Product $product)
-            {
-            }
+        $repository = new class($product) implements ProductCatalogRepositoryContract
+        {
+            public function __construct(private readonly Product $product) {}
 
             public function paginate(ProductCatalogFilters $filters): LengthAwarePaginatorContract
             {
@@ -31,14 +30,16 @@ class ProductCatalogServiceTest extends TestCase
             }
         };
 
-        $presenter = new class implements ProductCatalogPresenterContract {
+        $presenter = new class implements ProductCatalogPresenterContract
+        {
             public function present(Product $product): array
             {
                 return ['id' => $product->id];
             }
         };
 
-        $cache = new class implements CatalogCacheContract {
+        $cache = new class implements CatalogCacheContract
+        {
             public string $key = '';
 
             public bool $fresh = false;

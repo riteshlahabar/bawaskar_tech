@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Storefront;
 
-use App\Http\Controllers\Controller;
-use App\Models\Address;
-use App\Models\User;
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Contracts\Storefront\Session\StorefrontCartContract;
 use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
 use App\Contracts\Storefront\Session\StorefrontOrderSessionContract;
+use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -19,8 +19,7 @@ class StorefrontCheckoutController extends Controller
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontCartContract $cart,
         private readonly StorefrontOrderSessionContract $orderSession
-    ) {
-    }
+    ) {}
 
     public function placeOrder(
         Request $request,

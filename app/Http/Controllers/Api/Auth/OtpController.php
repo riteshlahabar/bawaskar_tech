@@ -9,9 +9,7 @@ use Illuminate\Validation\Rule;
 
 final class OtpController extends AuthApiController
 {
-    public function __construct(private readonly OtpContract $otp)
-    {
-    }
+    public function __construct(private readonly OtpContract $otp) {}
 
     public function request(Request $request): JsonResponse
     {

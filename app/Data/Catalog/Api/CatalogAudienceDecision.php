@@ -9,6 +9,5 @@ final readonly class CatalogAudienceDecision
         public bool $allowed = true,
         public ?string $message = null,
         public int $status = 200
-    ) {
-    }
+    ) {}
 }

@@ -33,8 +33,11 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_SALESMAN = 'salesman';
+
     public const ROLE_DEALER = 'dealer';
+
     public const ROLE_CUSTOMER = 'customer';
 
     protected function casts(): array

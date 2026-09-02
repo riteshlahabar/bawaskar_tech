@@ -10,7 +10,7 @@ class CatalogAudienceServiceTest extends TestCase
 {
     public function test_audience_rules_match_existing_catalog_access_behavior(): void
     {
-        $service = new CatalogAudienceService();
+        $service = new CatalogAudienceService;
 
         $guestHomepage = $service->forHomepage(null, 'dealer');
         $this->assertFalse($guestHomepage->allowed);

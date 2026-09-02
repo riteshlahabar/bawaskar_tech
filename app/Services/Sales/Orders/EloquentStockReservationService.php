@@ -27,10 +27,8 @@ final class EloquentStockReservationService implements StockReservationContract
                 ->where('product_id', $lineItem['product_id'])
                 ->when(
                     $lineItem['product_variant_id'] ?? null,
-                    fn ($query, $variantId) =>
-                        $query->where('product_variant_id', $variantId),
-                    fn ($query) =>
-                        $query->whereNull('product_variant_id')
+                    fn ($query, $variantId) => $query->where('product_variant_id', $variantId),
+                    fn ($query) => $query->whereNull('product_variant_id')
                 )
                 ->where(function ($query): void {
                     $query->whereNull('expiry_date')

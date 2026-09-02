@@ -32,10 +32,12 @@ class LoginController extends Controller
         $user = $request->user();
         if (! $user || $user->role !== User::ROLE_ADMIN || $user->status !== 'active') {
             Auth::logout();
+
             return back()->withErrors(['email' => 'This account is not authorized for the admin panel.']);
         }
 
         $user->forceFill(['last_login_at' => now()])->save();
+
         return redirect()->intended(route('admin.dashboard'));
     }
 
@@ -44,6 +46,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('admin.login')->with('success', 'You have been logged out.');
     }
 }

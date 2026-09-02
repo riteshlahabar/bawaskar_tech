@@ -11,13 +11,11 @@ use Illuminate\Http\Request;
  * SRP:
  * Handles HTTP request/response only.
  */
-final class CategoryCatalogController
-    extends ApiController
+final class CategoryCatalogController extends ApiController
 {
     public function __construct(
         private readonly CategoryCatalogContract $catalog
-    ) {
-    }
+    ) {}
 
     public function index(
         Request $request
@@ -39,15 +37,14 @@ final class CategoryCatalogController
                 : 'customer';
 
         return $this->success([
-            'categories' =>
-                $this->catalog
-                    ->categories(
-                        $locale,
-                        $audience,
-                        $request->boolean(
-                            'fresh'
-                        )
-                    ),
+            'categories' => $this->catalog
+                ->categories(
+                    $locale,
+                    $audience,
+                    $request->boolean(
+                        'fresh'
+                    )
+                ),
         ]);
     }
 }

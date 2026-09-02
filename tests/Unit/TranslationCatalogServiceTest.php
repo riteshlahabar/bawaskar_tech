@@ -13,14 +13,16 @@ class TranslationCatalogServiceTest extends TestCase
 {
     public function test_service_uses_locale_specific_cache_and_repository(): void
     {
-        $repository = new class implements TranslationCatalogRepositoryContract {
+        $repository = new class implements TranslationCatalogRepositoryContract
+        {
             public function activeForLocale(string $locale): Collection
             {
                 return collect(['welcome' => $locale.' value']);
             }
         };
 
-        $cache = new class implements CatalogCacheContract {
+        $cache = new class implements CatalogCacheContract
+        {
             public string $key = '';
 
             public bool $fresh = true;

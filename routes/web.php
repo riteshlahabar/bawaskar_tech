@@ -33,4 +33,3 @@ Route::post('/wishlist/toggle', [StorefrontWishlistController::class, 'toggle'])
 Route::post('/checkout/place-order', [StorefrontCheckoutController::class, 'placeOrder'])->name('store.checkout.place-order');
 
 Route::get('/{page}', [StorefrontPageController::class, 'show'])->name('store.page');
-

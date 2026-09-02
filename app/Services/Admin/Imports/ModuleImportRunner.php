@@ -26,8 +26,7 @@ final class ModuleImportRunner implements ImportRunnerContract
         private readonly ImportImagePathContract $paths,
         private readonly ProductImportMastersContract $masters,
         private readonly ProductImportMediaContract $media,
-    ) {
-    }
+    ) {}
 
     public function run(string $module, array $moduleConfig, array $headers, array $rows, array $forcedValues = []): ImportResult
     {
@@ -61,7 +60,7 @@ final class ModuleImportRunner implements ImportRunnerContract
     }
 
     /**
-     * @return array<string, mixed>|null  Null for a blank line.
+     * @return array<string, mixed>|null Null for a blank line.
      */
     private function combine(array $headers, array $values): ?array
     {
@@ -78,7 +77,7 @@ final class ModuleImportRunner implements ImportRunnerContract
     /**
      * @param  array<int, string>  $fields
      * @param  array<string, mixed>  $row
-     * @return bool  True when a new record was created.
+     * @return bool True when a new record was created.
      */
     private function importRow(string $module, string $model, array $fields, array $row): bool
     {

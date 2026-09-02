@@ -17,8 +17,7 @@ final class StorefrontSessionService implements StorefrontSessionContextContract
         private readonly StorefrontCartContract $cart,
         private readonly StorefrontWishlistContract $wishlist,
         private readonly StorefrontOrderSessionContract $orders
-    ) {
-    }
+    ) {}
 
     public function user(Request $request): ?User
     {

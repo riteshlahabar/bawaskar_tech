@@ -47,7 +47,7 @@ class ApiTokenGuardTest extends TestCase
     #[DataProvider('roleProvider')]
     public function test_a_token_only_opens_its_own_role(string $tokenRole, string $routeRole, bool $allowed): void
     {
-        $resolved = (new ApiTokenGuard())->resolve($this->requestFor($this->user($tokenRole)), $routeRole);
+        $resolved = (new ApiTokenGuard)->resolve($this->requestFor($this->user($tokenRole)), $routeRole);
 
         $this->assertSame($allowed, $resolved instanceof User);
     }
@@ -69,7 +69,7 @@ class ApiTokenGuardTest extends TestCase
     #[DataProvider('statusProvider')]
     public function test_only_an_active_account_is_accepted(string $status, bool $allowed): void
     {
-        $resolved = (new ApiTokenGuard())->resolve($this->requestFor($this->user('dealer', $status)), 'dealer');
+        $resolved = (new ApiTokenGuard)->resolve($this->requestFor($this->user('dealer', $status)), 'dealer');
 
         $this->assertSame($allowed, $resolved instanceof User);
     }
@@ -85,11 +85,11 @@ class ApiTokenGuardTest extends TestCase
 
     public function test_no_token_is_rejected(): void
     {
-        $this->assertNull((new ApiTokenGuard())->resolve($this->requestFor(null), 'dealer'));
+        $this->assertNull((new ApiTokenGuard)->resolve($this->requestFor(null), 'dealer'));
     }
 
     public function test_the_guard_contract_is_what_the_middleware_depends_on(): void
     {
-        $this->assertInstanceOf(ApiTokenGuardContract::class, new ApiTokenGuard());
+        $this->assertInstanceOf(ApiTokenGuardContract::class, new ApiTokenGuard);
     }
 }

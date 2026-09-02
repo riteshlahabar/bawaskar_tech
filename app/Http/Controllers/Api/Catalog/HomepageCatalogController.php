@@ -13,8 +13,7 @@ final class HomepageCatalogController extends ApiController
     public function __construct(
         private readonly HomepageCatalogContract $catalog,
         private readonly CatalogAudienceContract $audiences
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {

@@ -11,8 +11,7 @@ final class StorefrontHomepageService implements StorefrontHomepageContract
 {
     public function __construct(
         private readonly StorefrontHomepageRepositoryContract $homepage
-    ) {
-    }
+    ) {}
 
     public function content(string $audience): array
     {

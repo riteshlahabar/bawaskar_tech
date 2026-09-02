@@ -24,8 +24,7 @@ final class ImportRowMapper implements ImportRowMapperContract
     public function __construct(
         private readonly ImportRowReaderContract $reader,
         private readonly ImportImagePathContract $paths,
-    ) {
-    }
+    ) {}
 
     public function map(array $row, array $fields, string $module): array
     {

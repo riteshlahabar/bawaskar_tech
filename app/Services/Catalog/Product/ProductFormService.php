@@ -19,8 +19,7 @@ final class ProductFormService implements ProductFormContract
         private readonly ProductVariantFormDataContract $variants,
         private readonly ProductMediaContract $media,
         private readonly ProductVariantUnitContract $units,
-    ) {
-    }
+    ) {}
 
     public function augmentData(Product $product, array $data): array
     {

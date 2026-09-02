@@ -15,9 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 
 final class ImportRelationResolver implements ImportRelationResolverContract
 {
-    public function __construct(private readonly ImportRowReaderContract $reader)
-    {
-    }
+    public function __construct(private readonly ImportRowReaderContract $reader) {}
 
     public function resolve(array $data, array $row, string $module): array
     {

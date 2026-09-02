@@ -17,8 +17,7 @@ final class StorefrontCartSummaryService implements StorefrontCartSummaryContrac
         private readonly StorefrontIdentitySessionContract $identity,
         private readonly StorefrontSessionProductRepositoryContract $products,
         private readonly StorefrontSessionProductRulesContract $rules
-    ) {
-    }
+    ) {}
 
     public function summary(Request $request): array
     {
@@ -35,12 +34,14 @@ final class StorefrontCartSummaryService implements StorefrontCartSummaryContrac
             $product = $products->get((int) $entry['product_id']);
             if (! $product) {
                 $hasIssues = true;
+
                 continue;
             }
 
             $variant = $this->rules->variantForEntry($product, $entry);
             if (! empty($entry['variant_id']) && ! $variant) {
                 $hasIssues = true;
+
                 continue;
             }
 

@@ -6,7 +6,35 @@ on:
       - main
 
 jobs:
+  # Nothing reaches the server unless the suite passes first.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Check for known vulnerabilities
+        run: composer audit --no-interaction
+
+      - name: Check code style
+        run: vendor/bin/pint --test
+
+      - name: Run tests
+        run: php artisan test
+
   deploy:
+    name: Deploy
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -18,8 +46,29 @@ jobs:
           key: ${{ secrets.CPANEL_SSH_KEY }}
           passphrase: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
           port: ${{ secrets.CPANEL_PORT }}
-          script: |    
+          script: |
+            set -e
             cd ${{ secrets.PROJECT_PATH }}
+
+            # vendor/ is not in git, so without this step a dependency or
+            # security update never reaches production.
+            COMPOSER=$(command -v composer || echo /opt/cpanel/composer/bin/composer)
+            if [ ! -x "$COMPOSER" ]; then
+              echo "composer not found on the server - aborting before touching the app"
+              exit 1
+            fi
+
+            php artisan down --render="errors::503" --retry=15 || true
+
             git fetch origin main
             git reset --hard origin/main
+
+            "$COMPOSER" install --no-dev --optimize-autoloader --no-interaction --no-progress
+            php artisan migrate --force
+
             php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            php artisan up

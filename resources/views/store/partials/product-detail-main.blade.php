@@ -121,7 +121,10 @@
                     </div>
                 </div>
 
-                @php($additionalInformation = collect($product->additional_info ?? [])->filter(fn (array $row): bool => filled($row['label'] ?? null) || filled($row['value'] ?? null)))
+                @php
+                    $additionalInformation = collect($product->additional_info ?? [])
+                        ->filter(fn (array $row): bool => filled($row['label'] ?? null) || filled($row['value'] ?? null));
+                @endphp
 
                 <div class="col-12">
                     <div class="product-section-box">

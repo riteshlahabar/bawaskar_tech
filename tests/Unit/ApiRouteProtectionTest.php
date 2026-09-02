@@ -44,6 +44,65 @@ class ApiRouteProtectionTest extends TestCase
     }
 
     /**
+     * A route referencing a class that is not imported still registers fine and
+     * only blows up when it is hit, so every route's controller and action is
+     * checked here instead.
+     */
+    public function test_every_route_points_at_a_controller_action_that_exists(): void
+    {
+        $broken = [];
+
+        foreach (Route::getRoutes() as $route) {
+            $action = $route->getActionName();
+
+            if ($action === 'Closure' || ! str_contains($action, '@')) {
+                continue;
+            }
+
+            [$class, $method] = explode('@', $action, 2);
+
+            if (! class_exists($class) || ! method_exists($class, $method)) {
+                $broken[] = $route->uri().' -> '.$action;
+            }
+        }
+
+        $this->assertSame([], $broken, "These routes point at missing code:\n".implode("\n", $broken));
+    }
+
+    /**
+     * Every module controller is built by the container, so a constructor or
+     * binding mistake would only surface when someone opens that page. Around
+     * forty admin controllers share one base class, which makes this the check
+     * that a change to that base did not break any of them.
+     */
+    public function test_every_route_controller_can_be_built_by_the_container(): void
+    {
+        $failures = [];
+
+        foreach (Route::getRoutes() as $route) {
+            $action = $route->getActionName();
+
+            if ($action === 'Closure' || ! str_contains($action, '@')) {
+                continue;
+            }
+
+            $class = explode('@', $action, 2)[0];
+
+            if (isset($failures[$class]) || ! class_exists($class)) {
+                continue;
+            }
+
+            try {
+                app($class);
+            } catch (\Throwable $e) {
+                $failures[$class] = $class.': '.$e->getMessage();
+            }
+        }
+
+        $this->assertSame([], array_values($failures), "These controllers cannot be resolved:\n".implode("\n", $failures));
+    }
+
+    /**
      * Putting the token middleware on the login endpoints would lock everyone
      * out: you cannot present a token before you have one.
      */

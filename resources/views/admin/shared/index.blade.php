@@ -219,6 +219,3 @@
     <div class="modal fade" id="salaryModal"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.salary.generate') }}">@csrf<div class="modal-header"><h5>Generate Monthly Salary</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-6"><label>Year</label><input class="form-control" type="number" name="salary_year" value="{{ now()->year }}" required></div><div class="col-6"><label>Month</label><select class="form-select" name="salary_month">@foreach(range(1, 12) as $m)<option value="{{ $m }}" @selected($m === now()->month)>{{ DateTime::createFromFormat('!m', $m)->format('F') }}</option>@endforeach</select></div></div></div><div class="modal-footer"><button class="btn btn-success">Generate</button></div></form></div></div>
 @endif
 @endsection
-@push('scripts')
-    <script src="{{ asset('admin-module-js/shared/table-toolbar.js') }}"></script>
-@endpush

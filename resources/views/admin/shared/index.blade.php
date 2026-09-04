@@ -115,6 +115,14 @@
                                                 <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
                                             @endif
 
+                                            @if($module['key'] === 'products')
+                                                <div class="dropdown-divider"></div>
+                                                @foreach(['is_top_selling' => 'Top Selling', 'is_deal_timer_product' => 'Timer Deal', 'is_active' => 'Status'] as $flagKey => $flagLabel)
+                                                    @php($flagValue = (bool) data_get($record, $flagKey))
+                                                    <span class="dropdown-item-text admin-row-action-flag"><span>{{ $flagLabel }}</span><span class="badge {{ $flagValue ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">{{ $flagValue ? 'Active' : 'Inactive' }}</span></span>
+                                                @endforeach
+                                            @endif
+
                                             @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-success" type="button" data-bs-toggle="modal" data-bs-target="#approveDealer{{ $record->id }}"><i class="iconoir-check-circle"></i><span>Approve Dealer</span></button>

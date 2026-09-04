@@ -735,6 +735,24 @@ input[type="file"].form-control::file-selector-button {
 .admin-row-action-menu .dropdown-divider {
     margin: 6px 0;
 }
+
+/* Read-only flag rows inside the row action dropdown (products list). */
+.admin-row-action-menu .admin-row-action-flag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+.admin-row-action-menu .admin-row-action-flag .badge {
+    font-size: 11px;
+    font-weight: 600;
+}
 /* Keep one-row admin tables tall enough for action dropdowns and show row count controls. */
 .admin-table-responsive {
     min-height: 320px;

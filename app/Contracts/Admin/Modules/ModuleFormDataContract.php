@@ -37,4 +37,13 @@ interface ModuleFormDataContract
      * @return array<string, array<mixed>>
      */
     public function optionAttributes(array $module): array;
+
+    /**
+     * Choices for the listing toolbar's configured filters, keyed by filter
+     * name. Only filters that declare `options` or an `option_model` appear.
+     *
+     * @param  array<string, mixed>  $module
+     * @return array<string, array<mixed>>
+     */
+    public function filterOptions(array $module): array;
 }

@@ -144,6 +144,9 @@ return [
 
         'products' => [
             'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'productType', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active,
+            'filters' => [
+                ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title'],
+            ],
             'columns' => [['key' => 'images.0.path', 'label' => 'Image', 'type' => 'image'], ['key' => 'sku', 'label' => 'SKU'], ['key' => 'name', 'label' => 'Product'], ['key' => 'productType.name', 'label' => 'Product Type'], ['key' => 'category.name', 'label' => 'Category'], ['key' => 'brand.name', 'label' => 'Brand'], ['key' => 'homepageSection.title', 'label' => 'Section Title'], ['key' => 'unit.short_name', 'label' => 'Unit'], ['key' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'money'], ['key' => 'customer_price', 'label' => 'Customer Price', 'type' => 'money'], ['key' => 'is_top_selling', 'label' => 'Top Selling', 'type' => 'boolean'], ['key' => 'is_deal_timer_product', 'label' => 'Timer Deal', 'type' => 'boolean'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
             'fields' => [
                 ['type' => 'section_heading', 'label' => '1. Basic Information'],

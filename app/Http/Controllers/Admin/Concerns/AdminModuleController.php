@@ -38,6 +38,7 @@ abstract class AdminModuleController extends Controller
             'breadcrumbs' => ['Admin', $module['group'] ?? 'Module', $pageTitle],
             'records' => $this->records($request),
             'filters' => $request->only(['search', 'status', 'type']),
+            'filterOptions' => $this->modules->formData->filterOptions($module),
         ]);
     }
 

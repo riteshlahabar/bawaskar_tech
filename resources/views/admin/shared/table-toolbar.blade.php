@@ -5,6 +5,12 @@
     $searchColumns = $module['search'] ?? [];
     $columnLabels = collect($module['columns'] ?? [])->keyBy('key');
     $hasTypeFilter = collect($module['filters'] ?? [])->contains(fn ($filter) => ($filter['name'] ?? '') === 'type');
+
+    // Configured filters that carry their own choices. The `type` channel
+    // filter is rendered separately below because its options are fixed.
+    $filterOptions = $filterOptions ?? [];
+    $choiceFilters = collect($module['filters'] ?? [])
+        ->filter(fn ($filter) => ($filter['name'] ?? '') !== 'type' && ! empty($filterOptions[$filter['name'] ?? '']));
 @endphp
 <div class="admin-table-toolbar mb-3">
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2">
@@ -29,6 +35,20 @@
                     @endforeach
                 </select>
             </div>
+
+            @foreach($choiceFilters as $filter)
+                @php($filterName = $filter['name'])
+                @php($filterLabel = $filter['label'] ?? str($filterName)->replace('_id', '')->replace('_', ' ')->title())
+                <div class="admin-toolbar-field">
+                    <label class="form-label small text-muted mb-1">{{ $filterLabel }}</label>
+                    <select class="form-select" name="{{ $filterName }}">
+                        <option value="">All {{ $filterLabel }}</option>
+                        @foreach($filterOptions[$filterName] as $optionValue => $optionLabel)
+                            <option value="{{ $optionValue }}" @selected((string) request($filterName) === (string) $optionValue)>{{ $optionLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endforeach
 
             @if(!empty($module['status_options']) && !empty($module['status_column']))
                 <div class="admin-toolbar-field">

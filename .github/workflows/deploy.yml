@@ -58,6 +58,10 @@ jobs:
               exit 1
             fi
 
+            # Whatever happens below, the site comes back out of maintenance
+            # mode - otherwise a failed migration leaves it down.
+            trap 'php artisan up || true' EXIT
+
             php artisan down --render="errors::503" --retry=15 || true
 
             git fetch origin main

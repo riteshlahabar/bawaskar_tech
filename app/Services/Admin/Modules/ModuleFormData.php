@@ -111,6 +111,38 @@ final class ModuleFormData implements ModuleFormDataContract
         return $attributes;
     }
 
+    public function filterOptions(array $module): array
+    {
+        $options = [];
+
+        foreach ($module['filters'] ?? [] as $filter) {
+            $name = $filter['name'] ?? null;
+
+            if (! $name) {
+                continue;
+            }
+
+            if (isset($filter['options'])) {
+                $options[$name] = $filter['options'];
+
+                continue;
+            }
+
+            if (! isset($filter['option_model'])) {
+                continue;
+            }
+
+            $label = $filter['option_label'] ?? 'name';
+
+            $options[$name] = $this->optionQuery($filter)
+                ->orderBy($label)
+                ->pluck($label, $filter['option_value'] ?? 'id')
+                ->all();
+        }
+
+        return $options;
+    }
+
     /**
      * @param  array<string, mixed>  $module
      * @return array<int, array<string, mixed>>

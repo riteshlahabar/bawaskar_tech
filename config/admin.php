@@ -143,7 +143,7 @@ return [
         ],
 
         'products' => [
-            'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'productType', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active,
+            'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'productType', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active, 'form_layout' => 'tabs',
             'filters' => [
                 ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title'],
             ],

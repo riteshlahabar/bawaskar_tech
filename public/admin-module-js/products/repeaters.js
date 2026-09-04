@@ -3,6 +3,45 @@
 
     var ROW_SELECTOR = '[data-product-variant-row], [data-product-media-row], [data-product-additional-info-row]';
 
+    // "1.5" rather than "1.500" for the collapsed variant summary line.
+    function trimNumber(value) {
+        var parsed = parseFloat(value);
+        return isNaN(parsed) ? '' : String(parseFloat(parsed.toFixed(3)));
+    }
+
+    // Keeps the collapsed header readable, e.g. "500 ml  MRP 250  Main".
+    function updateVariantSummary(row) {
+        if (!row || !row.matches || !row.matches('[data-product-variant-row]')) return;
+
+        var sizeField = row.querySelector('[data-variant-size]');
+        var unitField = row.querySelector('[data-variant-unit]');
+        var mrpField = row.querySelector('[data-variant-mrp]');
+        var mainField = row.querySelector('[data-main-display-pack]');
+        var activeField = row.querySelector('[data-variant-active]');
+
+        var size = sizeField ? trimNumber(sizeField.value) : '';
+        var unit = unitField && unitField.selectedIndex > 0
+            ? unitField.options[unitField.selectedIndex].text.trim()
+            : '';
+        var label = (size + ' ' + unit).trim();
+        var mrp = mrpField ? trimNumber(mrpField.value) : '';
+
+        var labelTarget = row.querySelector('[data-variant-summary-label]');
+        if (labelTarget) labelTarget.textContent = label || 'New Variant';
+
+        var priceTarget = row.querySelector('[data-variant-summary-price]');
+        if (priceTarget) {
+            priceTarget.textContent = mrp ? 'MRP ' + mrp : '';
+            priceTarget.classList.toggle('d-none', !mrp);
+        }
+
+        var mainTarget = row.querySelector('[data-variant-summary-main]');
+        if (mainTarget) mainTarget.classList.toggle('d-none', !(mainField && mainField.checked));
+
+        var inactiveTarget = row.querySelector('[data-variant-summary-inactive]');
+        if (inactiveTarget) inactiveTarget.classList.toggle('d-none', !(activeField && !activeField.checked));
+    }
+
 function initProductRepeaters() {
         document.querySelectorAll('[data-product-variants-repeater], [data-product-media-repeater], [data-product-additional-info-repeater]').forEach(function (repeater) {
             var rowsHost = repeater.querySelector('[data-repeater-rows]');
@@ -33,6 +72,7 @@ function initProductRepeaters() {
 
             function initialiseRow(row) {
                 updateVariantTotals(row);
+                updateVariantSummary(row);
                 syncMediaFields(row);
             }
 
@@ -58,12 +98,16 @@ function initProductRepeaters() {
                     repeater.querySelectorAll('[data-main-display-pack]').forEach(function (checkbox) {
                         if (checkbox !== event.target) checkbox.checked = false;
                     });
+                    // Clearing the other Main flags also clears their badges.
+                    repeater.querySelectorAll('[data-product-variant-row]').forEach(updateVariantSummary);
                 }
                 initialiseRow(row);
             });
 
             repeater.addEventListener('input', function (event) {
-                updateVariantTotals(event.target.closest('[data-product-variant-row]'));
+                var variantRow = event.target.closest('[data-product-variant-row]');
+                updateVariantTotals(variantRow);
+                updateVariantSummary(variantRow);
             });
 
             rowsHost.querySelectorAll(ROW_SELECTOR).forEach(initialiseRow);

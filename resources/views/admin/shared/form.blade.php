@@ -7,6 +7,63 @@
     $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
     $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
     $optionAttributes = $optionAttributes ?? [];
+
+    // Modules that opt in with 'form_layout' => 'tabs' render one tab per
+    // section_heading instead of one long column. Nothing else changes: it is
+    // still a single <form> with a single submit, so validation, the field
+    // partials and the controllers are untouched.
+    $useTabs = ($module['form_layout'] ?? null) === 'tabs';
+    $tabGroups = [];
+
+    if ($useTabs) {
+        $currentGroup = null;
+
+        foreach ($fieldNodes as $node) {
+            if (! $fieldTree->shouldRender($node['field'], (bool) $record)) {
+                continue;
+            }
+
+            if (($node['field']['type'] ?? '') === 'section_heading') {
+                $tabGroups[] = ['heading' => $node['field'], 'nodes' => []];
+                $currentGroup = array_key_last($tabGroups);
+
+                continue;
+            }
+
+            if ($currentGroup === null) {
+                $tabGroups[] = ['heading' => ['label' => 'General'], 'nodes' => []];
+                $currentGroup = array_key_last($tabGroups);
+            }
+
+            $tabGroups[$currentGroup]['nodes'][] = $node;
+        }
+
+        // A heading with no visible fields left would render an empty tab.
+        $tabGroups = array_values(array_filter($tabGroups, fn (array $group): bool => $group['nodes'] !== []));
+
+        // Count the errors landing in each tab so the user can see where to go.
+        // A dotted key such as "variants.0.mrp" belongs to the "variants" field.
+        $errorKeys = collect($errors->keys());
+
+        foreach ($tabGroups as $groupIndex => $group) {
+            $tabGroups[$groupIndex]['error_count'] = collect($group['nodes'])
+                ->sum(function (array $node) use ($errorKeys): int {
+                    $name = $node['field']['name'] ?? null;
+
+                    if (blank($name)) {
+                        return 0;
+                    }
+
+                    return $errorKeys
+                        ->filter(fn (string $key): bool => $key === $name || str_starts_with($key, $name.'.'))
+                        ->count();
+                });
+        }
+
+        $activeTab = collect($tabGroups)->search(fn (array $group): bool => ($group['error_count'] ?? 0) > 0);
+        $activeTab = $activeTab === false ? 0 : $activeTab;
+        $useTabs = count($tabGroups) > 1;
+    }
 @endphp
 <div class="row admin-form-row">
     <div class="col-12">
@@ -29,14 +86,57 @@
                         @endif
                     @endforeach
 
-                    <div class="row g-3">
-                        @foreach($fieldNodes as $node)
-                            @continue(! $fieldTree->shouldRender($node['field'], (bool) $record))
-                            @include('admin.shared.fields.field', ['field' => $node['field'], 'children' => $node['children']])
-                        @endforeach
-                    </div>
+                    @if($useTabs)
+                        <ul class="nav nav-tabs admin-form-tabs" role="tablist">
+                            @foreach($tabGroups as $tabIndex => $group)
+                                @php
+                                    $heading = $group['heading'];
+                                    $paneId = 'formTab'.$module['key'].$tabIndex;
+                                    $tabLabel = preg_replace('/^\s*\d+\.\s*/', '', (string) ($heading['label'] ?? 'Section'));
+                                    $tabVisibilitySource = $heading['visibility_field'] ?? null;
+                                    $tabSectionTypes = array_values(array_filter((array) ($heading['show_for_section_types'] ?? [])));
+                                    $tabLayoutTypes = array_values(array_filter((array) ($heading['show_for_layout_types'] ?? [])));
+                                    $tabHasVisibility = filled($tabVisibilitySource) && ($tabSectionTypes !== [] || $tabLayoutTypes !== []);
+                                @endphp
+                                <li class="nav-item {{ $tabHasVisibility ? 'admin-conditional-field' : '' }}" role="presentation"
+                                    @if($tabHasVisibility)
+                                        data-visibility-source="{{ $tabVisibilitySource }}"
+                                        data-visibility-section-types="{{ implode(',', $tabSectionTypes) }}"
+                                        data-visibility-layout-types="{{ implode(',', $tabLayoutTypes) }}"
+                                        style="display:none;"
+                                    @endif>
+                                    <button class="nav-link {{ $tabIndex === $activeTab ? 'active' : '' }}" id="{{ $paneId }}-tab" data-bs-toggle="tab" data-bs-target="#{{ $paneId }}" type="button" role="tab" aria-controls="{{ $paneId }}" aria-selected="{{ $tabIndex === $activeTab ? 'true' : 'false' }}">
+                                        <span class="admin-form-tab-index">{{ $tabIndex + 1 }}</span>
+                                        <span class="admin-form-tab-label">{{ $tabLabel }}</span>
+                                        @if(($group['error_count'] ?? 0) > 0)
+                                            <span class="badge bg-danger admin-form-tab-errors">{{ $group['error_count'] }}</span>
+                                        @endif
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
 
-                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <div class="tab-content admin-form-tab-content">
+                            @foreach($tabGroups as $tabIndex => $group)
+                                <div class="tab-pane fade {{ $tabIndex === $activeTab ? 'show active' : '' }}" id="{{ 'formTab'.$module['key'].$tabIndex }}" role="tabpanel" aria-labelledby="{{ 'formTab'.$module['key'].$tabIndex }}-tab">
+                                    <div class="row g-3">
+                                        @foreach($group['nodes'] as $node)
+                                            @include('admin.shared.fields.field', ['field' => $node['field'], 'children' => $node['children']])
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="row g-3">
+                            @foreach($fieldNodes as $node)
+                                @continue(! $fieldTree->shouldRender($node['field'], (bool) $record))
+                                @include('admin.shared.fields.field', ['field' => $node['field'], 'children' => $node['children']])
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 admin-form-actions">
                         <a class="btn btn-outline-secondary" href="{{ route($module['route'].'.index', request()->only(['type','placement','section_key','row_title'])) }}">Cancel</a>
                         <button class="btn btn-primary" type="submit"><i class="iconoir-check-circle me-1"></i>{{ $record ? 'Update' : 'Save' }} {{ $module['singular'] }}</button>
                     </div>
@@ -111,6 +211,12 @@
                 control.disabled = isVisible ? control.dataset.conditionalOriginalDisabled === '1' : true;
             });
         });
+
+        // A tab strip item can be conditional too, so the tab layout needs a
+        // chance to move off a tab that just became hidden.
+        if (typeof window.adminFormTabsSync === 'function') {
+            window.adminFormTabsSync(form);
+        }
     }
 
 
@@ -162,6 +268,9 @@
     @include('admin.products.partials.scripts')
 @endif
 @endsection
+@push('scripts')
+    <script src="{{ asset('admin-module-js/shared/form-tabs.js') }}"></script>
+@endpush
 
 
 

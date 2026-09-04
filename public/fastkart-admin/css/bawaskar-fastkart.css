@@ -961,3 +961,15 @@ input[type="file"].form-control::file-selector-button {
     font-size: 10px;
     line-height: 1;
 }
+
+/* The fixed 38px control height above is meant for single-line inputs and
+   selects, but it also hit <textarea class="form-control">, squashing every
+   admin textarea to one line and making the `rows` attribute do nothing.
+   Textareas keep their own height so `rows` decides the box size. */
+.page-wrapper .card .card-body textarea.form-control {
+    height: auto !important;
+    min-height: 96px;
+    padding: 10px 12px !important;
+    line-height: 1.5 !important;
+    resize: vertical;
+}

@@ -48,7 +48,7 @@ final class ProductVariantFormDataService implements ProductVariantFormDataContr
                 // next save carries them onto the variant.
                 'hsn_code' => $variant->hsn_code ?: $product->hsn_code,
                 'gst_percent' => $variant->gst_percent ?? $product->gst_percent,
-                'units_per_case' => $variant->units_per_case ?: 1,
+                'units_per_case' => max(1, (int) $variant->units_per_case),
                 'mrp' => $variant->mrp ?? $product->mrp,
                 'dealer_price' => $variant->dealer_price ?? $product->dealer_price,
                 'customer_price' => $variant->customer_price ?? $product->customer_price,

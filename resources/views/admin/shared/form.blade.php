@@ -11,18 +11,9 @@
 <div class="row admin-form-row">
     <div class="col-12">
         <div class="card admin-form-card">
-
             <div class="card-body pt-3">
-                @if($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Please correct the following:</strong>
-                        <ul class="mb-0">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                {{-- The admin layout already renders the validation summary for
+                     every page, so this form must not repeat it. --}}
 
                 <p class="admin-form-required-legend text-muted small mb-3">
                     Fields marked <span class="text-danger">*</span> are compulsory.

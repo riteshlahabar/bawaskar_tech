@@ -105,7 +105,7 @@
                             <li>SKU : <a href="javascript:void(0)">{{ $selectedVariant?->variant_sku ?: $product->sku }}</a></li>
                             <li>{{ web_t('product.category', 'Category') }} : <a href="javascript:void(0)">{{ data_get($product, 'category.storefront_name') ?: web_t('product.fallback', 'Product') }}</a></li>
                             <li>Brand : <a href="javascript:void(0)">{{ data_get($product, 'brand.name') ?: 'Bawaskar' }}</a></li>
-                            <li>Available Stock : <a href="javascript:void(0)" data-detail-stock>{{ number_format($availableStock, 0) }} retail packs@if($audience === 'dealer' && $selectedVariant) / {{ number_format($availableCases, 0) }} full cases@endif</a></li>
+                            <li>Available Stock : <a href="javascript:void(0)" data-detail-stock>{{ number_format($availableStock, 0) }} retail packs{{ $audience === 'dealer' && $selectedVariant ? ' / ' . number_format($availableCases, 0) . ' full cases' : '' }}</a></li>
                             <li>{{ web_t('product.status', 'Status') }} : <a href="javascript:void(0)" data-detail-status>{{ $isOutOfStock ? web_t('product.out_of_stock', 'Out of Stock') : web_t('product.in_stock', 'In Stock') }}</a></li>
                         </ul></div></div>
 

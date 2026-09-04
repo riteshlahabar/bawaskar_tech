@@ -209,7 +209,7 @@
                 <span>rows</span>
             </form>
             <div class="admin-table-links">
-                {{ $records->links() }}
+                {{ $records->onEachSide(1)->links('pagination::admin') }}
             </div>
         </div>
     </div>

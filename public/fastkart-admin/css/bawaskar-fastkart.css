@@ -809,3 +809,150 @@ input[type="file"].form-control::file-selector-button {
 .page-wrapper .bg-light .form-check-label {
     color: #1f2937 !important;
 }
+
+/* ==========================================================================
+   Admin data table — compact, professional density.
+   Loaded after the Fastkart admin theme so these rules win the cascade.
+   ========================================================================== */
+.admin-table-card {
+    border: 1px solid #e9edf2;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.admin-table-responsive {
+    border: 1px solid #eef1f5;
+    border-radius: 10px;
+}
+
+.admin-data-table {
+    font-size: 12.5px;
+    color: #344054;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.admin-data-table > thead > tr > th {
+    background: #f8fafc;
+    color: #667085;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 11px 12px;
+    border-bottom: 1px solid #e9edf2;
+    border-top: 0;
+    vertical-align: middle;
+}
+
+.admin-data-table > tbody > tr > td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f2f4f7;
+    border-top: 0;
+    line-height: 1.4;
+}
+
+.admin-data-table > tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+.admin-data-table.table-hover > tbody > tr:hover > td {
+    background-color: #f8fbfa;
+}
+
+.admin-data-table .badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.admin-data-table .bulk-select-col {
+    width: 38px;
+    padding-left: 14px;
+    padding-right: 4px;
+}
+
+.admin-data-table .form-check-input {
+    width: 15px;
+    height: 15px;
+    margin-top: 0;
+}
+
+/* Keep the image column tight so rows stay a uniform height. */
+.admin-data-table .admin-image-thumb-btn {
+    width: 44px;
+    height: 34px;
+}
+
+.admin-row-action-toggle {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 7px;
+    font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Pager bar
+   -------------------------------------------------------------------------- */
+.admin-table-pagination {
+    padding: 12px 2px 2px;
+    border-top: 1px solid #eef1f5;
+    font-size: 12.5px;
+}
+
+.admin-table-result-meta,
+.admin-table-per-page-form {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #667085;
+}
+
+.admin-table-per-page-form .form-select {
+    width: 76px;
+    height: 30px !important;
+    padding: 2px 26px 2px 9px !important;
+    font-size: 12.5px;
+}
+
+.admin-pagination {
+    gap: 4px;
+}
+
+.admin-pagination .page-link {
+    min-width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475467;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 7px;
+}
+
+.admin-pagination .page-link:hover {
+    color: var(--theme-color);
+    border-color: var(--theme-color);
+    background: rgba(var(--theme-color-rgb), 0.06);
+}
+
+.admin-pagination .page-item.active .page-link {
+    color: #fff;
+    background: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+.admin-pagination .page-item.disabled .page-link {
+    color: #bcc3ce;
+    background: #fff;
+    border-color: #eef1f5;
+}

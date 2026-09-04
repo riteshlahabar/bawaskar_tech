@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/vendors/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/vendors/slick.css') }}">
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('fastkart-admin/css/bawaskar-fastkart.css') }}">
+    <link rel="stylesheet" href="{{ asset('fastkart-admin/css/bawaskar-fastkart.css').'?v='.filemtime(public_path('fastkart-admin/css/bawaskar-fastkart.css')) }}">
     @stack('styles')
 </head>
 <body>

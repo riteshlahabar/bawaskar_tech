@@ -27,3 +27,9 @@ Homestead.yaml
 Thumbs.db
 /storage/framework/views/*.php
 
+
+# Editor and ad-hoc backups - git is the backup
+*.bak
+*.bak-*
+*.orig
+*.old

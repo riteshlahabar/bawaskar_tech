@@ -70,6 +70,22 @@ class ModuleFilterOptionsTest extends TestCase
         $this->assertStringContainsString('homepage_section_id', $sql);
     }
 
+    /**
+     * The per-column dropdown was removed, so a search always spans every
+     * column the module lists and cannot be narrowed from the URL.
+     */
+    public function test_search_covers_every_configured_column(): void
+    {
+        $module = $this->productsModule();
+        $request = Request::create('/admin/products', 'GET', ['search' => 'tonic', 'search_column' => 'sku']);
+
+        $sql = app(ModuleQueryContract::class)->filtered($request, $module)->toSql();
+
+        foreach ($module['search'] as $column) {
+            $this->assertStringContainsString($column, $sql, "Search should still cover {$column}.");
+        }
+    }
+
     public function test_no_selection_leaves_the_query_unfiltered(): void
     {
         $request = Request::create('/admin/products', 'GET', ['homepage_section_id' => '']);

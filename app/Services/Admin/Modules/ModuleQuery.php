@@ -41,6 +41,9 @@ final class ModuleQuery implements ModuleQueryContract
         return $query;
     }
 
+    /**
+     * Searches every column the module lists in `search`.
+     */
     private function applySearch(Builder $query, Request $request, array $module): void
     {
         if (! $request->filled('search') || empty($module['search'])) {
@@ -48,11 +51,9 @@ final class ModuleQuery implements ModuleQueryContract
         }
 
         $term = trim((string) $request->input('search'));
-        $requested = (string) $request->input('search_column', '');
-        $columns = in_array($requested, $module['search'], true) ? [$requested] : $module['search'];
 
-        $query->where(function (Builder $builder) use ($columns, $term): void {
-            foreach ($columns as $index => $column) {
+        $query->where(function (Builder $builder) use ($module, $term): void {
+            foreach ($module['search'] as $index => $column) {
                 $method = $index === 0 ? 'where' : 'orWhere';
                 $builder->{$method}($column, 'like', '%'.$term.'%');
             }

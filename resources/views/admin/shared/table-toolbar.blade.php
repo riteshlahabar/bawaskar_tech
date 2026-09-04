@@ -2,8 +2,6 @@
     $query = request()->query();
     $exportQuery = request()->except(['page']);
     $resetQuery = request()->only(['type','placement','section_key','row_title']);
-    $searchColumns = $module['search'] ?? [];
-    $columnLabels = collect($module['columns'] ?? [])->keyBy('key');
     $hasTypeFilter = collect($module['filters'] ?? [])->contains(fn ($filter) => ($filter['name'] ?? '') === 'type');
 
     // Configured filters that carry their own choices. The `type` channel
@@ -24,16 +22,6 @@
             <div class="admin-toolbar-search">
                 <label class="form-label small text-muted mb-1">Search</label>
                 <input name="search" value="{{ request('search') }}" class="form-control" placeholder="Search {{ strtolower($pageTitle) }}...">
-            </div>
-
-            <div class="admin-toolbar-field">
-                <label class="form-label small text-muted mb-1">Column</label>
-                <select class="form-select" name="search_column">
-                    <option value="">All Columns</option>
-                    @foreach($searchColumns as $column)
-                        <option value="{{ $column }}" @selected(request('search_column') === $column)>{{ $columnLabels[$column]['label'] ?? str($column)->replace('_', ' ')->replace('.', ' ')->title() }}</option>
-                    @endforeach
-                </select>
             </div>
 
             @foreach($choiceFilters as $filter)

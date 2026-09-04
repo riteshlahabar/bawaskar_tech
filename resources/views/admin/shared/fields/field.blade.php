@@ -30,8 +30,19 @@
     @include('admin.shared.fields.group', ['field' => $field, 'children' => $children])
 
 @elseif($customView)
+    @php
+        $customRules = array_map(fn ($rule) => is_string($rule) ? $rule : '', (array) ($field['rules'] ?? []));
+        $customIsRequired = collect($customRules)->contains(fn (string $rule): bool => str_starts_with($rule, 'required'))
+            || (bool) ($field['force_required_indicator'] ?? false);
+    @endphp
     @if($customView['wrap'])
         <div class="col-12">
+            @if($customIsRequired && ! empty($field['label']))
+                <label class="form-label">
+                    {{ $field['label'] }}
+                    <span class="text-danger" title="Required field">*</span>
+                </label>
+            @endif
             @include($customView['view'])
             @if(! empty($field['name']))
                 @error($field['name'])<div class="text-danger small mt-1">{{ $message }}</div>@enderror
@@ -60,7 +71,7 @@
             @if($type === 'checkbox')
                 <div class="form-check form-switch mt-4">
                     <input type="checkbox" class="form-check-input" name="{{ $name }}" value="1" id="{{ $name }}" @checked((bool) $value)>
-                    <label class="form-check-label" for="{{ $name }}">{{ $field['label'] }}</label>
+                    <label class="form-check-label" for="{{ $name }}">{{ $field['label'] }}@if($isRequired) <span class="text-danger" title="Required field">*</span>@endif</label>
                     @error($name)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     @if(! empty($field['help']))<small class="text-muted d-block mt-1">{{ $field['help'] }}</small>@endif
                 </div>

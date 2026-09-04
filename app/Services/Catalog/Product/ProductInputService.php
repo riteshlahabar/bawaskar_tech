@@ -51,9 +51,20 @@ final class ProductInputService implements ProductInputContract
         $translations = $this->translations->extract($prepared);
         $prepared = $this->normalizeHomepageSection($prepared, $module);
 
-        $prepared['product_type'] = filled($prepared['product_type_id'] ?? null)
+        // `products.product_type` is a NOT NULL legacy column that mirrors the
+        // selected product type's slug and drives storefront navigation. Leave
+        // it untouched when no type is selected (or the type has no slug) so an
+        // update keeps the current value and an insert falls back to the table
+        // default, instead of failing with "Column 'product_type' cannot be null".
+        $productTypeSlug = filled($prepared['product_type_id'] ?? null)
             ? ProductType::query()->whereKey($prepared['product_type_id'])->value('slug')
             : null;
+
+        if (filled($productTypeSlug)) {
+            $prepared['product_type'] = $productTypeSlug;
+        } else {
+            unset($prepared['product_type']);
+        }
 
         foreach (['mrp', 'dealer_price', 'customer_price'] as $field) {
             if (blank($prepared[$field] ?? null)) {

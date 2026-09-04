@@ -24,6 +24,10 @@
                     </div>
                 @endif
 
+                <p class="admin-form-required-legend text-muted small mb-3">
+                    Fields marked <span class="text-danger">*</span> are compulsory.
+                </p>
+
                 <form method="POST" action="{{ $record ? route($module['route'].'.update', array_merge([$record->getKey()], request()->only($submenuQueryKeys))) : route($module['route'].'.store', request()->only($submenuQueryKeys)) }}" @if($hasUpload) enctype="multipart/form-data" @endif>
                     @csrf
                     @if($record) @method('PUT') @endif

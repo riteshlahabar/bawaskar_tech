@@ -151,7 +151,7 @@ return [
             'fields' => [
                 ['type' => 'section_heading', 'label' => '1. Basic Information'],
                 ['name' => 'name', 'label' => 'Product Name', 'rules' => ['required', 'string', 'max:255']],
-                ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['nullable', 'exists:categories,id']],
+                ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['required', 'exists:categories,id']],
                 ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Select any Homepage Settings section. Product will display according to selected section type.'],
                 ['name' => 'brand_id', 'label' => 'Brand', 'type' => 'select', 'option_model' => Brand::class, 'rules' => ['nullable', 'exists:brands,id']],
                 ['name' => 'product_type_id', 'label' => 'Product Type', 'type' => 'select', 'option_model' => ProductType::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:product_types,id']],

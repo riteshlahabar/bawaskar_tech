@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\Salesman\SalesmanLeaveBalanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanOrderController;
 use App\Http\Controllers\Api\Salesman\SalesmanPayslipController;
 use App\Http\Controllers\Api\Salesman\SalesmanPerformanceController;
+use App\Http\Controllers\Api\Salesman\SalesmanProfileController;
 use App\Http\Controllers\Api\Shared\InvoiceController;
 use App\Http\Controllers\Api\Shared\NotificationController;
 use App\Http\Controllers\Api\Shared\OrderTrackingController;
@@ -186,6 +187,9 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('shifts', [SalesmanCalendarController::class, 'shift']);
             Route::get('announcements', [SalesmanAnnouncementController::class, 'index']);
             Route::get('documents', [SalesmanDocumentController::class, 'index']);
+
+            Route::get('profile', [SalesmanProfileController::class, 'profile']);
+            Route::post('support', [SalesmanProfileController::class, 'support']);
 
             $registerSharedAccountRoutes();
         });

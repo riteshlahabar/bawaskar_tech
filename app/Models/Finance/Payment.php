@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    protected $fillable = ['payment_no', 'order_id', 'payer_id', 'collected_by', 'payment_mode', 'status', 'amount', 'transaction_ref', 'paid_at'];
+    protected $fillable = ['payment_no', 'order_id', 'payer_id', 'collected_by', 'payment_mode', 'status', 'amount', 'transaction_ref', 'paid_at', 'gateway', 'gateway_payload', 'failure_reason'];
 
     protected function casts(): array
     {
-        return ['amount' => 'decimal:2', 'paid_at' => 'datetime'];
+        return ['amount' => 'decimal:2', 'paid_at' => 'datetime', 'gateway_payload' => 'array'];
     }
 
     public function order(): BelongsTo

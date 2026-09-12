@@ -3,17 +3,49 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Contracts\Auth\OtpContract;
-use App\Models\DealerProfile;
+use App\Contracts\Auth\PhoneCredentialContract;
+use App\Data\Auth\VerifiedPhone;
 use App\Models\User;
+use App\Services\Auth\DealerAccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 final class DealerAuthController extends AuthApiController
 {
-    public function __construct(private readonly OtpContract $otp) {}
+    private const PURPOSE = 'dealer_login';
 
+    public function __construct(
+        private readonly OtpContract $otp,
+        private readonly PhoneCredentialContract $phoneCredential,
+        private readonly DealerAccountService $accounts,
+    ) {}
+
+    /**
+     * Firebase phone sign-in. The number comes from inside the verified ID
+     * token, so the firm details in the body cannot be attached to a mobile
+     * the caller does not own.
+     */
+    public function verifyFirebase(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'id_token' => ['nullable', 'string', 'max:4096'],
+            'mobile' => ['nullable', 'string', 'max:20'],
+            'otp' => ['nullable', 'string', 'size:6'],
+            'name' => ['required', 'string', 'max:255'],
+            'firm_name' => ['required', 'string', 'max:255'],
+            'gst_number' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        $phone = $this->phoneCredential->verify($validated, self::PURPOSE);
+
+        return $this->respondToRegistration($this->accounts->register($phone, $validated));
+    }
+
+    /**
+     * @deprecated Superseded by verifyFirebase(); kept while the dealer app is
+     *             migrated, and removed once no old build is in the field.
+     */
     public function verifyOtp(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -24,50 +56,13 @@ final class DealerAuthController extends AuthApiController
             'gst_number' => ['nullable', 'string', 'max:30'],
         ]);
 
-        if (! $this->otp->verify($validated['mobile'], 'dealer_login', $validated['otp'])) {
+        if (! $this->otp->verify($validated['mobile'], self::PURPOSE, $validated['otp'])) {
             return $this->fail('Invalid or expired OTP.', 422);
         }
 
-        $user = User::query()->firstOrCreate(
-            ['mobile' => $validated['mobile']],
-            [
-                'name' => $validated['name'],
-                'email' => $this->virtualEmail($validated['mobile'], 'dealer'),
-                'password' => Str::password(32),
-                'role' => User::ROLE_DEALER,
-                'status' => 'pending_approval',
-                'mobile_verified_at' => now(),
-            ]
-        );
+        $phone = VerifiedPhone::fromOtp($validated['mobile']);
 
-        $user->forceFill([
-            'name' => $validated['name'],
-            'role' => User::ROLE_DEALER,
-            'mobile_verified_at' => now(),
-        ])->save();
-
-        DealerProfile::query()->updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'dealer_code' => 'DLR'.str_pad((string) $user->id, 6, '0', STR_PAD_LEFT),
-                'firm_name' => $validated['firm_name'],
-                'gst_number' => $validated['gst_number'] ?? null,
-            ]
-        );
-
-        $user->load('dealerProfile.salesman');
-
-        // A dealer only gets a token once an admin has approved the account.
-        if (! $this->isApproved($user)) {
-            return $this->success(['user' => $user], 'Dealer registered. Admin approval required.', 201);
-        }
-
-        $user->forceFill(['last_login_at' => now()])->save();
-
-        return $this->success([
-            'user' => $user,
-            'token' => $user->createApiToken('dealer-app'),
-        ], 'Dealer logged in.');
+        return $this->respondToRegistration($this->accounts->register($phone, $validated));
     }
 
     public function login(Request $request): JsonResponse
@@ -87,7 +82,7 @@ final class DealerAuthController extends AuthApiController
             return $this->fail('Invalid dealer login.', 401);
         }
 
-        if (! $this->isApproved($user)) {
+        if (! $this->accounts->isApproved($user)) {
             return $this->fail('Dealer approval is pending.', 403);
         }
 
@@ -99,8 +94,21 @@ final class DealerAuthController extends AuthApiController
         ], 'Dealer logged in.');
     }
 
-    private function isApproved(User $user): bool
+    /**
+     * A dealer only gets a token once an admin has approved the account, so a
+     * successful phone verification is not by itself a successful login.
+     */
+    private function respondToRegistration(User $user): JsonResponse
     {
-        return $user->status === 'active' && $user->dealerProfile?->approved_at !== null;
+        if (! $this->accounts->isApproved($user)) {
+            return $this->success(['user' => $user], 'Dealer registered. Admin approval required.', 201);
+        }
+
+        $user->forceFill(['last_login_at' => now()])->save();
+
+        return $this->success([
+            'user' => $user,
+            'token' => $user->createApiToken('dealer-app'),
+        ], 'Dealer logged in.');
     }
 }

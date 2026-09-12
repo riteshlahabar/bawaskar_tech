@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Payments\EazypayCallbackController;
 use App\Http\Controllers\Storefront\StorefrontAuthController;
 use App\Http\Controllers\Storefront\StorefrontCartController;
 use App\Http\Controllers\Storefront\StorefrontCategoryController;
@@ -31,5 +32,12 @@ Route::post('/wishlist/add', [StorefrontWishlistController::class, 'add'])->name
 Route::post('/wishlist/remove/{productId}', [StorefrontWishlistController::class, 'remove'])->name('store.wishlist.remove');
 Route::post('/wishlist/toggle', [StorefrontWishlistController::class, 'toggle'])->name('store.wishlist.toggle');
 Route::post('/checkout/place-order', [StorefrontCheckoutController::class, 'placeOrder'])->name('store.checkout.place-order');
+
+// The bank sends the payer back here. Registered before the /{page} catch-all
+// so a GET return is not swallowed by the storefront page route, and exempt
+// from CSRF because the POST originates on the bank domain.
+Route::match(['get', 'post'], '/payments/eazypay/callback', [EazypayCallbackController::class, 'handle'])
+    ->middleware('throttle:api')
+    ->name('payments.eazypay.callback');
 
 Route::get('/{page}', [StorefrontPageController::class, 'show'])->name('store.page');

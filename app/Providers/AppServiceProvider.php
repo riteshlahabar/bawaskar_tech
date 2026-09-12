@@ -21,7 +21,9 @@ use App\Contracts\Admin\Modules\ModuleInputContract;
 use App\Contracts\Admin\Modules\ModuleQueryContract;
 use App\Contracts\Admin\Modules\ModuleValidationContract;
 use App\Contracts\Auth\ApiTokenGuardContract;
+use App\Contracts\Auth\FirebaseIdTokenContract;
 use App\Contracts\Auth\OtpContract;
+use App\Contracts\Auth\PhoneCredentialContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
@@ -40,6 +42,7 @@ use App\Contracts\Catalog\ProductTranslationRepositoryContract;
 use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\PublicUploadContract;
+use App\Contracts\Finance\PaymentGatewayContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
 use App\Contracts\Sales\Orders\OrderLineBuilderContract;
@@ -73,7 +76,9 @@ use App\Services\Admin\Modules\ModuleInput;
 use App\Services\Admin\Modules\ModuleQuery;
 use App\Services\Admin\Modules\ModuleValidation;
 use App\Services\Auth\ApiTokenGuard;
+use App\Services\Auth\Firebase\FirebaseIdTokenService;
 use App\Services\Auth\OtpService;
+use App\Services\Auth\PhoneCredentialService;
 use App\Services\Catalog\GoogleTextTranslator;
 use App\Services\Catalog\Product\ProductFormService;
 use App\Services\Catalog\Product\ProductImageService;
@@ -89,6 +94,9 @@ use App\Services\Catalog\Product\ProductVariantUnitService;
 use App\Services\Catalog\Product\ProductWorkflowService;
 use App\Services\Catalog\ProductTranslationService;
 use App\Services\Files\PublicUploadService;
+use App\Services\Finance\Eazypay\EazypayCipher;
+use App\Services\Finance\Eazypay\EazypayGateway;
+use App\Services\Finance\Eazypay\EazypaySignature;
 use App\Services\Sales\Orders\DealerOrderContextService;
 use App\Services\Sales\Orders\EloquentStockAvailabilityService;
 use App\Services\Sales\Orders\EloquentStockReservationService;
@@ -134,6 +142,9 @@ class AppServiceProvider extends ServiceProvider
             PublicUploadContract::class => PublicUploadService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,
+            PaymentGatewayContract::class => EazypayGateway::class,
+            FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
+            PhoneCredentialContract::class => PhoneCredentialService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,
@@ -170,7 +181,13 @@ class AppServiceProvider extends ServiceProvider
 
         foreach ($bindings as $contract => $implementation) {
             $this->app->bind($contract, $implementation);
-        }        $this->app->bind(
+        }        // The gateway is built from configuration, not from the container, so
+        // the AES key stays in one place and is read once per resolution.
+        $this->app->bind(EazypayCipher::class, static fn (): EazypayCipher => new EazypayCipher((string) config('eazypay.encryption_key', '')));
+
+        $this->app->bind(EazypaySignature::class, static fn (): EazypaySignature => new EazypaySignature((string) config('eazypay.encryption_key', '')));
+
+        $this->app->bind(
             TextTranslatorContract::class,
             GoogleTextTranslator::class
         );

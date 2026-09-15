@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Contracts\Auth\OtpContract;
 use App\Contracts\Auth\PhoneCredentialContract;
+use App\Contracts\Auth\RegistrationTokenContract;
 use App\Data\Auth\VerifiedPhone;
 use App\Models\User;
 use App\Services\Auth\DealerAccountService;
@@ -11,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-final class DealerAuthController extends AuthApiController
+final class DealerAuthController extends DealerAuthApiController
 {
     private const PURPOSE = 'dealer_login';
 
@@ -19,6 +20,7 @@ final class DealerAuthController extends AuthApiController
         private readonly OtpContract $otp,
         private readonly PhoneCredentialContract $phoneCredential,
         private readonly DealerAccountService $accounts,
+        private readonly RegistrationTokenContract $registrationTokens,
     ) {}
 
     /**
@@ -32,14 +34,14 @@ final class DealerAuthController extends AuthApiController
             'id_token' => ['nullable', 'string', 'max:4096'],
             'mobile' => ['nullable', 'string', 'max:20'],
             'otp' => ['nullable', 'string', 'size:6'],
-            'name' => ['required', 'string', 'max:255'],
-            'firm_name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'firm_name' => ['nullable', 'string', 'max:255'],
             'gst_number' => ['nullable', 'string', 'max:30'],
         ]);
 
         $phone = $this->phoneCredential->verify($validated, self::PURPOSE);
 
-        return $this->respondToRegistration($this->accounts->register($phone, $validated));
+        return $this->completeSignIn($phone, $validated);
     }
 
     /**
@@ -51,8 +53,8 @@ final class DealerAuthController extends AuthApiController
         $validated = $request->validate([
             'mobile' => ['required', 'string', 'max:20'],
             'otp' => ['required', 'string', 'size:6'],
-            'name' => ['required', 'string', 'max:255'],
-            'firm_name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'firm_name' => ['nullable', 'string', 'max:255'],
             'gst_number' => ['nullable', 'string', 'max:30'],
         ]);
 
@@ -60,9 +62,7 @@ final class DealerAuthController extends AuthApiController
             return $this->fail('Invalid or expired OTP.', 422);
         }
 
-        $phone = VerifiedPhone::fromOtp($validated['mobile']);
-
-        return $this->respondToRegistration($this->accounts->register($phone, $validated));
+        return $this->completeSignIn(VerifiedPhone::fromOtp($validated['mobile']), $validated);
     }
 
     public function login(Request $request): JsonResponse
@@ -95,20 +95,24 @@ final class DealerAuthController extends AuthApiController
     }
 
     /**
-     * A dealer only gets a token once an admin has approved the account, so a
-     * successful phone verification is not by itself a successful login.
+     * A registered dealer is signed in. A new number is not an error: it gets
+     * a registration token so the app can open the firm-details form next.
+     *
+     * @param  array<string, mixed>  $details
      */
-    private function respondToRegistration(User $user): JsonResponse
+    private function completeSignIn(VerifiedPhone $phone, array $details): JsonResponse
     {
-        if (! $this->accounts->isApproved($user)) {
-            return $this->success(['user' => $user], 'Dealer registered. Admin approval required.', 201);
+        if ($this->accounts->needsRegistration($phone, $details)) {
+            return $this->success([
+                'registration_required' => true,
+                'registration_token' => $this->registrationTokens->issue($phone, RegistrationTokenContract::DEALER_REGISTRATION),
+                'expires_in' => $this->registrationTokens->lifetimeSeconds(),
+                'mobile' => $phone->mobile,
+            ], 'Mobile verified. Complete dealer registration.');
         }
 
-        $user->forceFill(['last_login_at' => now()])->save();
+        $user = $this->accounts->register($phone, $details);
 
-        return $this->success([
-            'user' => $user,
-            'token' => $user->createApiToken('dealer-app'),
-        ], 'Dealer logged in.');
+        return $this->respondToDealer($user, $this->accounts->isApproved($user));
     }
 }

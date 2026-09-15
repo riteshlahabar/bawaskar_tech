@@ -1,11 +1,13 @@
 <?php
 
 use App\Exceptions\Auth\AccountRoleConflictException;
+use App\Exceptions\Auth\DealerNotRegisteredException;
 use App\Exceptions\Auth\InvalidPhoneCredentialException;
 use App\Exceptions\Files\UnsupportedUploadException;
 use App\Exceptions\Finance\PaymentGatewayException;
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\IdentifyApiToken;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureAdmin::class,
             'api.auth' => AuthenticateApiToken::class,
+            // Public routes that still need to know who is calling (dealer pricing).
+            'api.identify' => IdentifyApiToken::class,
         ]);
         // The bank POSTs its result from its own domain, so there is no
         // session token to send. The signature check in the controller is
@@ -45,6 +49,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (AccountRoleConflictException $e, Request $request) {
+            return $request->is('api/*')
+                ? response()->json(['success' => false, 'message' => $e->getMessage(), 'errors' => []], 422)
+                : back()->withInput()->with('error', $e->getMessage());
+        });
+
+        $exceptions->render(function (DealerNotRegisteredException $e, Request $request) {
             return $request->is('api/*')
                 ? response()->json(['success' => false, 'message' => $e->getMessage(), 'errors' => []], 422)
                 : back()->withInput()->with('error', $e->getMessage());

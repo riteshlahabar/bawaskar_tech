@@ -19,6 +19,8 @@ final readonly class VerifiedPhone
 
     public const SOURCE_OTP = 'otp';
 
+    public const SOURCE_REGISTRATION = 'registration';
+
     private function __construct(
         public string $mobile,
         public string $e164,
@@ -58,6 +60,19 @@ final readonly class VerifiedPhone
             MobileNumber::normalise($mobile),
             MobileNumber::e164($mobile),
             self::SOURCE_OTP,
+        );
+    }
+
+    /**
+     * A number verified moments earlier, carried by a signed registration
+     * token. Only the token service reaches this, after checking the token.
+     */
+    public static function fromRegistrationToken(string $mobile): self
+    {
+        return new self(
+            MobileNumber::normalise($mobile),
+            MobileNumber::e164($mobile),
+            self::SOURCE_REGISTRATION,
         );
     }
 

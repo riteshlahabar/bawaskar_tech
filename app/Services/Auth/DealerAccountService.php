@@ -4,6 +4,7 @@ namespace App\Services\Auth;
 
 use App\Data\Auth\VerifiedPhone;
 use App\Exceptions\Auth\AccountRoleConflictException;
+use App\Exceptions\Auth\DealerNotRegisteredException;
 use App\Models\DealerProfile;
 use App\Models\User;
 use App\Support\MobileNumber;
@@ -18,18 +19,31 @@ use Illuminate\Support\Str;
 final class DealerAccountService
 {
     /**
+     * Whether this number still has to go through the registration form: no
+     * dealer (or firm profile) exists yet and the request carried no details.
+     *
+     * @param  array<string, mixed>  $details
+     */
+    public function needsRegistration(VerifiedPhone $phone, array $details = []): bool
+    {
+        return $this->missingDetails($this->findDealer($phone), $details);
+    }
+
+    /**
      * @param  array<string, mixed>  $details
      */
     public function register(VerifiedPhone $phone, array $details): User
     {
-        $existing = $this->findByMobile($phone);
+        $existing = $this->findDealer($phone);
 
-        if ($existing && $existing->role !== User::ROLE_DEALER) {
-            throw AccountRoleConflictException::forRole($existing->role);
+        if ($this->missingDetails($existing, $details)) {
+            throw DealerNotRegisteredException::make();
         }
 
+        $name = $this->detail($details, 'name');
+
         $user = $existing ?: User::query()->create([
-            'name' => (string) $details['name'],
+            'name' => $name,
             'mobile' => $phone->mobile,
             'email' => $this->virtualEmail($phone->mobile),
             'password' => Str::password(32),
@@ -38,19 +52,20 @@ final class DealerAccountService
             'mobile_verified_at' => now(),
         ]);
 
-        $user->forceFill([
-            'name' => (string) $details['name'],
+        // Blank fields never overwrite stored details.
+        $user->forceFill(array_filter([
+            'name' => $name,
             'role' => User::ROLE_DEALER,
             'mobile_verified_at' => now(),
-        ])->save();
+        ], fn ($value) => $value !== ''))->save();
 
         DealerProfile::query()->updateOrCreate(
             ['user_id' => $user->id],
-            [
+            array_filter([
                 'dealer_code' => 'DLR'.str_pad((string) $user->id, 6, '0', STR_PAD_LEFT),
-                'firm_name' => (string) $details['firm_name'],
-                'gst_number' => $details['gst_number'] ?? null,
-            ]
+                'firm_name' => $this->detail($details, 'firm_name'),
+                'gst_number' => $this->detail($details, 'gst_number'),
+            ], fn ($value) => $value !== '')
         );
 
         return $user->load('dealerProfile.salesman');
@@ -59,6 +74,34 @@ final class DealerAccountService
     public function isApproved(User $user): bool
     {
         return $user->status === 'active' && $user->dealerProfile?->approved_at !== null;
+    }
+
+    private function findDealer(VerifiedPhone $phone): ?User
+    {
+        $existing = $this->findByMobile($phone);
+
+        if ($existing && $existing->role !== User::ROLE_DEALER) {
+            throw AccountRoleConflictException::forRole($existing->role);
+        }
+
+        return $existing;
+    }
+
+    /**
+     * @param  array<string, mixed>  $details
+     */
+    private function missingDetails(?User $existing, array $details): bool
+    {
+        return (! $existing && $this->detail($details, 'name') === '')
+            || (! $existing?->dealerProfile && $this->detail($details, 'firm_name') === '');
+    }
+
+    /**
+     * @param  array<string, mixed>  $details
+     */
+    private function detail(array $details, string $key): string
+    {
+        return trim((string) ($details[$key] ?? ''));
     }
 
     private function findByMobile(VerifiedPhone $phone): ?User

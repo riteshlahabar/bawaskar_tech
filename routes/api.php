@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminPeopleController;
 use App\Http\Controllers\Api\Auth\CustomerAuthController;
 use App\Http\Controllers\Api\Auth\DealerAuthController;
+use App\Http\Controllers\Api\Auth\DealerRegistrationController;
 use App\Http\Controllers\Api\Auth\OtpController;
 use App\Http\Controllers\Api\Auth\StaffAuthController;
 use App\Http\Controllers\Api\Catalog\CategoryCatalogController;
@@ -90,6 +91,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::post('customer/login', [CustomerAuthController::class, 'login']);
             Route::post('customer/register', [CustomerAuthController::class, 'register']);
             Route::post('dealer/otp/verify', [DealerAuthController::class, 'verifyOtp']);
+            Route::post('dealer/register', [DealerRegistrationController::class, 'register']);
             Route::post('dealer/login', [DealerAuthController::class, 'login']);
             Route::post('salesman/login', [StaffAuthController::class, 'salesmanLogin']);
             Route::post('admin/login', [StaffAuthController::class, 'adminLogin']);
@@ -99,10 +101,14 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
     });
 
     Route::middleware('throttle:api')->group(function () use ($registerSharedAccountRoutes): void {
-        Route::get('catalog/categories', [CategoryCatalogController::class, 'index']);
-        Route::get('catalog/products', [ProductCatalogController::class, 'index']);
-        Route::get('catalog/products/{product}/reviews', [ProductReviewController::class, 'index']);
-        Route::get('catalog/homepage', [HomepageCatalogController::class, 'index']);
+        // Public, but a valid token is still read so an approved dealer gets
+        // the dealer catalog instead of a 401.
+        Route::middleware('api.identify')->group(function (): void {
+            Route::get('catalog/categories', [CategoryCatalogController::class, 'index']);
+            Route::get('catalog/products', [ProductCatalogController::class, 'index']);
+            Route::get('catalog/products/{product}/reviews', [ProductReviewController::class, 'index']);
+            Route::get('catalog/homepage', [HomepageCatalogController::class, 'index']);
+        });
         Route::get('translations', [TranslationCatalogController::class, 'index']);
 
         Route::prefix('customer')->middleware('api.auth:customer')->group(function () use ($registerSharedAccountRoutes): void {

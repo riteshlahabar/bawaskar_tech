@@ -24,6 +24,7 @@ use App\Contracts\Auth\ApiTokenGuardContract;
 use App\Contracts\Auth\FirebaseIdTokenContract;
 use App\Contracts\Auth\OtpContract;
 use App\Contracts\Auth\PhoneCredentialContract;
+use App\Contracts\Auth\RegistrationTokenContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
@@ -76,6 +77,7 @@ use App\Services\Admin\Modules\ModuleInput;
 use App\Services\Admin\Modules\ModuleQuery;
 use App\Services\Admin\Modules\ModuleValidation;
 use App\Services\Auth\ApiTokenGuard;
+use App\Services\Auth\EncryptedRegistrationTokenService;
 use App\Services\Auth\Firebase\FirebaseIdTokenService;
 use App\Services\Auth\OtpService;
 use App\Services\Auth\PhoneCredentialService;
@@ -145,6 +147,7 @@ class AppServiceProvider extends ServiceProvider
             PaymentGatewayContract::class => EazypayGateway::class,
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,
+            RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,

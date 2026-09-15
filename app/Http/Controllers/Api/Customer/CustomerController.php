@@ -35,6 +35,16 @@ class CustomerController extends ApiController
         ]);
     }
 
+    public function addresses(Request $request): JsonResponse
+    {
+        $user = $this->requireUser($request, User::ROLE_CUSTOMER);
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+
+        return $this->success(['addresses' => $user->addresses()->orderByDesc('is_default')->latest()->get()]);
+    }
+
     public function storeAddress(Request $request): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_CUSTOMER);

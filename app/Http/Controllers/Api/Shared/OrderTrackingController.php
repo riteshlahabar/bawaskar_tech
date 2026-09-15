@@ -51,8 +51,26 @@ class OrderTrackingController extends ApiController
             $this->stage('approved', 'Approved', $order->approved_at),
             $this->stage('packed', 'Packed', $dispatch?->created_at),
             $this->stage('dispatched', 'Dispatched', $dispatch?->dispatched_at),
+            $this->stage('out_for_delivery', 'Out for delivery', $this->outForDeliveryAt($order, $dispatch)),
             $this->stage('delivered', 'Delivered', $dispatch?->delivered_at),
         ];
+    }
+
+    /**
+     * The recorded time first; otherwise inferred from the status, or from the
+     * delivery itself, so a delivered order never shows a skipped step.
+     */
+    private function outForDeliveryAt(Order $order, ?Dispatch $dispatch): ?object
+    {
+        if ($dispatch?->out_for_delivery_at) {
+            return $dispatch->out_for_delivery_at;
+        }
+
+        if ($order->status === 'out_for_delivery' || $dispatch?->status === 'out_for_delivery') {
+            return $dispatch?->updated_at ?? $order->updated_at;
+        }
+
+        return $dispatch?->delivered_at;
     }
 
     private function stage(string $key, string $label, ?object $at): array

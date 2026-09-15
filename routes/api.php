@@ -114,6 +114,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
         Route::prefix('customer')->middleware('api.auth:customer')->group(function () use ($registerSharedAccountRoutes): void {
             Route::get('dashboard', [CustomerController::class, 'dashboard']);
             Route::get('profile', [CustomerController::class, 'profile']);
+            Route::get('addresses', [CustomerController::class, 'addresses']);
             Route::post('addresses', [CustomerController::class, 'storeAddress']);
             Route::post('support', [CustomerController::class, 'support']);
             Route::get('orders', [CustomerOrderController::class, 'index']);
@@ -136,6 +137,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
         Route::prefix('dealer')->middleware('api.auth:dealer')->group(function () use ($registerSharedAccountRoutes): void {
             Route::get('dashboard', [DealerController::class, 'dashboard']);
             Route::get('profile', [DealerController::class, 'profile']);
+            Route::get('addresses', [DealerController::class, 'addresses']);
             Route::post('addresses', [DealerController::class, 'storeAddress']);
             Route::post('support', [DealerController::class, 'support']);
             Route::get('statements', [DealerController::class, 'statements']);

@@ -15,7 +15,7 @@ final class AdminOrderController extends AdminApiController
         $admin = $this->admin($request);
 
         $validated = $request->validate([
-            'status' => ['required', Rule::in(['approved', 'packing', 'dispatched', 'delivered', 'cancelled'])],
+            'status' => ['required', Rule::in(['approved', 'packing', 'dispatched', 'out_for_delivery', 'delivered', 'cancelled'])],
         ]);
 
         $approving = $validated['status'] === 'approved';

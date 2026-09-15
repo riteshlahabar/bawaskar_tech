@@ -22,6 +22,16 @@ class DealerController extends ApiController
         return $this->success(['user' => $user->load('dealerProfile.salesman', 'addresses')]);
     }
 
+    public function addresses(Request $request): JsonResponse
+    {
+        $user = $this->requireUser($request, User::ROLE_DEALER);
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+
+        return $this->success(['addresses' => $user->addresses()->orderByDesc('is_default')->latest()->get()]);
+    }
+
     public function storeAddress(Request $request): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_DEALER);

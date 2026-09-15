@@ -85,7 +85,7 @@ class OrderController extends AdminModuleController
 
     public function changeStatus(Request $request, int|string $id): RedirectResponse
     {
-        $data = $request->validate(['status' => ['required', Rule::in(['salesman_review', 'admin_review', 'approved', 'packing', 'dispatched', 'delivered', 'cancelled'])]]);
+        $data = $request->validate(['status' => ['required', Rule::in(['salesman_review', 'admin_review', 'approved', 'packing', 'dispatched', 'out_for_delivery', 'delivered', 'cancelled'])]]);
         $order = Order::with('items')->findOrFail($id);
         DB::transaction(function () use ($order, $data): void {
             $updates = ['status' => $data['status']];

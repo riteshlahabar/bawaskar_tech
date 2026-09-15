@@ -16,6 +16,12 @@ use Illuminate\Support\Collection;
 
 final class HomepageCatalogService implements HomepageCatalogContract
 {
+    /**
+     * Sections the storefront template builds from "products first, section
+     * items only when no product is assigned".
+     */
+    private const ENTRY_SECTIONS = ['hero_slider', 'top_small_banners', 'coupon_section', 'offer_section'];
+
     public function __construct(
         private readonly HomepageCatalogRepositoryContract $homepage,
         private readonly CategoryCatalogPresenterContract $categories,
@@ -43,6 +49,7 @@ final class HomepageCatalogService implements HomepageCatalogContract
         $rows = $sections
             ->map(function (ProductHomepageSection $section) use ($audience): array {
                 $limit = max(1, min(50, (int) ($section->product_limit ?: 8)));
+                $products = $this->homepage->productsForSection($section, $limit, $audience);
 
                 return [
                     'section_key' => $section->section_key,
@@ -52,11 +59,7 @@ final class HomepageCatalogService implements HomepageCatalogContract
                     'layout_type' => $section->layout_type,
                     'source_type' => $section->source_type,
                     'sort_order' => $section->sort_order,
-                    'items' => $this->sectionItems($section),
-                    'products' => $this->homepage
-                        ->productsForSection($section, $limit, $audience)
-                        ->map(fn (Product $product): array => $this->products->present($product))
-                        ->values(),
+                    ...$this->content($section, $products),
                 ];
             })
             ->values();
@@ -71,6 +74,47 @@ final class HomepageCatalogService implements HomepageCatalogContract
             'categories' => $categories,
             'rows' => $rows,
         ];
+    }
+
+    /**
+     * Banner / offer sections send their products as entries in `items` (and
+     * no product cards), falling back to the section's own items only when no
+     * product is assigned — the same rule as the storefront template, so the
+     * apps never show older banners than the website.
+     *
+     * @return array{items: Collection, products: Collection}
+     */
+    private function content(ProductHomepageSection $section, Collection $products): array
+    {
+        $type = (string) $section->section_type;
+
+        if (in_array($type, self::ENTRY_SECTIONS, true)) {
+            return [
+                'items' => $products->isNotEmpty() ? $this->productEntries($products) : $this->sectionItems($section),
+                'products' => collect(),
+            ];
+        }
+
+        if ($type === 'strip_offer_banner') {
+            return [
+                'items' => $this->productEntries($products)->concat($this->sectionItems($section))->values(),
+                'products' => collect(),
+            ];
+        }
+
+        return [
+            'items' => $this->sectionItems($section),
+            'products' => $products
+                ->map(fn (Product $product): array => $this->products->present($product))
+                ->values(),
+        ];
+    }
+
+    private function productEntries(Collection $products): Collection
+    {
+        return $products
+            ->map(fn (Product $product): array => $this->presenter->productEntry($product))
+            ->values();
     }
 
     private function sectionItems(ProductHomepageSection $section): Collection

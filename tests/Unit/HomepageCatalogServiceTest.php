@@ -19,11 +19,44 @@ class HomepageCatalogServiceTest extends TestCase
 {
     public function test_service_builds_existing_homepage_shape_from_replaceable_dependencies(): void
     {
+        $result = $this->homepageFor('product_section');
+
+        $this->assertSame([['id' => 12]], $result['categories']->all());
+        $this->assertSame('featured', $result['rows']->first()['section_key']);
+        $this->assertSame([['id' => 11]], $result['rows']->first()['items']->all());
+        $this->assertSame([['id' => 13]], $result['rows']->first()['products']->all());
+        $this->assertSame([], $result['banners']->all());
+    }
+
+    public function test_banner_sections_use_assigned_products_as_entries_like_the_storefront(): void
+    {
+        foreach (['coupon_section', 'top_small_banners', 'offer_section'] as $type) {
+            $row = $this->homepageFor($type)['rows']->first();
+
+            $this->assertSame([['entry' => 13]], $row['items']->all(), "{$type} should show the product entry, not the old item.");
+            $this->assertSame([], $row['products']->all(), "{$type} should not also send product cards.");
+        }
+    }
+
+    public function test_hero_banners_come_from_assigned_products(): void
+    {
+        $this->assertSame([['entry' => 13]], $this->homepageFor('hero_slider')['banners']->all());
+    }
+
+    public function test_banner_sections_fall_back_to_items_without_products(): void
+    {
+        $row = $this->homepageFor('coupon_section', withProduct: false)['rows']->first();
+
+        $this->assertSame([['id' => 11]], $row['items']->all());
+    }
+
+    private function homepageFor(string $sectionType, bool $withProduct = true): array
+    {
         $section = new ProductHomepageSection([
             'section_key' => 'featured',
             'title' => 'Featured',
             'subtitle' => 'Selected products',
-            'section_type' => 'product_section',
+            'section_type' => $sectionType,
             'layout_type' => 'grid',
             'source_type' => 'featured_products',
             'sort_order' => 2,
@@ -41,12 +74,12 @@ class HomepageCatalogServiceTest extends TestCase
         $product = new Product;
         $product->id = 13;
 
-        $repository = new class($section, $category, $product) implements HomepageCatalogRepositoryContract
+        $repository = new class($section, $category, $withProduct ? collect([$product]) : collect()) implements HomepageCatalogRepositoryContract
         {
             public function __construct(
                 private readonly ProductHomepageSection $section,
                 private readonly Category $category,
-                private readonly Product $product
+                private readonly Collection $products
             ) {}
 
             public function activeSections(): Collection
@@ -64,7 +97,7 @@ class HomepageCatalogServiceTest extends TestCase
                 int $limit,
                 string $audience
             ): Collection {
-                return collect([$this->product]);
+                return $this->products;
             }
 
             public function fallbackBanners(ProductHomepageSection $section): Collection
@@ -101,6 +134,11 @@ class HomepageCatalogServiceTest extends TestCase
                 return ['id' => $item->id];
             }
 
+            public function productEntry(Product $product): array
+            {
+                return ['entry' => $product->id];
+            }
+
             public function fallbackBanner(StorefrontBanner $banner): array
             {
                 return ['id' => $banner->id];
@@ -112,17 +150,11 @@ class HomepageCatalogServiceTest extends TestCase
             }
         };
 
-        $result = (new HomepageCatalogService(
+        return (new HomepageCatalogService(
             $repository,
             $categoryPresenter,
             $productPresenter,
             $homepagePresenter
         ))->homepage('customer');
-
-        $this->assertSame([['id' => 12]], $result['categories']->all());
-        $this->assertSame('featured', $result['rows']->first()['section_key']);
-        $this->assertSame([['id' => 11]], $result['rows']->first()['items']->all());
-        $this->assertSame([['id' => 13]], $result['rows']->first()['products']->all());
-        $this->assertSame([], $result['banners']->all());
     }
 }

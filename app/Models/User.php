@@ -18,6 +18,7 @@ use App\Models\Sales\Order;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -39,6 +40,17 @@ class User extends Authenticatable
     public const ROLE_DEALER = 'dealer';
 
     public const ROLE_CUSTOMER = 'customer';
+
+    /** @var list<string> */
+    protected $appends = ['profile_photo_url'];
+
+    /**
+     * Full URL of the uploaded profile photo, or null when there is none.
+     */
+    protected function profilePhotoUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => filled($this->profile_photo) ? asset($this->profile_photo) : null);
+    }
 
     protected function casts(): array
     {

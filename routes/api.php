@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Shared\ChangePasswordController;
 use App\Http\Controllers\Api\Shared\InvoiceController;
 use App\Http\Controllers\Api\Shared\NotificationController;
 use App\Http\Controllers\Api\Shared\OrderTrackingController;
+use App\Http\Controllers\Api\Shared\ProfileUpdateController;
 use App\Http\Controllers\Api\Shared\ReturnRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,9 @@ use Illuminate\Support\Facades\Route;
 $registerSharedAccountRoutes = static function (): void {
     Route::get('change-password', [ChangePasswordController::class, 'show']);
     Route::post('change-password', [ChangePasswordController::class, 'update']);
+
+    Route::post('profile', [ProfileUpdateController::class, 'update']);
+    Route::post('profile/photo', [ProfileUpdateController::class, 'photo']);
 
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/read', [NotificationController::class, 'markRead']);

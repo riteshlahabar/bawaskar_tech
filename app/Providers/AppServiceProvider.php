@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\Account\ProfileUpdateContract;
 use App\Contracts\Admin\FormFieldTreeContract;
 use App\Contracts\Admin\FormFieldViewContract;
 use App\Contracts\Admin\Imports\ImportFileReaderContract;
@@ -61,6 +62,7 @@ use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
 use App\Repositories\Sales\Orders\EloquentOrderProductResolver;
 use App\Repositories\Sales\Orders\EloquentOrderRepository;
+use App\Services\Account\ProfileUpdateService;
 use App\Services\Admin\Imports\ImportImagePathNormalizer;
 use App\Services\Admin\Imports\ImportRelationResolver;
 use App\Services\Admin\Imports\ImportRowMapper;
@@ -151,6 +153,7 @@ class AppServiceProvider extends ServiceProvider
             PhoneCredentialContract::class => PhoneCredentialService::class,
             RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,
             PasswordChangeContract::class => PasswordChangeService::class,
+            ProfileUpdateContract::class => ProfileUpdateService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,

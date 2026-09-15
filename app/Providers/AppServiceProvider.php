@@ -23,6 +23,7 @@ use App\Contracts\Admin\Modules\ModuleValidationContract;
 use App\Contracts\Auth\ApiTokenGuardContract;
 use App\Contracts\Auth\FirebaseIdTokenContract;
 use App\Contracts\Auth\OtpContract;
+use App\Contracts\Auth\PasswordChangeContract;
 use App\Contracts\Auth\PhoneCredentialContract;
 use App\Contracts\Auth\RegistrationTokenContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
@@ -80,6 +81,7 @@ use App\Services\Auth\ApiTokenGuard;
 use App\Services\Auth\EncryptedRegistrationTokenService;
 use App\Services\Auth\Firebase\FirebaseIdTokenService;
 use App\Services\Auth\OtpService;
+use App\Services\Auth\PasswordChangeService;
 use App\Services\Auth\PhoneCredentialService;
 use App\Services\Catalog\GoogleTextTranslator;
 use App\Services\Catalog\Product\ProductFormService;
@@ -148,6 +150,7 @@ class AppServiceProvider extends ServiceProvider
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,
             RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,
+            PasswordChangeContract::class => PasswordChangeService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,

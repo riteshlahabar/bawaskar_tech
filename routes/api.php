@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\Salesman\SalesmanOrderController;
 use App\Http\Controllers\Api\Salesman\SalesmanPayslipController;
 use App\Http\Controllers\Api\Salesman\SalesmanPerformanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanProfileController;
+use App\Http\Controllers\Api\Shared\ChangePasswordController;
 use App\Http\Controllers\Api\Shared\InvoiceController;
 use App\Http\Controllers\Api\Shared\NotificationController;
 use App\Http\Controllers\Api\Shared\OrderTrackingController;
@@ -52,6 +53,9 @@ use Illuminate\Support\Facades\Route;
  * another. Registering them once keeps the three apps on identical payloads.
  */
 $registerSharedAccountRoutes = static function (): void {
+    Route::get('change-password', [ChangePasswordController::class, 'show']);
+    Route::post('change-password', [ChangePasswordController::class, 'update']);
+
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/read', [NotificationController::class, 'markRead']);
 

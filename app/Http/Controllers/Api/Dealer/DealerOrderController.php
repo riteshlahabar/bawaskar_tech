@@ -6,12 +6,13 @@ use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Order;
 use App\Models\User;
+use App\Services\Sales\Orders\OrderItemImageAttacher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DealerOrderController extends ApiController
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, OrderItemImageAttacher $images): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_DEALER);
         if ($user instanceof JsonResponse) {
@@ -19,10 +20,12 @@ class DealerOrderController extends ApiController
         }
 
         $orders = Order::query()
-            ->with('items.product', 'items.variant', 'invoice', 'dispatches', 'salesman')
+            ->with('items.product.images', 'items.variant', 'invoice', 'dispatches', 'salesman')
             ->where('dealer_id', $user->id)
             ->latest()
             ->paginate($request->integer('per_page', 20));
+
+        $images->attach($orders->getCollection());
 
         return $this->success(['orders' => $orders]);
     }
@@ -47,7 +50,7 @@ class DealerOrderController extends ApiController
         return $this->success(['order' => $order], 'Dealer order sent to assigned salesman.', 201);
     }
 
-    public function show(Request $request, Order $order): JsonResponse
+    public function show(Request $request, Order $order, OrderItemImageAttacher $images): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_DEALER);
         if ($user instanceof JsonResponse) {
@@ -58,6 +61,9 @@ class DealerOrderController extends ApiController
             return $this->fail('Order not found.', 404);
         }
 
-        return $this->success(['order' => $order->load('items.product', 'items.variant', 'invoice', 'dispatches', 'salesman')]);
+        $order->load('items.product.images', 'items.variant', 'invoice', 'dispatches', 'salesman');
+        $images->attach([$order]);
+
+        return $this->success(['order' => $order]);
     }
 }

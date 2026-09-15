@@ -6,12 +6,13 @@ use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Order;
 use App\Models\User;
+use App\Services\Sales\Orders\OrderItemImageAttacher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerOrderController extends ApiController
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, OrderItemImageAttacher $images): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_CUSTOMER);
         if ($user instanceof JsonResponse) {
@@ -19,10 +20,12 @@ class CustomerOrderController extends ApiController
         }
 
         $orders = Order::query()
-            ->with('items.product', 'items.variant', 'invoice', 'dispatches')
+            ->with('items.product.images', 'items.variant', 'invoice', 'dispatches')
             ->where('customer_id', $user->id)
             ->latest()
             ->paginate($request->integer('per_page', 20));
+
+        $images->attach($orders->getCollection());
 
         return $this->success(['orders' => $orders]);
     }
@@ -154,7 +157,7 @@ class CustomerOrderController extends ApiController
         return $this->success(['order' => $order], 'Customer order sent to admin.', 201);
     }
 
-    public function show(Request $request, Order $order): JsonResponse
+    public function show(Request $request, Order $order, OrderItemImageAttacher $images): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_CUSTOMER);
         if ($user instanceof JsonResponse) {
@@ -165,6 +168,9 @@ class CustomerOrderController extends ApiController
             return $this->fail('Order not found.', 404);
         }
 
-        return $this->success(['order' => $order->load('items.product', 'items.variant', 'invoice', 'dispatches')]);
+        $order->load('items.product.images', 'items.variant', 'invoice', 'dispatches');
+        $images->attach([$order]);
+
+        return $this->success(['order' => $order]);
     }
 }

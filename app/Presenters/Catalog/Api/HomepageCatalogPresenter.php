@@ -37,7 +37,7 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
      * Mirrors the storefront template's product entry helpers, so the apps
      * show the same banner / offer content as the website.
      */
-    public function productEntry(Product $product): array
+    public function productEntry(Product $product, bool $nameAsTitle = true): array
     {
         $image = $product->homepage_image_path ?: data_get($product, 'images.0.path');
 
@@ -45,7 +45,7 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
             'id' => $product->id,
             'product_id' => $product->id,
             'slot' => 'product',
-            'title' => $product->homepage_title ?: $product->storefront_name,
+            'title' => $product->homepage_title ?: ($nameAsTitle ? $product->storefront_name : null),
             'subtitle' => $product->homepage_subtitle ?: $product->sale_badge_text,
             'description' => $product->homepage_description ?: $product->short_description,
             'highlight_text' => $product->homepage_highlight_text,

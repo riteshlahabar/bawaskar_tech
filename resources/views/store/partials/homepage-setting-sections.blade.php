@@ -12,6 +12,14 @@
         return storefront_public_t($entry->title ?: $fallback, 'homepage_entry');
     };
 
+    // Text drawn on top of a banner image: an admin-entered banner title only,
+    // never the product name.
+    $entryHeading = function ($entry) use ($isProduct) {
+        $value = $isProduct($entry) ? $entry->homepage_title : $entry->title;
+
+        return filled($value) ? storefront_public_t($value, 'homepage_entry') : null;
+    };
+
     $entrySubtitle = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
             return storefront_public_t($entry->homepage_subtitle ?: $entry->sale_badge_text, 'homepage_entry');
@@ -157,7 +165,7 @@
                                         <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                             <div class="container-fluid-lg">
                                                 @if($entrySubtitle($entry))<h6 class="ls-expanded theme-color text-uppercase">{{ $entrySubtitle($entry) }}</h6>@endif
-                                                <h1 class="heding-2">{{ $entryTitle($entry, $section->title) }}</h1>
+                                                @if($entryHeading($entry))<h1 class="heding-2">{{ $entryHeading($entry) }}</h1>@endif
                                                 @if($entryDescription($entry))<h5 class="text-content">{{ $entryDescription($entry) }}</h5>@endif
                                                 <button class="btn theme-bg-color btn-md text-white fw-bold mt-md-4 mt-2 mend-auto" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>
                                             </div>
@@ -182,7 +190,7 @@
                                         <a href="{{ $entryUrl($entry) }}"><img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
                                         <div class="banner-detail p-center-left w-75 banner-p-sm mend-auto">
                                             @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
-                                            <h4 class="fw-bold mb-0">{{ $entryTitle($entry, $section->title) }}</h4>
+                                            @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
                                             <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn shop-now-button mt-3 ps-0 mend-auto theme-color fw-bold">{{ $entryButton($entry) }} <i class="fa-solid fa-chevron-right"></i></button>
                                         </div>
                                     </div>

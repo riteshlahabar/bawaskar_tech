@@ -89,15 +89,19 @@ final class HomepageCatalogService implements HomepageCatalogContract
         $type = (string) $section->section_type;
 
         if (in_array($type, self::ENTRY_SECTIONS, true)) {
+            // Banners never show the product name on top of the image; bank
+            // offer cards still use it as the offer name.
+            $nameAsTitle = $type === 'coupon_section';
+
             return [
-                'items' => $products->isNotEmpty() ? $this->productEntries($products) : $this->sectionItems($section),
+                'items' => $products->isNotEmpty() ? $this->productEntries($products, $nameAsTitle) : $this->sectionItems($section),
                 'products' => collect(),
             ];
         }
 
         if ($type === 'strip_offer_banner') {
             return [
-                'items' => $this->productEntries($products)->concat($this->sectionItems($section))->values(),
+                'items' => $this->productEntries($products, false)->concat($this->sectionItems($section))->values(),
                 'products' => collect(),
             ];
         }
@@ -110,10 +114,10 @@ final class HomepageCatalogService implements HomepageCatalogContract
         ];
     }
 
-    private function productEntries(Collection $products): Collection
+    private function productEntries(Collection $products, bool $nameAsTitle): Collection
     {
         return $products
-            ->map(fn (Product $product): array => $this->presenter->productEntry($product))
+            ->map(fn (Product $product): array => $this->presenter->productEntry($product, $nameAsTitle))
             ->values();
     }
 

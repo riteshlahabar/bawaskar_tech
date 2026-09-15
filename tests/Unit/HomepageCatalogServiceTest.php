@@ -30,17 +30,25 @@ class HomepageCatalogServiceTest extends TestCase
 
     public function test_banner_sections_use_assigned_products_as_entries_like_the_storefront(): void
     {
-        foreach (['coupon_section', 'top_small_banners', 'offer_section'] as $type) {
+        foreach (['top_small_banners', 'offer_section'] as $type) {
             $row = $this->homepageFor($type)['rows']->first();
 
-            $this->assertSame([['entry' => 13]], $row['items']->all(), "{$type} should show the product entry, not the old item.");
+            $this->assertSame([['entry' => 13, 'no_name' => true]], $row['items']->all(), "{$type} should show the product entry without the product name.");
             $this->assertSame([], $row['products']->all(), "{$type} should not also send product cards.");
         }
     }
 
-    public function test_hero_banners_come_from_assigned_products(): void
+    public function test_bank_offers_keep_the_product_name_as_offer_title(): void
     {
-        $this->assertSame([['entry' => 13]], $this->homepageFor('hero_slider')['banners']->all());
+        $row = $this->homepageFor('coupon_section')['rows']->first();
+
+        $this->assertSame([['entry' => 13]], $row['items']->all());
+        $this->assertSame([], $row['products']->all());
+    }
+
+    public function test_hero_banners_come_from_assigned_products_without_the_product_name(): void
+    {
+        $this->assertSame([['entry' => 13, 'no_name' => true]], $this->homepageFor('hero_slider')['banners']->all());
     }
 
     public function test_banner_sections_fall_back_to_items_without_products(): void
@@ -134,9 +142,9 @@ class HomepageCatalogServiceTest extends TestCase
                 return ['id' => $item->id];
             }
 
-            public function productEntry(Product $product): array
+            public function productEntry(Product $product, bool $nameAsTitle = true): array
             {
-                return ['entry' => $product->id];
+                return $nameAsTitle ? ['entry' => $product->id] : ['entry' => $product->id, 'no_name' => true];
             }
 
             public function fallbackBanner(StorefrontBanner $banner): array

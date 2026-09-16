@@ -4,6 +4,7 @@ namespace App\Services\Account;
 
 use App\Contracts\Account\ProfileUpdateContract;
 use App\Contracts\Files\PublicUploadContract;
+use App\Contracts\Localization\SupportedLocalesContract;
 use App\Models\CustomerProfile;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -13,9 +14,21 @@ final class ProfileUpdateService implements ProfileUpdateContract
 {
     public const PHOTO_DIRECTORY = 'uploads/profile-photos';
 
+    /** @deprecated Kept for older callers; the live list comes from SupportedLocalesContract. */
     public const LANGUAGES = ['en', 'mr', 'hi'];
 
-    public function __construct(private readonly PublicUploadContract $uploads) {}
+    public function __construct(
+        private readonly PublicUploadContract $uploads,
+        private readonly SupportedLocalesContract $locales
+    ) {}
+
+    /**
+     * @return array<int, string>
+     */
+    private function languageCodes(): array
+    {
+        return $this->locales->codes();
+    }
 
     public function rules(User $user): array
     {
@@ -31,7 +44,7 @@ final class ProfileUpdateService implements ProfileUpdateContract
             ],
             User::ROLE_CUSTOMER => $rules + [
                 'date_of_birth' => ['nullable', 'date', 'before:today'],
-                'preferred_language' => ['nullable', Rule::in(self::LANGUAGES)],
+                'preferred_language' => ['nullable', Rule::in($this->languageCodes())],
             ],
             default => $rules,
         };

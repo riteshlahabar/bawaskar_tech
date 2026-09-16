@@ -119,6 +119,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('catalog/homepage', [HomepageCatalogController::class, 'index']);
         });
         Route::get('translations', [TranslationCatalogController::class, 'index']);
+        Route::post('translations/sync', [TranslationCatalogController::class, 'sync'])->middleware('throttle:otp');
 
         Route::prefix('customer')->middleware('api.auth:customer')->group(function () use ($registerSharedAccountRoutes): void {
             Route::get('dashboard', [CustomerController::class, 'dashboard']);

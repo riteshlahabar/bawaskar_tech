@@ -5,6 +5,7 @@ namespace App\Services\Catalog;
 use App\Contracts\Catalog\ProductTranslationRepositoryContract;
 use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
+use App\Contracts\Localization\SupportedLocalesContract;
 use App\Models\Catalog\Product;
 
 /**
@@ -19,18 +20,22 @@ use App\Models\Catalog\Product;
  */
 class ProductTranslationService implements ProductTranslationServiceContract
 {
-    private const LOCALES = [
-        'hi',
-        'mr',
-        'gu',
-        'kn',
-        'te',
-    ];
-
     public function __construct(
         private readonly TextTranslatorContract $translator,
-        private readonly ProductTranslationRepositoryContract $repository
+        private readonly ProductTranslationRepositoryContract $repository,
+        private readonly SupportedLocalesContract $supportedLocales
     ) {}
+
+    /**
+     * The admin Languages list is the single source of truth, so adding or
+     * disabling a language in admin is enough; this no longer keeps a copy.
+     *
+     * @return array<int, string>
+     */
+    private function locales(): array
+    {
+        return $this->supportedLocales->translatable();
+    }
 
     public function translatePayload(
         string $name,
@@ -38,7 +43,7 @@ class ProductTranslationService implements ProductTranslationServiceContract
     ): array {
         $translations = [];
 
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $translations[$locale] = [
                 'name' => $this->translator->translate(
                     $name,
@@ -63,7 +68,7 @@ class ProductTranslationService implements ProductTranslationServiceContract
     {
         $translations = [];
 
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $nameKey =
                 'translation_'.$locale.'_name';
 
@@ -135,7 +140,7 @@ class ProductTranslationService implements ProductTranslationServiceContract
 
         $data = [];
 
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $translation =
                 $translations[$locale] ?? [];
 

@@ -13,6 +13,7 @@ use App\Models\Communication\AppTranslation;
 use App\Models\Communication\Language;
 use App\Models\Communication\Notification;
 use App\Models\Communication\SupportTicket;
+use App\Models\Communication\WebTranslation;
 use App\Models\Courier;
 use App\Models\DealerProfile;
 use App\Models\Field\AttendanceLog;
@@ -86,7 +87,7 @@ return [
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
             ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ]],
         ['label' => 'System', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
-            ['key' => 'company-settings', 'label' => 'Seller / Company Information', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'translations', 'label' => 'Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'], ['key' => 'reports', 'label' => 'Reports', 'route' => 'admin.reports.index', 'icon' => 'iconoir-stats-report'], ]],
+            ['key' => 'company-settings', 'label' => 'Seller / Company Information', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'], ['key' => 'reports', 'label' => 'Reports', 'route' => 'admin.reports.index', 'icon' => 'iconoir-stats-report'], ]],
     ],
     'modules' => [
         'salesmen' => [
@@ -498,6 +499,19 @@ return [
                 ['name' => 'subtitle', 'label' => 'Subtitle', 'rules' => ['nullable', 'string', 'max:255']],
                 ['name' => 'icon_path', 'label' => 'Icon - 40 x 40 px', 'type' => 'image', 'upload_dir' => 'uploads/storefront/service-blocks', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048']],
                 ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'web-translations' => [
+            'label' => 'Website Translations', 'group' => 'System', 'singular' => 'Website Translation', 'description' => 'Storefront and mobile-app text. Rows are created automatically the first time a string is shown in a language; edit any wrong wording here.', 'model' => WebTranslation::class, 'search' => ['translation_key', 'english_text', 'value', 'locale'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['id', 'desc'],
+            'columns' => [['key' => 'locale', 'label' => 'Language'], ['key' => 'group', 'label' => 'Group'], ['key' => 'translation_key', 'label' => 'Key'], ['key' => 'english_text', 'label' => 'English'], ['key' => 'value', 'label' => 'Translation'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'locale', 'label' => 'Language', 'type' => 'select', 'option_model' => Language::class, 'option_where' => ['is_active' => 1], 'option_value' => 'code', 'option_label' => 'name', 'rules' => ['required', 'string', 'max:10']],
+                ['name' => 'group', 'label' => 'Group', 'help' => 'The part before the first dot in the key, e.g. nav, footer, cart.', 'rules' => ['nullable', 'string', 'max:80']],
+                ['name' => 'translation_key', 'label' => 'Translation Key', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'english_text', 'label' => 'English Text', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
+                ['name' => 'value', 'label' => 'Translated Text', 'type' => 'textarea', 'rules' => ['required', 'string']],
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],
         ],

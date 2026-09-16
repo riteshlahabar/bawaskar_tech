@@ -4,19 +4,32 @@ namespace App\Services\Catalog\Product;
 
 use App\Contracts\Catalog\Product\ProductTranslationContract;
 use App\Contracts\Catalog\Product\TextTranslatorContract;
+use App\Contracts\Localization\SupportedLocalesContract;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductTranslation;
 
 final class ProductTranslationService implements ProductTranslationContract
 {
-    private const LOCALES = ['hi', 'mr', 'gu', 'kn', 'te'];
+    public function __construct(
+        private readonly TextTranslatorContract $translator,
+        private readonly SupportedLocalesContract $supportedLocales
+    ) {}
 
-    public function __construct(private readonly TextTranslatorContract $translator) {}
+    /**
+     * The admin Languages list is the single source of truth, so adding or
+     * disabling a language in admin is enough; this no longer keeps a copy.
+     *
+     * @return array<int, string>
+     */
+    private function locales(): array
+    {
+        return $this->supportedLocales->translatable();
+    }
 
     public function translatePayload(string $name, ?string $description): array
     {
         $translations = [];
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $translations[$locale] = [
                 'name' => $this->translator->translate($name, 'en', $locale),
                 'description' => filled($description) ? $this->translator->translate((string) $description, 'en', $locale) : '',
@@ -29,7 +42,7 @@ final class ProductTranslationService implements ProductTranslationContract
     public function extract(array &$data): array
     {
         $translations = [];
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $nameKey = 'translation_'.$locale.'_name';
             $descriptionKey = 'translation_'.$locale.'_description';
             $translations[$locale] = [
@@ -65,7 +78,7 @@ final class ProductTranslationService implements ProductTranslationContract
     {
         $translations = $product->relationLoaded('translations') ? $product->translations : $product->translations()->get();
         $data = [];
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $translation = $translations->firstWhere('locale', $locale);
             $data['translation_'.$locale.'_name'] = $translation?->name;
             $data['translation_'.$locale.'_description'] = $translation?->description;

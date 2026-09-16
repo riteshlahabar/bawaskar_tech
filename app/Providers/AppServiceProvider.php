@@ -46,6 +46,8 @@ use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Finance\PaymentGatewayContract;
+use App\Contracts\Localization\AppStringTranslationContract;
+use App\Contracts\Localization\SupportedLocalesContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
 use App\Contracts\Sales\Orders\OrderLineBuilderContract;
@@ -105,6 +107,8 @@ use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
+use App\Services\Localization\DatabaseSupportedLocalesService;
+use App\Services\Localization\WebTranslationAppStringService;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
 use App\Services\Sales\Orders\DealerOrderContextService;
 use App\Services\Sales\Orders\EloquentStockAvailabilityService;
@@ -151,6 +155,8 @@ class AppServiceProvider extends ServiceProvider
             ProductRepositoryContract::class => EloquentProductRepository::class,
             SalesDocumentDataContract::class => SalesDocumentDataService::class,
             SalesDocumentPdfContract::class => DompdfSalesDocumentPdfService::class,
+            SupportedLocalesContract::class => DatabaseSupportedLocalesService::class,
+            AppStringTranslationContract::class => WebTranslationAppStringService::class,
             PublicUploadContract::class => PublicUploadService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,

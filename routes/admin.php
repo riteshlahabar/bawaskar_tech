@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\TourPlans\TourPlanController;
 use App\Http\Controllers\Admin\Translations\TranslationController;
 use App\Http\Controllers\Admin\Units\UnitController;
 use App\Http\Controllers\Admin\Warehouses\WarehouseController;
+use App\Http\Controllers\Admin\WebTranslations\WebTranslationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -73,6 +74,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'attendance' => AttendanceController::class, 'dealer-visits' => DealerVisitController::class, 'tour-plans' => TourPlanController::class,
             'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
             'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class,
+            'web-translations' => WebTranslationController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');

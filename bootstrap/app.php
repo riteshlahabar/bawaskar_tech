@@ -8,6 +8,7 @@ use App\Exceptions\Finance\PaymentGatewayException;
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\IdentifyApiToken;
+use App\Http\Middleware\SetApiLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Every API response is locale-aware: product and category names come back
+        // translated without each endpoint having to ask for it.
+        $middleware->api(prepend: [SetApiLocale::class]);
+
         $middleware->alias([
             'admin' => EnsureAdmin::class,
             'api.auth' => AuthenticateApiToken::class,

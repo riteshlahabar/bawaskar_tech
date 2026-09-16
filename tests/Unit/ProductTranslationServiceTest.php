@@ -4,11 +4,39 @@ namespace Tests\Unit;
 
 use App\Contracts\Catalog\ProductTranslationRepositoryContract;
 use App\Contracts\Catalog\TextTranslatorContract;
+use App\Contracts\Localization\SupportedLocalesContract;
 use App\Services\Catalog\ProductTranslationService;
 use PHPUnit\Framework\TestCase;
 
 class ProductTranslationServiceTest extends TestCase
 {
+    /** Stands in for the admin Languages list, which needs no database here. */
+    private function locales(): SupportedLocalesContract
+    {
+        return new class implements SupportedLocalesContract
+        {
+            public function codes(): array
+            {
+                return ['en', 'hi', 'mr', 'gu', 'pa', 'te'];
+            }
+
+            public function translatable(): array
+            {
+                return ['hi', 'mr', 'gu', 'pa', 'te'];
+            }
+
+            public function isSupported(string $locale): bool
+            {
+                return in_array($locale, $this->codes(), true);
+            }
+
+            public function default(): string
+            {
+                return 'en';
+            }
+        };
+    }
+
     public function test_translation_service_uses_replaceable_contracts(): void
     {
         $translator = new class implements TextTranslatorContract
@@ -53,7 +81,8 @@ class ProductTranslationServiceTest extends TestCase
 
         $service = new ProductTranslationService(
             $translator,
-            $repository
+            $repository,
+            $this->locales()
         );
 
         $result = $service->translatePayload(
@@ -107,7 +136,8 @@ class ProductTranslationServiceTest extends TestCase
 
         $service = new ProductTranslationService(
             $translator,
-            $repository
+            $repository,
+            $this->locales()
         );
 
         $data = [

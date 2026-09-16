@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppTranslation extends Model
 {
-    protected $fillable = ['group', 'translation_key', 'locale', 'value', 'is_active'];
+    protected $fillable = ['app', 'group', 'translation_key', 'english_text', 'locale', 'value', 'is_active'];
 
     protected function casts(): array
     {

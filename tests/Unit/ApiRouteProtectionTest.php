@@ -11,7 +11,7 @@ class ApiRouteProtectionTest extends TestCase
      * Endpoints that are deliberately public: the storefront catalog the apps
      * read before anyone signs in, plus the auth handshake itself.
      */
-    private const PUBLIC_PREFIXES = ['health', 'auth/', 'catalog/', 'translations'];
+    private const PUBLIC_PREFIXES = ['health', 'auth/', 'catalog/', 'translations', 'app-translations'];
 
     public function test_every_non_public_api_route_is_behind_the_token_middleware(): void
     {

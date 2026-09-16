@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\Dealer\DealerOrderController;
 use App\Http\Controllers\Api\Dealer\DealerOutstandingController;
 use App\Http\Controllers\Api\Dealer\DealerPaymentController;
 use App\Http\Controllers\Api\Dealer\DealerReportController;
+use App\Http\Controllers\Api\Localization\AppTranslationController;
 use App\Http\Controllers\Api\Payments\OnlinePaymentController;
 use App\Http\Controllers\Api\Salesman\SalesmanAdvanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanAnnouncementController;
@@ -120,6 +121,9 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
         });
         Route::get('translations', [TranslationCatalogController::class, 'index']);
         Route::post('translations/sync', [TranslationCatalogController::class, 'sync'])->middleware('throttle:otp');
+        // Mobile-app strings (app_translations): read-only fetch + key registration.
+        Route::get('app-translations', [AppTranslationController::class, 'index']);
+        Route::post('app-translations/register', [AppTranslationController::class, 'register']);
 
         Route::prefix('customer')->middleware('api.auth:customer')->group(function () use ($registerSharedAccountRoutes): void {
             Route::get('dashboard', [CustomerController::class, 'dashboard']);

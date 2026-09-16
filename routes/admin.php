@@ -46,6 +46,7 @@ use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockCon
 use App\Http\Controllers\Admin\Support\SupportController;
 use App\Http\Controllers\Admin\Targets\TargetController;
 use App\Http\Controllers\Admin\TourPlans\TourPlanController;
+use App\Http\Controllers\Admin\Translations\AppTranslationBatchController;
 use App\Http\Controllers\Admin\Translations\TranslationController;
 use App\Http\Controllers\Admin\Units\UnitController;
 use App\Http\Controllers\Admin\Warehouses\WarehouseController;
@@ -99,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('expenses/{expense}/decision', [ExpenseController::class, 'decision'])->name('expenses.decision');
         Route::post('leaves/{leave}/decision', [LeaveController::class, 'decision'])->name('leaves.decision');
         Route::post('salary/generate', [SalaryController::class, 'generate'])->name('salary.generate');
+        Route::post('translations/translate-batch', AppTranslationBatchController::class)->name('translations.translate-batch');
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
         Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');

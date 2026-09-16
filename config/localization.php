@@ -30,4 +30,25 @@ return [
 
     'app_string_group' => 'app',
 
+    /*
+    |--------------------------------------------------------------------------
+    | App translations (app_translations table)
+    |--------------------------------------------------------------------------
+    |
+    | Each app registers its English strings; the admin Translate button then
+    | fills every other language in small batches so one request always ends
+    | well inside the shared-hosting time limit.
+    |
+    */
+
+    'apps' => [
+        'customer' => 'Customer App',
+        'dealer' => 'Dealer App',
+        'salesman' => 'Salesman App',
+    ],
+
+    'app_register_max_items' => 1500,
+
+    'app_translate_batch_size' => 40,
+
 ];

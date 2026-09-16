@@ -47,6 +47,9 @@ use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Finance\PaymentGatewayContract;
 use App\Contracts\Localization\AppStringTranslationContract;
+use App\Contracts\Localization\AppTranslationBatchContract;
+use App\Contracts\Localization\AppTranslationCatalogContract;
+use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
@@ -60,10 +63,13 @@ use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Contracts\Sales\Orders\StockAvailabilityContract;
 use App\Contracts\Sales\Orders\StockReservationContract;
 use App\Contracts\Sales\SalesDocumentDataContract;
+use App\Contracts\Sales\SalesDocumentGstDetailsContract;
 use App\Contracts\Sales\SalesDocumentPdfContract;
+use App\Contracts\Support\AmountInWordsContract;
 use App\Contracts\Support\TransactionManagerContract;
 use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
+use App\Repositories\Localization\EloquentAppTranslationRepository;
 use App\Repositories\Sales\Orders\EloquentOrderProductResolver;
 use App\Repositories\Sales\Orders\EloquentOrderRepository;
 use App\Services\Account\ProfileUpdateService;
@@ -107,6 +113,8 @@ use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
+use App\Services\Localization\AppTranslationBatchService;
+use App\Services\Localization\AppTranslationCatalogService;
 use App\Services\Localization\DatabaseSupportedLocalesService;
 use App\Services\Localization\WebTranslationAppStringService;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
@@ -120,6 +128,8 @@ use App\Services\Sales\Orders\OrderPricingService;
 use App\Services\Sales\Orders\OrderWorkflowService;
 use App\Services\Sales\Orders\TimestampOrderNumberGenerator;
 use App\Services\Sales\SalesDocumentDataService;
+use App\Services\Sales\SalesDocumentGstDetailsService;
+use App\Services\Support\IndianAmountInWordsService;
 use App\Services\Support\LaravelTransactionManager;
 use App\Support\Admin\Forms\ConfigFormFieldViews;
 use App\Support\Admin\Forms\FormFieldTree;
@@ -155,8 +165,13 @@ class AppServiceProvider extends ServiceProvider
             ProductRepositoryContract::class => EloquentProductRepository::class,
             SalesDocumentDataContract::class => SalesDocumentDataService::class,
             SalesDocumentPdfContract::class => DompdfSalesDocumentPdfService::class,
+            SalesDocumentGstDetailsContract::class => SalesDocumentGstDetailsService::class,
+            AmountInWordsContract::class => IndianAmountInWordsService::class,
             SupportedLocalesContract::class => DatabaseSupportedLocalesService::class,
             AppStringTranslationContract::class => WebTranslationAppStringService::class,
+            AppTranslationRepositoryContract::class => EloquentAppTranslationRepository::class,
+            AppTranslationCatalogContract::class => AppTranslationCatalogService::class,
+            AppTranslationBatchContract::class => AppTranslationBatchService::class,
             PublicUploadContract::class => PublicUploadService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,

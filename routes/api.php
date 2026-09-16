@@ -72,6 +72,7 @@ $registerSharedAccountRoutes = static function (): void {
 
     Route::get('invoices', [InvoiceController::class, 'index']);
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show']);
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf']);
 
     Route::get('returns', [ReturnRequestController::class, 'index']);
     Route::post('returns', [ReturnRequestController::class, 'store']);

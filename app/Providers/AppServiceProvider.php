@@ -57,6 +57,8 @@ use App\Contracts\Sales\Orders\OrderRepositoryContract;
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Contracts\Sales\Orders\StockAvailabilityContract;
 use App\Contracts\Sales\Orders\StockReservationContract;
+use App\Contracts\Sales\SalesDocumentDataContract;
+use App\Contracts\Sales\SalesDocumentPdfContract;
 use App\Contracts\Support\TransactionManagerContract;
 use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
@@ -103,6 +105,7 @@ use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
+use App\Services\Sales\DompdfSalesDocumentPdfService;
 use App\Services\Sales\Orders\DealerOrderContextService;
 use App\Services\Sales\Orders\EloquentStockAvailabilityService;
 use App\Services\Sales\Orders\EloquentStockReservationService;
@@ -112,6 +115,7 @@ use App\Services\Sales\Orders\OrderLineQuantityService;
 use App\Services\Sales\Orders\OrderPricingService;
 use App\Services\Sales\Orders\OrderWorkflowService;
 use App\Services\Sales\Orders\TimestampOrderNumberGenerator;
+use App\Services\Sales\SalesDocumentDataService;
 use App\Services\Support\LaravelTransactionManager;
 use App\Support\Admin\Forms\ConfigFormFieldViews;
 use App\Support\Admin\Forms\FormFieldTree;
@@ -145,6 +149,8 @@ class AppServiceProvider extends ServiceProvider
             ProductTranslationContract::class => \App\Services\Catalog\Product\ProductTranslationService::class,
             \App\Contracts\Catalog\Product\TextTranslatorContract::class => \App\Services\Catalog\Product\GoogleTextTranslator::class,
             ProductRepositoryContract::class => EloquentProductRepository::class,
+            SalesDocumentDataContract::class => SalesDocumentDataService::class,
+            SalesDocumentPdfContract::class => DompdfSalesDocumentPdfService::class,
             PublicUploadContract::class => PublicUploadService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,

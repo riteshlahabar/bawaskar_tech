@@ -34,6 +34,8 @@ use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
+use App\Models\Storefront\StorefrontFooterLink;
+use App\Models\Storefront\StorefrontServiceBlock;
 use App\Models\User;
 
 $active = ['1' => 'Active', '0' => 'Inactive'];
@@ -81,6 +83,8 @@ return [
             ['key' => 'internal-expenses', 'label' => 'Expense List', 'route' => 'admin.internal-expenses.index', 'icon' => 'iconoir-notes'], ['key' => 'expense-categories', 'label' => 'Category List', 'route' => 'admin.expense-categories.index', 'icon' => 'iconoir-list-select'], ['key' => 'expense-subcategories', 'label' => 'Subcategory List', 'route' => 'admin.expense-subcategories.index', 'icon' => 'iconoir-list'], ]],
         ['label' => 'HRMS', 'items' => [
             ['key' => 'timesheet', 'label' => 'Timesheet', 'id' => 'timesheetMenu', 'icon' => 'iconoir-calendar', 'children' => [['key' => 'attendance', 'label' => 'Attendance', 'route' => 'admin.attendance.index', 'icon' => 'iconoir-check-circle'], ['key' => 'leaves', 'label' => 'Leave', 'route' => 'admin.leaves.index', 'icon' => 'iconoir-calendar-minus'], ['key' => 'bulk-attendance', 'label' => 'Bulk Attendance', 'route' => 'admin.attendance.bulk', 'icon' => 'iconoir-table-rows']]], ['key' => 'dealer-visits', 'label' => 'Dealer Visits', 'route' => 'admin.dealer-visits.index', 'icon' => 'iconoir-map-pin'], ['key' => 'tour-plans', 'label' => 'Tour Plans', 'route' => 'admin.tour-plans.index', 'icon' => 'iconoir-route'], ['key' => 'expenses', 'label' => 'Expenses', 'route' => 'admin.expenses.index', 'icon' => 'iconoir-receive-dollars'], ['key' => 'salary', 'label' => 'Salary & Payroll', 'route' => 'admin.salary.index', 'icon' => 'iconoir-coins'], ['key' => 'targets', 'label' => 'Targets & Commission', 'route' => 'admin.targets.index', 'icon' => 'iconoir-target'], ['key' => 'assets', 'label' => 'Salesman Assets', 'route' => 'admin.assets.index', 'icon' => 'iconoir-laptop'], ]],
+        ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
+            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ]],
         ['label' => 'System', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
             ['key' => 'company-settings', 'label' => 'Seller / Company Information', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'translations', 'label' => 'Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'], ['key' => 'reports', 'label' => 'Reports', 'route' => 'admin.reports.index', 'icon' => 'iconoir-stats-report'], ]],
     ],
@@ -474,6 +478,30 @@ return [
             'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'asset_type', 'label' => 'Type'], ['key' => 'asset_name', 'label' => 'Asset'], ['key' => 'serial_no', 'label' => 'Serial No.'], ['key' => 'issued_on', 'label' => 'Issued', 'type' => 'date'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
             'fields' => [['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']], ['name' => 'asset_type', 'label' => 'Asset Type', 'type' => 'select', 'options' => ['mobile' => 'Mobile', 'laptop' => 'Laptop', 'sim' => 'SIM Card', 'vehicle' => 'Vehicle', 'other' => 'Other'], 'rules' => ['required', 'string', 'max:40']], ['name' => 'asset_name', 'label' => 'Asset Name', 'rules' => ['required', 'string', 'max:255']], ['name' => 'serial_no', 'label' => 'Serial Number', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'issued_on', 'label' => 'Issued On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'returned_on', 'label' => 'Returned On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'condition', 'label' => 'Condition', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['issued' => 'Issued', 'returned' => 'Returned', 'lost' => 'Lost', 'damaged' => 'Damaged'], 'rules' => ['required', 'string', 'max:40']]],
         ],
+        'storefront-footer-links' => [
+            'label' => 'Footer Links', 'group' => 'Storefront', 'singular' => 'Footer Link', 'description' => 'Links shown in the website footer columns.', 'model' => StorefrontFooterLink::class, 'search' => ['title', 'url', 'link_group'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'link_group', 'label' => 'Footer Column'], ['key' => 'title', 'label' => 'Link Title'], ['key' => 'url', 'label' => 'URL'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'link_group', 'label' => 'Footer Column', 'type' => 'select', 'options' => ['about' => 'About Store', 'useful' => 'Useful Links', 'help' => 'Help Center', 'categories' => 'Categories'], 'rules' => ['required', 'string', 'max:80']],
+                ['name' => 'title', 'label' => 'Link Title', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'url', 'label' => 'URL', 'help' => 'Full URL, or a path such as /about-us', 'rules' => ['required', 'string', 'max:2048']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'storefront-service-blocks' => [
+            'label' => 'Service Blocks', 'group' => 'Storefront', 'singular' => 'Service Block', 'description' => 'The promise strip shown above the website footer.', 'model' => StorefrontServiceBlock::class, 'search' => ['title', 'subtitle'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'icon_path', 'label' => 'Icon', 'type' => 'image'], ['key' => 'title', 'label' => 'Title'], ['key' => 'subtitle', 'label' => 'Subtitle'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'title', 'label' => 'Title', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'subtitle', 'label' => 'Subtitle', 'rules' => ['nullable', 'string', 'max:255']],
+                ['name' => 'icon_path', 'label' => 'Icon - 40 x 40 px', 'type' => 'image', 'upload_dir' => 'uploads/storefront/service-blocks', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
         'notifications' => [
             'label' => 'Notifications', 'group' => 'System', 'singular' => 'Notification', 'model' => Notification::class, 'with' => ['user'], 'search' => ['title', 'message'], 'can_delete' => true,
             'columns' => [['key' => 'user.name', 'label' => 'Recipient'], ['key' => 'channel', 'label' => 'Channel'], ['key' => 'title', 'label' => 'Title'], ['key' => 'message', 'label' => 'Message'], ['key' => 'read_at', 'label' => 'Read At', 'type' => 'datetime'], ['key' => 'created_at', 'label' => 'Sent', 'type' => 'datetime']],

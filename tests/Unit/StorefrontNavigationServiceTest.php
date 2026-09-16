@@ -34,6 +34,11 @@ class StorefrontNavigationServiceTest extends TestCase
                 return collect([$this->category]);
             }
 
+            public function categoryMenu(string $audience, int $categoryLimit, int $productLimit): Collection
+            {
+                return collect([$this->category]);
+            }
+
             public function productTypeCounts(string $audience): Collection
             {
                 return collect([$this->type]);

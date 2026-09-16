@@ -22,6 +22,32 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
             ->get();
     }
 
+    public function categoryMenu(string $audience, int $categoryLimit, int $productLimit): Collection
+    {
+        $categories = $this->categories($audience)->take($categoryLimit)->values();
+
+        if ($categories->isEmpty()) {
+            return $categories;
+        }
+
+        $grouped = Product::query()
+            ->visibleFor($audience)
+            ->with('translations')
+            ->whereIn('category_id', $categories->pluck('id')->all())
+            ->orderBy('category_id')
+            ->storefrontOrder()
+            ->limit($categories->count() * $productLimit * 3)
+            ->get(['id', 'name', 'category_id', 'sort_order'])
+            ->groupBy('category_id');
+
+        return $categories->each(function (Category $category) use ($grouped, $productLimit): void {
+            $category->setAttribute(
+                'menu_products',
+                collect($grouped->get($category->getKey(), collect()))->take($productLimit)->values()
+            );
+        });
+    }
+
     public function productTypeCounts(string $audience): Collection
     {
         return Product::query()

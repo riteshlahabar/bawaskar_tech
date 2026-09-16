@@ -5,6 +5,8 @@
     $headerCartTotal = (float) data_get($storeCart ?? [], 'grand_total', 0);
     $headerWishlistCount = (int) data_get($storeWishlist ?? [], 'count', 0);
     $headerUserRole = $storeUser?->role === 'dealer' ? 'Dealer' : 'Customer';
+    $headerCompany = $companySetting ?? null;
+    $headerPhone = filled($headerCompany?->phone) ? trim((string) $headerCompany->phone) : null;
 @endphp
 
 <ul class="right-side-menu">
@@ -17,17 +19,19 @@
             </div>
         </div>
     </li>
-    <li class="right-side">
-        <a href="{{ route('store.page', ['page' => 'contact-us']) }}" class="delivery-login-box">
-            <div class="delivery-icon">
-                <i data-feather="phone-call"></i>
-            </div>
-            <div class="delivery-detail">
-                <h6>24/7 Delivery</h6>
-                <h5>+91 888 104 2340</h5>
-            </div>
-        </a>
-    </li>
+    @if($headerPhone)
+        <li class="right-side">
+            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $headerPhone) }}" class="delivery-login-box">
+                <div class="delivery-icon">
+                    <i data-feather="phone-call"></i>
+                </div>
+                <div class="delivery-detail">
+                    <h6>{{ web_t('header.delivery_support', '24/7 Delivery') }}</h6>
+                    <h5>{{ $headerPhone }}</h5>
+                </div>
+            </a>
+        </li>
+    @endif
     <li class="right-side">
         <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="btn p-0 position-relative header-wishlist" data-store-wishlist-link>
             <i data-feather="heart"></i>

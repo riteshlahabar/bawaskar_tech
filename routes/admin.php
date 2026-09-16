@@ -41,6 +41,8 @@ use App\Http\Controllers\Admin\Salary\SalaryController;
 use App\Http\Controllers\Admin\SalesDocuments\SalesDocumentController;
 use App\Http\Controllers\Admin\Salesmen\SalesmanController;
 use App\Http\Controllers\Admin\Settings\CompanySettingController;
+use App\Http\Controllers\Admin\StorefrontFooterLinks\StorefrontFooterLinkController;
+use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockController;
 use App\Http\Controllers\Admin\Support\SupportController;
 use App\Http\Controllers\Admin\Targets\TargetController;
 use App\Http\Controllers\Admin\TourPlans\TourPlanController;
@@ -70,6 +72,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'internal-expenses' => InternalExpenseController::class, 'expense-categories' => ExpenseCategoryController::class, 'expense-subcategories' => ExpenseSubcategoryController::class,
             'attendance' => AttendanceController::class, 'dealer-visits' => DealerVisitController::class, 'tour-plans' => TourPlanController::class,
             'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
+            'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');

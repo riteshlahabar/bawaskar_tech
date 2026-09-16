@@ -6,6 +6,7 @@ use App\Contracts\Storefront\Repositories\StorefrontCatalogRepositoryContract;
 use App\Contracts\Storefront\StorefrontCatalogContract;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\CompanySetting;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -65,5 +66,10 @@ final class StorefrontCatalogService implements StorefrontCatalogContract
             'trendingProducts' => $this->catalog->trendingProducts($product, $audience, 4),
             'companySetting' => $this->catalog->companySetting(),
         ];
+    }
+
+    public function companySetting(): ?CompanySetting
+    {
+        return $this->catalog->companySetting();
     }
 }

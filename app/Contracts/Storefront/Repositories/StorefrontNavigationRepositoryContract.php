@@ -8,6 +8,8 @@ interface StorefrontNavigationRepositoryContract
 {
     public function categories(string $audience): Collection;
 
+    public function categoryMenu(string $audience, int $categoryLimit, int $productLimit): Collection;
+
     public function productTypeCounts(string $audience): Collection;
 
     public function featuredProducts(string $audience): Collection;

@@ -35,6 +35,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
 
         return [
             'categories' => $this->navigation->categories($audience),
+            'categoryMenu' => $this->navigation->categoryMenu($audience, 12, 8),
             'productTypes' => $productTypes,
             'productTypeLabels' => $labels,
             'featuredProducts' => $featuredProducts,
@@ -47,6 +48,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
 
         return [
             'categories' => collect(),
+            'categoryMenu' => collect(),
             'productTypes' => $this->emptyProductTypes($labels),
             'productTypeLabels' => $labels,
             'featuredProducts' => collect(),

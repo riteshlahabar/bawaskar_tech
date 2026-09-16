@@ -36,7 +36,7 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
 
         try {
             $categories = $data['categories'] ?? $this->catalog->categories($audience);
-            $products = $data['products'] ?? ($page === 'shop-left-sidebar'
+            $products = $data['products'] ?? (in_array($page, ['shop-left-sidebar', 'search'], true)
                 ? $this->catalog->shopProducts(
                     $audience,
                     $request->filled('product_type')
@@ -50,12 +50,14 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             $homeContent = $this->homepage->content($audience);
             $storefrontNavigation = $this->navigation->data($audience);
             [$storeLanguages, $currentStoreLanguage] = $this->languages->data($request);
+            $companySetting = $this->catalog->companySetting();
         } catch (Throwable) {
             $categories = collect();
             $products = collect();
             $homeContent = $this->homepage->emptyContent();
             $storefrontNavigation = $this->navigation->emptyData();
             [$storeLanguages, $currentStoreLanguage] = $this->languages->emptyData();
+            $companySetting = null;
         }
 
         $storeLastOrder = $orderContext['lastOrder'];
@@ -65,6 +67,7 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             'categories' => $categories,
             'products' => $products,
             'homeContent' => $homeContent,
+            'companySetting' => $companySetting,
             'storefrontNavigation' => $storefrontNavigation,
             'storeLanguages' => $storeLanguages,
             'currentStoreLanguage' => $currentStoreLanguage,

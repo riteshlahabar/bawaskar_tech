@@ -13,4 +13,6 @@ final class StorefrontSessionKeys
     public const WISHLIST = 'storefront.wishlist';
 
     public const LAST_ORDER_ID = 'storefront.last_order_id';
+
+    public const DELIVERY_DISTRICT = 'storefront.delivery_district';
 }

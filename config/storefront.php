@@ -39,4 +39,6 @@ return [
         'reset-password',
         'welcome',
     ],
+    // LGD state whose districts fill the "Your Location" box until admin adds Delivery Areas (27 = Maharashtra).
+    'default_delivery_state_code' => 27,
 ];

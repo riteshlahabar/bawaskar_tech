@@ -53,10 +53,14 @@
         var district = root.querySelector('[data-location="district"]');
         var subdistrict = root.querySelector('[data-location="subdistrict"]');
         var otherWrap = root.querySelector('[data-location-other]');
+        // State + District only pickers (admin Delivery Areas) have no taluka select.
+        var hasSubdistrict = !!subdistrict;
 
-        if (!api || !state || !district || !subdistrict) {
+        if (!api || !state || !district) {
             return;
         }
+
+        subdistrict = subdistrict || document.createElement('select');
 
         function syncOther() {
             if (otherWrap) {
@@ -93,12 +97,16 @@
             return load(api + '/districts?state=' + encodeURIComponent(state.value), 'districts').then(function (items) {
                 fill(district, items, 'Select district', selected);
 
-                return selectedSubdistrict !== undefined ? loadSubdistricts(selectedSubdistrict) : null;
+                return hasSubdistrict && selectedSubdistrict !== undefined ? loadSubdistricts(selectedSubdistrict) : null;
             });
         }
 
         state.addEventListener('change', function () { loadDistricts(); });
-        district.addEventListener('change', function () { loadSubdistricts(); });
+        district.addEventListener('change', function () {
+            if (hasSubdistrict) {
+                loadSubdistricts();
+            }
+        });
         subdistrict.addEventListener('change', syncOther);
 
         reset(district, 'Select district');

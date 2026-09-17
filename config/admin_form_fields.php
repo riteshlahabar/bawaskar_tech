@@ -26,6 +26,10 @@ return [
         'view' => 'admin.shared.fields.location-picker',
         'wrap' => false,
     ],
+    'district_picker' => [
+        'view' => 'admin.shared.fields.district-picker',
+        'wrap' => false,
+    ],
     'private_file' => [
         'view' => 'admin.shared.fields.private-file',
     ],

@@ -3,6 +3,7 @@
 namespace App\Services\Storefront;
 
 use App\Contracts\Storefront\StorefrontCatalogContract;
+use App\Contracts\Storefront\StorefrontDeliveryLocationContract;
 use App\Contracts\Storefront\StorefrontHomepageContract;
 use App\Contracts\Storefront\StorefrontLanguageContract;
 use App\Contracts\Storefront\StorefrontNavigationContract;
@@ -21,7 +22,8 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
         private readonly StorefrontHomepageContract $homepage,
         private readonly StorefrontNavigationContract $navigation,
         private readonly StorefrontLanguageContract $languages,
-        private readonly StorefrontOrderContextContract $orders
+        private readonly StorefrontOrderContextContract $orders,
+        private readonly StorefrontDeliveryLocationContract $deliveryLocation
     ) {}
 
     public function render(Request $request, string $page, array $data = []): View
@@ -51,6 +53,7 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             $storefrontNavigation = $this->navigation->data($audience);
             [$storeLanguages, $currentStoreLanguage] = $this->languages->data($request);
             $companySetting = $this->catalog->companySetting();
+            $deliveryLocation = $this->deliveryLocation->context($request);
         } catch (Throwable) {
             $categories = collect();
             $products = collect();
@@ -58,6 +61,7 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             $storefrontNavigation = $this->navigation->emptyData();
             [$storeLanguages, $currentStoreLanguage] = $this->languages->emptyData();
             $companySetting = null;
+            $deliveryLocation = ['areas' => [], 'selected' => null];
         }
 
         $storeLastOrder = $orderContext['lastOrder'];
@@ -68,6 +72,8 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             'products' => $products,
             'homeContent' => $homeContent,
             'companySetting' => $companySetting,
+            'deliveryAreas' => $deliveryLocation['areas'],
+            'selectedDeliveryArea' => $deliveryLocation['selected'],
             'storefrontNavigation' => $storefrontNavigation,
             'storeLanguages' => $storeLanguages,
             'currentStoreLanguage' => $currentStoreLanguage,

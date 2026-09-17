@@ -52,6 +52,7 @@ use App\Contracts\Localization\AppTranslationCatalogContract;
 use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
 use App\Contracts\Localization\WebsiteTranslationLookupContract;
+use App\Contracts\Location\DistrictSelectionContract;
 use App\Contracts\Location\LocationDirectoryContract;
 use App\Contracts\Location\UserLocationContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
@@ -122,6 +123,7 @@ use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
 use App\Services\Localization\DatabaseSupportedLocalesService;
 use App\Services\Localization\WebTranslationAppStringService;
+use App\Services\Location\DistrictSelectionService;
 use App\Services\Location\UserLocationService;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
 use App\Services\Sales\Orders\DealerOrderContextService;
@@ -190,6 +192,7 @@ class AppServiceProvider extends ServiceProvider
             ProfileUpdateContract::class => ProfileUpdateService::class,
             LocationDirectoryContract::class => EloquentLocationDirectory::class,
             UserLocationContract::class => UserLocationService::class,
+            DistrictSelectionContract::class => DistrictSelectionService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,

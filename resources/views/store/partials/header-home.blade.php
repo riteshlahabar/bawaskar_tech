@@ -35,7 +35,7 @@
                                         <button class="btn location-button" data-bs-toggle="modal"
                                             data-bs-target="#locationModal">
                                             <i class="iconly-Location icli"></i>
-                                            <span>{{ web_t('header.location', 'Location') }}</span>
+                                            <span>{{ $selectedDeliveryArea['name'] ?? web_t('header.location', 'Location') }}</span>
                                             <i class="fa-solid fa-angle-down down-arrow"></i>
                                         </button>
                                     </div>

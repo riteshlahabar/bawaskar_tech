@@ -78,7 +78,7 @@
                                         <span class="location-arrow">
                                             <i data-feather="map-pin"></i>
                                         </span>
-                                        <span class="locat-name">Your Location</span>
+                                        <span class="locat-name">{{ $selectedDeliveryArea['name'] ?? web_t('header.your_location', 'Your Location') }}</span>
                                         <i class="fa-solid fa-angle-down"></i>
                                     </button>
                                 </div>

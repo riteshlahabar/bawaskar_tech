@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\Customers\CustomerController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\Dealers\DealerController;
 use App\Http\Controllers\Admin\DealerVisits\DealerVisitController;
+use App\Http\Controllers\Admin\DeliveryAreas\DeliveryAreaController;
 use App\Http\Controllers\Admin\Dispatches\DispatchController;
 use App\Http\Controllers\Admin\EmailTemplates\EmailTemplateController;
 use App\Http\Controllers\Admin\ExpenseCategories\ExpenseCategoryController;
@@ -85,7 +86,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
             'holidays' => HolidayController::class, 'shifts' => ShiftController::class, 'shift-assignments' => ShiftAssignmentController::class, 'announcements' => AnnouncementController::class,
             'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'performance-reviews' => PerformanceReviewController::class,
-            'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class,
+            'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class, 'delivery-areas' => DeliveryAreaController::class,
             'web-translations' => WebTranslationController::class,
             'admin-users' => AdminUserController::class, 'admin-roles' => AdminRoleController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,

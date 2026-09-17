@@ -44,6 +44,7 @@ use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
+use App\Models\Storefront\DeliveryArea;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontServiceBlock;
 use App\Models\User;
@@ -114,7 +115,7 @@ return [
             ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
         ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
-            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ]],
+            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ]],
         ['label' => 'Reports', 'id' => 'reportsMenu', 'icon' => 'iconoir-stats-report', 'items' => []],
         ['label' => 'Settings', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
             ['key' => 'company-settings', 'label' => 'Company Profile', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'],
@@ -604,6 +605,18 @@ return [
                 ['name' => 'link_group', 'label' => 'Footer Column', 'type' => 'select', 'options' => ['about' => 'About Store', 'useful' => 'Useful Links', 'help' => 'Help Center', 'categories' => 'Categories'], 'rules' => ['required', 'string', 'max:80']],
                 ['name' => 'title', 'label' => 'Link Title', 'rules' => ['required', 'string', 'max:255']],
                 ['name' => 'url', 'label' => 'URL', 'help' => 'Full URL, or a path such as /about-us', 'rules' => ['required', 'string', 'max:2048']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'delivery-areas' => [
+            'label' => 'Delivery Areas', 'group' => 'Storefront', 'singular' => 'Delivery Area', 'description' => 'Districts listed in the website "Your Location" box. Until you add one, every Maharashtra district is listed.', 'model' => DeliveryArea::class, 'search' => ['district_name', 'state_name'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'filters' => [['name' => 'state_code', 'label' => 'State', 'column' => 'state_code', 'option_model' => LgdState::class, 'option_value' => 'state_code', 'option_label' => 'name']],
+            'columns' => [['key' => 'district_name', 'label' => 'District'], ['key' => 'state_name', 'label' => 'State'], ['key' => 'min_order_amount', 'label' => 'Minimum Order', 'type' => 'money'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['type' => 'district_picker', 'name' => 'district', 'label' => 'District'],
+                ['name' => 'min_order_amount', 'label' => 'Minimum Order (₹)', 'type' => 'number', 'step' => '0.01', 'help' => 'Leave blank to show no minimum.', 'rules' => ['nullable', 'numeric', 'min:0']],
                 ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

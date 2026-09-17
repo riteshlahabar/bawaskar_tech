@@ -47,6 +47,7 @@
 <script src="{{ asset('fastkart-admin/js/sidebareffect.js') }}"></script>
 <script src="{{ asset('fastkart-admin/js/tooltip-init.js') }}"></script>
 <script src="{{ asset('fastkart-admin/js/script.js') }}"></script>
+<script src="{{ asset('admin-module-js/shared/sidebar-active.js').'?v='.filemtime(public_path('admin-module-js/shared/sidebar-active.js')) }}"></script>
 <script src="{{ asset('admin-module-js/shared/table-toolbar.js') }}"></script>
 @stack('scripts')
 </body>

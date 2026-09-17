@@ -426,7 +426,7 @@ input[type="file"].form-control::file-selector-button {
 
 .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact > div {
     margin: 0 !important;
-    padding: 0 20px 0 24px !important;
+    padding: 0 20px 0 30px !important;
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
@@ -1111,4 +1111,27 @@ input[type="file"].form-control::file-selector-button {
     margin-right: 10px;
     color: #d0d5dd;
     font-weight: 400;
+}
+
+/* Sidebar submenus: one fixed icon box so every label starts at the same
+   point, and long labels wrap instead of being cut at the sidebar edge. */
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu .admin-sidebar-submenu-icon,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu svg.admin-sidebar-submenu-icon {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    flex: 0 0 16px !important;
+    margin: 0 !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu a.admin-sidebar-submenu-link {
+    white-space: normal !important;
+    padding-right: 12px !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu a.admin-sidebar-submenu-link > span:not(.sub-arrow) {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal !important;
+    line-height: 1.3;
 }

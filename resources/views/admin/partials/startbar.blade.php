@@ -104,14 +104,14 @@
                                             <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;"><i class="fa fa-angle-right"></i></span>
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
-                                            @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
+                                            @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
     <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i>
 @endif
 <span>{{ $child['label'] }}</span></a></li>@endforeach
                                         </ul>
                                     </li>
                                 @else
-                                    <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav {{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}"><i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span>@isset($item['badge'])<span class="badge badge-light-primary ms-auto">{{ $item['badge'] }}</span>@endisset</a></li>
+                                    <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav {{ $isItemActive($item)?'active':'' }}" @if($isItemActive($item)) data-admin-active @endif href="{{ $itemUrl($item) }}"><i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span>@isset($item['badge'])<span class="badge badge-light-primary ms-auto">{{ $item['badge'] }}</span>@endisset</a></li>
                                 @endif
                             @endforeach
                         @else
@@ -126,12 +126,12 @@
                                             <li><a class="submenu-title admin-sidebar-submenu-link {{ $open?'active':'' }}" href="javascript:void(0)">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
     @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
-<span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
+<span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
     <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i>
 @endif
 <span>{{ $child['label'] }}</span></a></li>@endforeach</ul></li>
                                         @else
-                                            <li><a class="admin-sidebar-submenu-link {{ $isItemActive($item)?'active':'' }}" href="{{ $itemUrl($item) }}">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
+                                            <li><a class="admin-sidebar-submenu-link {{ $isItemActive($item)?'active':'' }}" @if($isItemActive($item)) data-admin-active @endif href="{{ $itemUrl($item) }}">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
     @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
 <span>{{ $item['label'] }}</span></a></li>

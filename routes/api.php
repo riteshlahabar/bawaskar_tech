@@ -41,6 +41,7 @@ use App\Http\Controllers\Api\Salesman\SalesmanPayslipController;
 use App\Http\Controllers\Api\Salesman\SalesmanPerformanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanProfileController;
 use App\Http\Controllers\Api\Shared\ChangePasswordController;
+use App\Http\Controllers\Api\Shared\DeviceTokenController;
 use App\Http\Controllers\Api\Shared\InvoiceController;
 use App\Http\Controllers\Api\Shared\NotificationController;
 use App\Http\Controllers\Api\Shared\OrderTrackingController;
@@ -64,6 +65,9 @@ $registerSharedAccountRoutes = static function (): void {
 
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/read', [NotificationController::class, 'markRead']);
+    Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('device-token', [DeviceTokenController::class, 'store']);
+    Route::post('device-token/remove', [DeviceTokenController::class, 'destroy']);
 
     Route::get('orders/{order}/tracking', [OrderTrackingController::class, 'show']);
 

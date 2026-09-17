@@ -15,8 +15,8 @@ class CompanySettingController extends Controller
     {
         return view('admin.settings.company', [
             'setting' => CompanySetting::query()->first() ?: new CompanySetting,
-            'pageTitle' => 'Seller / Company Information',
-            'breadcrumbs' => ['Admin', 'Settings', 'Seller / Company Information'],
+            'pageTitle' => 'Company Profile',
+            'breadcrumbs' => ['Admin', 'Settings', 'Company Profile'],
         ]);
     }
 
@@ -60,6 +60,6 @@ class CompanySettingController extends Controller
 
         $setting->fill($validated)->save();
 
-        return back()->with('success', 'Seller / Company information updated successfully.');
+        return back()->with('success', 'Company profile updated successfully.');
     }
 }

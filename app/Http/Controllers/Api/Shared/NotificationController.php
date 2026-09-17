@@ -42,6 +42,21 @@ class NotificationController extends ApiController
         ]);
     }
 
+    /**
+     * Just the bell badge number, so the app can refresh it cheaply.
+     */
+    public function unreadCount(Request $request): JsonResponse
+    {
+        $user = $this->requireUser($request);
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+
+        return $this->success([
+            'unread_count' => Notification::query()->where('user_id', $user->id)->whereNull('read_at')->count(),
+        ]);
+    }
+
     public function markRead(Request $request): JsonResponse
     {
         $user = $this->requireUser($request);

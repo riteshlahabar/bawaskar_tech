@@ -29,6 +29,11 @@ final class AttendanceReport extends Report
         return 'Present, late, half day, absent and leave days with working hours per salesman.';
     }
 
+    public function icon(): string
+    {
+        return 'check-square';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -69,10 +74,10 @@ final class AttendanceReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Salesmen', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Present Days', 'value' => array_sum(array_column($rows, 'present')) + array_sum(array_column($rows, 'late')), 'type' => 'number'],
-                ['label' => 'Absent Days', 'value' => array_sum(array_column($rows, 'absent')), 'type' => 'number'],
-                ['label' => 'Working Hours', 'value' => array_sum(array_column($rows, 'hours')), 'type' => 'number'],
+                ['label' => 'Salesmen', 'icon' => 'users', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Present Days', 'icon' => 'check-circle', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'present')) + array_sum(array_column($rows, 'late')), 'type' => 'number'],
+                ['label' => 'Absent Days', 'icon' => 'user-x', 'tone' => 'danger', 'value' => array_sum(array_column($rows, 'absent')), 'type' => 'number'],
+                ['label' => 'Working Hours', 'icon' => 'clock', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'hours')), 'type' => 'number'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

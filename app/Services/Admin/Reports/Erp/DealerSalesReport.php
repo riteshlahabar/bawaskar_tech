@@ -31,6 +31,11 @@ final class DealerSalesReport extends Report
         return 'Orders, sales and payments received per dealer in the period, with current outstanding.';
     }
 
+    public function icon(): string
+    {
+        return 'shopping-bag';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman', 'dealer'];
@@ -69,10 +74,10 @@ final class DealerSalesReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Dealers', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Dealer Sales', 'value' => array_sum(array_column($rows, 'sales')), 'type' => 'money'],
-                ['label' => 'Payments Received', 'value' => array_sum(array_column($rows, 'received')), 'type' => 'money'],
-                ['label' => 'Total Outstanding', 'value' => array_sum(array_column($rows, 'outstanding')), 'type' => 'money'],
+                ['label' => 'Dealers', 'icon' => 'shopping-bag', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Dealer Sales', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'sales')), 'type' => 'money'],
+                ['label' => 'Payments Received', 'icon' => 'credit-card', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'received')), 'type' => 'money'],
+                ['label' => 'Total Outstanding', 'icon' => 'alert-circle', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'outstanding')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'code', 'label' => 'Dealer Code'],

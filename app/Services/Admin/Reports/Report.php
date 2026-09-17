@@ -24,6 +24,11 @@ abstract class Report implements ReportContract
         return '';
     }
 
+    public function icon(): string
+    {
+        return 'bar-chart-2';
+    }
+
     protected function betweenDates(Builder $query, string $column, ReportFilters $filters): Builder
     {
         return $query->whereBetween($column, [$filters->from, $filters->to]);

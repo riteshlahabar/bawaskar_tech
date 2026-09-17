@@ -29,6 +29,11 @@ final class AdvanceLoanReport extends Report
         return 'Advances and loans requested in the period: amount, recovered and still pending.';
     }
 
+    public function icon(): string
+    {
+        return 'briefcase';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -59,10 +64,10 @@ final class AdvanceLoanReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Requests', 'value' => $advances->count(), 'type' => 'number'],
-                ['label' => 'Sanctioned', 'value' => $given->sum('amount'), 'type' => 'money'],
-                ['label' => 'Recovered', 'value' => $given->sum('recovered_amount'), 'type' => 'money'],
-                ['label' => 'Pending Recovery', 'value' => $given->sum(fn (SalaryAdvance $advance): float => $advance->outstanding_amount), 'type' => 'money'],
+                ['label' => 'Requests', 'icon' => 'file-text', 'tone' => 'info', 'value' => $advances->count(), 'type' => 'number'],
+                ['label' => 'Sanctioned', 'icon' => 'credit-card', 'tone' => 'primary', 'value' => $given->sum('amount'), 'type' => 'money'],
+                ['label' => 'Recovered', 'icon' => 'check-circle', 'tone' => 'purple', 'value' => $given->sum('recovered_amount'), 'type' => 'money'],
+                ['label' => 'Pending Recovery', 'icon' => 'clock', 'tone' => 'warning', 'value' => $given->sum(fn (SalaryAdvance $advance): float => $advance->outstanding_amount), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'reference', 'label' => 'Reference'],

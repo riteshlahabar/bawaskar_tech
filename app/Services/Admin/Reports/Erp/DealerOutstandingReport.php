@@ -29,6 +29,11 @@ final class DealerOutstandingReport extends Report
         return 'Current credit position of every dealer, highest outstanding first. Not date based.';
     }
 
+    public function icon(): string
+    {
+        return 'alert-circle';
+    }
+
     public function filters(): array
     {
         return ['salesman', 'dealer'];
@@ -62,10 +67,10 @@ final class DealerOutstandingReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Total Outstanding', 'value' => array_sum(array_column($rows, 'outstanding')), 'type' => 'money'],
-                ['label' => 'Total Credit Limit', 'value' => array_sum(array_column($rows, 'credit_limit')), 'type' => 'money'],
-                ['label' => 'Dealers with Balance', 'value' => count(array_filter($rows, fn (array $row): bool => $row['outstanding'] > 0)), 'type' => 'number'],
-                ['label' => 'Over Credit Limit', 'value' => count(array_filter($rows, fn (array $row): bool => $row['credit_limit'] > 0 && $row['outstanding'] > $row['credit_limit'])), 'type' => 'number'],
+                ['label' => 'Total Outstanding', 'icon' => 'alert-circle', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'outstanding')), 'type' => 'money'],
+                ['label' => 'Total Credit Limit', 'icon' => 'credit-card', 'tone' => 'info', 'value' => array_sum(array_column($rows, 'credit_limit')), 'type' => 'money'],
+                ['label' => 'Dealers with Balance', 'icon' => 'users', 'tone' => 'purple', 'value' => count(array_filter($rows, fn (array $row): bool => $row['outstanding'] > 0)), 'type' => 'number'],
+                ['label' => 'Over Credit Limit', 'icon' => 'alert-triangle', 'tone' => 'danger', 'value' => count(array_filter($rows, fn (array $row): bool => $row['credit_limit'] > 0 && $row['outstanding'] > $row['credit_limit'])), 'type' => 'number'],
             ],
             columns: [
                 ['key' => 'code', 'label' => 'Dealer Code'],

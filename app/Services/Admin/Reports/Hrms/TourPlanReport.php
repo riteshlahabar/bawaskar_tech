@@ -29,6 +29,11 @@ final class TourPlanReport extends Report
         return 'Planned vs completed tour days per salesman.';
     }
 
+    public function icon(): string
+    {
+        return 'map';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -62,10 +67,10 @@ final class TourPlanReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Tour Plans', 'value' => $plans, 'type' => 'number'],
-                ['label' => 'Completed', 'value' => $completed, 'type' => 'number'],
-                ['label' => 'Cancelled', 'value' => array_sum(array_column($rows, 'cancelled')), 'type' => 'number'],
-                ['label' => 'Completion Rate', 'value' => $this->percent($completed, $plans - array_sum(array_column($rows, 'cancelled'))), 'type' => 'percent'],
+                ['label' => 'Tour Plans', 'icon' => 'map', 'tone' => 'info', 'value' => $plans, 'type' => 'number'],
+                ['label' => 'Completed', 'icon' => 'check-circle', 'tone' => 'primary', 'value' => $completed, 'type' => 'number'],
+                ['label' => 'Cancelled', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => array_sum(array_column($rows, 'cancelled')), 'type' => 'number'],
+                ['label' => 'Completion Rate', 'icon' => 'percent', 'tone' => 'purple', 'value' => $this->percent($completed, $plans - array_sum(array_column($rows, 'cancelled'))), 'type' => 'percent'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

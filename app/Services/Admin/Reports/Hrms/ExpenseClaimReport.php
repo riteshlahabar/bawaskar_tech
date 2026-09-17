@@ -29,6 +29,11 @@ final class ExpenseClaimReport extends Report
         return 'Salesman expense claims by type, split into approved, pending and rejected amounts.';
     }
 
+    public function icon(): string
+    {
+        return 'file-text';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -60,10 +65,10 @@ final class ExpenseClaimReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Claimed', 'value' => array_sum(array_column($rows, 'claimed')), 'type' => 'money'],
-                ['label' => 'Approved', 'value' => array_sum(array_column($rows, 'approved')), 'type' => 'money'],
-                ['label' => 'Pending', 'value' => array_sum(array_column($rows, 'pending')), 'type' => 'money'],
-                ['label' => 'Rejected', 'value' => array_sum(array_column($rows, 'rejected')), 'type' => 'money'],
+                ['label' => 'Claimed', 'icon' => 'file-text', 'tone' => 'info', 'value' => array_sum(array_column($rows, 'claimed')), 'type' => 'money'],
+                ['label' => 'Approved', 'icon' => 'check-circle', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'approved')), 'type' => 'money'],
+                ['label' => 'Pending', 'icon' => 'clock', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'pending')), 'type' => 'money'],
+                ['label' => 'Rejected', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => array_sum(array_column($rows, 'rejected')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

@@ -29,6 +29,11 @@ final class OrderStatusReport extends Report
         return 'How many orders, and how much value, sit at each stage from review to delivery.';
     }
 
+    public function icon(): string
+    {
+        return 'list';
+    }
+
     public function filters(): array
     {
         return ['date', 'channel'];
@@ -57,10 +62,10 @@ final class OrderStatusReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'All Orders', 'value' => $allOrders, 'type' => 'number'],
-                ['label' => 'Delivered', 'value' => (int) ($totals['delivered']->orders ?? 0), 'type' => 'number'],
-                ['label' => 'Cancelled', 'value' => (int) ($totals['cancelled']->orders ?? 0), 'type' => 'number'],
-                ['label' => 'Value in Pipeline', 'value' => $totals->except(['delivered', 'cancelled'])->sum('value'), 'type' => 'money'],
+                ['label' => 'All Orders', 'icon' => 'shopping-cart', 'tone' => 'info', 'value' => $allOrders, 'type' => 'number'],
+                ['label' => 'Delivered', 'icon' => 'check-circle', 'tone' => 'primary', 'value' => (int) ($totals['delivered']->orders ?? 0), 'type' => 'number'],
+                ['label' => 'Cancelled', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => (int) ($totals['cancelled']->orders ?? 0), 'type' => 'number'],
+                ['label' => 'Value in Pipeline', 'icon' => 'truck', 'tone' => 'warning', 'value' => $totals->except(['delivered', 'cancelled'])->sum('value'), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'status', 'label' => 'Status'],

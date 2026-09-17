@@ -24,6 +24,11 @@ interface ReportContract
     public function description(): string;
 
     /**
+     * Feather icon name used in the sidebar and on the report header.
+     */
+    public function icon(): string;
+
+    /**
      * Filter names from ReportFilters::SUPPORTED, in display order.
      *
      * @return array<int, string>

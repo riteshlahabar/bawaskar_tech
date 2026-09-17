@@ -29,6 +29,11 @@ final class PaymentsReport extends Report
         return 'Payments by mode and status, including cash collected by salesmen.';
     }
 
+    public function icon(): string
+    {
+        return 'credit-card';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman', 'dealer'];
@@ -56,10 +61,10 @@ final class PaymentsReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Received', 'value' => $received->sum('amount'), 'type' => 'money'],
-                ['label' => 'Collected by Salesmen', 'value' => $received->sum('by_salesman'), 'type' => 'money'],
-                ['label' => 'Pending', 'value' => $groups->where('status', 'pending')->sum('amount'), 'type' => 'money'],
-                ['label' => 'Failed / Refunded', 'value' => $groups->whereIn('status', ['failed', 'refunded'])->sum('amount'), 'type' => 'money'],
+                ['label' => 'Received', 'icon' => 'check-circle', 'tone' => 'primary', 'value' => $received->sum('amount'), 'type' => 'money'],
+                ['label' => 'Collected by Salesmen', 'icon' => 'user-check', 'tone' => 'info', 'value' => $received->sum('by_salesman'), 'type' => 'money'],
+                ['label' => 'Pending', 'icon' => 'clock', 'tone' => 'warning', 'value' => $groups->where('status', 'pending')->sum('amount'), 'type' => 'money'],
+                ['label' => 'Failed / Refunded', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => $groups->whereIn('status', ['failed', 'refunded'])->sum('amount'), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'mode', 'label' => 'Payment Mode', 'type' => 'status'],

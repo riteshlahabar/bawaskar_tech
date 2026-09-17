@@ -30,6 +30,11 @@ final class GstSummaryReport extends Report
         return 'Taxable value and GST by rate from order lines (line totals include GST). Cancelled orders are excluded. Check figures with your accountant before filing.';
     }
 
+    public function icon(): string
+    {
+        return 'percent';
+    }
+
     public function filters(): array
     {
         return ['date', 'channel'];
@@ -62,9 +67,9 @@ final class GstSummaryReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Taxable Value', 'value' => array_sum(array_column($rows, 'taxable')), 'type' => 'money'],
-                ['label' => 'Total GST', 'value' => array_sum(array_column($rows, 'gst')), 'type' => 'money'],
-                ['label' => 'Gross Value', 'value' => array_sum(array_column($rows, 'gross')), 'type' => 'money'],
+                ['label' => 'Taxable Value', 'icon' => 'file-text', 'tone' => 'info', 'value' => array_sum(array_column($rows, 'taxable')), 'type' => 'money'],
+                ['label' => 'Total GST', 'icon' => 'percent', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'gst')), 'type' => 'money'],
+                ['label' => 'Gross Value', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'gross')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'rate', 'label' => 'GST Rate', 'type' => 'percent'],

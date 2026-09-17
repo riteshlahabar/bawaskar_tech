@@ -29,6 +29,11 @@ final class TargetCommissionReport extends Report
         return 'Target periods overlapping the date range: target, achieved, and commission earned on the achieved amount.';
     }
 
+    public function icon(): string
+    {
+        return 'target';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -65,10 +70,10 @@ final class TargetCommissionReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Target', 'value' => $target, 'type' => 'money'],
-                ['label' => 'Achieved', 'value' => $achieved, 'type' => 'money'],
-                ['label' => 'Achievement', 'value' => $this->percent($achieved, $target), 'type' => 'percent'],
-                ['label' => 'Commission Earned', 'value' => array_sum(array_column($rows, 'commission')), 'type' => 'money'],
+                ['label' => 'Target', 'icon' => 'target', 'tone' => 'info', 'value' => $target, 'type' => 'money'],
+                ['label' => 'Achieved', 'icon' => 'award', 'tone' => 'primary', 'value' => $achieved, 'type' => 'money'],
+                ['label' => 'Achievement', 'icon' => 'percent', 'tone' => 'purple', 'value' => $this->percent($achieved, $target), 'type' => 'percent'],
+                ['label' => 'Commission Earned', 'icon' => 'dollar-sign', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'commission')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

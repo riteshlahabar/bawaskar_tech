@@ -31,6 +31,11 @@ final class SalesmanSalesReport extends Report
         return 'Orders booked, dealers served and money collected per salesman.';
     }
 
+    public function icon(): string
+    {
+        return 'user-check';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -62,10 +67,10 @@ final class SalesmanSalesReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Salesmen', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Orders Booked', 'value' => array_sum(array_column($rows, 'orders')), 'type' => 'number'],
-                ['label' => 'Sales', 'value' => array_sum(array_column($rows, 'sales')), 'type' => 'money'],
-                ['label' => 'Collected', 'value' => array_sum(array_column($rows, 'collected')), 'type' => 'money'],
+                ['label' => 'Salesmen', 'icon' => 'users', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Orders Booked', 'icon' => 'shopping-cart', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'orders')), 'type' => 'number'],
+                ['label' => 'Sales', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'sales')), 'type' => 'money'],
+                ['label' => 'Collected', 'icon' => 'dollar-sign', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'collected')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

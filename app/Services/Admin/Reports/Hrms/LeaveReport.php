@@ -30,6 +30,11 @@ final class LeaveReport extends Report
         return 'Leave applications overlapping the period, by salesman and leave type.';
     }
 
+    public function icon(): string
+    {
+        return 'calendar';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -60,10 +65,10 @@ final class LeaveReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Applications', 'value' => $applications->count(), 'type' => 'number'],
-                ['label' => 'Approved Leave Days', 'value' => array_sum(array_column($rows, 'approved_days')), 'type' => 'number'],
-                ['label' => 'Pending', 'value' => array_sum(array_column($rows, 'pending')), 'type' => 'number'],
-                ['label' => 'Rejected', 'value' => array_sum(array_column($rows, 'rejected')), 'type' => 'number'],
+                ['label' => 'Applications', 'icon' => 'file-text', 'tone' => 'info', 'value' => $applications->count(), 'type' => 'number'],
+                ['label' => 'Approved Leave Days', 'icon' => 'calendar', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'approved_days')), 'type' => 'number'],
+                ['label' => 'Pending', 'icon' => 'clock', 'tone' => 'warning', 'value' => array_sum(array_column($rows, 'pending')), 'type' => 'number'],
+                ['label' => 'Rejected', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => array_sum(array_column($rows, 'rejected')), 'type' => 'number'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

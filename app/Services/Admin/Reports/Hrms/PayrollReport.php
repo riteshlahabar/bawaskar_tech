@@ -29,6 +29,11 @@ final class PayrollReport extends Report
         return 'Salary slips for the months in the period: earnings, deductions and net pay.';
     }
 
+    public function icon(): string
+    {
+        return 'dollar-sign';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman'];
@@ -62,10 +67,10 @@ final class PayrollReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Salary Slips', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Gross Earnings', 'value' => array_sum(array_map(fn (array $row): float => $row['basic'] + $row['allowances'] + $row['bonus'] + $row['incentives'], $rows)), 'type' => 'money'],
-                ['label' => 'Deductions', 'value' => array_sum(array_column($rows, 'deductions')), 'type' => 'money'],
-                ['label' => 'Net Payable', 'value' => array_sum(array_column($rows, 'net')), 'type' => 'money'],
+                ['label' => 'Salary Slips', 'icon' => 'file-text', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Gross Earnings', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => array_sum(array_map(fn (array $row): float => $row['basic'] + $row['allowances'] + $row['bonus'] + $row['incentives'], $rows)), 'type' => 'money'],
+                ['label' => 'Deductions', 'icon' => 'minus-circle', 'tone' => 'danger', 'value' => array_sum(array_column($rows, 'deductions')), 'type' => 'money'],
+                ['label' => 'Net Payable', 'icon' => 'dollar-sign', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'net')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

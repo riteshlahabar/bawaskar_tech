@@ -30,6 +30,11 @@ final class StockExpiryReport extends Report
         return 'Stock per batch and warehouse, with low stock, expired and soon-to-expire batches flagged. Not date based.';
     }
 
+    public function icon(): string
+    {
+        return 'archive';
+    }
+
     public function filters(): array
     {
         return ['warehouse', 'expiry_days'];
@@ -75,11 +80,11 @@ final class StockExpiryReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Batches', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Available Quantity', 'value' => array_sum(array_column($rows, 'available')), 'type' => 'number'],
-                ['label' => 'Expired', 'value' => $count('Expired'), 'type' => 'number'],
-                ['label' => 'Expiring in 30 Days', 'value' => $count('Expiring soon'), 'type' => 'number'],
-                ['label' => 'Low Stock', 'value' => $count('Low stock'), 'type' => 'number'],
+                ['label' => 'Batches', 'icon' => 'archive', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Available Quantity', 'icon' => 'package', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'available')), 'type' => 'number'],
+                ['label' => 'Expired', 'icon' => 'x-octagon', 'tone' => 'danger', 'value' => $count('Expired'), 'type' => 'number'],
+                ['label' => 'Expiring in 30 Days', 'icon' => 'clock', 'tone' => 'warning', 'value' => $count('Expiring soon'), 'type' => 'number'],
+                ['label' => 'Low Stock', 'icon' => 'alert-triangle', 'tone' => 'purple', 'value' => $count('Low stock'), 'type' => 'number'],
             ],
             columns: [
                 ['key' => 'product', 'label' => 'Product'],

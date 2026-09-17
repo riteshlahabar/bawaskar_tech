@@ -32,7 +32,7 @@ final class ReportMenu
                     'label' => $report->title(),
                     'route' => 'admin.report.show',
                     'params' => ['report' => $report->key()],
-                    'feather' => 'bar-chart-2',
+                    'feather' => $report->icon(),
                 ], $this->reports->forSection($section))),
             ];
         }

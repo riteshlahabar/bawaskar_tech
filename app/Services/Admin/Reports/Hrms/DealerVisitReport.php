@@ -30,6 +30,11 @@ final class DealerVisitReport extends Report
         return 'How often each salesman visited each dealer, and when last.';
     }
 
+    public function icon(): string
+    {
+        return 'map-pin';
+    }
+
     public function filters(): array
     {
         return ['date', 'salesman', 'dealer'];
@@ -59,9 +64,9 @@ final class DealerVisitReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Total Visits', 'value' => array_sum(array_column($rows, 'visits')), 'type' => 'number'],
-                ['label' => 'Salesmen Visiting', 'value' => $groups->pluck('salesman_id')->unique()->count(), 'type' => 'number'],
-                ['label' => 'Dealers Covered', 'value' => $groups->pluck('dealer_id')->filter()->unique()->count(), 'type' => 'number'],
+                ['label' => 'Total Visits', 'icon' => 'map-pin', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'visits')), 'type' => 'number'],
+                ['label' => 'Salesmen Visiting', 'icon' => 'users', 'tone' => 'info', 'value' => $groups->pluck('salesman_id')->unique()->count(), 'type' => 'number'],
+                ['label' => 'Dealers Covered', 'icon' => 'shopping-bag', 'tone' => 'purple', 'value' => $groups->pluck('dealer_id')->filter()->unique()->count(), 'type' => 'number'],
             ],
             columns: [
                 ['key' => 'salesman', 'label' => 'Salesman'],

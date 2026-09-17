@@ -29,6 +29,11 @@ final class SalesSummaryReport extends Report
         return 'Orders and sales value per day or month, dealer vs customer. Cancelled orders are excluded.';
     }
 
+    public function icon(): string
+    {
+        return 'trending-up';
+    }
+
     public function filters(): array
     {
         return ['date', 'channel', 'period'];
@@ -63,10 +68,10 @@ final class SalesSummaryReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Orders', 'value' => $orders->count(), 'type' => 'number'],
-                ['label' => 'Total Sales', 'value' => $total, 'type' => 'money'],
-                ['label' => 'GST Collected', 'value' => $orders->sum('gst_total'), 'type' => 'money'],
-                ['label' => 'Average Order Value', 'value' => $orders->count() ? $total / $orders->count() : 0, 'type' => 'money'],
+                ['label' => 'Orders', 'icon' => 'shopping-cart', 'tone' => 'info', 'value' => $orders->count(), 'type' => 'number'],
+                ['label' => 'Total Sales', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => $total, 'type' => 'money'],
+                ['label' => 'GST Collected', 'icon' => 'percent', 'tone' => 'purple', 'value' => $orders->sum('gst_total'), 'type' => 'money'],
+                ['label' => 'Average Order Value', 'icon' => 'activity', 'tone' => 'warning', 'value' => $orders->count() ? $total / $orders->count() : 0, 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'period', 'label' => $filters->period === 'month' ? 'Month' : 'Date'],

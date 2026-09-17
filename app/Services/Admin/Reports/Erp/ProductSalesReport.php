@@ -30,6 +30,11 @@ final class ProductSalesReport extends Report
         return 'Quantity and value sold per product, best sellers first.';
     }
 
+    public function icon(): string
+    {
+        return 'package';
+    }
+
     public function filters(): array
     {
         return ['date', 'channel'];
@@ -63,9 +68,9 @@ final class ProductSalesReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Products Sold', 'value' => count($rows), 'type' => 'number'],
-                ['label' => 'Quantity Sold', 'value' => array_sum(array_column($rows, 'quantity')), 'type' => 'number'],
-                ['label' => 'Sales Value', 'value' => array_sum(array_column($rows, 'value')), 'type' => 'money'],
+                ['label' => 'Products Sold', 'icon' => 'package', 'tone' => 'info', 'value' => count($rows), 'type' => 'number'],
+                ['label' => 'Quantity Sold', 'icon' => 'layers', 'tone' => 'purple', 'value' => array_sum(array_column($rows, 'quantity')), 'type' => 'number'],
+                ['label' => 'Sales Value', 'icon' => 'trending-up', 'tone' => 'primary', 'value' => array_sum(array_column($rows, 'value')), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'product', 'label' => 'Product'],

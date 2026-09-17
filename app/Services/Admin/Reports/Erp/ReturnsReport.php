@@ -30,6 +30,11 @@ final class ReturnsReport extends Report
         return 'Every return request raised in the period with its status and refund.';
     }
 
+    public function icon(): string
+    {
+        return 'rotate-ccw';
+    }
+
     public function filters(): array
     {
         return ['date', 'channel'];
@@ -57,10 +62,10 @@ final class ReturnsReport extends Report
 
         return new ReportResult(
             cards: [
-                ['label' => 'Return Requests', 'value' => $returns->count(), 'type' => 'number'],
-                ['label' => 'Pending', 'value' => $returns->whereIn('status', ['requested', 'approved', 'received'])->count(), 'type' => 'number'],
-                ['label' => 'Rejected', 'value' => $returns->where('status', 'rejected')->count(), 'type' => 'number'],
-                ['label' => 'Refunded Amount', 'value' => $returns->where('status', 'refunded')->sum('refund_amount'), 'type' => 'money'],
+                ['label' => 'Return Requests', 'icon' => 'rotate-ccw', 'tone' => 'info', 'value' => $returns->count(), 'type' => 'number'],
+                ['label' => 'Pending', 'icon' => 'clock', 'tone' => 'warning', 'value' => $returns->whereIn('status', ['requested', 'approved', 'received'])->count(), 'type' => 'number'],
+                ['label' => 'Rejected', 'icon' => 'x-circle', 'tone' => 'danger', 'value' => $returns->where('status', 'rejected')->count(), 'type' => 'number'],
+                ['label' => 'Refunded Amount', 'icon' => 'dollar-sign', 'tone' => 'primary', 'value' => $returns->where('status', 'refunded')->sum('refund_amount'), 'type' => 'money'],
             ],
             columns: [
                 ['key' => 'return_no', 'label' => 'Return No.'],

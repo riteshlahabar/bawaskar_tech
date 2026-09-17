@@ -5,6 +5,7 @@ namespace App\Repositories\Storefront;
 use App\Contracts\Storefront\Repositories\StorefrontNavigationRepositoryContract;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\Storefront\StorefrontTopbarMessage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -74,6 +75,15 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
         return $this->productQuery($audience)
             ->storefrontOrder()
             ->limit(6)
+            ->get();
+    }
+
+    public function topbarMessages(): Collection
+    {
+        return StorefrontTopbarMessage::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
     }
 

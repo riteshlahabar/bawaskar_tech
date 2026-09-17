@@ -5,6 +5,7 @@
     $companyEmail = filled($company?->email) ? trim((string) $company->email) : null;
     $menuCategories = collect(data_get($storefrontNavigation ?? [], 'categoryMenu', collect()));
     $shopUrl = route('store.page', ['page' => 'shop-left-sidebar']);
+    $topbarMessages = collect(data_get($storefrontNavigation ?? [], 'topbarMessages', collect()));
 @endphp
     <header class="pb-md-4 pb-0">
         <div class="header-top">
@@ -20,28 +21,23 @@
                     </div>
 
                     <div class="col-xxl-6 col-lg-9 d-lg-block d-none">
+                        @if ($topbarMessages->isNotEmpty())
                         <div class="header-offer">
                             <div class="notification-slider">
+                                @foreach ($topbarMessages as $topbarMessage)
                                 <div>
                                     <div class="timer-notification">
-                                        <h6><strong class="me-1">Welcome to Bawaskar Farmer Store!</strong>Wrap new offers/gift
-                                            every single day on Weekends.<strong class="ms-1">New Coupon Code: Fast024
-                                            </strong>
-
+                                        <h6>@if (filled($topbarMessage->heading))<strong class="me-1">{{ storefront_public_t($topbarMessage->heading, 'topbar') }}</strong>@endif{{ storefront_public_t($topbarMessage->message, 'topbar') }}
+                                            @if (filled($topbarMessage->link_label) && $topbarMessage->linkHref())
+                                            <a href="{{ $topbarMessage->linkHref() }}" class="text-white">{{ storefront_public_t($topbarMessage->link_label, 'topbar') }}</a>
+                                            @endif
                                         </h6>
                                     </div>
                                 </div>
-
-                                <div>
-                                    <div class="timer-notification">
-                                        <h6>{{ web_t('topbar.sale_message', 'Something you love is now on sale!') }}
-                                            <a href="{{ route('store.page', ['page'=>'shop-left-sidebar']) }}" class="text-white">{{ web_t('topbar.buy_now', 'Buy Now') }}
-                                                !</a>
-                                        </h6>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
                         </div>
+                        @endif
                     </div>
 
                     <div class="col-lg-3">

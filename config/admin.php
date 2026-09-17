@@ -47,6 +47,7 @@ use App\Models\Sales\ReturnRequest;
 use App\Models\Storefront\DeliveryArea;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontServiceBlock;
+use App\Models\Storefront\StorefrontTopbarMessage;
 use App\Models\User;
 
 $active = ['1' => 'Active', '0' => 'Inactive'];
@@ -121,7 +122,7 @@ return [
             ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'app-languages', 'label' => 'App Languages', 'route' => 'admin.app-languages.edit', 'icon' => 'iconoir-smartphone-device'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'],
         ]],
         ['label' => 'Settings', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
-            ['key' => 'company-settings', 'label' => 'Company Profile', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'],
+            ['key' => 'company-settings', 'label' => 'Company Profile', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'storefront-topbar-messages', 'label' => 'Top Bar Messages', 'route' => 'admin.storefront-topbar-messages.index', 'icon' => 'iconoir-megaphone'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'],
             ['key' => 'users-menu', 'label' => 'Users', 'id' => 'usersMenu', 'icon' => 'iconoir-group', 'children' => [['key' => 'admin-users', 'label' => 'Admin Users', 'route' => 'admin.admin-users.index', 'icon' => 'iconoir-user'], ['key' => 'admin-roles', 'label' => 'Roles & Permissions', 'route' => 'admin.admin-roles.index', 'icon' => 'iconoir-lock']]],
         ]],
     ],
@@ -608,6 +609,19 @@ return [
                 ['name' => 'link_group', 'label' => 'Footer Column', 'type' => 'select', 'options' => ['about' => 'About Store', 'useful' => 'Useful Links', 'help' => 'Help Center', 'categories' => 'Categories'], 'rules' => ['required', 'string', 'max:80']],
                 ['name' => 'title', 'label' => 'Link Title', 'rules' => ['required', 'string', 'max:255']],
                 ['name' => 'url', 'label' => 'URL', 'help' => 'Full URL, or a path such as /about-us', 'rules' => ['required', 'string', 'max:2048']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'storefront-topbar-messages' => [
+            'label' => 'Top Bar Messages', 'group' => 'Settings', 'singular' => 'Top Bar Message', 'description' => 'Messages that slide in the dark strip at the top of the website header. Turn all of them off to hide the strip.', 'model' => StorefrontTopbarMessage::class, 'search' => ['heading', 'message', 'link_label'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'heading', 'label' => 'Bold Heading'], ['key' => 'message', 'label' => 'Message'], ['key' => 'link_label', 'label' => 'Link Text'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'heading', 'label' => 'Bold Heading', 'help' => 'Optional. Shown in bold before the message.', 'rules' => ['nullable', 'string', 'max:255', 'required_without:message']],
+                ['name' => 'message', 'label' => 'Message', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:500', 'required_without:heading']],
+                ['name' => 'link_label', 'label' => 'Link Text', 'help' => 'Optional, e.g. Buy Now', 'rules' => ['nullable', 'string', 'max:100', 'required_with:link_url']],
+                ['name' => 'link_url', 'label' => 'Link URL', 'help' => 'Full URL, or a path such as /shop-left-sidebar', 'rules' => ['nullable', 'string', 'max:2048', 'required_with:link_label']],
                 ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

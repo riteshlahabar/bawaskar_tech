@@ -15,4 +15,7 @@ interface StorefrontNavigationRepositoryContract
     public function featuredProducts(string $audience): Collection;
 
     public function fallbackProducts(string $audience): Collection;
+
+    /** Active header top-bar messages in sort order. */
+    public function topbarMessages(): Collection;
 }

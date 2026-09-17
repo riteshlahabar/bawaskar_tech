@@ -39,6 +39,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
             'productTypes' => $productTypes,
             'productTypeLabels' => $labels,
             'featuredProducts' => $featuredProducts,
+            'topbarMessages' => $this->navigation->topbarMessages(),
         ];
     }
 
@@ -52,6 +53,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
             'productTypes' => $this->emptyProductTypes($labels),
             'productTypeLabels' => $labels,
             'featuredProducts' => collect(),
+            'topbarMessages' => collect(),
         ];
     }
 

@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Contracts\Storefront\Repositories\StorefrontNavigationRepositoryContract;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\Storefront\StorefrontTopbarMessage;
 use App\Services\Storefront\StorefrontNavigationService;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
@@ -53,6 +54,11 @@ class StorefrontNavigationServiceTest extends TestCase
             {
                 return collect([$this->fallback]);
             }
+
+            public function topbarMessages(): Collection
+            {
+                return collect([new StorefrontTopbarMessage(['message' => 'Now on sale'])]);
+            }
         };
 
         $result = (new StorefrontNavigationService($repository))->data('customer');
@@ -61,5 +67,7 @@ class StorefrontNavigationServiceTest extends TestCase
         $this->assertSame(4, $result['productTypes']->first()['products_count']);
         $this->assertSame([5], $result['featuredProducts']->pluck('id')->all());
         $this->assertSame([1], $result['categories']->pluck('id')->all());
+        $this->assertSame(['Now on sale'], $result['topbarMessages']->pluck('message')->all());
+        $this->assertTrue((new StorefrontNavigationService($repository))->emptyData()['topbarMessages']->isEmpty());
     }
 }

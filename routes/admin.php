@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\Salesmen\SalesmanController;
 use App\Http\Controllers\Admin\Settings\CompanySettingController;
 use App\Http\Controllers\Admin\StorefrontFooterLinks\StorefrontFooterLinkController;
 use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockController;
+use App\Http\Controllers\Admin\StorefrontTopbarMessages\StorefrontTopbarMessageController;
 use App\Http\Controllers\Admin\Support\SupportController;
 use App\Http\Controllers\Admin\Targets\TargetController;
 use App\Http\Controllers\Admin\TourPlans\TourPlanController;
@@ -88,6 +89,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'holidays' => HolidayController::class, 'shifts' => ShiftController::class, 'shift-assignments' => ShiftAssignmentController::class, 'announcements' => AnnouncementController::class,
             'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'performance-reviews' => PerformanceReviewController::class,
             'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class, 'delivery-areas' => DeliveryAreaController::class,
+            'storefront-topbar-messages' => StorefrontTopbarMessageController::class,
             'web-translations' => WebTranslationController::class,
             'admin-users' => AdminUserController::class, 'admin-roles' => AdminRoleController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,

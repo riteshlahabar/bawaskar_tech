@@ -7,6 +7,7 @@ use App\Exceptions\Files\UnsupportedUploadException;
 use App\Exceptions\Finance\PaymentGatewayException;
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureAdminPermission;
 use App\Http\Middleware\IdentifyApiToken;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Foundation\Application;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'admin.permission' => EnsureAdminPermission::class,
             'api.auth' => AuthenticateApiToken::class,
             // Public routes that still need to know who is calling (dealer pricing).
             'api.identify' => IdentifyApiToken::class,

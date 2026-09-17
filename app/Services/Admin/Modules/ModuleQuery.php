@@ -39,6 +39,7 @@ final class ModuleQuery implements ModuleQueryContract
         $this->applySearch($query, $request, $module);
         $this->applyStatus($query, $request, $module);
         $this->applySubmenu($query, $request, $module);
+        $this->applyChannel($query, $request, $module);
         $this->applyConfiguredFilters($query, $request, $module);
         $this->applyDateRange($query, $request, $module);
 
@@ -90,6 +91,25 @@ final class ModuleQuery implements ModuleQueryContract
         if ($request->filled('section_key') && $key === 'storefront-section-products') {
             $query->whereHas('section', fn (Builder $builder) => $builder->where('section_key', $request->query('section_key')));
         }
+    }
+
+    /**
+     * Sales pages are split into Customer and Dealer (?type=), each with its
+     * own permission, so each lists only its own channel's records.
+     */
+    private function applyChannel(Builder $query, Request $request, array $module): void
+    {
+        $channel = $request->query('type');
+        if (empty($module['channel']) || ! in_array($channel, ['customer', 'dealer'], true)) {
+            return;
+        }
+
+        $column = $module['channel']['column'];
+        $relation = $module['channel']['relation'] ?? null;
+
+        $relation
+            ? $query->whereHas($relation, fn (Builder $builder) => $builder->where($column, $channel))
+            : $query->where($column, $channel);
     }
 
     private function applyConfiguredFilters(Builder $query, Request $request, array $module): void

@@ -1,4 +1,5 @@
 @php
+    $can = ($moduleAccess ?? []) + ['view' => true, 'create' => true, 'edit' => true, 'delete' => true];
     $query = request()->query();
     $exportQuery = request()->except(['page']);
     $resetQuery = request()->only(['type','placement','section_key','row_title']);
@@ -80,6 +81,7 @@
                 <span class="badge bg-primary-subtle text-primary align-self-center px-3 py-2">{{ str(request('type'))->title() }} View</span>
             @endif
 
+            @if($can['create'])
             <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data" class="d-inline admin-import-form">
                 @csrf
 </form>
@@ -133,6 +135,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="dropdown">
                 <button class="btn btn-outline-secondary admin-toolbar-icon dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="iconoir-view-grid"></i></button>
                 <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">
@@ -159,7 +162,7 @@
             <a class="btn btn-outline-danger admin-toolbar-icon" href="{{ route($module['route'].'.export', ['format' => 'pdf'] + $exportQuery) }}" title="Export PDF" aria-label="Export PDF"><i class="fa-solid fa-file-pdf"></i></a>
             <button class="btn btn-outline-secondary admin-toolbar-icon" type="button" onclick="window.print()" title="Print" aria-label="Print"><i class="fa-solid fa-print"></i></button>
 
-            @if($module['can_delete'] ?? true)
+            @if(($module['can_delete'] ?? true) && $can['delete'])
                 <button class="btn btn-outline-danger admin-toolbar-icon" type="submit" form="bulkActionForm" onclick="return confirm('Delete selected records?')" title="Delete Selected" aria-label="Delete Selected"><i class="fa-solid fa-trash-can"></i></button>
             @endif
         </div>

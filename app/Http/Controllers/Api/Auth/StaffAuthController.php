@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Contracts\Admin\Access\AdminAccessContract;
 use App\Models\Auth\ApiToken;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -27,12 +28,18 @@ final class StaffAuthController extends AuthApiController
         ], 'Salesman logged in.');
     }
 
-    public function adminLogin(Request $request): JsonResponse
+    public function adminLogin(Request $request, AdminAccessContract $access): JsonResponse
     {
         $user = $this->authenticate($request, User::ROLE_ADMIN);
 
         if ($user instanceof JsonResponse) {
             return $user;
+        }
+
+        // The admin API has no per-section permission checks, so only a
+        // Super Admin may use it; limited staff work in the admin panel.
+        if (! $access->isSuper($user)) {
+            return $this->fail('Only a Super Admin can use the admin API.', 403);
         }
 
         return $this->success([

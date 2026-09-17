@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Access\AdminRoleController;
+use App\Http\Controllers\Admin\Access\AdminUserController;
 use App\Http\Controllers\Admin\Assets\AssetController;
 use App\Http\Controllers\Admin\Attendance\AttendanceController;
 use App\Http\Controllers\Admin\Auth\LoginController;
@@ -66,7 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('login', [LoginController::class, 'store'])->middleware('throttle:login')->name('login.store');
     });
 
-    Route::middleware(['auth', 'admin'])->group(function (): void {
+    Route::middleware(['auth', 'admin', 'admin.permission'])->group(function (): void {
         Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
         Route::get('common-import/{module}/sample', [CommonImportController::class, 'sample'])->name('common-import.sample');
         Route::post('common-import/{module}', [CommonImportController::class, 'store'])->name('common-import.store');
@@ -85,6 +87,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'performance-reviews' => PerformanceReviewController::class,
             'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class,
             'web-translations' => WebTranslationController::class,
+            'admin-users' => AdminUserController::class, 'admin-roles' => AdminRoleController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');

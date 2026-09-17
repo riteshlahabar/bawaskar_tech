@@ -2,6 +2,8 @@
 @section('title', $pageTitle)
 @section('content')
 @php
+    // $moduleAccess comes from AdminAccessServiceProvider (the signed-in role).
+    $can = ($moduleAccess ?? []) + ['view' => true, 'create' => true, 'edit' => true, 'delete' => true];
     $submenuTitle = request()->query('row_title');
     $submenuSingular = $module['singular'];
 
@@ -18,13 +20,13 @@
 <div class="card admin-table-card" data-table-key="{{ $module['key'] }}">
     <div class="card-body pt-3">
         <div class="d-flex justify-content-end gap-2 mb-3">
-            @if($module['key'] === 'salary')
+            @if($module['key'] === 'salary' && $can['edit'])
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#salaryModal"><i class="iconoir-dollar-circle me-1"></i>Generate Salary</button>
             @endif
-            @if($module['key'] === 'translations')
+            @if($module['key'] === 'translations' && $can['edit'])
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#appTranslateModal"><i class="iconoir-translate me-1"></i>Translate</button>
             @endif
-            @if($module['can_create'] ?? true)
+            @if(($module['can_create'] ?? true) && $can['create'])
                 <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $submenuSingular }}</a>
             @endif
         </div>
@@ -42,7 +44,7 @@
                 <table class="table table-hover align-middle mb-0 admin-data-table">
                     <thead class="table-light">
                         <tr>
-                            <th class="bulk-select-col"><input class="form-check-input admin-select-all" type="checkbox" title="Select all"></th>
+                            <th class="bulk-select-col">@if($can['delete'])<input class="form-check-input admin-select-all" type="checkbox" title="Select all">@endif</th>
                             @foreach($module['columns'] as $index => $column)
                                 <th data-column-index="{{ $index }}">{{ $column['label'] }}</th>
                             @endforeach
@@ -52,7 +54,7 @@
                     <tbody>
                         @forelse($records as $record)
                             <tr>
-                                <td class="bulk-select-col"><input class="form-check-input admin-row-checkbox" type="checkbox" name="selected_ids[]" value="{{ $record->getKey() }}"></td>
+                                <td class="bulk-select-col">@if($can['delete'])<input class="form-check-input admin-row-checkbox" type="checkbox" name="selected_ids[]" value="{{ $record->getKey() }}">@endif</td>
                                 @foreach($module['columns'] as $index => $column)
                                     @php
                                         $value = data_get($record, $column['key']);
@@ -114,7 +116,7 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end admin-row-action-menu">
                                             <a class="dropdown-item" href="{{ route($module['route'].'.show', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-eye"></i><span>View</span></a>
-                                            @if($module['can_edit'] ?? true)
+                                            @if(($module['can_edit'] ?? true) && $can['edit'])
                                                 <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
                                             @endif
 
@@ -126,22 +128,24 @@
                                                 @endforeach
                                             @endif
 
-                                            @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
+                                            @if($module['key'] === 'dealers' && $record->status === 'pending_approval' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-success" type="button" data-bs-toggle="modal" data-bs-target="#approveDealer{{ $record->id }}"><i class="iconoir-check-circle"></i><span>Approve Dealer</span></button>
                                             @endif
 
                                             @if($module['key'] === 'orders')
                                                 <div class="dropdown-divider"></div>
+                                                @if($can['edit'])
                                                 <button class="dropdown-item text-success" type="button" data-bs-toggle="modal" data-bs-target="#orderStatus{{ $record->id }}"><i class="iconoir-check-circle"></i><span>Update Status</span></button>
                                                 <button class="dropdown-item text-info" type="submit" form="convertOrderToPi{{ $record->id }}"><i class="iconoir-page"></i><span>Convert to PI</span></button>
+                                                @endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'order', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'order', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 
                                             @if($module['key'] === 'proforma-invoices')
                                                 <div class="dropdown-divider"></div>
-                                                <button class="dropdown-item text-info" type="submit" form="convertPiToInvoice{{ $record->id }}"><i class="iconoir-receipt"></i><span>Convert to Sale Invoice</span></button>
+                                                @if($can['edit'])<button class="dropdown-item text-info" type="submit" form="convertPiToInvoice{{ $record->id }}"><i class="iconoir-receipt"></i><span>Convert to Sale Invoice</span></button>@endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'proforma', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'proforma', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
@@ -152,13 +156,13 @@
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'invoice', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 
-                                            @if(in_array($module['key'], ['expenses','leaves']) && $record->status === 'pending')
+                                            @if(in_array($module['key'], ['expenses','leaves']) && $record->status === 'pending' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-success" type="submit" form="decisionForm{{ $module['key'] }}{{ $record->id }}" name="status" value="approved"><i class="iconoir-check-circle"></i><span>Approve</span></button>
                                                 <button class="dropdown-item text-danger" type="submit" form="decisionForm{{ $module['key'] }}{{ $record->id }}" name="status" value="rejected"><i class="iconoir-xmark-circle"></i><span>Reject</span></button>
                                             @endif
 
-                                            @if($module['can_delete'] ?? true)
+                                            @if(($module['can_delete'] ?? true) && $can['delete'])
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-danger" type="button" onclick="if(confirm('Delete this record?')) document.getElementById('deleteForm{{ $module['key'] }}{{ $record->id }}').submit();"><i class="fa-solid fa-trash-can"></i><span>Delete</span></button>
                                             @endif

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Auth\AdminRole;
 use App\Models\Auth\ApiToken;
 use App\Models\Communication\Notification;
 use App\Models\Field\AttendanceLog;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -27,7 +29,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'name', 'email', 'mobile', 'password', 'role', 'status', 'mobile_verified_at', 'last_login_at',
+    'name', 'email', 'mobile', 'password', 'role', 'admin_role_id', 'status', 'mobile_verified_at', 'last_login_at',
     'state_code', 'state_name', 'district_code', 'district_name', 'subdistrict_code', 'subdistrict_name', 'city_village', 'pincode',
 ])]
 #[Hidden(['password', 'remember_token'])]
@@ -96,6 +98,14 @@ class User extends Authenticatable
     public function apiTokens(): HasMany
     {
         return $this->hasMany(ApiToken::class);
+    }
+
+    /**
+     * Admin panel role (admin accounts only).
+     */
+    public function adminRole(): BelongsTo
+    {
+        return $this->belongsTo(AdminRole::class);
     }
 
     public function salesmanProfile(): HasOne

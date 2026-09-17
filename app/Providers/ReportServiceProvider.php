@@ -25,9 +25,7 @@ use App\Services\Admin\Reports\Hrms\TargetCommissionReport;
 use App\Services\Admin\Reports\Hrms\TourPlanReport;
 use App\Services\Admin\Reports\ReportExporter;
 use App\Services\Admin\Reports\ReportFilterOptions;
-use App\Services\Admin\Reports\ReportMenu;
 use App\Services\Admin\Reports\ReportRegistry;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -67,10 +65,6 @@ class ReportServiceProvider extends ServiceProvider
         $this->app->bind(ReportFilterOptionsContract::class, ReportFilterOptions::class);
     }
 
-    public function boot(): void
-    {
-        View::composer('admin.partials.startbar', function ($view): void {
-            $view->with('sidebarGroups', $this->app->make(ReportMenu::class)->fill(config('admin.groups', [])));
-        });
-    }
+    // The sidebar Reports menu (ReportMenu) is composed in AdminAccessServiceProvider,
+    // which also removes the sections the signed-in role cannot open.
 }

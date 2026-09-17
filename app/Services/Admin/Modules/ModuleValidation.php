@@ -49,8 +49,10 @@ final class ModuleValidation implements ModuleValidationContract
                     : $rule;
             }, $fieldRules);
 
+            // Editing: a blank password keeps the current one.
             if ($record && ($field['type'] ?? '') === 'password') {
-                $fieldRules = array_values(array_filter($fieldRules, fn ($rule) => $rule !== 'required'));
+                $fieldRules = array_values(array_filter($fieldRules, fn ($rule) => $rule !== 'required' && $rule !== 'nullable'));
+                array_unshift($fieldRules, 'nullable');
             }
 
             $rules[$field['name']] = $fieldRules;

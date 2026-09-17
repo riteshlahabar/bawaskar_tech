@@ -92,12 +92,17 @@ abstract class PeopleModuleController extends AdminModuleController
                 }
             }
             $data['role'] = $this->role;
+            // An admin-typed password counts as a real one (the app then asks for it on Change Password).
+            $passwordTyped = filled($data['password'] ?? null);
             if (! $record) {
                 $data['status'] ??= $this->role === User::ROLE_DEALER ? 'pending_approval' : 'active';
                 $data['password'] ??= Str::password(20);
                 $record = User::query()->create($data);
             } else {
                 $record->fill($data)->save();
+            }
+            if ($passwordTyped) {
+                $record->forceFill(['password_set_at' => now()])->save();
             }
             if ($profile !== []) {
                 $profile['user_id'] = $record->id;

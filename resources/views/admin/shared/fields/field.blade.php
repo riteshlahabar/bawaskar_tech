@@ -59,6 +59,11 @@
         $rulesList = array_map(fn ($rule) => is_string($rule) ? $rule : '', (array) ($field['rules'] ?? []));
         $isRequired = collect($rulesList)->contains(fn (string $rule): bool => str_starts_with($rule, 'required'))
             || (bool) ($field['force_required_indicator'] ?? false);
+        if ($type === 'password') {
+            // Editing never forces a new password; blank keeps the current one.
+            $isRequired = $isRequired && empty($record);
+            $field['help'] = ! empty($record) ? 'Leave blank to keep the current password.' : 'Minimum 8 characters.';
+        }
         $lockedBySubmenu = in_array($module['key'] ?? '', ['storefront-banners', 'storefront-sections'], true)
             && in_array($name, ['placement', 'section_key'], true)
             && request()->filled($name);
@@ -138,5 +143,15 @@
                 @if(! empty($field['help']))<small class="text-muted">{{ $field['help'] }}</small>@endif
             @endif
         </div>
+        @if($type === 'password')
+            <div class="{{ $field['col'] ?? 'col-md-6' }}">
+                <label class="form-label">
+                    Confirm {{ $field['label'] }}
+                    @if($isRequired)<span class="text-danger" title="Required field">*</span>@endif
+                </label>
+                <input class="form-control" type="password" name="{{ $name }}_confirmation" value="" autocomplete="new-password" @required($isRequired)>
+                <small class="text-muted">Type the same password again.</small>
+            </div>
+        @endif
     @endif
 @endif

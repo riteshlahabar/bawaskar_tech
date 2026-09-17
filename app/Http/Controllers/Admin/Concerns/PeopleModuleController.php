@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Concerns;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,11 +16,6 @@ abstract class PeopleModuleController extends AdminModuleController
     protected string $profileModel;
 
     protected array $profileFields = [];
-
-    protected function recordsQuery(array $module): Builder
-    {
-        return User::query()->with($module['with'] ?? [$this->profileRelation])->where('role', $this->role);
-    }
 
     protected function rules(array $module, ?Model $record = null): array
     {

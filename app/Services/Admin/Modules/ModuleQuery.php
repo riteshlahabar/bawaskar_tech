@@ -25,6 +25,10 @@ final class ModuleQuery implements ModuleQueryContract
             $query->where($column, $value);
         }
 
+        foreach ($module['where_not_null'] ?? [] as $column) {
+            $query->whereNotNull($column);
+        }
+
         return $query;
     }
 

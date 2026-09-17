@@ -41,6 +41,11 @@ class SalaryAdvance extends Model
         return $this->belongsTo(User::class, 'salesman_id');
     }
 
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
     public function schedule(): HasMany
     {
         return $this->hasMany(AdvanceInstallment::class);

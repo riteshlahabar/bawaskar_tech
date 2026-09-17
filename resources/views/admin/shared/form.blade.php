@@ -3,7 +3,7 @@
 @section('content')
 @php
     // $fieldTree, $fieldViews and $fieldNodes are supplied by the view composer.
-    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'image', 'image_multiple', 'product_media_repeater'], true));
+    $hasUpload = collect($module['fields'] ?? [])->contains(fn ($field) => in_array($field['type'] ?? '', ['file', 'private_file', 'image', 'image_multiple', 'product_media_repeater'], true));
     $submenuQueryKeys = ['type', 'placement', 'section_key', 'row_title'];
     $fieldNames = collect($module['fields'] ?? [])->pluck('name')->filter()->values()->all();
     $optionAttributes = $optionAttributes ?? [];

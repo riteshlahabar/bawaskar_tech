@@ -25,6 +25,13 @@ use App\Models\Field\SalesmanAsset;
 use App\Models\Field\SalesmanTarget;
 use App\Models\Field\TourPlan;
 use App\Models\Finance\Payment;
+use App\Models\Hr\Announcement;
+use App\Models\Hr\EmployeeDocument;
+use App\Models\Hr\Holiday;
+use App\Models\Hr\PerformanceReview;
+use App\Models\Hr\SalaryAdvance;
+use App\Models\Hr\Shift;
+use App\Models\Hr\ShiftAssignment;
 use App\Models\InternalExpense;
 use App\Models\InternalExpenseCategory;
 use App\Models\InternalExpenseSubcategory;
@@ -43,6 +50,13 @@ $active = ['1' => 'Active', '0' => 'Inactive'];
 $userStatus = ['active' => 'Active', 'inactive' => 'Inactive', 'pending_approval' => 'Pending Approval'];
 $orderStatus = ['salesman_review' => 'Salesman Review', 'admin_review' => 'Admin Review', 'approved' => 'Approved', 'packing' => 'Packing', 'dispatched' => 'Dispatched', 'out_for_delivery' => 'Out for Delivery', 'delivered' => 'Delivered', 'cancelled' => 'Cancelled'];
 $approvalStatus = ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'];
+$holidayTypes = ['national' => 'National', 'company' => 'Company', 'festival' => 'Festival'];
+$weekDays = ['1' => 'Monday', '2' => 'Tuesday', '3' => 'Wednesday', '4' => 'Thursday', '5' => 'Friday', '6' => 'Saturday', '7' => 'Sunday'];
+$audiences = ['salesman' => 'Salesmen', 'dealer' => 'Dealers', 'customer' => 'Customers', 'all' => 'Everyone'];
+$documentTypes = ['aadhaar' => 'Aadhaar', 'pan' => 'PAN', 'driving_license' => 'Driving License', 'bank' => 'Bank Details', 'appointment_letter' => 'Appointment Letter', 'id_card' => 'ID Card', 'certificate' => 'Certificate', 'other' => 'Other'];
+$documentStatus = ['pending' => 'Pending', 'verified' => 'Verified', 'rejected' => 'Rejected', 'expired' => 'Expired'];
+$advanceStatus = ['pending' => 'Pending', 'approved' => 'Approved', 'disbursed' => 'Disbursed', 'closed' => 'Closed', 'rejected' => 'Rejected'];
+$reviewStatus = ['draft' => 'Draft', 'published' => 'Published'];
 
 return [
     'brand' => ['name' => 'Bawaskar ERP', 'short_name' => 'BERP'],
@@ -89,7 +103,14 @@ return [
         ['label' => 'Expense', 'id' => 'companyExpenseMenu', 'icon' => 'iconoir-receive-dollars', 'items' => [
             ['key' => 'internal-expenses', 'label' => 'Expense List', 'route' => 'admin.internal-expenses.index', 'icon' => 'iconoir-notes'], ['key' => 'expense-categories', 'label' => 'Category List', 'route' => 'admin.expense-categories.index', 'icon' => 'iconoir-list-select'], ['key' => 'expense-subcategories', 'label' => 'Subcategory List', 'route' => 'admin.expense-subcategories.index', 'icon' => 'iconoir-list'], ]],
         ['label' => 'HRMS', 'items' => [
-            ['key' => 'timesheet', 'label' => 'Timesheet', 'id' => 'timesheetMenu', 'icon' => 'iconoir-calendar', 'children' => [['key' => 'attendance', 'label' => 'Attendance', 'route' => 'admin.attendance.index', 'icon' => 'iconoir-check-circle'], ['key' => 'leaves', 'label' => 'Leave', 'route' => 'admin.leaves.index', 'icon' => 'iconoir-calendar-minus'], ['key' => 'bulk-attendance', 'label' => 'Bulk Attendance', 'route' => 'admin.attendance.bulk', 'icon' => 'iconoir-table-rows']]], ['key' => 'dealer-visits', 'label' => 'Dealer Visits', 'route' => 'admin.dealer-visits.index', 'icon' => 'iconoir-map-pin'], ['key' => 'tour-plans', 'label' => 'Tour Plans', 'route' => 'admin.tour-plans.index', 'icon' => 'iconoir-route'], ['key' => 'expenses', 'label' => 'Expenses', 'route' => 'admin.expenses.index', 'icon' => 'iconoir-receive-dollars'], ['key' => 'salary', 'label' => 'Salary & Payroll', 'route' => 'admin.salary.index', 'icon' => 'iconoir-coins'], ['key' => 'targets', 'label' => 'Targets & Commission', 'route' => 'admin.targets.index', 'icon' => 'iconoir-target'], ['key' => 'assets', 'label' => 'Salesman Assets', 'route' => 'admin.assets.index', 'icon' => 'iconoir-laptop'], ]],
+            ['key' => 'timesheet', 'label' => 'Timesheet', 'id' => 'timesheetMenu', 'icon' => 'iconoir-calendar', 'children' => [['key' => 'attendance', 'label' => 'Attendance', 'route' => 'admin.attendance.index', 'icon' => 'iconoir-check-circle'], ['key' => 'leaves', 'label' => 'Leave', 'route' => 'admin.leaves.index', 'icon' => 'iconoir-calendar-minus'], ['key' => 'bulk-attendance', 'label' => 'Bulk Attendance', 'route' => 'admin.attendance.bulk', 'icon' => 'iconoir-table-rows']]], ['key' => 'dealer-visits', 'label' => 'Dealer Visits', 'route' => 'admin.dealer-visits.index', 'icon' => 'iconoir-map-pin'], ['key' => 'tour-plans', 'label' => 'Tour Plans', 'route' => 'admin.tour-plans.index', 'icon' => 'iconoir-route'], ['key' => 'expenses', 'label' => 'Expenses', 'route' => 'admin.expenses.index', 'icon' => 'iconoir-receive-dollars'], ['key' => 'salary', 'label' => 'Salary & Payroll', 'route' => 'admin.salary.index', 'icon' => 'iconoir-coins'], ['key' => 'targets', 'label' => 'Targets & Commission', 'route' => 'admin.targets.index', 'icon' => 'iconoir-target'], ['key' => 'assets', 'label' => 'Salesman Assets', 'route' => 'admin.assets.index', 'icon' => 'iconoir-laptop'],
+            ['key' => 'holidays', 'label' => 'Holidays', 'route' => 'admin.holidays.index', 'icon' => 'iconoir-calendar'],
+            ['key' => 'shift-menu', 'label' => 'Shifts', 'id' => 'shiftMenu', 'icon' => 'iconoir-clock', 'children' => [['key' => 'shifts', 'label' => 'Shift List', 'route' => 'admin.shifts.index', 'icon' => 'iconoir-clock'], ['key' => 'shift-assignments', 'label' => 'Shift Assignments', 'route' => 'admin.shift-assignments.index', 'icon' => 'iconoir-user']]],
+            ['key' => 'announcements', 'label' => 'Announcements', 'route' => 'admin.announcements.index', 'icon' => 'iconoir-megaphone'],
+            ['key' => 'employee-documents', 'label' => 'Employee Documents', 'route' => 'admin.employee-documents.index', 'icon' => 'iconoir-page'],
+            ['key' => 'salary-advances', 'label' => 'Advances & Loans', 'route' => 'admin.salary-advances.index', 'icon' => 'iconoir-coins'],
+            ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
+        ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
             ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ]],
         ['label' => 'System', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
@@ -484,6 +505,92 @@ return [
             'label' => 'Salesman Assets', 'group' => 'Salesman HRMS', 'singular' => 'Asset', 'model' => SalesmanAsset::class, 'with' => ['salesman'], 'status_column' => 'status', 'status_options' => ['issued' => 'Issued', 'returned' => 'Returned', 'lost' => 'Lost', 'damaged' => 'Damaged'],
             'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'asset_type', 'label' => 'Type'], ['key' => 'asset_name', 'label' => 'Asset'], ['key' => 'serial_no', 'label' => 'Serial No.'], ['key' => 'issued_on', 'label' => 'Issued', 'type' => 'date'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
             'fields' => [['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']], ['name' => 'asset_type', 'label' => 'Asset Type', 'type' => 'select', 'options' => ['mobile' => 'Mobile', 'laptop' => 'Laptop', 'sim' => 'SIM Card', 'vehicle' => 'Vehicle', 'other' => 'Other'], 'rules' => ['required', 'string', 'max:40']], ['name' => 'asset_name', 'label' => 'Asset Name', 'rules' => ['required', 'string', 'max:255']], ['name' => 'serial_no', 'label' => 'Serial Number', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'issued_on', 'label' => 'Issued On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'returned_on', 'label' => 'Returned On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'condition', 'label' => 'Condition', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['issued' => 'Issued', 'returned' => 'Returned', 'lost' => 'Lost', 'damaged' => 'Damaged'], 'rules' => ['required', 'string', 'max:40']]],
+        ],
+        'holidays' => [
+            'label' => 'Holidays', 'group' => 'Salesman HRMS', 'singular' => 'Holiday', 'description' => 'Holiday calendar shown in the salesman app.', 'model' => Holiday::class, 'search' => ['title'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['holiday_date', 'desc'],
+            'columns' => [['key' => 'holiday_date', 'label' => 'Date', 'type' => 'date'], ['key' => 'title', 'label' => 'Holiday'], ['key' => 'holiday_type', 'label' => 'Type'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'title', 'label' => 'Holiday Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'holiday_date', 'label' => 'Date', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'holiday_type', 'label' => 'Type', 'type' => 'select', 'options' => $holidayTypes, 'default' => 'company', 'rules' => ['required', 'in:'.implode(',', array_keys($holidayTypes))]],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'shifts' => [
+            'label' => 'Shifts', 'group' => 'Salesman HRMS', 'singular' => 'Shift', 'description' => 'Working hours, grace time and weekly offs.', 'model' => Shift::class, 'with_count' => ['assignments'], 'search' => ['name'], 'status_column' => 'is_active', 'status_options' => $active,
+            'columns' => [['key' => 'name', 'label' => 'Shift'], ['key' => 'starts_at', 'label' => 'Starts'], ['key' => 'ends_at', 'label' => 'Ends'], ['key' => 'grace_minutes', 'label' => 'Grace (min)'], ['key' => 'assignments_count', 'label' => 'Assigned'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Shift Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'starts_at', 'label' => 'Start Time', 'type' => 'time', 'rules' => ['required', 'date_format:H:i,H:i:s']],
+                ['name' => 'ends_at', 'label' => 'End Time', 'type' => 'time', 'rules' => ['required', 'date_format:H:i,H:i:s']],
+                ['name' => 'grace_minutes', 'label' => 'Grace Minutes', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0', 'max:600'], 'help' => 'Late marking starts after this many minutes.'],
+                ['name' => 'half_day_minutes', 'label' => 'Half Day Minutes', 'type' => 'number', 'default' => 240, 'rules' => ['nullable', 'integer', 'min:0', 'max:1440'], 'help' => 'Worked less than this counts as half day.'],
+                ['name' => 'weekly_offs', 'label' => 'Weekly Offs', 'type' => 'checkbox_list', 'options' => $weekDays, 'rules' => ['nullable', 'array']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'shift-assignments' => [
+            'label' => 'Shift Assignments', 'group' => 'Salesman HRMS', 'singular' => 'Shift Assignment', 'description' => 'Which salesman works which shift, and from when.', 'model' => ShiftAssignment::class, 'with' => ['salesman', 'shift'], 'sort' => ['effective_from', 'desc'],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'shift.name', 'label' => 'Shift'], ['key' => 'effective_from', 'label' => 'From', 'type' => 'date'], ['key' => 'effective_to', 'label' => 'To', 'type' => 'date']],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'shift_id', 'label' => 'Shift', 'type' => 'select', 'option_model' => Shift::class, 'option_where' => ['is_active' => true], 'rules' => ['required', 'exists:shifts,id']],
+                ['name' => 'effective_from', 'label' => 'Effective From', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'effective_to', 'label' => 'Effective To', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:effective_from'], 'help' => 'Leave blank if the shift continues.'],
+            ],
+        ],
+        'announcements' => [
+            'label' => 'Announcements', 'group' => 'Salesman HRMS', 'singular' => 'Announcement', 'description' => 'Notices shown in the apps. Leave Publish At blank to keep it as a draft.', 'model' => Announcement::class, 'with' => ['author'], 'search' => ['title', 'body'], 'sort' => ['id', 'desc'], 'filters' => [['name' => 'audience', 'column' => 'audience', 'options' => $audiences]],
+            'columns' => [['key' => 'title', 'label' => 'Title'], ['key' => 'audience', 'label' => 'Audience'], ['key' => 'category', 'label' => 'Category'], ['key' => 'published_at', 'label' => 'Published', 'type' => 'datetime'], ['key' => 'expires_at', 'label' => 'Expires', 'type' => 'datetime'], ['key' => 'author.name', 'label' => 'Created By']],
+            'fields' => [
+                ['name' => 'title', 'label' => 'Title', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'audience', 'label' => 'Audience', 'type' => 'select', 'options' => $audiences, 'default' => 'salesman', 'rules' => ['required', 'in:'.implode(',', array_keys($audiences))]],
+                ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => ['announcement' => 'Announcement', 'policy' => 'Policy', 'circular' => 'Circular', 'event' => 'Event'], 'default' => 'announcement', 'rules' => ['required', 'in:announcement,policy,circular,event']],
+                ['name' => 'body', 'label' => 'Message', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 6, 'rules' => ['required', 'string', 'max:10000']],
+                ['name' => 'published_at', 'label' => 'Publish At', 'type' => 'datetime-local', 'rules' => ['nullable', 'date']],
+                ['name' => 'expires_at', 'label' => 'Expires At', 'type' => 'datetime-local', 'rules' => ['nullable', 'date']],
+                ['name' => 'attachment_path', 'label' => 'Attachment (PDF / image)', 'type' => 'file', 'accept' => '.pdf,image/*', 'upload_dir' => 'uploads/announcements', 'rules' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120']],
+            ],
+        ],
+        'employee-documents' => [
+            'label' => 'Employee Documents', 'group' => 'Salesman HRMS', 'singular' => 'Employee Document', 'description' => 'KYC and HR documents. Files are stored privately and only admins can download them.', 'model' => EmployeeDocument::class, 'with' => ['salesman'], 'search' => ['document_no'], 'status_column' => 'status', 'status_options' => $documentStatus, 'filters' => [['name' => 'document_type', 'column' => 'document_type', 'options' => $documentTypes]],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'document_type', 'label' => 'Document'], ['key' => 'document_no', 'label' => 'Number'], ['key' => 'expires_on', 'label' => 'Expires', 'type' => 'date'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'document_type', 'label' => 'Document Type', 'type' => 'select', 'options' => $documentTypes, 'rules' => ['required', 'in:'.implode(',', array_keys($documentTypes))]],
+                ['name' => 'document_no', 'label' => 'Document Number', 'rules' => ['nullable', 'string', 'max:100']],
+                ['name' => 'issued_on', 'label' => 'Issued On', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'expires_on', 'label' => 'Expires On', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $documentStatus, 'default' => 'pending', 'rules' => ['required', 'in:'.implode(',', array_keys($documentStatus))]],
+                ['name' => 'file_path', 'label' => 'Document File (PDF / image)', 'type' => 'private_file', 'accept' => '.pdf,image/*', 'rules' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120']],
+                ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'salary-advances' => [
+            'label' => 'Advances & Loans', 'group' => 'Salesman HRMS', 'singular' => 'Advance / Loan', 'description' => 'Requests raised from the salesman app. Approve, mark disbursed and record recovery here.', 'model' => SalaryAdvance::class, 'with' => ['salesman', 'approver'], 'search' => ['reference_no'], 'status_column' => 'status', 'status_options' => $advanceStatus, 'filters' => [['name' => 'advance_type', 'column' => 'advance_type', 'options' => ['advance' => 'Advance', 'loan' => 'Loan']]], 'can_create' => false, 'can_delete' => false,
+            'columns' => [['key' => 'reference_no', 'label' => 'Reference'], ['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'advance_type', 'label' => 'Type'], ['key' => 'amount', 'label' => 'Amount', 'type' => 'money'], ['key' => 'installments', 'label' => 'EMIs'], ['key' => 'emi_amount', 'label' => 'EMI', 'type' => 'money'], ['key' => 'recovered_amount', 'label' => 'Recovered', 'type' => 'money'], ['key' => 'status', 'label' => 'Status', 'type' => 'status'], ['key' => 'approver.name', 'label' => 'Approved By']],
+            'fields' => [
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $advanceStatus, 'rules' => ['required', 'in:'.implode(',', array_keys($advanceStatus))]],
+                ['name' => 'disbursed_on', 'label' => 'Disbursed On', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'recovered_amount', 'label' => 'Recovered Amount', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'reason', 'label' => 'Reason', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'performance-reviews' => [
+            'label' => 'Performance Reviews', 'group' => 'Salesman HRMS', 'singular' => 'Performance Review', 'description' => 'Scores out of 100. Drafts stay hidden from the salesman app until published.', 'model' => PerformanceReview::class, 'with' => ['salesman', 'reviewer'], 'status_column' => 'status', 'status_options' => $reviewStatus, 'sort' => ['period_start', 'desc'],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'period_start', 'label' => 'From', 'type' => 'date'], ['key' => 'period_end', 'label' => 'To', 'type' => 'date'], ['key' => 'overall_rating', 'label' => 'Overall'], ['key' => 'status', 'label' => 'Status', 'type' => 'status'], ['key' => 'reviewer.name', 'label' => 'Reviewed By']],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'period_start', 'label' => 'Period From', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'period_end', 'label' => 'Period To', 'type' => 'date', 'rules' => ['required', 'date', 'after_or_equal:period_start']],
+                ['name' => 'sales_score', 'label' => 'Sales Score', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'between:0,100']],
+                ['name' => 'collection_score', 'label' => 'Collection Score', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'between:0,100']],
+                ['name' => 'visit_score', 'label' => 'Visit Score', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'between:0,100']],
+                ['name' => 'overall_rating', 'label' => 'Overall Rating', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'between:0,100'], 'help' => 'Leave blank to use the average of the three scores.'],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $reviewStatus, 'default' => 'draft', 'rules' => ['required', 'in:'.implode(',', array_keys($reviewStatus))]],
+                ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
+            ],
         ],
         'storefront-footer-links' => [
             'label' => 'Footer Links', 'group' => 'Storefront', 'singular' => 'Footer Link', 'description' => 'Links shown in the website footer columns.', 'model' => StorefrontFooterLink::class, 'search' => ['title', 'url', 'link_group'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],

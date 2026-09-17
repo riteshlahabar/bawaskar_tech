@@ -16,6 +16,13 @@ use App\Http\Controllers\Admin\EmailTemplates\EmailTemplateController;
 use App\Http\Controllers\Admin\ExpenseCategories\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expenses\ExpenseController;
 use App\Http\Controllers\Admin\ExpenseSubcategories\ExpenseSubcategoryController;
+use App\Http\Controllers\Admin\Hr\AnnouncementController;
+use App\Http\Controllers\Admin\Hr\EmployeeDocumentController;
+use App\Http\Controllers\Admin\Hr\HolidayController;
+use App\Http\Controllers\Admin\Hr\PerformanceReviewController;
+use App\Http\Controllers\Admin\Hr\SalaryAdvanceController;
+use App\Http\Controllers\Admin\Hr\ShiftAssignmentController;
+use App\Http\Controllers\Admin\Hr\ShiftController;
 use App\Http\Controllers\Admin\Imports\CommonImportController;
 use App\Http\Controllers\Admin\InternalExpenses\InternalExpenseController;
 use App\Http\Controllers\Admin\Inventory\InventoryController;
@@ -74,6 +81,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'internal-expenses' => InternalExpenseController::class, 'expense-categories' => ExpenseCategoryController::class, 'expense-subcategories' => ExpenseSubcategoryController::class,
             'attendance' => AttendanceController::class, 'dealer-visits' => DealerVisitController::class, 'tour-plans' => TourPlanController::class,
             'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
+            'holidays' => HolidayController::class, 'shifts' => ShiftController::class, 'shift-assignments' => ShiftAssignmentController::class, 'announcements' => AnnouncementController::class,
+            'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'performance-reviews' => PerformanceReviewController::class,
             'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class,
             'web-translations' => WebTranslationController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
@@ -99,6 +108,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('sales-documents/{document}/{id}/pdf', [SalesDocumentController::class, 'pdf'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.pdf');
         Route::post('expenses/{expense}/decision', [ExpenseController::class, 'decision'])->name('expenses.decision');
         Route::post('leaves/{leave}/decision', [LeaveController::class, 'decision'])->name('leaves.decision');
+        Route::get('employee-documents/{employee_document}/download', [EmployeeDocumentController::class, 'download'])->name('employee-documents.download');
         Route::post('salary/generate', [SalaryController::class, 'generate'])->name('salary.generate');
         Route::post('translations/translate-batch', AppTranslationBatchController::class)->name('translations.translate-batch');
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

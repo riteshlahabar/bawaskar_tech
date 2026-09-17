@@ -28,7 +28,7 @@
         'sf-row-15-product-section'=>'layout','sf-row-15-heading'=>'type','sf-row-15-products'=>'shopping-cart',
         'sf-row-16-blog'=>'layout',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
-        'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor',
+        'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor','holidays'=>'sun','shift-menu'=>'clock','shifts'=>'clock','shift-assignments'=>'user-check','announcements'=>'volume-2','employee-documents'=>'file-text','salary-advances'=>'credit-card','performance-reviews'=>'star',
         'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
     ];
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','systemMenu'=>'settings'];

@@ -19,6 +19,12 @@ return [
     'product_media_repeater' => [
         'view' => 'admin.products.partials.media.repeater',
     ],
+    'checkbox_list' => [
+        'view' => 'admin.shared.fields.checkbox-list',
+    ],
+    'private_file' => [
+        'view' => 'admin.shared.fields.private-file',
+    ],
     'product_additional_information_repeater' => [
         'view' => 'admin.products.partials.additional-information.repeater',
     ],

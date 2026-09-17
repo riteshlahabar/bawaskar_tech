@@ -5,6 +5,7 @@ namespace App\Models\Hr;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeDocument extends Model
 {
@@ -16,6 +17,19 @@ class EmployeeDocument extends Model
     protected function casts(): array
     {
         return ['issued_on' => 'date', 'expires_on' => 'date'];
+    }
+
+    /**
+     * The private file goes with the record, so a deleted KYC row never
+     * leaves an orphaned Aadhaar or PAN scan on disk.
+     */
+    protected static function booted(): void
+    {
+        static::deleted(function (EmployeeDocument $document): void {
+            if ($document->file_path) {
+                Storage::disk('local')->delete($document->file_path);
+            }
+        });
     }
 
     /**

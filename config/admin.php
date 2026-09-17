@@ -80,7 +80,13 @@ return [
             ['key' => 'inventory', 'label' => 'Stock', 'route' => 'admin.inventory.index', 'icon' => 'iconoir-package'],
             ['key' => 'warehouses', 'label' => 'Warehouse', 'route' => 'admin.warehouses.index', 'icon' => 'iconoir-home-alt'],
             ['key' => 'homepage-settings', 'label' => 'Homepage Settings', 'route' => 'admin.homepage-settings.index', 'icon' => 'iconoir-www'],
-        ]],        ['label' => 'Expense', 'id' => 'companyExpenseMenu', 'icon' => 'iconoir-receive-dollars', 'items' => [
+        ]],
+        ['label' => 'Finance', 'id' => 'financeMenu', 'icon' => 'iconoir-dollar-circle', 'items' => [
+            ['key' => 'payments', 'label' => 'Payments', 'route' => 'admin.payments.index', 'icon' => 'iconoir-credit-card'],
+            ['key' => 'collections', 'label' => 'Collections', 'route' => 'admin.collections.index', 'icon' => 'iconoir-wallet'],
+            ['key' => 'outstanding', 'label' => 'Outstanding', 'route' => 'admin.outstanding.index', 'icon' => 'iconoir-graph-up'],
+        ]],
+        ['label' => 'Expense', 'id' => 'companyExpenseMenu', 'icon' => 'iconoir-receive-dollars', 'items' => [
             ['key' => 'internal-expenses', 'label' => 'Expense List', 'route' => 'admin.internal-expenses.index', 'icon' => 'iconoir-notes'], ['key' => 'expense-categories', 'label' => 'Category List', 'route' => 'admin.expense-categories.index', 'icon' => 'iconoir-list-select'], ['key' => 'expense-subcategories', 'label' => 'Subcategory List', 'route' => 'admin.expense-subcategories.index', 'icon' => 'iconoir-list'], ]],
         ['label' => 'HRMS', 'items' => [
             ['key' => 'timesheet', 'label' => 'Timesheet', 'id' => 'timesheetMenu', 'icon' => 'iconoir-calendar', 'children' => [['key' => 'attendance', 'label' => 'Attendance', 'route' => 'admin.attendance.index', 'icon' => 'iconoir-check-circle'], ['key' => 'leaves', 'label' => 'Leave', 'route' => 'admin.leaves.index', 'icon' => 'iconoir-calendar-minus'], ['key' => 'bulk-attendance', 'label' => 'Bulk Attendance', 'route' => 'admin.attendance.bulk', 'icon' => 'iconoir-table-rows']]], ['key' => 'dealer-visits', 'label' => 'Dealer Visits', 'route' => 'admin.dealer-visits.index', 'icon' => 'iconoir-map-pin'], ['key' => 'tour-plans', 'label' => 'Tour Plans', 'route' => 'admin.tour-plans.index', 'icon' => 'iconoir-route'], ['key' => 'expenses', 'label' => 'Expenses', 'route' => 'admin.expenses.index', 'icon' => 'iconoir-receive-dollars'], ['key' => 'salary', 'label' => 'Salary & Payroll', 'route' => 'admin.salary.index', 'icon' => 'iconoir-coins'], ['key' => 'targets', 'label' => 'Targets & Commission', 'route' => 'admin.targets.index', 'icon' => 'iconoir-target'], ['key' => 'assets', 'label' => 'Salesman Assets', 'route' => 'admin.assets.index', 'icon' => 'iconoir-laptop'], ]],

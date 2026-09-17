@@ -51,6 +51,7 @@ use App\Contracts\Localization\AppTranslationBatchContract;
 use App\Contracts\Localization\AppTranslationCatalogContract;
 use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
+use App\Contracts\Localization\WebsiteTranslationLookupContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
 use App\Contracts\Sales\Orders\OrderLineBuilderContract;
@@ -70,6 +71,7 @@ use App\Contracts\Support\TransactionManagerContract;
 use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
 use App\Repositories\Localization\EloquentAppTranslationRepository;
+use App\Repositories\Localization\EloquentWebsiteTranslationLookup;
 use App\Repositories\Sales\Orders\EloquentOrderProductResolver;
 use App\Repositories\Sales\Orders\EloquentOrderRepository;
 use App\Services\Account\ProfileUpdateService;
@@ -172,6 +174,7 @@ class AppServiceProvider extends ServiceProvider
             AppTranslationRepositoryContract::class => EloquentAppTranslationRepository::class,
             AppTranslationCatalogContract::class => AppTranslationCatalogService::class,
             AppTranslationBatchContract::class => AppTranslationBatchService::class,
+            WebsiteTranslationLookupContract::class => EloquentWebsiteTranslationLookup::class,
             PublicUploadContract::class => PublicUploadService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,

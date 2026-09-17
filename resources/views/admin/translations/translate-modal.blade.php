@@ -16,8 +16,9 @@
                 </select>
 
                 <p class="small text-muted mb-3">
-                    Every English string the apps have registered is translated into all active languages.
-                    Only missing translations are processed, so you can stop and press Translate again later.
+                    Missing app text is copied from the website's translations first, then from another app,
+                    and only the rest is sent to Google. Existing and hand-corrected translations are never changed,
+                    so you can stop and press Translate again later.
                 </p>
 
                 <div class="progress mb-2" style="height: 10px;">
@@ -60,6 +61,9 @@
         startBtn.addEventListener('click', async () => {
             setRunning(true);
             let done = 0;
+            let fromWebsite = 0;
+            let fromApps = 0;
+            let fromGoogle = 0;
             let failed = 0;
             status.textContent = 'Starting...';
 
@@ -78,17 +82,21 @@
                     break;
                 }
 
-                const progressed = result.translated + result.reused;
+                const progressed = result.translated + result.website + result.reused;
                 done += progressed;
+                fromWebsite += result.website;
+                fromApps += result.reused;
+                fromGoogle += result.translated;
                 failed += result.failed;
                 changed = changed || progressed > 0;
 
                 const total = done + result.remaining;
+                const breakdown = 'website ' + fromWebsite + ', other app ' + fromApps + ', Google ' + fromGoogle;
                 bar.style.width = (total === 0 ? 100 : Math.round(done / total * 100)) + '%';
-                status.textContent = 'Translated ' + done + ', remaining ' + result.remaining + (failed ? ', failed ' + failed : '') + '.';
+                status.textContent = 'Saved ' + done + ' (' + breakdown + '), remaining ' + result.remaining + (failed ? ', failed ' + failed : '') + '.';
 
                 if (result.remaining === 0) {
-                    status.textContent = 'Done. ' + done + ' translations saved.';
+                    status.textContent = 'Done. ' + done + ' translations saved (' + breakdown + ').';
                     break;
                 }
 

@@ -6,13 +6,17 @@ use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Localization\AppTranslationBatchContract;
 use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
+use App\Contracts\Localization\WebsiteTranslationLookupContract;
+use App\Models\Communication\AppTranslation;
 use Throwable;
 
 /**
- * SRP: translate the next batch of missing app strings and store them.
+ * SRP: fill the next batch of missing app strings.
  *
- * A string whose English text is already translated elsewhere (another app,
- * same language) is copied instead of sent to Google again.
+ * Order per missing (app, key, language): the website's translation of the
+ * same English text, then another app's, then Google. Copies cost nothing, so
+ * they are all saved in one go; only Google calls are batched and time-boxed.
+ * Existing values (including admin corrections) are never touched.
  */
 final class AppTranslationBatchService implements AppTranslationBatchContract
 {
@@ -24,6 +28,7 @@ final class AppTranslationBatchService implements AppTranslationBatchContract
 
     public function __construct(
         private readonly AppTranslationRepositoryContract $repository,
+        private readonly WebsiteTranslationLookupContract $website,
         private readonly SupportedLocalesContract $locales,
         private readonly TextTranslatorContract $translator,
     ) {}
@@ -35,39 +40,48 @@ final class AppTranslationBatchService implements AppTranslationBatchContract
         $batchSize = max(1, (int) config('localization.app_translate_batch_size', 40));
 
         $index = $this->repository->translatedIndex(null, $targets);
-        $reusable = $this->reusableByEnglish($index);
+        $fromWebsite = $this->websiteMap($targets);
+        $fromApps = $this->appMap($index);
         $pending = $this->pending($this->repository->englishRows($app, $default), $targets, $index);
 
-        $translated = 0;
-        $reused = 0;
-        $failed = 0;
+        $copies = [];
+        $toTranslate = [];
+        $counts = ['translated' => 0, 'website' => 0, 'reused' => 0, 'failed' => 0];
+
+        foreach ($pending as [$row, $locale]) {
+            $match = $this->matchKey($locale, $row['english']);
+
+            if (! $this->hasPlaceholder($row['english']) && isset($fromWebsite[$match])) {
+                $copies[] = $this->record($row, $locale, $fromWebsite[$match], AppTranslation::SOURCE_WEBSITE);
+                $counts['website']++;
+            } elseif (isset($fromApps[$match])) {
+                $copies[] = $this->record($row, $locale, $fromApps[$match], AppTranslation::SOURCE_APP);
+                $counts['reused']++;
+            } else {
+                $toTranslate[] = [$row, $locale];
+            }
+        }
+
+        if ($copies !== []) {
+            $this->repository->saveTranslations($copies);
+        }
+
+        $translated = [];
         $failuresInRow = 0;
-        $done = 0;
         $startedAt = microtime(true);
 
-        foreach (array_slice($pending, 0, $batchSize) as [$row, $locale]) {
+        foreach (array_slice($toTranslate, 0, $batchSize) as [$row, $locale]) {
             if (microtime(true) - $startedAt > self::TIME_BUDGET_SECONDS) {
                 break;
             }
 
-            $reuse = $reusable[$locale.'|'.$row['english']] ?? null;
+            $match = $this->matchKey($locale, $row['english']);
 
-            if ($reuse !== null) {
-                $this->repository->saveTranslation($row['app'], $row['key'], $locale, $row['english'], $reuse);
-                $reused++;
-                $done++;
-
-                continue;
-            }
-
-            try {
-                $value = trim($this->translator->translate($row['english'], $default, $locale));
-            } catch (Throwable) {
-                $value = '';
-            }
+            // Same English earlier in this batch: copy it instead of asking again.
+            $value = $translated[$match] ?? $this->translate($row['english'], $default, $locale);
 
             if ($value === '') {
-                $failed++;
+                $counts['failed']++;
 
                 if (++$failuresInRow >= self::MAX_CONSECUTIVE_FAILURES) {
                     break;
@@ -77,18 +91,24 @@ final class AppTranslationBatchService implements AppTranslationBatchContract
             }
 
             $failuresInRow = 0;
-            $this->repository->saveTranslation($row['app'], $row['key'], $locale, $row['english'], $value);
-            $reusable[$locale.'|'.$row['english']] = $value;
-            $translated++;
-            $done++;
+            $source = isset($translated[$match]) ? AppTranslation::SOURCE_APP : AppTranslation::SOURCE_GOOGLE;
+            $counts[$source === AppTranslation::SOURCE_APP ? 'reused' : 'translated']++;
+            $translated[$match] = $value;
+            $this->repository->saveTranslations([$this->record($row, $locale, $value, $source)]);
         }
 
-        return [
-            'translated' => $translated,
-            'reused' => $reused,
-            'failed' => $failed,
-            'remaining' => max(0, count($pending) - $done),
-        ];
+        $done = $counts['translated'] + $counts['website'] + $counts['reused'];
+
+        return $counts + ['remaining' => max(0, count($pending) - $done)];
+    }
+
+    private function translate(string $english, string $from, string $to): string
+    {
+        try {
+            return trim($this->translator->translate($english, $from, $to));
+        } catch (Throwable) {
+            return '';
+        }
     }
 
     /**
@@ -113,10 +133,30 @@ final class AppTranslationBatchService implements AppTranslationBatchContract
     }
 
     /**
-     * @param  array<string, array{value: string, english: string}>  $index
-     * @return array<string, string> "locale|english" => translated value
+     * @param  array<int, string>  $targets
+     * @return array<string, string> match key => website translation
      */
-    private function reusableByEnglish(array $index): array
+    private function websiteMap(array $targets): array
+    {
+        $map = [];
+
+        foreach ($this->website->translationsFor($targets) as $row) {
+            // An "auto-translation" identical to the English is a failed one.
+            if (trim($row['value']) === '' || trim($row['value']) === trim($row['english'])) {
+                continue;
+            }
+
+            $map[$this->matchKey($row['locale'], $row['english'])] ??= $row['value'];
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param  array<string, array{value: string, english: string}>  $index
+     * @return array<string, string> match key => another app's translation
+     */
+    private function appMap(array $index): array
     {
         $map = [];
 
@@ -126,9 +166,30 @@ final class AppTranslationBatchService implements AppTranslationBatchContract
             }
 
             $locale = substr($compositeKey, strrpos($compositeKey, '|') + 1);
-            $map[$locale.'|'.$entry['english']] ??= $entry['value'];
+            $map[$this->matchKey($locale, $entry['english'])] ??= $entry['value'];
         }
 
         return $map;
+    }
+
+    /** Same language + same English, ignoring case and extra spaces. */
+    private function matchKey(string $locale, string $english): string
+    {
+        return $locale.'|'.mb_strtolower((string) preg_replace('/\s+/u', ' ', trim($english)));
+    }
+
+    /** App placeholders ({n}) are written differently on the website (:n). */
+    private function hasPlaceholder(string $english): bool
+    {
+        return str_contains($english, '{');
+    }
+
+    /**
+     * @param  array{app: string, key: string, english: string}  $row
+     * @return array{app: string, key: string, locale: string, english: string, value: string, source: string}
+     */
+    private function record(array $row, string $locale, string $value, string $source): array
+    {
+        return ['app' => $row['app'], 'key' => $row['key'], 'locale' => $locale, 'english' => $row['english'], 'value' => $value, 'source' => $source];
     }
 }

@@ -16,7 +16,8 @@ interface AppTranslationRepositoryContract
 
     /**
      * Upserts English rows. Keys whose English text changed have their other
-     * language rows cleared so the next Translate run redoes them.
+     * language rows cleared so the next Translate run redoes them; rows an
+     * admin corrected by hand are left alone.
      *
      * @param  array<string, string>  $items
      * @param  array<int, string>  $changedKeys
@@ -45,5 +46,10 @@ interface AppTranslationRepositoryContract
      */
     public function translatedIndex(?string $app, array $locales): array;
 
-    public function saveTranslation(string $app, string $key, string $locale, string $english, string $value): void;
+    /**
+     * Stores translated values in bulk without touching rows' model events.
+     *
+     * @param  array<int, array{app: string, key: string, locale: string, english: string, value: string, source: string}>  $rows
+     */
+    public function saveTranslations(array $rows): void;
 }

@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * One table for all three mobile apps: `app` keeps customer, dealer and
  * salesman strings apart, `english_text` is the source the admin Translate
- * button works from, and `value` may be empty until a row is translated.
+ * button works from, `value` may be empty until a row is translated, and
+ * `source` records where the value came from (website, app, google, manual).
  */
 return new class extends Migration
 {
@@ -16,6 +17,7 @@ return new class extends Migration
         Schema::table('app_translations', function (Blueprint $table): void {
             $table->string('app', 20)->nullable()->after('id')->index();
             $table->text('english_text')->nullable()->after('translation_key');
+            $table->string('source', 20)->nullable()->after('value');
         });
 
         Schema::table('app_translations', function (Blueprint $table): void {
@@ -30,7 +32,7 @@ return new class extends Migration
         Schema::table('app_translations', function (Blueprint $table): void {
             $table->dropUnique(['app', 'translation_key', 'locale']);
             $table->unique(['translation_key', 'locale']);
-            $table->dropColumn(['app', 'english_text']);
+            $table->dropColumn(['app', 'english_text', 'source']);
         });
     }
 };

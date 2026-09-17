@@ -9,7 +9,7 @@ namespace App\Contracts\Localization;
 interface AppTranslationBatchContract
 {
     /**
-     * @return array{translated: int, reused: int, failed: int, remaining: int}
+     * @return array{translated: int, website: int, reused: int, failed: int, remaining: int}
      */
     public function translateNextBatch(?string $app): array;
 }

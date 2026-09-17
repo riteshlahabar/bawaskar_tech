@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
+use App\Contracts\Localization\WebsiteTranslationLookupContract;
 use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
 use RuntimeException;
@@ -45,12 +46,61 @@ class AppTranslationServicesTest extends TestCase
         ];
         $translator = new FakeTranslator;
 
-        $result = (new AppTranslationBatchService($repository, new FakeLocales, $translator))->translateNextBatch(null);
+        $result = $this->batch($repository, $translator)->translateNextBatch(null);
 
         // 2 rows x 2 languages: first of each language hits Google, second is reused.
-        $this->assertSame(['translated' => 2, 'reused' => 2, 'failed' => 0, 'remaining' => 0], $result);
+        $this->assertSame(['translated' => 2, 'website' => 0, 'reused' => 2, 'failed' => 0, 'remaining' => 0], $result);
         $this->assertSame(2, $translator->calls);
         $this->assertSame('hi:Cancel', $repository->saved['customer|common.cancel|hi']);
+        $this->assertSame('app', $repository->sources['customer|common.cancel|hi']);
+    }
+
+    public function test_batch_copies_website_translation_by_english_text_ignoring_case_and_spaces(): void
+    {
+        $repository = new FakeAppTranslationRepository;
+        $repository->rows = [['app' => 'customer', 'key' => 'cart.add', 'english' => 'Add  to cart']];
+        $website = new FakeWebsiteLookup([
+            ['locale' => 'hi', 'english' => 'Add To Cart', 'value' => 'कार्ट में जोड़ें'],
+            ['locale' => 'mr', 'english' => 'Add To Cart', 'value' => 'Add To Cart'],
+        ]);
+        $translator = new FakeTranslator;
+
+        $result = $this->batch($repository, $translator, $website)->translateNextBatch('customer');
+
+        $this->assertSame(1, $result['website']);
+        $this->assertSame('कार्ट में जोड़ें', $repository->saved['customer|cart.add|hi']);
+        $this->assertSame('website', $repository->sources['customer|cart.add|hi']);
+        // The Marathi "translation" equals the English, so it is not trusted.
+        $this->assertSame('google', $repository->sources['customer|cart.add|mr']);
+        $this->assertSame(1, $translator->calls);
+    }
+
+    public function test_batch_never_copies_placeholder_text_from_website(): void
+    {
+        $repository = new FakeAppTranslationRepository;
+        $repository->rows = [['app' => 'dealer', 'key' => 'cart.left', 'english' => 'Only {n} left']];
+        $website = new FakeWebsiteLookup([['locale' => 'hi', 'english' => 'Only {n} left', 'value' => 'website value']]);
+
+        $this->batch($repository, new FakeTranslator, $website)->translateNextBatch('dealer');
+
+        $this->assertSame('google', $repository->sources['dealer|cart.left|hi']);
+    }
+
+    public function test_batch_leaves_existing_translations_alone(): void
+    {
+        $repository = new FakeAppTranslationRepository;
+        $repository->rows = [['app' => 'dealer', 'key' => 'cart.title', 'english' => 'Cart']];
+        $repository->index = [
+            'dealer|cart.title|hi' => ['value' => 'hand fixed', 'english' => 'Cart'],
+            'dealer|cart.title|mr' => ['value' => 'hand fixed mr', 'english' => 'Cart'],
+        ];
+        $translator = new FakeTranslator;
+
+        $result = $this->batch($repository, $translator, new FakeWebsiteLookup([['locale' => 'hi', 'english' => 'Cart', 'value' => 'x']]))->translateNextBatch('dealer');
+
+        $this->assertSame(0, $result['remaining']);
+        $this->assertSame([], $repository->saved);
+        $this->assertSame(0, $translator->calls);
     }
 
     public function test_batch_stops_after_repeated_translator_failures(): void
@@ -64,11 +114,26 @@ class AppTranslationServicesTest extends TestCase
         $translator = new FakeTranslator;
         $translator->fail = true;
 
-        $result = (new AppTranslationBatchService($repository, new FakeLocales, $translator))->translateNextBatch('dealer');
+        $result = $this->batch($repository, $translator)->translateNextBatch('dealer');
 
         $this->assertSame(3, $translator->calls);
         $this->assertSame(3, $result['failed']);
         $this->assertSame(6, $result['remaining']);
+    }
+
+    private function batch(FakeAppTranslationRepository $repository, FakeTranslator $translator, ?FakeWebsiteLookup $website = null): AppTranslationBatchService
+    {
+        return new AppTranslationBatchService($repository, $website ?? new FakeWebsiteLookup([]), new FakeLocales, $translator);
+    }
+}
+
+class FakeWebsiteLookup implements WebsiteTranslationLookupContract
+{
+    public function __construct(private readonly array $rows) {}
+
+    public function translationsFor(array $locales): array
+    {
+        return array_values(array_filter($this->rows, fn ($row) => in_array($row['locale'], $locales, true)));
     }
 }
 
@@ -124,6 +189,12 @@ class FakeAppTranslationRepository implements AppTranslationRepositoryContract
     /** @var array<string, string> */
     public array $saved = [];
 
+    /** @var array<string, string> */
+    public array $sources = [];
+
+    /** @var array<string, array{value: string, english: string}> */
+    public array $index = [];
+
     public int $saveEnglishCalls = 0;
 
     public array $lastChangedKeys = [];
@@ -154,11 +225,14 @@ class FakeAppTranslationRepository implements AppTranslationRepositoryContract
 
     public function translatedIndex(?string $app, array $locales): array
     {
-        return [];
+        return $this->index;
     }
 
-    public function saveTranslation(string $app, string $key, string $locale, string $english, string $value): void
+    public function saveTranslations(array $rows): void
     {
-        $this->saved[$app.'|'.$key.'|'.$locale] = $value;
+        foreach ($rows as $row) {
+            $this->saved[$row['app'].'|'.$row['key'].'|'.$row['locale']] = $row['value'];
+            $this->sources[$row['app'].'|'.$row['key'].'|'.$row['locale']] = $row['source'];
+        }
     }
 }

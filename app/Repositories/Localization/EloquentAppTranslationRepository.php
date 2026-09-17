@@ -49,7 +49,8 @@ final class EloquentAppTranslationRepository implements AppTranslationRepository
                 ->where('app', $app)
                 ->where('locale', '!=', $defaultLocale)
                 ->whereIn('translation_key', $changedKeys)
-                ->update(['value' => null, 'updated_at' => $now]);
+                ->where(fn ($query) => $query->whereNull('source')->orWhere('source', '!=', AppTranslation::SOURCE_MANUAL))
+                ->update(['value' => null, 'source' => null, 'updated_at' => $now]);
         }
     }
 
@@ -107,16 +108,28 @@ final class EloquentAppTranslationRepository implements AppTranslationRepository
         return $index;
     }
 
-    public function saveTranslation(string $app, string $key, string $locale, string $english, string $value): void
+    public function saveTranslations(array $rows): void
     {
-        AppTranslation::query()->updateOrCreate(
-            ['app' => $app, 'translation_key' => $key, 'locale' => $locale],
-            [
-                'group' => explode('.', $key, 2)[0],
-                'english_text' => $english,
-                'value' => $value,
-                'is_active' => true,
-            ]
-        );
+        $now = now();
+        $records = array_map(fn (array $row): array => [
+            'app' => $row['app'],
+            'group' => explode('.', $row['key'], 2)[0],
+            'translation_key' => $row['key'],
+            'english_text' => $row['english'],
+            'locale' => $row['locale'],
+            'value' => $row['value'],
+            'source' => $row['source'],
+            'is_active' => true,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $rows);
+
+        foreach (array_chunk($records, 200) as $chunk) {
+            AppTranslation::query()->upsert(
+                $chunk,
+                ['app', 'translation_key', 'locale'],
+                ['group', 'english_text', 'value', 'source', 'updated_at']
+            );
+        }
     }
 }

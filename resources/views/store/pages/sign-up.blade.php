@@ -190,6 +190,7 @@
                                         @error('gst_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
+                                @include('store.partials.location-fields')
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
                                         <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password">
@@ -341,6 +342,7 @@
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
 
     @include('store.partials.wishlist-script')
+    <script src="{{ asset('js/location-picker.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const roleInput = document.getElementById('signupRole');

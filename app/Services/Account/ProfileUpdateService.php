@@ -5,6 +5,7 @@ namespace App\Services\Account;
 use App\Contracts\Account\ProfileUpdateContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Localization\SupportedLocalesContract;
+use App\Contracts\Location\UserLocationContract;
 use App\Models\CustomerProfile;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -19,7 +20,8 @@ final class ProfileUpdateService implements ProfileUpdateContract
 
     public function __construct(
         private readonly PublicUploadContract $uploads,
-        private readonly SupportedLocalesContract $locales
+        private readonly SupportedLocalesContract $locales,
+        private readonly UserLocationContract $location,
     ) {}
 
     /**
@@ -38,11 +40,11 @@ final class ProfileUpdateService implements ProfileUpdateContract
         ];
 
         return match ($user->role) {
-            User::ROLE_DEALER => $rules + [
+            User::ROLE_DEALER => $rules + $this->location->rules() + [
                 'firm_name' => ['required', 'string', 'max:255'],
                 'gst_number' => ['nullable', 'string', 'max:20'],
             ],
-            User::ROLE_CUSTOMER => $rules + [
+            User::ROLE_CUSTOMER => $rules + $this->location->rules() + [
                 'date_of_birth' => ['nullable', 'date', 'before:today'],
                 'preferred_language' => ['nullable', Rule::in($this->languageCodes())],
             ],
@@ -58,7 +60,7 @@ final class ProfileUpdateService implements ProfileUpdateContract
         $user->forceFill(array_filter([
             'name' => trim((string) $data['name']),
             'email' => $email,
-        ], fn (string $value) => $value !== ''))->save();
+        ], fn (string $value) => $value !== '') + $this->location->attributes($data))->save();
 
         if ($user->role === User::ROLE_DEALER) {
             $user->dealerProfile?->update([

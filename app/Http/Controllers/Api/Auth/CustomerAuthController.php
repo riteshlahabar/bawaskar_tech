@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Contracts\Auth\OtpContract;
 use App\Contracts\Auth\PhoneCredentialContract;
+use App\Contracts\Location\UserLocationContract;
 use App\Data\Auth\VerifiedPhone;
 use App\Models\CustomerProfile;
 use App\Models\User;
@@ -21,6 +22,7 @@ final class CustomerAuthController extends AuthApiController
         private readonly OtpContract $otp,
         private readonly PhoneCredentialContract $phoneCredential,
         private readonly CustomerAccountService $accounts,
+        private readonly UserLocationContract $location,
     ) {}
 
     /**
@@ -70,8 +72,9 @@ final class CustomerAuthController extends AuthApiController
             'mobile' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
             'password' => ['nullable', 'string', 'min:6'],
-        ]);
+        ] + $this->location->rules());
 
+        $location = $this->location->attributes($validated);
         $user = User::query()->where('mobile', $validated['mobile'])->first();
         $email = $validated['email'] ?? null;
 
@@ -87,6 +90,7 @@ final class CustomerAuthController extends AuthApiController
             return $user;
         }
 
+        $user->forceFill($location)->save();
         CustomerProfile::query()->firstOrCreate(['user_id' => $user->id]);
 
         return $this->success(['user' => $user->load('customerProfile')], 'Customer registered. Verify OTP to continue.', 201);

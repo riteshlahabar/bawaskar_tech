@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Contracts\Location\UserLocationContract;
 use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerProfile;
@@ -15,7 +16,8 @@ use Illuminate\Validation\Rule;
 class StorefrontAuthController extends Controller
 {
     public function __construct(
-        private readonly StorefrontIdentitySessionContract $identity
+        private readonly StorefrontIdentitySessionContract $identity,
+        private readonly UserLocationContract $location,
     ) {}
 
     public function login(Request $request): RedirectResponse
@@ -86,9 +88,16 @@ class StorefrontAuthController extends Controller
             'gst_number' => ['nullable', 'string', 'max:30'],
             'accept_terms' => ['accepted'],
             'redirect_to' => ['nullable', 'string', 'max:2048'],
-        ], [
+        ] + $this->location->rules(), [
             'role.required' => 'Please select account type.',
             'role.in' => 'Please choose a valid account type.',
+            'state_code.required' => 'Please select state.',
+            'district_code.required' => 'Please select district.',
+            'subdistrict_code.required' => 'Please select taluka.',
+            'subdistrict_name.required_if' => 'Please type the taluka name.',
+            'city_village.required' => 'Please enter city or village.',
+            'pincode.required' => 'Please enter pincode.',
+            'pincode.regex' => 'Pincode must be 6 digits.',
             'name.required' => 'Please enter full name.',
             'name.min' => 'Full name must be at least 3 characters.',
             'email.required' => 'Please enter email address.',
@@ -112,8 +121,9 @@ class StorefrontAuthController extends Controller
         $validated['gst_number'] = isset($validated['gst_number']) ? strtoupper(trim((string) $validated['gst_number'])) : null;
 
         $isDealer = $validated['role'] === User::ROLE_DEALER;
+        $location = $this->location->attributes($validated);
 
-        $user = User::query()->create([
+        $user = User::query()->create($location + [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'mobile' => $validated['mobile'],

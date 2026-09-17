@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Concerns;
 
+use App\Contracts\Location\UserLocationContract;
 use App\Models\User;
+use App\Support\Admin\Modules\AdminModuleServices;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -17,9 +20,14 @@ abstract class PeopleModuleController extends AdminModuleController
 
     protected array $profileFields = [];
 
+    public function __construct(AdminModuleServices $modules, private readonly UserLocationContract $location)
+    {
+        parent::__construct($modules);
+    }
+
     protected function rules(array $module, ?Model $record = null): array
     {
-        $rules = parent::rules($module, $record);
+        $rules = parent::rules($module, $record) + $this->location->rules((bool) ($module['location_required'] ?? true));
         if ($record) {
             $relationName = explode('.', $this->profileRelation)[0];
             $profileId = $record->{$relationName}?->getKey();
@@ -45,6 +53,18 @@ abstract class PeopleModuleController extends AdminModuleController
         }
 
         return $rules;
+    }
+
+    /**
+     * The raw location inputs are swapped for the resolved users-table columns
+     * (codes plus names); an optional location left blank changes nothing.
+     */
+    protected function prepareData(array $validated, Request $request, array $module): array
+    {
+        $location = $this->location->attributes($validated);
+        $data = array_diff_key(parent::prepareData($validated, $request, $module), array_flip(UserLocationContract::FIELDS));
+
+        return $data + $location;
     }
 
     protected function persist(array $data, ?Model $record): Model
@@ -79,6 +99,15 @@ abstract class PeopleModuleController extends AdminModuleController
         $data = parent::formData($record, $module);
         foreach ($this->profileFields as $field) {
             $data[$field] = data_get($record, $this->profileRelation.'.'.$field);
+        }
+
+        foreach (UserLocationContract::FIELDS as $field) {
+            $data[$field] = $record->getAttribute($field);
+        }
+
+        // A taluka typed by hand has a name but no code.
+        if (blank($data['subdistrict_code']) && filled($data['subdistrict_name'])) {
+            $data['subdistrict_code'] = UserLocationContract::OTHER_SUBDISTRICT;
         }
 
         return $data;

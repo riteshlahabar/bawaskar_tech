@@ -22,6 +22,10 @@ return [
     'checkbox_list' => [
         'view' => 'admin.shared.fields.checkbox-list',
     ],
+    'location_picker' => [
+        'view' => 'admin.shared.fields.location-picker',
+        'wrap' => false,
+    ],
     'private_file' => [
         'view' => 'admin.shared.fields.private-file',
     ],

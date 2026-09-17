@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Contracts\Auth\RegistrationTokenContract;
+use App\Contracts\Location\UserLocationContract;
 use App\Services\Auth\DealerAccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ final class DealerRegistrationController extends DealerAuthApiController
     public function __construct(
         private readonly RegistrationTokenContract $registrationTokens,
         private readonly DealerAccountService $accounts,
+        private readonly UserLocationContract $location,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -25,7 +27,7 @@ final class DealerRegistrationController extends DealerAuthApiController
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'firm_name' => ['required', 'string', 'min:2', 'max:255'],
             'gst_number' => ['nullable', 'string', 'max:30'],
-        ]);
+        ] + $this->location->rules());
 
         $phone = $this->registrationTokens->resolve(
             $validated['registration_token'],
@@ -36,7 +38,7 @@ final class DealerRegistrationController extends DealerAuthApiController
             return $this->fail('Mobile verification has expired. Please verify your mobile number again.', 422);
         }
 
-        $user = $this->accounts->register($phone, $validated);
+        $user = $this->accounts->register($phone, $validated, $this->location->attributes($validated));
 
         return $this->respondToDealer($user, $this->accounts->isApproved($user));
     }

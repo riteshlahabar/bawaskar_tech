@@ -31,8 +31,9 @@ final class DealerAccountService
 
     /**
      * @param  array<string, mixed>  $details
+     * @param  array<string, mixed>  $location  users-table location columns (UserLocationContract::attributes)
      */
-    public function register(VerifiedPhone $phone, array $details): User
+    public function register(VerifiedPhone $phone, array $details, array $location = []): User
     {
         $existing = $this->findDealer($phone);
 
@@ -57,7 +58,7 @@ final class DealerAccountService
             'name' => $name,
             'role' => User::ROLE_DEALER,
             'mobile_verified_at' => now(),
-        ], fn ($value) => $value !== ''))->save();
+        ], fn ($value) => $value !== '') + $location)->save();
 
         DealerProfile::query()->updateOrCreate(
             ['user_id' => $user->id],

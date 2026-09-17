@@ -52,6 +52,8 @@ use App\Contracts\Localization\AppTranslationCatalogContract;
 use App\Contracts\Localization\AppTranslationRepositoryContract;
 use App\Contracts\Localization\SupportedLocalesContract;
 use App\Contracts\Localization\WebsiteTranslationLookupContract;
+use App\Contracts\Location\LocationDirectoryContract;
+use App\Contracts\Location\UserLocationContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
 use App\Contracts\Sales\Orders\OrderLineBuilderContract;
@@ -72,6 +74,7 @@ use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
 use App\Repositories\Localization\EloquentAppTranslationRepository;
 use App\Repositories\Localization\EloquentWebsiteTranslationLookup;
+use App\Repositories\Location\EloquentLocationDirectory;
 use App\Repositories\Sales\Orders\EloquentOrderProductResolver;
 use App\Repositories\Sales\Orders\EloquentOrderRepository;
 use App\Services\Account\ProfileUpdateService;
@@ -119,6 +122,7 @@ use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
 use App\Services\Localization\DatabaseSupportedLocalesService;
 use App\Services\Localization\WebTranslationAppStringService;
+use App\Services\Location\UserLocationService;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
 use App\Services\Sales\Orders\DealerOrderContextService;
 use App\Services\Sales\Orders\EloquentStockAvailabilityService;
@@ -184,6 +188,8 @@ class AppServiceProvider extends ServiceProvider
             RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,
             PasswordChangeContract::class => PasswordChangeService::class,
             ProfileUpdateContract::class => ProfileUpdateService::class,
+            LocationDirectoryContract::class => EloquentLocationDirectory::class,
+            UserLocationContract::class => UserLocationService::class,
             ModuleDefinitionContract::class => ModuleDefinition::class,
             ModuleQueryContract::class => ModuleQuery::class,
             ModuleValidationContract::class => ModuleValidation::class,

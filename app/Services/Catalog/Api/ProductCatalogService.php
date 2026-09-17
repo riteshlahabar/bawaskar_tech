@@ -21,6 +21,8 @@ final class ProductCatalogService implements ProductCatalogContract
     {
         $cacheKey = 'catalog.products.'
             .$this->cache->version().'.'
+            // Names and units are translated, so each language has its own copy.
+            .app()->getLocale().'.'
             .sha1(json_encode($filters->cachePayload()));
 
         return $this->cache->remember($cacheKey, $fresh, function () use ($filters): array {

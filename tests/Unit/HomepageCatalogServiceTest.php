@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\Presenters\CategoryCatalogPresenterContract;
 use App\Contracts\Catalog\Api\Presenters\HomepageCatalogPresenterContract;
 use App\Contracts\Catalog\Api\Presenters\ProductCatalogPresenterContract;
@@ -23,6 +24,7 @@ class HomepageCatalogServiceTest extends TestCase
 
         $this->assertSame([['id' => 12]], $result['categories']->all());
         $this->assertSame('featured', $result['rows']->first()['section_key']);
+        $this->assertSame('homepage_section:Featured', $result['rows']->first()['title'], 'Section titles go through the website translation.');
         $this->assertSame([['id' => 11]], $result['rows']->first()['items']->all());
         $this->assertSame([['id' => 13]], $result['rows']->first()['products']->all());
         $this->assertSame([], $result['banners']->all());
@@ -162,7 +164,14 @@ class HomepageCatalogServiceTest extends TestCase
             $repository,
             $categoryPresenter,
             $productPresenter,
-            $homepagePresenter
+            $homepagePresenter,
+            new class implements CatalogTextTranslatorContract
+            {
+                public function text(?string $text, string $group): ?string
+                {
+                    return $text === null ? null : $group.':'.$text;
+                }
+            }
         ))->homepage('customer');
     }
 }

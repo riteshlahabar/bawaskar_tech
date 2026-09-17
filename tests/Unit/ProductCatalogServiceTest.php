@@ -66,7 +66,7 @@ class ProductCatalogServiceTest extends TestCase
         $this->assertSame(2, $result['current_page']);
         $this->assertTrue($cache->fresh);
         $this->assertSame(
-            'catalog.products.7.'.sha1(json_encode($filters->cachePayload())),
+            'catalog.products.7.'.app()->getLocale().'.'.sha1(json_encode($filters->cachePayload())),
             $cache->key
         );
     }

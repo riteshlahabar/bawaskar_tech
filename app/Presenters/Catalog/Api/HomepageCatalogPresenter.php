@@ -2,6 +2,7 @@
 
 namespace App\Presenters\Catalog\Api;
 
+use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\Presenters\HomepageCatalogPresenterContract;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSectionItem;
@@ -10,19 +11,21 @@ use Illuminate\Support\Str;
 
 final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
 {
+    public function __construct(private readonly CatalogTextTranslatorContract $translator) {}
+
     public function item(ProductHomepageSectionItem $item): array
     {
         return [
             'id' => $item->id,
             'slot' => $item->slot,
-            'title' => $item->title,
-            'subtitle' => $item->subtitle,
-            'description' => $item->description,
-            'highlight_text' => $item->highlight_text,
-            'discount_text' => $item->discount_text,
-            'validity_text' => $item->validity_text,
+            'title' => $this->entry($item->title),
+            'subtitle' => $this->entry($item->subtitle),
+            'description' => $this->entry($item->description),
+            'highlight_text' => $this->entry($item->highlight_text),
+            'discount_text' => $this->entry($item->discount_text),
+            'validity_text' => $this->entry($item->validity_text),
             'coupon_code' => $item->coupon_code,
-            'button_text' => $item->button_text,
+            'button_text' => $this->button($item->button_text),
             'button_url' => $item->button_url,
             'image_url' => $this->assetUrl($item->image_path),
             'mobile_image_url' => $this->assetUrl($item->mobile_image_path),
@@ -45,14 +48,14 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
             'id' => $product->id,
             'product_id' => $product->id,
             'slot' => 'product',
-            'title' => $product->homepage_title ?: ($nameAsTitle ? $product->storefront_name : null),
-            'subtitle' => $product->homepage_subtitle ?: $product->sale_badge_text,
-            'description' => $product->homepage_description ?: $product->short_description,
-            'highlight_text' => $product->homepage_highlight_text,
-            'discount_text' => $product->homepage_discount_text,
-            'validity_text' => $product->homepage_validity_text,
+            'title' => filled($product->homepage_title) ? $this->entry($product->homepage_title) : ($nameAsTitle ? $product->storefront_name : null),
+            'subtitle' => $this->entry($product->homepage_subtitle ?: $product->sale_badge_text),
+            'description' => $this->entry($product->homepage_description ?: $product->short_description),
+            'highlight_text' => $this->entry($product->homepage_highlight_text),
+            'discount_text' => $this->entry($product->homepage_discount_text),
+            'validity_text' => $this->entry($product->homepage_validity_text),
             'coupon_code' => $product->homepage_coupon_code,
-            'button_text' => $product->homepage_button_text,
+            'button_text' => $this->button($product->homepage_button_text),
             'button_url' => $product->homepage_button_url,
             'image_url' => $this->assetUrl($image),
             'mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),
@@ -68,14 +71,14 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
         return [
             'id' => $banner->id,
             'slot' => $banner->placement,
-            'title' => $banner->title,
-            'subtitle' => $banner->subtitle,
-            'description' => $banner->description,
+            'title' => $this->entry($banner->title),
+            'subtitle' => $this->entry($banner->subtitle),
+            'description' => $this->entry($banner->description),
             'highlight_text' => null,
-            'discount_text' => $banner->subtitle,
+            'discount_text' => $this->entry($banner->subtitle),
             'validity_text' => null,
             'coupon_code' => null,
-            'button_text' => $banner->button_text,
+            'button_text' => $this->button($banner->button_text),
             'button_url' => $banner->button_url,
             'image_url' => $this->assetUrl($banner->image_path),
             'mobile_image_url' => null,
@@ -90,13 +93,23 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
     {
         return [
             'id' => $banner->id,
-            'title' => $banner->title,
-            'subtitle' => $banner->subtitle,
-            'description' => $banner->description,
-            'button_text' => $banner->button_text,
+            'title' => $this->entry($banner->title),
+            'subtitle' => $this->entry($banner->subtitle),
+            'description' => $this->entry($banner->description),
+            'button_text' => $this->button($banner->button_text),
             'button_url' => $banner->button_url,
             'image_url' => $this->assetUrl($banner->image_path),
         ];
+    }
+
+    private function entry(?string $text): ?string
+    {
+        return $this->translator->text($text, 'homepage_entry');
+    }
+
+    private function button(?string $text): ?string
+    {
+        return $this->translator->text($text, 'homepage_button');
     }
 
     private function assetUrl(?string $path): ?string

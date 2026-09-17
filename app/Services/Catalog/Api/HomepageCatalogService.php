@@ -2,6 +2,7 @@
 
 namespace App\Services\Catalog\Api;
 
+use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\HomepageCatalogContract;
 use App\Contracts\Catalog\Api\Presenters\CategoryCatalogPresenterContract;
 use App\Contracts\Catalog\Api\Presenters\HomepageCatalogPresenterContract;
@@ -26,7 +27,8 @@ final class HomepageCatalogService implements HomepageCatalogContract
         private readonly HomepageCatalogRepositoryContract $homepage,
         private readonly CategoryCatalogPresenterContract $categories,
         private readonly ProductCatalogPresenterContract $products,
-        private readonly HomepageCatalogPresenterContract $presenter
+        private readonly HomepageCatalogPresenterContract $presenter,
+        private readonly CatalogTextTranslatorContract $translator
     ) {}
 
     public function homepage(string $audience): array
@@ -53,8 +55,8 @@ final class HomepageCatalogService implements HomepageCatalogContract
 
                 return [
                     'section_key' => $section->section_key,
-                    'title' => $section->title,
-                    'subtitle' => $section->subtitle,
+                    'title' => $this->translator->text($section->title, 'homepage_section'),
+                    'subtitle' => $this->translator->text($section->subtitle, 'homepage_section'),
                     'section_type' => $section->section_type,
                     'layout_type' => $section->layout_type,
                     'source_type' => $section->source_type,

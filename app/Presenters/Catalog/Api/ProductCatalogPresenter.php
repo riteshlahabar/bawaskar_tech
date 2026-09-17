@@ -2,6 +2,7 @@
 
 namespace App\Presenters\Catalog\Api;
 
+use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\Presenters\ProductCatalogPresenterContract;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductMedia;
@@ -10,6 +11,8 @@ use Illuminate\Support\Str;
 
 final class ProductCatalogPresenter implements ProductCatalogPresenterContract
 {
+    public function __construct(private readonly CatalogTextTranslatorContract $translator) {}
+
     public function present(Product $product): array
     {
         $mainVariant = $product->mainVariant();
@@ -27,7 +30,7 @@ final class ProductCatalogPresenter implements ProductCatalogPresenterContract
             'short_description' => $product->short_description,
             'category_id' => $product->category_id,
             'category_name' => $product->category?->storefront_name,
-            'unit_name' => $product->unit?->name,
+            'unit_name' => $this->translator->text($product->unit?->name, 'unit'),
             'image_url' => $product->storefront_image_url,
             'homepage_image_url' => $this->assetUrl($product->homepage_image_path),
             'homepage_mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),

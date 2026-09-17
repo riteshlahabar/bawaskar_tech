@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\Catalog\Api\CatalogAudienceContract;
 use App\Contracts\Catalog\Api\CatalogCacheContract;
+use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\CategoryCatalogContract;
 use App\Contracts\Catalog\Api\HomepageCatalogContract;
 use App\Contracts\Catalog\Api\Presenters\CategoryCatalogPresenterContract;
@@ -27,6 +28,7 @@ use App\Services\Catalog\Api\CategoryCatalogService;
 use App\Services\Catalog\Api\HomepageCatalogService;
 use App\Services\Catalog\Api\LaravelCatalogCache;
 use App\Services\Catalog\Api\ProductCatalogService;
+use App\Services\Catalog\Api\StorefrontCatalogTextTranslator;
 use App\Services\Catalog\Api\TranslationCatalogService;
 use Illuminate\Support\ServiceProvider;
 
@@ -75,6 +77,11 @@ final class CatalogServiceProvider extends ServiceProvider
         $this->app->bind(
             HomepageCatalogPresenterContract::class,
             HomepageCatalogPresenter::class
+        );
+
+        $this->app->bind(
+            CatalogTextTranslatorContract::class,
+            StorefrontCatalogTextTranslator::class
         );
 
         $this->app->bind(

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Localization;
 
+use App\Contracts\Localization\AppLanguageSettingsContract;
 use App\Contracts\Localization\AppTranslationCatalogContract;
-use App\Contracts\Localization\SupportedLocalesContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Api\Localization\AppTranslationIndexRequest;
 use App\Http\Requests\Api\Localization\AppTranslationRegisterRequest;
@@ -17,7 +17,7 @@ final class AppTranslationController extends ApiController
 {
     public function __construct(
         private readonly AppTranslationCatalogContract $catalog,
-        private readonly SupportedLocalesContract $locales,
+        private readonly AppLanguageSettingsContract $appLanguages,
     ) {}
 
     public function index(AppTranslationIndexRequest $request): JsonResponse
@@ -28,7 +28,8 @@ final class AppTranslationController extends ApiController
         return $this->success([
             'app' => $app,
             'locale' => $locale,
-            'available_locales' => $this->locales->codes(),
+            // Only the languages the admin switched on for this app (Translation → App Languages).
+            'available_locales' => $this->appLanguages->activeFor($app),
             'translations' => (object) $this->catalog->translations($app, $locale),
         ]);
     }

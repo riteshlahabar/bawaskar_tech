@@ -24,6 +24,7 @@ return [
         'report-*' => ['view'],
         'email-templates' => ['view'],
         'company-settings' => ['view', 'edit'],
+        'app-languages' => ['view', 'edit'],
         'bulk-attendance' => ['view', 'create'],
     ],
 
@@ -48,6 +49,8 @@ return [
         'admin.report.export' => ['report-{report}', 'view'],
         'admin.company-settings.edit' => ['company-settings', 'view'],
         'admin.company-settings.update' => ['company-settings', 'edit'],
+        'admin.app-languages.edit' => ['app-languages', 'view'],
+        'admin.app-languages.update' => ['app-languages', 'edit'],
         'admin.products.images.destroy' => ['products', 'edit'],
         'admin.products.field-image.destroy' => ['products', 'edit'],
         'admin.common-import.sample' => ['{module}', 'view'],

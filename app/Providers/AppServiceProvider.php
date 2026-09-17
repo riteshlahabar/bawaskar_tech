@@ -47,6 +47,7 @@ use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Finance\PaymentGatewayContract;
+use App\Contracts\Localization\AppLanguageSettingsContract;
 use App\Contracts\Localization\AppStringTranslationContract;
 use App\Contracts\Localization\AppTranslationBatchContract;
 use App\Contracts\Localization\AppTranslationCatalogContract;
@@ -121,6 +122,7 @@ use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
+use App\Services\Localization\AppLanguageSettingsService;
 use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
 use App\Services\Localization\DatabaseSupportedLocalesService;
@@ -228,6 +230,7 @@ class AppServiceProvider extends ServiceProvider
             OrderCheckoutMapperContract::class => OrderCheckoutMapper::class,
             TransactionManagerContract::class => LaravelTransactionManager::class,
             PersonSummaryContract::class => PersonSummaryService::class,
+            AppLanguageSettingsContract::class => AppLanguageSettingsService::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

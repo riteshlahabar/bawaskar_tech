@@ -56,6 +56,7 @@ use App\Http\Controllers\Admin\StorefrontServiceBlocks\StorefrontServiceBlockCon
 use App\Http\Controllers\Admin\Support\SupportController;
 use App\Http\Controllers\Admin\Targets\TargetController;
 use App\Http\Controllers\Admin\TourPlans\TourPlanController;
+use App\Http\Controllers\Admin\Translations\AppLanguageController;
 use App\Http\Controllers\Admin\Translations\AppTranslationBatchController;
 use App\Http\Controllers\Admin\Translations\TranslationController;
 use App\Http\Controllers\Admin\Units\UnitController;
@@ -115,6 +116,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('employee-documents/{employee_document}/download', [EmployeeDocumentController::class, 'download'])->name('employee-documents.download');
         Route::post('salary/generate', [SalaryController::class, 'generate'])->name('salary.generate');
         Route::post('translations/translate-batch', AppTranslationBatchController::class)->name('translations.translate-batch');
+        Route::get('translation/app-languages', [AppLanguageController::class, 'edit'])->name('app-languages.edit');
+        Route::put('translation/app-languages', [AppLanguageController::class, 'update'])->name('app-languages.update');
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/{report}/export/{format}', [ReportController::class, 'export'])->where('report', '[a-z0-9-]+')->whereIn('format', ['excel', 'pdf'])->name('report.export');
         Route::get('reports/{report}', [ReportController::class, 'show'])->where('report', '[a-z0-9-]+')->name('report.show');

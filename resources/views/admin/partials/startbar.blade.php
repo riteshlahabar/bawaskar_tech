@@ -1,5 +1,5 @@
 @php
-    $groups = config('admin.groups', []);
+    $groups = $sidebarGroups ?? config('admin.groups', []);
     $isItemActive = function (array $item): bool {
         if (empty($item['route'])) return false;
         $active = request()->routeIs(str_replace('.index', '.*', $item['route'])) || request()->routeIs($item['route']);
@@ -29,9 +29,9 @@
         'sf-row-16-blog'=>'layout',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
         'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor','holidays'=>'sun','shift-menu'=>'clock','shifts'=>'clock','shift-assignments'=>'user-check','announcements'=>'volume-2','employee-documents'=>'file-text','salary-advances'=>'credit-card','performance-reviews'=>'star',
-        'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports'=>'bar-chart-2','email-templates'=>'mail'
+        'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','translations'=>'type','support'=>'headphones','reports-overview'=>'pie-chart','erp-reports'=>'trending-up','hrms-reports'=>'users','email-templates'=>'mail'
     ];
-    $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','systemMenu'=>'settings'];
+    $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','reportsMenu'=>'bar-chart-2','systemMenu'=>'settings'];
 @endphp
 
 <style>
@@ -105,7 +105,7 @@
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
                                             @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
-    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i>
+    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? ($child['feather'] ?? 'circle') }}"></i>
 @endif
 <span>{{ $child['label'] }}</span></a></li>@endforeach
                                         </ul>
@@ -127,7 +127,7 @@
     @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
 <span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
-    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? 'circle' }}"></i>
+    <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? ($child['feather'] ?? 'circle') }}"></i>
 @endif
 <span>{{ $child['label'] }}</span></a></li>@endforeach</ul></li>
                                         @else

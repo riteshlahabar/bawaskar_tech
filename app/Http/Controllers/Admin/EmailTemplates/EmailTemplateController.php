@@ -11,7 +11,7 @@ class EmailTemplateController extends Controller
     {
         return view('admin.email-templates.index', [
             'pageTitle' => 'Email Templates',
-            'breadcrumbs' => ['System', 'Email Templates'],
+            'breadcrumbs' => ['Settings', 'Email Templates'],
             'templates' => config('storefront.email_templates', []),
         ]);
     }

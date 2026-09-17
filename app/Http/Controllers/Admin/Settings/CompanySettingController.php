@@ -16,7 +16,7 @@ class CompanySettingController extends Controller
         return view('admin.settings.company', [
             'setting' => CompanySetting::query()->first() ?: new CompanySetting,
             'pageTitle' => 'Seller / Company Information',
-            'breadcrumbs' => ['Admin', 'System', 'Seller / Company Information'],
+            'breadcrumbs' => ['Admin', 'Settings', 'Seller / Company Information'],
         ]);
     }
 

@@ -112,6 +112,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('salary/generate', [SalaryController::class, 'generate'])->name('salary.generate');
         Route::post('translations/translate-batch', AppTranslationBatchController::class)->name('translations.translate-batch');
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/{report}/export/{format}', [ReportController::class, 'export'])->where('report', '[a-z0-9-]+')->whereIn('format', ['excel', 'pdf'])->name('report.export');
+        Route::get('reports/{report}', [ReportController::class, 'show'])->where('report', '[a-z0-9-]+')->name('report.show');
         Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
         Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');
     });

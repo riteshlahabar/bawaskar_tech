@@ -21,6 +21,7 @@ use App\Contracts\Admin\Modules\ModuleFormDataContract;
 use App\Contracts\Admin\Modules\ModuleInputContract;
 use App\Contracts\Admin\Modules\ModuleQueryContract;
 use App\Contracts\Admin\Modules\ModuleValidationContract;
+use App\Contracts\Admin\People\PersonSummaryContract;
 use App\Contracts\Auth\ApiTokenGuardContract;
 use App\Contracts\Auth\FirebaseIdTokenContract;
 use App\Contracts\Auth\OtpContract;
@@ -95,6 +96,7 @@ use App\Services\Admin\Modules\ModuleFormData;
 use App\Services\Admin\Modules\ModuleInput;
 use App\Services\Admin\Modules\ModuleQuery;
 use App\Services\Admin\Modules\ModuleValidation;
+use App\Services\Admin\People\PersonSummaryService;
 use App\Services\Auth\ApiTokenGuard;
 use App\Services\Auth\EncryptedRegistrationTokenService;
 use App\Services\Auth\Firebase\FirebaseIdTokenService;
@@ -225,6 +227,7 @@ class AppServiceProvider extends ServiceProvider
             DealerOrderContextContract::class => DealerOrderContextService::class,
             OrderCheckoutMapperContract::class => OrderCheckoutMapper::class,
             TransactionManagerContract::class => LaravelTransactionManager::class,
+            PersonSummaryContract::class => PersonSummaryService::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

@@ -1,2 +1,1 @@
-@extends('admin.shared.show')
-
+@extends('admin.people.show')

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Concerns;
 
+use App\Contracts\Admin\People\PersonSummaryContract;
 use App\Contracts\Location\UserLocationContract;
+use App\Data\Admin\People\PersonSummary;
 use App\Models\User;
 use App\Support\Admin\Modules\AdminModuleServices;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,9 +23,20 @@ abstract class PeopleModuleController extends AdminModuleController
 
     protected array $profileFields = [];
 
-    public function __construct(AdminModuleServices $modules, private readonly UserLocationContract $location)
-    {
+    public function __construct(
+        AdminModuleServices $modules,
+        private readonly UserLocationContract $location,
+        private readonly PersonSummaryContract $summaries,
+    ) {
         parent::__construct($modules);
+    }
+
+    public function show(int|string $id): View
+    {
+        $view = parent::show($id);
+        $record = $view->getData()['record'];
+
+        return $view->with('summary', $record instanceof User ? $this->summaries->for($record) : PersonSummary::empty());
     }
 
     protected function rules(array $module, ?Model $record = null): array

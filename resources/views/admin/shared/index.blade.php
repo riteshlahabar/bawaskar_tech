@@ -100,6 +100,9 @@
                                             <span class="badge bg-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}-subtle text-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}">{{ str($value)->replace('_', ' ')->title() }}</span>
                                         @elseif(($column['type'] ?? '') === 'money')
                                             Rs. {{ number_format((float) $value, 2) }}
+                                        @elseif(($column['type'] ?? '') === 'email')
+                                            @php($email = \App\Models\User::displayEmail($value))
+                                            @if($email)<a href="mailto:{{ $email }}" class="text-title">{{ $email }}</a>@else<span class="text-muted">-</span>@endif
                                         @elseif(($column['type'] ?? '') === 'date')
                                             {{ $value ? \Illuminate\Support\Carbon::parse($value)->format('d-m-Y') : '-' }}
                                         @elseif(($column['type'] ?? '') === 'datetime')

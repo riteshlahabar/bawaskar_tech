@@ -3,6 +3,7 @@
 namespace App\Services\Admin\Modules;
 
 use App\Contracts\Admin\Modules\ModuleExportContract;
+use App\Models\User;
 use App\Support\Admin\SimplePdfExporter;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -82,6 +83,7 @@ final class ModuleExport implements ModuleExportContract
             'boolean' => $value ? 'Active' : 'Inactive',
             'status' => Str::of((string) $value)->replace('_', ' ')->title()->toString(),
             'money' => number_format((float) $value, 2),
+            'email' => (string) User::displayEmail(is_string($value) ? $value : null),
             'date' => $value ? Carbon::parse($value)->format('d-m-Y') : '',
             'datetime' => $value ? Carbon::parse($value)->format('d-m-Y h:i A') : '',
             default => (string) ($value ?? ''),

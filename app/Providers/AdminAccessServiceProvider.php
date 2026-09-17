@@ -44,7 +44,7 @@ class AdminAccessServiceProvider extends ServiceProvider
                 : $this->app->make(AdminSectionCatalogContract::class)->menu());
         });
 
-        View::composer(['admin.shared.index', 'admin.shared.show', 'admin.shared.table-toolbar'], function ($view): void {
+        View::composer(['admin.shared.index', 'admin.shared.show', 'admin.people.show', 'admin.shared.table-toolbar'], function ($view): void {
             $user = auth()->user();
             $module = $view->getData()['module'] ?? null;
             if (! $user instanceof User || ! is_array($module) || empty($module['key'])) {

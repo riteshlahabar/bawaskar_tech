@@ -46,8 +46,21 @@ class User extends Authenticatable
 
     public const ROLE_CUSTOMER = 'customer';
 
+    /** Domain of the placeholder emails given to accounts created by mobile OTP. */
+    public const PLACEHOLDER_EMAIL_SUFFIX = '.bawaskar.local';
+
     /** @var list<string> */
     protected $appends = ['profile_photo_url'];
+
+    /**
+     * The email to show a person, or null for an OTP placeholder address.
+     */
+    public static function displayEmail(?string $email): ?string
+    {
+        $email = trim((string) $email);
+
+        return $email === '' || str_ends_with(strtolower($email), self::PLACEHOLDER_EMAIL_SUFFIX) ? null : $email;
+    }
 
     /**
      * Full URL of the uploaded profile photo, or null when there is none.

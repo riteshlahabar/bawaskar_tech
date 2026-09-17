@@ -55,9 +55,15 @@ final class DatabaseSupportedLocalesService implements SupportedLocalesContract
         return in_array($locale, $this->codes(), true);
     }
 
+    /**
+     * Read from `app.fallback_locale`, not `app.locale`: SetApiLocale calls
+     * app()->setLocale(), which rewrites `app.locale` to the request's language,
+     * so an app registering its English text with Accept-Language: gu would
+     * otherwise have it stored as Gujarati.
+     */
     public function default(): string
     {
-        return (string) config('app.locale', 'en');
+        return (string) config('app.fallback_locale', 'en');
     }
 
     /**

@@ -93,6 +93,23 @@
     <!-- mobile fix menu end -->
 
     <!-- Breadcrumb Section Start -->
+    @php
+        $aboutPage = $aboutPage ?? null;
+        $aboutHighlights = collect($aboutHighlights ?? []);
+        $aboutStats = collect($aboutStats ?? []);
+        $aboutTeam = collect($aboutTeam ?? []);
+        $aboutMedia = static function (?string $path, ?string $fallback = null): ?string {
+            $path = trim((string) $path);
+
+            if ($path === '') {
+                return $fallback ? asset($fallback) : null;
+            }
+
+            return \Illuminate\Support\Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+        };
+        $aboutIntroParagraphs = $aboutPage ? $aboutPage->introParagraphs() : [];
+    @endphp
+
     <section class="breadcrumb-section pt-0">
         <div class="container-fluid-lg">
             <div class="row">
@@ -117,6 +134,7 @@
     <!-- Breadcrumb Section End -->
 
     <!-- Fresh Vegetable Section Start -->
+    @if ($aboutPage)
     <section class="fresh-vegetable-section section-lg-space">
         <div class="container-fluid-lg">
             <div class="row gx-xl-5 gy-xl-0 g-3 ratio_148_1">
@@ -125,8 +143,8 @@
                         <div class="col-6">
                             <div class="fresh-image-2">
                                 <div>
-                                    <img src="{{ asset('fastkart-store/images/inner-page/about-us/1.jpg') }}"
-                                        class="bg-img blur-up lazyload" alt="">
+                                    <img src="{{ $aboutMedia($aboutPage->image_one_path, 'fastkart-store/images/inner-page/about-us/1.jpg') }}"
+                                        class="bg-img blur-up lazyload" alt="{{ $aboutPage->intro_heading }}">
                                 </div>
                             </div>
                         </div>
@@ -134,8 +152,8 @@
                         <div class="col-6">
                             <div class="fresh-image">
                                 <div>
-                                    <img src="{{ asset('fastkart-store/images/inner-page/about-us/2.jpg') }}"
-                                        class="bg-img blur-up lazyload" alt="">
+                                    <img src="{{ $aboutMedia($aboutPage->image_two_path, 'fastkart-store/images/inner-page/about-us/2.jpg') }}"
+                                        class="bg-img blur-up lazyload" alt="{{ $aboutPage->intro_heading }}">
                                 </div>
                             </div>
                         </div>
@@ -146,67 +164,38 @@
                     <div class="fresh-contain p-center-left">
                         <div>
                             <div class="review-title">
-                                <h4>{{ web_t('nav.about_us', 'About Us') }}</h4>
-                                <h2>We make Organic Food In Market</h2>
+                                @if (filled($aboutPage->intro_label))
+                                    <h4>{{ storefront_public_t($aboutPage->intro_label, 'about') }}</h4>
+                                @endif
+                                @if (filled($aboutPage->intro_heading))
+                                    <h2>{{ storefront_public_t($aboutPage->intro_heading, 'about') }}</h2>
+                                @endif
                             </div>
 
                             <div class="delivery-list">
-                                <p class="text-content">Just a few seconds to measure your body temperature. Up to 5
-                                    users! The battery lasts up to 2 years. There are many variations of passages of
-                                    Lorem Ipsum available.We started in 2019 and haven't stopped smashing it since. A
-                                    global brand that doesn't sleep, we are 24/7 and always bringing something new with
-                                    over 100 new products dropping on the monthly, bringing you the latest looks for
-                                    less.</p>
+                                @foreach ($aboutIntroParagraphs as $aboutParagraph)
+                                    <p class="text-content">{{ storefront_public_t($aboutParagraph, 'about') }}</p>
+                                @endforeach
 
-                                <ul class="delivery-box">
-                                    <li>
-                                        <div class="delivery-box">
-                                            <div class="delivery-icon">
-                                                <img src="{{ asset('fastkart-store/svg/3/delivery.svg') }}" class="blur-up lazyload" alt="">
-                                            </div>
+                                @if ($aboutHighlights->isNotEmpty())
+                                    <ul class="delivery-box">
+                                        @foreach ($aboutHighlights as $aboutHighlight)
+                                            <li>
+                                                <div class="delivery-box">
+                                                    @if ($aboutMedia($aboutHighlight->icon_path))
+                                                        <div class="delivery-icon">
+                                                            <img src="{{ $aboutMedia($aboutHighlight->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutHighlight->title }}">
+                                                        </div>
+                                                    @endif
 
-                                            <div class="delivery-detail">
-                                                <h5 class="text">Free delivery for all orders</h5>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li>
-                                        <div class="delivery-box">
-                                            <div class="delivery-icon">
-                                                <img src="{{ asset('fastkart-store/svg/3/leaf.svg') }}" class="blur-up lazyload" alt="">
-                                            </div>
-
-                                            <div class="delivery-detail">
-                                                <h5 class="text">Only fresh foods</h5>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li>
-                                        <div class="delivery-box">
-                                            <div class="delivery-icon">
-                                                <img src="{{ asset('fastkart-store/svg/3/delivery.svg') }}" class="blur-up lazyload" alt="">
-                                            </div>
-
-                                            <div class="delivery-detail">
-                                                <h5 class="text">Free delivery for all orders</h5>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li>
-                                        <div class="delivery-box">
-                                            <div class="delivery-icon">
-                                                <img src="{{ asset('fastkart-store/svg/3/leaf.svg') }}" class="blur-up lazyload" alt="">
-                                            </div>
-
-                                            <div class="delivery-detail">
-                                                <h5 class="text">Only fresh foods</h5>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                                                    <div class="delivery-detail">
+                                                        <h5 class="text">{{ storefront_public_t($aboutHighlight->title, 'about') }}</h5>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -214,275 +203,105 @@
             </div>
         </div>
     </section>
+    @endif
     <!-- Fresh Vegetable Section End -->
 
     <!-- Client Section Start -->
+    @if ($aboutStats->isNotEmpty())
     <section class="client-section section-lg-space">
         <div class="container-fluid-lg">
             <div class="row">
                 <div class="col-12">
                     <div class="about-us-title text-center">
-                        <h4>What We Do</h4>
-                        <h2 class="center">We are Trusted by Clients</h2>
+                        @if (filled($aboutPage?->stats_label))
+                            <h4>{{ storefront_public_t($aboutPage->stats_label, 'about') }}</h4>
+                        @endif
+                        @if (filled($aboutPage?->stats_heading))
+                            <h2 class="center">{{ storefront_public_t($aboutPage->stats_heading, 'about') }}</h2>
+                        @endif
                     </div>
 
                     <div class="slider-3_1 product-wrapper">
-                        <div>
-                            <div class="clint-contain">
-                                <div class="client-icon">
-                                    <img src="{{ asset('fastkart-store/svg/3/work.svg') }}" class="blur-up lazyload" alt="">
+                        @foreach ($aboutStats as $aboutStat)
+                            <div>
+                                <div class="clint-contain">
+                                    @if ($aboutMedia($aboutStat->icon_path))
+                                        <div class="client-icon">
+                                            <img src="{{ $aboutMedia($aboutStat->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutStat->title }}">
+                                        </div>
+                                    @endif
+                                    @if (filled($aboutStat->value))
+                                        <h2>{{ $aboutStat->value }}</h2>
+                                    @endif
+                                    <h4>{{ storefront_public_t($aboutStat->title, 'about') }}</h4>
+                                    @if (filled($aboutStat->description))
+                                        <p>{{ storefront_public_t($aboutStat->description, 'about') }}</p>
+                                    @endif
                                 </div>
-                                <h2>10</h2>
-                                <h4>Business Years</h4>
-                                <p>A coffee shop is a small business that sells coffee, pastries, and other morning
-                                    goods. There are many different types of coffee shops around the world.</p>
                             </div>
-                        </div>
-
-                        <div>
-                            <div class="clint-contain">
-                                <div class="client-icon">
-                                    <img src="{{ asset('fastkart-store/svg/3/buy.svg') }}" class="blur-up lazyload" alt="">
-                                </div>
-                                <h2>80 K+</h2>
-                                <h4>Products Sales</h4>
-                                <p>Some coffee shops have a seating area, while some just have a spot to order and then
-                                    go somewhere else to sit down. The coffee shop that I am going to.</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="clint-contain">
-                                <div class="client-icon">
-                                    <img src="{{ asset('fastkart-store/svg/3/user.svg') }}" class="blur-up lazyload" alt="">
-                                </div>
-                                <h2>90%</h2>
-                                <h4>Happy Customers</h4>
-                                <p>My goal for this coffee shop is to be able to get a coffee and get on with my day.
-                                    It's a Thursday morning and I am rushing between meetings.</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    @endif
     <!-- Client Section End -->
 
     <!-- Team Section Start -->
+    @if ($aboutTeam->isNotEmpty())
     <section class="team-section section-lg-space">
         <div class="container-fluid-lg">
             <div class="about-us-title text-center">
-                <h4 class="text-content">Our Creative Team</h4>
-                <h2 class="center">fastkart team member</h2>
+                @if (filled($aboutPage?->team_label))
+                    <h4 class="text-content">{{ storefront_public_t($aboutPage->team_label, 'about') }}</h4>
+                @endif
+                @if (filled($aboutPage?->team_heading))
+                    <h2 class="center">{{ storefront_public_t($aboutPage->team_heading, 'about') }}</h2>
+                @endif
             </div>
             <div class="row">
                 <div class="col-12">
                     <div class="slider-user product-wrapper">
-                        <div>
-                            <div class="team-box">
-                                <div class="team-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/user/1.jpg') }}" class="img-fluid blur-up lazyload"
-                                        alt="">
-                                </div>
+                        @foreach ($aboutTeam as $aboutMember)
+                            <div>
+                                <div class="team-box">
+                                    @if ($aboutMedia($aboutMember->photo_path))
+                                        <div class="team-image">
+                                            <img src="{{ $aboutMedia($aboutMember->photo_path) }}" class="img-fluid blur-up lazyload" alt="{{ $aboutMember->name }}">
+                                        </div>
+                                    @endif
 
-                                <div class="team-name">
-                                    <h3>Anna Baranov</h3>
-                                    <h5>Marketing</h5>
-                                    <p>cheeseburger airedale mozzarella the big cheese fondue.</p>
-                                    <ul class="team-media">
-                                        <li>
-                                            <a href="https://www.facebook.com/" class="fb-bg">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://in.pinterest.com/" class="pint-bg">
-                                                <i class="fa-brands fa-pinterest-p"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://twitter.com/" class="twitter-bg">
-                                                <i class="fa-brands fa-twitter"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://www.instagram.com/" class="insta-bg">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
+                                    <div class="team-name">
+                                        <h3>{{ $aboutMember->name }}</h3>
+                                        @if (filled($aboutMember->role))
+                                            <h5>{{ storefront_public_t($aboutMember->role, 'about') }}</h5>
+                                        @endif
+                                        @if (filled($aboutMember->bio))
+                                            <p>{{ storefront_public_t($aboutMember->bio, 'about') }}</p>
+                                        @endif
+                                        @php($aboutSocials = $aboutMember->socialLinks())
+                                        @if ($aboutSocials !== [])
+                                            <ul class="team-media">
+                                                @foreach ($aboutSocials as $aboutSocial)
+                                                    <li>
+                                                        <a href="{{ $aboutSocial['url'] }}" class="{{ $aboutSocial['class'] }}" target="_blank" rel="noopener">
+                                                            <i class="{{ $aboutSocial['icon'] }}"></i>
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <div class="team-box">
-                                <div class="team-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/user/2.jpg') }}" class="img-fluid blur-up lazyload"
-                                        alt="">
-                                </div>
-
-                                <div class="team-name">
-                                    <h3>Anna Baranov</h3>
-                                    <h5>Marketing</h5>
-                                    <p>cheese on toast mozzarella bavarian bergkase smelly cheese cheesy feet.</p>
-                                    <ul class="team-media">
-                                        <li>
-                                            <a href="https://www.facebook.com/" class="fb-bg">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://in.pinterest.com/" class="pint-bg">
-                                                <i class="fa-brands fa-pinterest-p"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://twitter.com/" class="twitter-bg">
-                                                <i class="fa-brands fa-twitter"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://www.instagram.com/" class="insta-bg">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="team-box">
-                                <div class="team-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/user/3.jpg') }}" class="img-fluid blur-up lazyload"
-                                        alt="">
-                                </div>
-
-                                <div class="team-name">
-                                    <h3>Anna Baranov</h3>
-                                    <h5>Marketing</h5>
-                                    <p>camembert de normandie. Bocconcini rubber cheese fromage frais port-salut.</p>
-                                    <ul class="team-media">
-                                        <li>
-                                            <a href="https://www.facebook.com/" class="fb-bg">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://in.pinterest.com/" class="pint-bg">
-                                                <i class="fa-brands fa-pinterest-p"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://twitter.com/" class="twitter-bg">
-                                                <i class="fa-brands fa-twitter"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://www.instagram.com/" class="insta-bg">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="team-box">
-                                <div class="team-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/user/4.jpg') }}" class="img-fluid blur-up lazyload"
-                                        alt="">
-                                </div>
-
-                                <div class="team-name">
-                                    <h3>Anna Baranov</h3>
-                                    <h5>Marketing</h5>
-                                    <p>Fondue stinking bishop goat. Macaroni cheese croque monsieur cottage cheese.</p>
-                                    <ul class="team-media">
-                                        <li>
-                                            <a href="https://www.facebook.com/" class="fb-bg">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://in.pinterest.com/" class="pint-bg">
-                                                <i class="fa-brands fa-pinterest-p"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://twitter.com/" class="twitter-bg">
-                                                <i class="fa-brands fa-twitter"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://www.instagram.com/" class="insta-bg">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="team-box">
-                                <div class="team-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/user/1.jpg') }}" class="img-fluid blur-up lazyload"
-                                        alt="">
-                                </div>
-
-                                <div class="team-name">
-                                    <h3>Anna Baranov</h3>
-                                    <h5>Marketing</h5>
-                                    <p>squirty cheese cheddar macaroni cheese airedale cheese triangles.</p>
-                                    <ul class="team-media">
-                                        <li>
-                                            <a href="https://www.facebook.com/" class="fb-bg">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://in.pinterest.com/" class="pint-bg">
-                                                <i class="fa-brands fa-pinterest-p"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://twitter.com/" class="twitter-bg">
-                                                <i class="fa-brands fa-twitter"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="https://www.instagram.com/" class="insta-bg">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    @endif
     <!-- Team Section End -->
 
     <!-- Review Section Start -->

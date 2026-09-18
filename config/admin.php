@@ -45,9 +45,11 @@ use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
 use App\Models\Storefront\DeliveryArea;
+use App\Models\Storefront\StorefrontAboutItem;
 use App\Models\Storefront\StorefrontFaq;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontServiceBlock;
+use App\Models\Storefront\StorefrontTeamMember;
 use App\Models\Storefront\StorefrontTopbarMessage;
 use App\Models\User;
 
@@ -119,7 +121,7 @@ return [
             ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
         ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
-            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ]],
+            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ['key' => 'storefront-about', 'label' => 'About Page', 'route' => 'admin.storefront-about.edit', 'icon' => 'iconoir-info-empty'], ['key' => 'storefront-about-items', 'label' => 'About Sections', 'route' => 'admin.storefront-about-items.index', 'icon' => 'iconoir-list'], ['key' => 'storefront-team-members', 'label' => 'Team Members', 'route' => 'admin.storefront-team-members.index', 'icon' => 'iconoir-group'], ]],
         ['label' => 'Reports', 'id' => 'reportsMenu', 'icon' => 'iconoir-stats-report', 'items' => []],
         ['label' => 'Translation', 'id' => 'translationMenu', 'icon' => 'iconoir-translate', 'items' => [
             ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'app-languages', 'label' => 'App Languages', 'route' => 'admin.app-languages.edit', 'icon' => 'iconoir-smartphone-device'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'],
@@ -613,6 +615,38 @@ return [
                 ['name' => 'question', 'label' => 'Question', 'col' => 'col-12', 'rules' => ['required', 'string', 'max:500']],
                 ['name' => 'answer', 'label' => 'Answer', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 6, 'help' => 'Leave a blank line between paragraphs.', 'rules' => ['required', 'string', 'max:5000']],
                 ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => $faqCategories, 'help' => 'Decides which card on the FAQ page shows this question. Leave blank to list it only under All.', 'rules' => ['nullable', 'string', 'max:60', 'in:'.implode(',', array_keys($faqCategories))]],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'storefront-about-items' => [
+            'label' => 'About Sections', 'group' => 'Storefront', 'singular' => 'About Section Item', 'description' => 'Bullets shown next to the About Us intro text, and the figures in the "What We Do" row.', 'model' => StorefrontAboutItem::class, 'search' => ['title', 'value', 'description'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'filters' => [['name' => 'block', 'label' => 'Block', 'column' => 'block', 'options' => ['highlight' => 'Intro Bullet', 'stat' => 'What We Do Figure']]],
+            'columns' => [['key' => 'icon_path', 'label' => 'Icon', 'type' => 'image'], ['key' => 'block_label', 'label' => 'Block'], ['key' => 'value', 'label' => 'Figure'], ['key' => 'title', 'label' => 'Title'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'block', 'label' => 'Block', 'type' => 'select', 'options' => ['highlight' => 'Intro Bullet', 'stat' => 'What We Do Figure'], 'help' => 'Intro bullets sit beside the About text; figures fill the "What We Do" row.', 'rules' => ['required', 'in:highlight,stat']],
+                ['name' => 'title', 'label' => 'Title', 'col' => 'col-12', 'help' => 'The bullet line, or the label under the figure.', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'value', 'label' => 'Figure', 'help' => 'Only for "What We Do", e.g. 10+ or 500+.', 'rules' => ['nullable', 'string', 'max:50']],
+                ['name' => 'icon_path', 'label' => 'Icon - 40 x 40 px', 'type' => 'image', 'upload_dir' => 'uploads/storefront/about', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048']],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'help' => 'Only for "What We Do"; shown under the label.', 'rules' => ['nullable', 'string', 'max:1000']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'storefront-team-members' => [
+            'label' => 'Team Members', 'group' => 'Storefront', 'singular' => 'Team Member', 'description' => 'People shown in the team row on the About Us page. With no active members the whole row is hidden.', 'model' => StorefrontTeamMember::class, 'search' => ['name', 'role'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'photo_path', 'label' => 'Photo', 'type' => 'image'], ['key' => 'name', 'label' => 'Name'], ['key' => 'role', 'label' => 'Role'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Full Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'role', 'label' => 'Role / Designation', 'rules' => ['nullable', 'string', 'max:255']],
+                ['name' => 'bio', 'label' => 'Short Line', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 2, 'help' => 'One short sentence shown under the role.', 'rules' => ['nullable', 'string', 'max:500']],
+                ['name' => 'photo_path', 'label' => 'Photo - 350 x 350 px', 'type' => 'image', 'upload_dir' => 'uploads/storefront/team', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048']],
+                ['name' => 'facebook_url', 'label' => 'Facebook URL', 'rules' => ['nullable', 'url', 'max:2048']],
+                ['name' => 'twitter_url', 'label' => 'Twitter / X URL', 'rules' => ['nullable', 'url', 'max:2048']],
+                ['name' => 'instagram_url', 'label' => 'Instagram URL', 'rules' => ['nullable', 'url', 'max:2048']],
+                ['name' => 'linkedin_url', 'label' => 'LinkedIn URL', 'rules' => ['nullable', 'url', 'max:2048']],
                 ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

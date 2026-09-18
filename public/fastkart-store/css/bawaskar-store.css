@@ -578,3 +578,10 @@
 .faq-top-link.active .faq-box-contain h3 {
     color: var(--theme-color);
 }
+
+/* LinkedIn tint for team member social links; matches the template's fb-bg / twitter-bg set. */
+.linkedin-bg {
+    color: #0a66c2;
+    -webkit-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}

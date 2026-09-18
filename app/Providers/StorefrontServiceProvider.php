@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\Storefront\Repositories\DeliveryAreaRepositoryContract;
+use App\Contracts\Storefront\Repositories\StorefrontAboutRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontCatalogRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontFaqRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontHomepageRepositoryContract;
@@ -18,6 +19,7 @@ use App\Contracts\Storefront\Session\StorefrontIdentitySessionContract;
 use App\Contracts\Storefront\Session\StorefrontOrderSessionContract;
 use App\Contracts\Storefront\Session\StorefrontSessionProductRulesContract;
 use App\Contracts\Storefront\Session\StorefrontWishlistContract;
+use App\Contracts\Storefront\StorefrontAboutPageContract;
 use App\Contracts\Storefront\StorefrontCatalogContract;
 use App\Contracts\Storefront\StorefrontDeliveryLocationContract;
 use App\Contracts\Storefront\StorefrontFaqContract;
@@ -28,6 +30,7 @@ use App\Contracts\Storefront\StorefrontOrderContextContract;
 use App\Contracts\Storefront\StorefrontPageRendererContract;
 use App\Contracts\Storefront\StorefrontSessionContextContract;
 use App\Repositories\Storefront\EloquentDeliveryAreaRepository;
+use App\Repositories\Storefront\EloquentStorefrontAboutRepository;
 use App\Repositories\Storefront\EloquentStorefrontCatalogRepository;
 use App\Repositories\Storefront\EloquentStorefrontFaqRepository;
 use App\Repositories\Storefront\EloquentStorefrontHomepageRepository;
@@ -44,6 +47,7 @@ use App\Services\Storefront\Session\StorefrontOrderSessionService;
 use App\Services\Storefront\Session\StorefrontSessionProductRules;
 use App\Services\Storefront\Session\StorefrontSessionService;
 use App\Services\Storefront\Session\StorefrontWishlistService;
+use App\Services\Storefront\StorefrontAboutPageService;
 use App\Services\Storefront\StorefrontCatalogService;
 use App\Services\Storefront\StorefrontDeliveryLocationService;
 use App\Services\Storefront\StorefrontFaqService;
@@ -81,6 +85,8 @@ final class StorefrontServiceProvider extends ServiceProvider
             StorefrontOrderRepositoryContract::class => EloquentStorefrontOrderRepository::class,
             StorefrontDeliveryLocationContract::class => StorefrontDeliveryLocationService::class,
             DeliveryAreaRepositoryContract::class => EloquentDeliveryAreaRepository::class,
+            StorefrontAboutPageContract::class => StorefrontAboutPageService::class,
+            StorefrontAboutRepositoryContract::class => EloquentStorefrontAboutRepository::class,
             StorefrontFaqContract::class => StorefrontFaqService::class,
             StorefrontFaqRepositoryContract::class => EloquentStorefrontFaqRepository::class,
             StorefrontPageRendererContract::class => StorefrontPageRenderer::class,

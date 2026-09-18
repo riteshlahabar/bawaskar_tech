@@ -425,6 +425,15 @@
     padding-top: 18px;
 }
 
+/* Unit sits directly under the product name, no gap. */
+.product-box-3 .product-footer .product-detail .name {
+    margin-bottom: 0;
+}
+
+.product-box-3 .product-footer .product-detail .unit {
+    margin-top: 0;
+}
+
 @media (max-width: 575px) {
     .product-box-3 .product-header .product-image {
         height: 150px;

@@ -7,7 +7,7 @@
     $price = $mainVariant ? $mainVariant->priceFor($audience) : (float) ($audience === 'dealer' ? $product->dealer_price : $product->customer_price);
     $mrp = (float) ($mainVariant?->mrp ?? $product->mrp);
     $discount = $mrp > $price && $mrp > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
-    $unitName = $mainVariant?->display_name ?: (data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs');
+    $unitName = $mainVariant?->display_name ?: '1 '.(data_get($product, 'unit.short_name') ?: data_get($product, 'unit.name') ?: 'pcs');
     $availableStock = $mainVariant ? (float) $mainVariant->available_stock : (float) $product->available_stock;
     $lowStockAlert = (float) optional($mainVariant?->inventoryBatches->first() ?: $product->inventoryBatches->first())->low_stock_alert;
     $isOutOfStock = $availableStock <= 0;

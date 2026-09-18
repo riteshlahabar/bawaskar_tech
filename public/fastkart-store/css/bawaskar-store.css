@@ -392,8 +392,16 @@
     }
 }
 
+/* Category/shop card image fills the card edge to edge (card padding is a fluid calc). */
 .product-box-3 .product-header .product-image {
+    width: calc(100% + 2 * (7px + 7 * (100vw - 320px) / 1600));
+    height: 190px;
+    margin: calc(-1 * (7px + 7 * (100vw - 320px) / 1600))
+            calc(-1 * (7px + 7 * (100vw - 320px) / 1600)) 0;
+    padding: 0;
     overflow: hidden;
+    border-radius: 5px 5px 0 0;
+    background-color: #f8f8f8;
 }
 
 .product-box-3 .product-header .product-image > a {
@@ -405,12 +413,18 @@
 .product-box-3 .product-header .product-image img {
     width: 100% !important;
     height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     margin: 0 !important;
     object-fit: cover !important;
     object-position: center;
     display: block;
+}
+
+@media (max-width: 575px) {
+    .product-box-3 .product-header .product-image {
+        height: 150px;
+    }
 }
 
 

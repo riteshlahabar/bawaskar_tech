@@ -98,6 +98,28 @@ return new class extends Migration
         }
 
         DB::table('storefront_about_items')->insert($rows);
+
+        $team = [
+            ['Ramesh Bawaskar', 'Managing Director', 'Leads the company and its supplier relationships.', 'fastkart-store/images/inner-page/user/1.jpg'],
+            ['Sunita Deshmukh', 'Operations Head', 'Looks after stock, dispatch and delivery across districts.', 'fastkart-store/images/inner-page/user/2.jpg'],
+            ['Amit Jadhav', 'Sales Manager', 'Handles the dealer network and the field sales team.', 'fastkart-store/images/inner-page/user/3.jpg'],
+        ];
+
+        $members = [];
+        foreach ($team as $index => [$name, $role, $bio, $photo]) {
+            $members[] = [
+                'name' => $name,
+                'role' => $role,
+                'bio' => $bio,
+                'photo_path' => $photo,
+                'sort_order' => $index + 1,
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        DB::table('storefront_team_members')->insert($members);
     }
 
     public function down(): void

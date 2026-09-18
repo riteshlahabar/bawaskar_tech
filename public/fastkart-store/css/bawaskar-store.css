@@ -465,9 +465,9 @@
     position: relative;
 }
 
-/* Hide only the caret next to INR; the button itself is unchanged. */
-.store-topbar-currency .dropdown-toggle::after {
-    display: none !important;
+/* Hide only the arrow next to INR (the template draws it with ::before). */
+.store-topbar-currency .dropdown-toggle::before {
+    content: none !important;
 }
 
 .store-topbar-language .dropdown-menu,

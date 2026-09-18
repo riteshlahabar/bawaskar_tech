@@ -33,7 +33,7 @@ return [
     'route_actions' => [
         'index' => 'view', 'show' => 'view', 'export' => 'view', 'sample' => 'view', 'download' => 'view', 'print' => 'view', 'pdf' => 'view',
         'create' => 'create', 'store' => 'create',
-        'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'change-status' => 'edit',
+        'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'cancel' => 'edit',
         'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
         'destroy' => 'delete', 'bulk-destroy' => 'delete',
     ],

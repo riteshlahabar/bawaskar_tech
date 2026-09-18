@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Contracts\Sales\OrderStatusContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 final class AdminOrderController extends AdminApiController
 {
-    public function updateStatus(Request $request, Order $order): JsonResponse
+    /**
+     * Cancelling is the only status an admin sets directly; the rest follow the
+     * invoice and dispatch steps.
+     */
+    public function cancel(Request $request, OrderStatusContract $status, Order $order): JsonResponse
     {
         $admin = $this->admin($request);
 
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(['approved', 'packing', 'dispatched', 'out_for_delivery', 'delivered', 'cancelled'])],
-        ]);
+        $reason = $request->validate([
+            'cancel_reason' => ['required', 'string', 'max:500'],
+        ])['cancel_reason'];
 
-        $approving = $validated['status'] === 'approved';
+        if (! $status->cancel($order, $reason, $admin->id)) {
+            return $this->fail('A delivered or already cancelled order cannot be cancelled.');
+        }
 
-        $order->forceFill([
-            'status' => $validated['status'],
-            'approved_by' => $approving ? $admin->id : $order->approved_by,
-            'approved_at' => $approving ? now() : $order->approved_at,
-        ])->save();
-
-        return $this->success(['order' => $order->fresh('items.product')], 'Order status updated.');
+        return $this->success(['order' => $order->fresh('items.product')], 'Order cancelled.');
     }
 
     public function upsertDispatch(Request $request, Order $order): JsonResponse

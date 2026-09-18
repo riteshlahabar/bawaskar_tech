@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Orders;
 
+use App\Contracts\Sales\OrderStatusContract;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
-use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class OrderController extends AdminModuleController
 {
@@ -48,16 +46,20 @@ class OrderController extends AdminModuleController
             $data['grand_total'] = max(0, $subtotal + $gstTotal - $discount);
         }
 
-        if (($data['status'] ?? null) === 'approved') {
-            $data['approved_by'] = auth()->id();
-            $data['approved_at'] = now();
-        }
+        // Status is never taken from the form; it follows the sales actions.
+        unset($data['status']);
 
         return $data;
     }
 
     protected function persist(array $data, ?Model $record): Model
     {
+        // A new order starts where the workflow starts; an edit keeps the
+        // status the sales actions have already given it.
+        if ($record === null) {
+            $data['status'] = ($data['order_type'] ?? 'customer') === 'dealer' ? 'salesman_review' : 'admin_review';
+        }
+
         return parent::persist($data, $record);
     }
 
@@ -83,25 +85,20 @@ class OrderController extends AdminModuleController
         return redirect()->route('admin.proforma-invoices.edit', $proforma->getKey())->with('success', 'Sale Order converted to Proforma Invoice.');
     }
 
-    public function changeStatus(Request $request, int|string $id): RedirectResponse
+    /**
+     * The only status an admin sets by hand. Everything else follows the sales
+     * actions (invoice raised, dispatch packed / dispatched / delivered).
+     */
+    public function cancel(Request $request, OrderStatusContract $status, int|string $id): RedirectResponse
     {
-        $data = $request->validate(['status' => ['required', Rule::in(['salesman_review', 'admin_review', 'approved', 'packing', 'dispatched', 'out_for_delivery', 'delivered', 'cancelled'])]]);
-        $order = Order::with('items')->findOrFail($id);
-        DB::transaction(function () use ($order, $data): void {
-            $updates = ['status' => $data['status']];
-            if ($data['status'] === 'approved') {
-                $updates += ['approved_by' => auth()->id(), 'approved_at' => now()];
-            }
-            $order->update($updates);
-            if ($data['status'] === 'approved') {
-                Invoice::firstOrCreate(['order_id' => $order->id], [
-                    'invoice_no' => 'INV'.now()->format('ymdHis').str_pad((string) $order->id, 4, '0', STR_PAD_LEFT),
-                    'invoice_date' => now()->toDateString(), 'grand_total' => $order->grand_total,
-                ]);
-            }
-        });
+        $reason = $request->validate(['cancel_reason' => ['required', 'string', 'max:500']])['cancel_reason'];
+        $order = Order::query()->findOrFail($id);
 
-        return back()->with('success', 'Order status updated.');
+        if (! $status->cancel($order, $reason, auth()->id())) {
+            return back()->with('error', 'A delivered or already cancelled order cannot be cancelled.');
+        }
+
+        return back()->with('success', 'Order cancelled.');
     }
 
     private function nextOrderNumber(string $type): string

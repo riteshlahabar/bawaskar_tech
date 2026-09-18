@@ -118,7 +118,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         Route::post('dealers/{dealer}/approve', [DealerController::class, 'approve'])->name('dealers.approve');
         Route::post('orders/{id}/convert-to-proforma', [OrderController::class, 'convertToProforma'])->name('orders.convert-to-proforma');
-        Route::post('orders/{order}/change-status', [OrderController::class, 'changeStatus'])->name('orders.change-status');
+        Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::post('proforma-invoices/{id}/convert-to-invoice', [ProformaInvoiceController::class, 'convertToInvoice'])->name('proforma-invoices.convert-to-invoice');
         Route::get('sales-documents/{document}/{id}/print', [SalesDocumentController::class, 'print'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.print');
         Route::get('sales-documents/{document}/{id}/pdf', [SalesDocumentController::class, 'pdf'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.pdf');

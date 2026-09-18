@@ -58,13 +58,8 @@ class ProformaInvoiceController extends AdminModuleController
 
             $proforma->forceFill(['status' => 'converted'])->save();
 
-            if (in_array($order->status, ['salesman_review', 'admin_review'], true)) {
-                $order->forceFill([
-                    'status' => 'approved',
-                    'approved_by' => auth()->id(),
-                    'approved_at' => now(),
-                ])->save();
-            }
+            // The order status follows the invoice: InvoiceOrderStatusObserver
+            // moves it to Approved, so nothing is set here by hand.
 
             return $invoice;
         });

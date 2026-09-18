@@ -34,12 +34,16 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'approved_at',
+        'cancel_reason',
+        'cancelled_by',
+        'cancelled_at',
     ];
 
     protected function casts(): array
     {
         return [
             'approved_at' => 'datetime',
+            'cancelled_at' => 'datetime',
             'subtotal' => 'decimal:2',
             'gst_total' => 'decimal:2',
             'discount_total' => 'decimal:2',

@@ -68,11 +68,16 @@ use App\Contracts\Sales\Orders\OrderRepositoryContract;
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
 use App\Contracts\Sales\Orders\StockAvailabilityContract;
 use App\Contracts\Sales\Orders\StockReservationContract;
+use App\Contracts\Sales\OrderStatusContract;
 use App\Contracts\Sales\SalesDocumentDataContract;
 use App\Contracts\Sales\SalesDocumentGstDetailsContract;
 use App\Contracts\Sales\SalesDocumentPdfContract;
 use App\Contracts\Support\AmountInWordsContract;
 use App\Contracts\Support\TransactionManagerContract;
+use App\Models\Sales\Dispatch;
+use App\Models\Sales\Invoice;
+use App\Observers\Sales\DispatchOrderStatusObserver;
+use App\Observers\Sales\InvoiceOrderStatusObserver;
 use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
 use App\Repositories\Localization\EloquentAppTranslationRepository;
@@ -137,6 +142,7 @@ use App\Services\Sales\Orders\OrderCheckoutMapper;
 use App\Services\Sales\Orders\OrderLineBuilderService;
 use App\Services\Sales\Orders\OrderLineQuantityService;
 use App\Services\Sales\Orders\OrderPricingService;
+use App\Services\Sales\Orders\OrderStatusService;
 use App\Services\Sales\Orders\OrderWorkflowService;
 use App\Services\Sales\Orders\TimestampOrderNumberGenerator;
 use App\Services\Sales\SalesDocumentDataService;
@@ -175,6 +181,7 @@ class AppServiceProvider extends ServiceProvider
             ProductTranslationContract::class => \App\Services\Catalog\Product\ProductTranslationService::class,
             \App\Contracts\Catalog\Product\TextTranslatorContract::class => \App\Services\Catalog\Product\GoogleTextTranslator::class,
             ProductRepositoryContract::class => EloquentProductRepository::class,
+            OrderStatusContract::class => OrderStatusService::class,
             SalesDocumentDataContract::class => SalesDocumentDataService::class,
             SalesDocumentPdfContract::class => DompdfSalesDocumentPdfService::class,
             SalesDocumentGstDetailsContract::class => SalesDocumentGstDetailsService::class,
@@ -263,6 +270,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        // Order status follows the sales actions instead of being typed in.
+        Invoice::observe(InvoiceOrderStatusObserver::class);
+        Dispatch::observe(DispatchOrderStatusObserver::class);
 
         // The shared admin form and its field partials get the layout services
         // handed to them, so the Blade templates hold no static calls.

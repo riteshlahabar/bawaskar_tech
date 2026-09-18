@@ -415,29 +415,32 @@
 
 
 /* Inner-page storefront topbar language/currency. */
+/* Indian flag drawn as an SVG so the Ashoka Chakra shows its spokes at small sizes. */
 .store-india-flag {
-    width: 20px;
+    width: 21px;
     height: 14px;
     display: inline-block;
-    flex: 0 0 20px;
-    border: 1px solid rgba(0, 0, 0, .12);
+    flex: 0 0 21px;
+    border: 1px solid rgba(0, 0, 0, .14);
     border-radius: 2px;
-    background: linear-gradient(to bottom, #ff9933 0 33.33%, #fff 33.33% 66.66%, #138808 66.66% 100%);
-    position: relative;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Crect width='36' height='24' fill='%23ffffff'/%3E%3Crect width='36' height='8' fill='%23ff9933'/%3E%3Crect y='16' width='36' height='8' fill='%23138808'/%3E%3Cg fill='none' stroke='%23000080'%3E%3Ccircle cx='18' cy='12' r='3.3' stroke-width='0.55'/%3E%3Ccircle cx='18' cy='12' r='1.8' stroke-width='2.8' stroke-dasharray='0.14 0.3312'/%3E%3C/g%3E%3Ccircle cx='18' cy='12' r='0.55' fill='%23000080'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     vertical-align: middle;
 }
 
-.store-india-flag::after {
-    content: "";
-    width: 5px;
-    height: 5px;
-    border: 1px solid #000080;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
+/* Space between the flag and the language name, in the button and in the list. */
+.store-topbar-language .btn,
+.store-topbar-language-menu .dropdown-item > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.store-topbar-language .btn .store-india-flag,
+.store-topbar-language-menu .store-india-flag {
+    margin-right: 2px;
 }
 
 .store-topbar-language-menu {

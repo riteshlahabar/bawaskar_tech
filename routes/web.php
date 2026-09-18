@@ -5,6 +5,7 @@ use App\Http\Controllers\Storefront\StorefrontAuthController;
 use App\Http\Controllers\Storefront\StorefrontCartController;
 use App\Http\Controllers\Storefront\StorefrontCategoryController;
 use App\Http\Controllers\Storefront\StorefrontCheckoutController;
+use App\Http\Controllers\Storefront\StorefrontContactController;
 use App\Http\Controllers\Storefront\StorefrontDeliveryLocationController;
 use App\Http\Controllers\Storefront\StorefrontLanguageController;
 use App\Http\Controllers\Storefront\StorefrontPageController;
@@ -34,6 +35,7 @@ Route::post('/wishlist/add', [StorefrontWishlistController::class, 'add'])->name
 Route::post('/wishlist/remove/{productId}', [StorefrontWishlistController::class, 'remove'])->name('store.wishlist.remove');
 Route::post('/wishlist/toggle', [StorefrontWishlistController::class, 'toggle'])->name('store.wishlist.toggle');
 Route::post('/checkout/place-order', [StorefrontCheckoutController::class, 'placeOrder'])->name('store.checkout.place-order');
+Route::post('/contact', [StorefrontContactController::class, 'store'])->middleware('throttle:5,1')->name('store.contact');
 
 // The bank sends the payer back here. Registered before the /{page} catch-all
 // so a GET return is not swallowed by the storefront page route, and exempt

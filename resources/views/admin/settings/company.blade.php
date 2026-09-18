@@ -33,6 +33,7 @@
                                 ['whatsapp', 'WhatsApp Number', 'text', false],
                                 ['email', 'Email', 'email', false],
                                 ['website', 'Website', 'url', false],
+                                ['map_embed_url', 'Map Embed URL', 'url', false],
                                 ['gst_number', 'GST Number', 'text', false],
                                 ['cin_number', 'CIN Number', 'text', false],
                             ],

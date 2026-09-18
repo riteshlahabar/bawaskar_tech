@@ -44,6 +44,7 @@ use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
+use App\Models\Storefront\ContactMessage;
 use App\Models\Storefront\DeliveryArea;
 use App\Models\Storefront\StorefrontAboutItem;
 use App\Models\Storefront\StorefrontFaq;
@@ -57,6 +58,7 @@ $active = ['1' => 'Active', '0' => 'Inactive'];
 // FAQ categories live in config/storefront.php (the website reads them there); required directly because config files cannot call config() while loading.
 $faqCategories = array_map(static fn (array $category): string => $category['label'], (require __DIR__.'/storefront.php')['faq_categories']);
 $userStatus = ['active' => 'Active', 'inactive' => 'Inactive', 'pending_approval' => 'Pending Approval'];
+$contactStatus = ['new' => 'New', 'read' => 'Read', 'replied' => 'Replied'];
 $orderStatus = ['salesman_review' => 'Salesman Review', 'admin_review' => 'Admin Review', 'approved' => 'Approved', 'packing' => 'Packing', 'dispatched' => 'Dispatched', 'out_for_delivery' => 'Out for Delivery', 'delivered' => 'Delivered', 'cancelled' => 'Cancelled'];
 $approvalStatus = ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'];
 $holidayTypes = ['national' => 'National', 'company' => 'Company', 'festival' => 'Festival'];
@@ -121,7 +123,7 @@ return [
             ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
         ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
-            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ['key' => 'storefront-about', 'label' => 'About Page', 'route' => 'admin.storefront-about.edit', 'icon' => 'iconoir-info-empty'], ['key' => 'storefront-about-items', 'label' => 'About Sections', 'route' => 'admin.storefront-about-items.index', 'icon' => 'iconoir-list'], ['key' => 'storefront-team-members', 'label' => 'Team Members', 'route' => 'admin.storefront-team-members.index', 'icon' => 'iconoir-group'], ]],
+            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ['key' => 'storefront-about', 'label' => 'About Page', 'route' => 'admin.storefront-about.edit', 'icon' => 'iconoir-info-empty'], ['key' => 'storefront-about-items', 'label' => 'About Sections', 'route' => 'admin.storefront-about-items.index', 'icon' => 'iconoir-list'], ['key' => 'storefront-team-members', 'label' => 'Team Members', 'route' => 'admin.storefront-team-members.index', 'icon' => 'iconoir-group'], ['key' => 'contact-messages', 'label' => 'Contact Messages', 'route' => 'admin.contact-messages.index', 'icon' => 'iconoir-mail-open'], ]],
         ['label' => 'Reports', 'id' => 'reportsMenu', 'icon' => 'iconoir-stats-report', 'items' => []],
         ['label' => 'Translation', 'id' => 'translationMenu', 'icon' => 'iconoir-translate', 'items' => [
             ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'app-languages', 'label' => 'App Languages', 'route' => 'admin.app-languages.edit', 'icon' => 'iconoir-smartphone-device'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'],
@@ -623,6 +625,14 @@ return [
                 ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => $faqCategories, 'help' => 'Decides which card on the FAQ page shows this question. Leave blank to list it only under All.', 'rules' => ['nullable', 'string', 'max:60', 'in:'.implode(',', array_keys($faqCategories))]],
                 ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
+        'contact-messages' => [
+            'label' => 'Contact Messages', 'group' => 'Storefront', 'singular' => 'Contact Message', 'description' => 'Messages sent from the website Contact Us form.', 'model' => ContactMessage::class, 'with' => ['user'], 'search' => ['name', 'email', 'phone', 'subject', 'message'], 'status_column' => 'status', 'status_options' => $contactStatus, 'sort' => ['created_at', 'desc'], 'can_create' => false,
+            'columns' => [['key' => 'created_at', 'label' => 'Received', 'type' => 'datetime'], ['key' => 'name', 'label' => 'Name'], ['key' => 'email', 'label' => 'Email', 'type' => 'email'], ['key' => 'phone', 'label' => 'Phone'], ['key' => 'subject', 'label' => 'Subject'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'fields' => [
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $contactStatus, 'rules' => ['required', 'in:'.implode(',', array_keys($contactStatus))]],
             ],
         ],
 

@@ -21,6 +21,7 @@ use App\Contracts\Storefront\Session\StorefrontSessionProductRulesContract;
 use App\Contracts\Storefront\Session\StorefrontWishlistContract;
 use App\Contracts\Storefront\StorefrontAboutPageContract;
 use App\Contracts\Storefront\StorefrontCatalogContract;
+use App\Contracts\Storefront\StorefrontContactContract;
 use App\Contracts\Storefront\StorefrontDeliveryLocationContract;
 use App\Contracts\Storefront\StorefrontFaqContract;
 use App\Contracts\Storefront\StorefrontHomepageContract;
@@ -49,6 +50,7 @@ use App\Services\Storefront\Session\StorefrontSessionService;
 use App\Services\Storefront\Session\StorefrontWishlistService;
 use App\Services\Storefront\StorefrontAboutPageService;
 use App\Services\Storefront\StorefrontCatalogService;
+use App\Services\Storefront\StorefrontContactService;
 use App\Services\Storefront\StorefrontDeliveryLocationService;
 use App\Services\Storefront\StorefrontFaqService;
 use App\Services\Storefront\StorefrontHomepageService;
@@ -86,6 +88,7 @@ final class StorefrontServiceProvider extends ServiceProvider
             StorefrontDeliveryLocationContract::class => StorefrontDeliveryLocationService::class,
             DeliveryAreaRepositoryContract::class => EloquentDeliveryAreaRepository::class,
             StorefrontAboutPageContract::class => StorefrontAboutPageService::class,
+            StorefrontContactContract::class => StorefrontContactService::class,
             StorefrontAboutRepositoryContract::class => EloquentStorefrontAboutRepository::class,
             StorefrontFaqContract::class => StorefrontFaqService::class,
             StorefrontFaqRepositoryContract::class => EloquentStorefrontFaqRepository::class,

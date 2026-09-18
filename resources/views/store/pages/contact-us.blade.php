@@ -90,6 +90,37 @@
     <!-- mobile fix menu end -->
 
     <!-- Breadcrumb Section Start -->
+    @php
+        $contactCompany = $companySetting ?? null;
+        $contactMapUrl = $contactCompany?->mapEmbedUrl();
+
+        // Only the details filled in Company Profile are shown; a blank field
+        // simply removes its box.
+        $contactBoxes = collect([
+            ['key' => 'contact.phone_label', 'label' => 'Phone', 'icon' => 'fa-solid fa-phone', 'value' => trim((string) $contactCompany?->phone), 'href' => null],
+            ['key' => 'contact.whatsapp_label', 'label' => 'WhatsApp', 'icon' => 'fa-brands fa-whatsapp', 'value' => trim((string) $contactCompany?->whatsapp), 'href' => null],
+            ['key' => 'contact.email_label', 'label' => 'Email', 'icon' => 'fa-solid fa-envelope', 'value' => trim((string) $contactCompany?->email), 'href' => null],
+            ['key' => 'contact.address_label', 'label' => 'Address', 'icon' => 'fa-solid fa-location-dot', 'value' => trim((string) $contactCompany?->address), 'href' => null],
+        ])->filter(fn (array $box): bool => $box['value'] !== '')
+            ->map(function (array $box): array {
+                $box['href'] = match ($box['key']) {
+                    'contact.phone_label' => 'tel:'.preg_replace('/\s+/', '', $box['value']),
+                    'contact.whatsapp_label' => 'https://wa.me/'.preg_replace('/\D+/', '', $box['value']),
+                    'contact.email_label' => 'mailto:'.$box['value'],
+                    default => null,
+                };
+
+                return $box;
+            })->values();
+
+        $contactUserName = trim((string) ($storeUser?->name ?? ''));
+        $contactNameParts = $contactUserName === '' ? [] : preg_split('/\s+/', $contactUserName, 2);
+        $contactUserFirstName = $contactNameParts[0] ?? '';
+        $contactUserLastName = $contactNameParts[1] ?? '';
+        $contactUserEmail = \App\Models\User::displayEmail($storeUser?->email) ?? '';
+        $contactUserPhone = trim((string) ($storeUser?->mobile ?? ''));
+    @endphp
+
     <section class="breadcrumb-section pt-0">
         <div class="container-fluid-lg">
             <div class="row">
@@ -133,65 +164,29 @@
 
                                 <div class="contact-detail">
                                     <div class="row g-4">
-                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                            <div class="contact-detail-box">
-                                                <div class="contact-icon">
-                                                    <i class="fa-solid fa-phone"></i>
-                                                </div>
-                                                <div class="contact-detail-title">
-                                                    <h4>Phone</h4>
-                                                </div>
+                                        @foreach ($contactBoxes as $contactBox)
+                                            <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                                <div class="contact-detail-box">
+                                                    <div class="contact-icon">
+                                                        <i class="{{ $contactBox['icon'] }}"></i>
+                                                    </div>
 
-                                                <div class="contact-detail-contain">
-                                                    <p>(+1) 618 190 496</p>
+                                                    <div class="contact-detail-title">
+                                                        <h4>{{ web_t($contactBox['key'], $contactBox['label']) }}</h4>
+                                                    </div>
+
+                                                    <div class="contact-detail-contain">
+                                                        <p>
+                                                            @if ($contactBox['href'])
+                                                                <a href="{{ $contactBox['href'] }}">{{ $contactBox['value'] }}</a>
+                                                            @else
+                                                                {{ $contactBox['value'] }}
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                            <div class="contact-detail-box">
-                                                <div class="contact-icon">
-                                                    <i class="fa-solid fa-envelope"></i>
-                                                </div>
-                                                <div class="contact-detail-title">
-                                                    <h4>Email</h4>
-                                                </div>
-
-                                                <div class="contact-detail-contain">
-                                                    <p>geweto9420@chokxus.com</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                            <div class="contact-detail-box">
-                                                <div class="contact-icon">
-                                                    <i class="fa-solid fa-location-dot"></i>
-                                                </div>
-                                                <div class="contact-detail-title">
-                                                    <h4>London Office</h4>
-                                                </div>
-
-                                                <div class="contact-detail-contain">
-                                                    <p>Cruce Casa de Postas 29</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                            <div class="contact-detail-box">
-                                                <div class="contact-icon">
-                                                    <i class="fa-solid fa-building"></i>
-                                                </div>
-                                                <div class="contact-detail-title">
-                                                    <h4>Bournemouth Office</h4>
-                                                </div>
-
-                                                <div class="contact-detail-contain">
-                                                    <p>VisitaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n de la Encina 22</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -204,64 +199,103 @@
                         <h2>{{ web_t('nav.contact_us', 'Contact Us') }}</h2>
                     </div>
                     <div class="right-sidebar-box">
-                        <div class="row">
-                            <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                <div class="mb-md-4 mb-3 custom-form">
-                                    <label for="exampleFormControlInput" class="form-label">First Name</label>
-                                    <div class="custom-input">
-                                        <input type="text" class="form-control" id="exampleFormControlInput"
-                                            placeholder="Enter First Name">
-                                        <i class="fa-solid fa-user"></i>
+                        @if (session('contact_success'))
+                            <div class="alert alert-success" role="alert">{{ session('contact_success') }}</div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger" role="alert">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $contactError)
+                                        <li>{{ $contactError }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('store.contact') }}" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlInput" class="form-label">{{ web_t('contact.first_name', 'First Name') }}</label>
+                                        <div class="custom-input">
+                                            <input type="text" class="form-control" id="exampleFormControlInput"
+                                                name="first_name" value="{{ old('first_name', $contactUserFirstName) }}" required
+                                                placeholder="{{ web_t('contact.first_name_placeholder', 'Enter First Name') }}">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlInput1" class="form-label">{{ web_t('contact.last_name', 'Last Name') }}</label>
+                                        <div class="custom-input">
+                                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                                name="last_name" value="{{ old('last_name', $contactUserLastName) }}"
+                                                placeholder="{{ web_t('contact.last_name_placeholder', 'Enter Last Name') }}">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlInput2" class="form-label">{{ web_t('contact.email', 'Email Address') }}</label>
+                                        <div class="custom-input">
+                                            <input type="email" class="form-control" id="exampleFormControlInput2"
+                                                name="email" value="{{ old('email', $contactUserEmail) }}" required
+                                                placeholder="{{ web_t('contact.email_placeholder', 'Enter Email Address') }}">
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlInput3" class="form-label">{{ web_t('contact.phone', 'Phone Number') }}</label>
+                                        <div class="custom-input">
+                                            <input type="tel" class="form-control" id="exampleFormControlInput3"
+                                                name="phone" value="{{ old('phone', $contactUserPhone) }}"
+                                                placeholder="{{ web_t('contact.phone_placeholder', 'Enter Your Phone Number') }}" maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
+                                                this.value.slice(0, this.maxLength);">
+                                            <i class="fa-solid fa-mobile-screen-button"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlInputSubject" class="form-label">{{ web_t('contact.subject', 'Subject') }}</label>
+                                        <div class="custom-input">
+                                            <input type="text" class="form-control" id="exampleFormControlInputSubject"
+                                                name="subject" value="{{ old('subject') }}"
+                                                placeholder="{{ web_t('contact.subject_placeholder', 'What is this about?') }}">
+                                            <i class="fa-solid fa-tag"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="exampleFormControlTextarea" class="form-label">{{ web_t('contact.message', 'Message') }}</label>
+                                        <div class="custom-textarea">
+                                            <textarea class="form-control" id="exampleFormControlTextarea" name="message" required
+                                                placeholder="{{ web_t('contact.message_placeholder', 'Enter Your Message') }}" rows="6">{{ old('message') }}</textarea>
+                                            <i class="fa-solid fa-message"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                <div class="mb-md-4 mb-3 custom-form">
-                                    <label for="exampleFormControlInput1" class="form-label">Last Name</label>
-                                    <div class="custom-input">
-                                        <input type="text" class="form-control" id="exampleFormControlInput1"
-                                            placeholder="Enter Last Name">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
-                                </div>
+                            {{-- Spam trap: hidden from people, filled in by bots. --}}
+                            <div class="d-none" aria-hidden="true">
+                                <label for="contact-website">Website</label>
+                                <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off">
                             </div>
 
-                            <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                <div class="mb-md-4 mb-3 custom-form">
-                                    <label for="exampleFormControlInput2" class="form-label">Email Address</label>
-                                    <div class="custom-input">
-                                        <input type="email" class="form-control" id="exampleFormControlInput2"
-                                            placeholder="Enter Email Address">
-                                        <i class="fa-solid fa-envelope"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xxl-6 col-lg-12 col-sm-6">
-                                <div class="mb-md-4 mb-3 custom-form">
-                                    <label for="exampleFormControlInput3" class="form-label">Phone Number</label>
-                                    <div class="custom-input">
-                                        <input type="tel" class="form-control" id="exampleFormControlInput3"
-                                            placeholder="Enter Your Phone Number" maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
-                                            this.value.slice(0, this.maxLength);">
-                                        <i class="fa-solid fa-mobile-screen-button"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="mb-md-4 mb-3 custom-form">
-                                    <label for="exampleFormControlTextarea" class="form-label">Message</label>
-                                    <div class="custom-textarea">
-                                        <textarea class="form-control" id="exampleFormControlTextarea"
-                                            placeholder="Enter Your Message" rows="6"></textarea>
-                                        <i class="fa-solid fa-message"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-animation btn-md fw-bold ms-auto">Send Message</button>
+                            <button type="submit" class="btn btn-animation btn-md fw-bold ms-auto">{{ web_t('contact.send', 'Send Message') }}</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -270,16 +304,18 @@
     <!-- Contact Box Section End -->
 
     <!-- Map Section Start -->
+    @if ($contactMapUrl)
     <section class="map-section">
         <div class="container-fluid p-0">
             <div class="map-box">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d2994.3803116994895!2d55.29773782339708!3d25.222534631321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m5!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!3m2!1d25.2048493!2d55.2707828!4m0!5e1!3m2!1sen!2sin!4v1652217109535!5m2!1sen!2sin"
+                    src="{{ $contactMapUrl }}"
                     style="border:0;" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
+    @endif
     <!-- Map Section End -->
 
     <!-- Footer Section Start -->

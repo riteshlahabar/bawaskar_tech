@@ -32,6 +32,7 @@ class CompanySettingController extends Controller
             'whatsapp' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'website' => ['nullable', 'url', 'max:2048'],
+            'map_embed_url' => ['nullable', 'url', 'max:2048'],
             'gst_number' => ['nullable', 'string', 'max:50'],
             'cin_number' => ['nullable', 'string', 'max:50'],
             'founder_name' => ['nullable', 'string', 'max:255'],

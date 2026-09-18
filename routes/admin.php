@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Brands\BrandController;
 use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Collections\CollectionController;
+use App\Http\Controllers\Admin\ContactMessages\ContactMessageController;
 use App\Http\Controllers\Admin\Couriers\CourierController;
 use App\Http\Controllers\Admin\Customers\CustomerController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
@@ -95,6 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'storefront-footer-links' => StorefrontFooterLinkController::class, 'storefront-service-blocks' => StorefrontServiceBlockController::class, 'delivery-areas' => DeliveryAreaController::class,
             'storefront-topbar-messages' => StorefrontTopbarMessageController::class, 'storefront-faqs' => StorefrontFaqController::class,
             'storefront-about-items' => StorefrontAboutItemController::class, 'storefront-team-members' => StorefrontTeamMemberController::class,
+            'contact-messages' => ContactMessageController::class,
             'web-translations' => WebTranslationController::class,
             'admin-users' => AdminUserController::class, 'admin-roles' => AdminRoleController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,

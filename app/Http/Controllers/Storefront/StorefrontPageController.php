@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Contracts\Storefront\StorefrontFaqContract;
 use App\Contracts\Storefront\StorefrontPageRendererContract;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -10,7 +11,8 @@ use Illuminate\Http\Request;
 final class StorefrontPageController extends Controller
 {
     public function __construct(
-        private readonly StorefrontPageRendererContract $pages
+        private readonly StorefrontPageRendererContract $pages,
+        private readonly StorefrontFaqContract $faqs
     ) {}
 
     public function home(Request $request): View
@@ -22,6 +24,6 @@ final class StorefrontPageController extends Controller
     {
         abort_unless(in_array($page, config('storefront.pages', []), true), 404);
 
-        return $this->pages->render($request, $page);
+        return $this->pages->render($request, $page, $page === 'faq' ? $this->faqs->pageData($request) : []);
     }
 }

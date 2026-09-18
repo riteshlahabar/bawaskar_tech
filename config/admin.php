@@ -45,12 +45,15 @@ use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
 use App\Models\Storefront\DeliveryArea;
+use App\Models\Storefront\StorefrontFaq;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontServiceBlock;
 use App\Models\Storefront\StorefrontTopbarMessage;
 use App\Models\User;
 
 $active = ['1' => 'Active', '0' => 'Inactive'];
+// FAQ categories live in config/storefront.php (the website reads them there); required directly because config files cannot call config() while loading.
+$faqCategories = array_map(static fn (array $category): string => $category['label'], (require __DIR__.'/storefront.php')['faq_categories']);
 $userStatus = ['active' => 'Active', 'inactive' => 'Inactive', 'pending_approval' => 'Pending Approval'];
 $orderStatus = ['salesman_review' => 'Salesman Review', 'admin_review' => 'Admin Review', 'approved' => 'Approved', 'packing' => 'Packing', 'dispatched' => 'Dispatched', 'out_for_delivery' => 'Out for Delivery', 'delivered' => 'Delivered', 'cancelled' => 'Cancelled'];
 $approvalStatus = ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'];
@@ -116,7 +119,7 @@ return [
             ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
         ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
-            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ]],
+            ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ]],
         ['label' => 'Reports', 'id' => 'reportsMenu', 'icon' => 'iconoir-stats-report', 'items' => []],
         ['label' => 'Translation', 'id' => 'translationMenu', 'icon' => 'iconoir-translate', 'items' => [
             ['key' => 'languages', 'label' => 'Languages', 'route' => 'admin.languages.index', 'icon' => 'iconoir-language'], ['key' => 'app-languages', 'label' => 'App Languages', 'route' => 'admin.app-languages.edit', 'icon' => 'iconoir-smartphone-device'], ['key' => 'translations', 'label' => 'App Translations', 'route' => 'admin.translations.index', 'icon' => 'iconoir-language'], ['key' => 'web-translations', 'label' => 'Website Translations', 'route' => 'admin.web-translations.index', 'icon' => 'iconoir-translate'],
@@ -602,6 +605,19 @@ return [
                 ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
             ],
         ],
+        'storefront-faqs' => [
+            'label' => 'FAQs', 'group' => 'Storefront', 'singular' => 'FAQ', 'description' => 'Questions and answers shown on the website FAQ page. Visitors can search them and filter by category.', 'model' => StorefrontFaq::class, 'search' => ['question', 'answer'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'filters' => [['name' => 'category', 'label' => 'Category', 'column' => 'category', 'options' => $faqCategories]],
+            'columns' => [['key' => 'question', 'label' => 'Question'], ['key' => 'category_label', 'label' => 'Category'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'question', 'label' => 'Question', 'col' => 'col-12', 'rules' => ['required', 'string', 'max:500']],
+                ['name' => 'answer', 'label' => 'Answer', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 6, 'help' => 'Leave a blank line between paragraphs.', 'rules' => ['required', 'string', 'max:5000']],
+                ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => $faqCategories, 'help' => 'Decides which card on the FAQ page shows this question. Leave blank to list it only under All.', 'rules' => ['nullable', 'string', 'max:60', 'in:'.implode(',', array_keys($faqCategories))]],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+
         'storefront-footer-links' => [
             'label' => 'Footer Links', 'group' => 'Storefront', 'singular' => 'Footer Link', 'description' => 'Links shown in the website footer columns.', 'model' => StorefrontFooterLink::class, 'search' => ['title', 'url', 'link_group'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
             'columns' => [['key' => 'link_group', 'label' => 'Footer Column'], ['key' => 'title', 'label' => 'Link Title'], ['key' => 'url', 'label' => 'URL'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],

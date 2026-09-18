@@ -41,4 +41,15 @@ return [
     ],
     // LGD state whose districts fill the "Your Location" box until admin adds Delivery Areas (27 = Maharashtra).
     'default_delivery_state_code' => 27,
+
+    /*
+     * Cards above the FAQ accordion. Each card filters the questions by its
+     * key, which is also the Category option in the admin FAQs form.
+     */
+    'faq_categories' => [
+        'getting-started' => ['label' => 'Getting Started', 'description' => 'Creating an account, signing in and registering as a dealer.', 'image' => 'fastkart-store/images/inner-page/faq/start.png'],
+        'orders-delivery' => ['label' => 'Orders & Delivery', 'description' => 'Delivery time, order tracking and the areas we deliver to.', 'image' => 'fastkart-store/images/inner-page/faq/help.png'],
+        'pricing-payment' => ['label' => 'Pricing & Payment', 'description' => 'Payment methods, dealer credit and GST invoices.', 'image' => 'fastkart-store/images/inner-page/faq/price.png'],
+        'support' => ['label' => 'Support & Returns', 'description' => 'Cancelling an order, returns and how to reach our team.', 'image' => 'fastkart-store/images/inner-page/faq/contact.png'],
+    ],
 ];

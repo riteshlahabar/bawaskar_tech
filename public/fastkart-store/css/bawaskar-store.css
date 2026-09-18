@@ -555,3 +555,26 @@
     max-height: 135px;
     object-fit: contain;
 }
+
+/* FAQ category cards: the template card made clickable so it filters the questions. */
+.faq-top-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.faq-top-link .faq-top-box {
+    height: 100%;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.faq-top-link:hover .faq-top-box,
+.faq-top-link.active .faq-top-box {
+    border-color: var(--theme-color);
+    background-color: #fff;
+}
+
+.faq-top-link.active .faq-box-contain h3 {
+    color: var(--theme-color);
+}

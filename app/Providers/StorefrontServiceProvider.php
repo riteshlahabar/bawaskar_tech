@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\Storefront\Repositories\DeliveryAreaRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontCatalogRepositoryContract;
+use App\Contracts\Storefront\Repositories\StorefrontFaqRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontHomepageRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontLanguageRepositoryContract;
 use App\Contracts\Storefront\Repositories\StorefrontNavigationRepositoryContract;
@@ -19,6 +20,7 @@ use App\Contracts\Storefront\Session\StorefrontSessionProductRulesContract;
 use App\Contracts\Storefront\Session\StorefrontWishlistContract;
 use App\Contracts\Storefront\StorefrontCatalogContract;
 use App\Contracts\Storefront\StorefrontDeliveryLocationContract;
+use App\Contracts\Storefront\StorefrontFaqContract;
 use App\Contracts\Storefront\StorefrontHomepageContract;
 use App\Contracts\Storefront\StorefrontLanguageContract;
 use App\Contracts\Storefront\StorefrontNavigationContract;
@@ -27,6 +29,7 @@ use App\Contracts\Storefront\StorefrontPageRendererContract;
 use App\Contracts\Storefront\StorefrontSessionContextContract;
 use App\Repositories\Storefront\EloquentDeliveryAreaRepository;
 use App\Repositories\Storefront\EloquentStorefrontCatalogRepository;
+use App\Repositories\Storefront\EloquentStorefrontFaqRepository;
 use App\Repositories\Storefront\EloquentStorefrontHomepageRepository;
 use App\Repositories\Storefront\EloquentStorefrontLanguageRepository;
 use App\Repositories\Storefront\EloquentStorefrontNavigationRepository;
@@ -43,6 +46,7 @@ use App\Services\Storefront\Session\StorefrontSessionService;
 use App\Services\Storefront\Session\StorefrontWishlistService;
 use App\Services\Storefront\StorefrontCatalogService;
 use App\Services\Storefront\StorefrontDeliveryLocationService;
+use App\Services\Storefront\StorefrontFaqService;
 use App\Services\Storefront\StorefrontHomepageService;
 use App\Services\Storefront\StorefrontLanguageService;
 use App\Services\Storefront\StorefrontNavigationService;
@@ -77,6 +81,8 @@ final class StorefrontServiceProvider extends ServiceProvider
             StorefrontOrderRepositoryContract::class => EloquentStorefrontOrderRepository::class,
             StorefrontDeliveryLocationContract::class => StorefrontDeliveryLocationService::class,
             DeliveryAreaRepositoryContract::class => EloquentDeliveryAreaRepository::class,
+            StorefrontFaqContract::class => StorefrontFaqService::class,
+            StorefrontFaqRepositoryContract::class => EloquentStorefrontFaqRepository::class,
             StorefrontPageRendererContract::class => StorefrontPageRenderer::class,
         ];
 

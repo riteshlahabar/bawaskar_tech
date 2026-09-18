@@ -1654,3 +1654,74 @@ input[type="file"].form-control::file-selector-button {
 .people-info-value a {
     color: #0da487;
 }
+
+/* FAQ view page: question mark badge, website-style answer preview and the hint note. */
+.faq-show-mark {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13, 164, 135, 0.12);
+    color: #0da487;
+}
+.faq-show-mark svg {
+    width: 24px;
+    height: 24px;
+}
+.faq-show-preview {
+    border: 1px solid #edf0f3;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+.faq-show-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #edf0f3;
+    font-weight: 600;
+    color: #1f2937;
+}
+.faq-show-question svg {
+    width: 16px;
+    height: 16px;
+    color: #6b7280;
+    flex: 0 0 16px;
+}
+.faq-show-answer {
+    padding: 18px;
+}
+.faq-show-answer p {
+    margin: 0 0 14px;
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.75;
+}
+.faq-show-answer p:last-child {
+    margin-bottom: 0;
+}
+.faq-show-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 9px;
+    background: rgba(13, 164, 135, 0.07);
+    color: #4a5568;
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.faq-show-note svg {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    margin-top: 2px;
+    color: #0da487;
+}

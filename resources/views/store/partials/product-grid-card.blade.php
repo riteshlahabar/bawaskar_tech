@@ -1,7 +1,6 @@
 @php
     $imageUrl = $product->storefront_image_url;
     $displayName = $product->translatedName();
-    $displayDescription = $product->short_description;
     $productUrl = route('store.product', ['product' => $product->id]);
     $audience = $storeAudience ?? 'customer';
     $mainVariant = $product->mainVariant();
@@ -41,7 +40,6 @@
         <div class="product-footer">
             <div class="product-detail">
                 <a href="{{ $productUrl }}"><h5 class="name">{{ $displayName }}</h5></a>
-                <p class="text-content mt-1 mb-2">{{ str($displayDescription ?: web_t('product.quality_farmer_product', 'Quality farmer product'))->limit(80) }}</p>
                 <h6 class="unit">{{ storefront_public_t($unitName, 'unit') }}</h6>
                 @if($mrp > $price)
                     <h6 class="text-content mb-1"><del>Rs. {{ number_format($mrp, 2) }}</del></h6>

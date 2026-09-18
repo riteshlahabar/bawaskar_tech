@@ -421,9 +421,17 @@
     display: block;
 }
 
+.product-box-3 .product-footer {
+    padding-top: 18px;
+}
+
 @media (max-width: 575px) {
     .product-box-3 .product-header .product-image {
         height: 150px;
+    }
+
+    .product-box-3 .product-footer {
+        padding-top: 14px;
     }
 }
 

@@ -425,6 +425,19 @@
     padding-top: 18px;
 }
 
+/* Option bar is sized for 3 icons; this card has 2, so shrink it to its content. */
+.product-box-3 .product-header .product-image .product-option {
+    width: auto;
+    max-width: none;
+    justify-content: center;
+    padding: 8px 4px;
+}
+
+.product-box-3 .product-header .product-image .product-option li {
+    width: auto;
+    padding: 0 18px;
+}
+
 /* Unit sits directly under the product name, no gap. */
 .product-box-3 .product-footer .product-detail .name {
     margin-bottom: 0;

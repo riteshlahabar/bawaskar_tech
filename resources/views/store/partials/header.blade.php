@@ -6,6 +6,7 @@
     $menuCategories = collect(data_get($storefrontNavigation ?? [], 'categoryMenu', collect()));
     $shopUrl = route('store.page', ['page' => 'shop-left-sidebar']);
     $topbarMessages = collect(data_get($storefrontNavigation ?? [], 'topbarMessages', collect()));
+    $hasDealProducts = collect(data_get($storefrontNavigation ?? [], 'dealProducts', collect()))->isNotEmpty();
 @endphp
     <header class="pb-md-4 pb-0">
         <div class="header-top">
@@ -193,10 +194,12 @@
                         </div>
 
                         <div class="header-nav-right">
+                            @if ($hasDealProducts)
                             <button class="btn deal-button" data-bs-toggle="modal" data-bs-target="#deal-box">
                                 <i data-feather="zap"></i>
-                                <span>Deal Today</span>
+                                <span>{{ web_t('deal.title', 'Deal Today') }}</span>
                             </button>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,9 @@ interface StorefrontNavigationRepositoryContract
 
     public function fallbackProducts(string $audience): Collection;
 
+    /** Products ticked "Deal Timer Product", for the header "Deal Today" popup. */
+    public function dealProducts(string $audience, int $limit): Collection;
+
     /** Active header top-bar messages in sort order. */
     public function topbarMessages(): Collection;
 }

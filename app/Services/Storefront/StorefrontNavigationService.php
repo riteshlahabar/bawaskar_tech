@@ -9,6 +9,9 @@ use Illuminate\Support\Collection;
 
 final class StorefrontNavigationService implements StorefrontNavigationContract
 {
+    /** The Fastkart "Deal Today" popup is laid out for four products. */
+    private const DEAL_LIMIT = 4;
+
     public function __construct(
         private readonly StorefrontNavigationRepositoryContract $navigation
     ) {}
@@ -40,6 +43,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
             'productTypeLabels' => $labels,
             'featuredProducts' => $featuredProducts,
             'topbarMessages' => $this->navigation->topbarMessages(),
+            'dealProducts' => $this->navigation->dealProducts($audience, self::DEAL_LIMIT),
         ];
     }
 
@@ -54,6 +58,7 @@ final class StorefrontNavigationService implements StorefrontNavigationContract
             'productTypeLabels' => $labels,
             'featuredProducts' => collect(),
             'topbarMessages' => collect(),
+            'dealProducts' => collect(),
         ];
     }
 

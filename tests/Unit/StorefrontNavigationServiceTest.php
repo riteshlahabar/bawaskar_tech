@@ -55,6 +55,11 @@ class StorefrontNavigationServiceTest extends TestCase
                 return collect([$this->fallback]);
             }
 
+            public function dealProducts(string $audience, int $limit): Collection
+            {
+                return collect([$this->fallback])->map(fn (Product $product) => $product->setAttribute('deal_limit', $limit)->setAttribute('deal_audience', $audience));
+            }
+
             public function topbarMessages(): Collection
             {
                 return collect([new StorefrontTopbarMessage(['message' => 'Now on sale'])]);
@@ -68,6 +73,12 @@ class StorefrontNavigationServiceTest extends TestCase
         $this->assertSame([5], $result['featuredProducts']->pluck('id')->all());
         $this->assertSame([1], $result['categories']->pluck('id')->all());
         $this->assertSame(['Now on sale'], $result['topbarMessages']->pluck('message')->all());
-        $this->assertTrue((new StorefrontNavigationService($repository))->emptyData()['topbarMessages']->isEmpty());
+        $this->assertSame([5], $result['dealProducts']->pluck('id')->all());
+        $this->assertSame(4, $result['dealProducts']->first()->deal_limit);
+        $this->assertSame('customer', $result['dealProducts']->first()->deal_audience);
+
+        $empty = (new StorefrontNavigationService($repository))->emptyData();
+        $this->assertTrue($empty['topbarMessages']->isEmpty());
+        $this->assertTrue($empty['dealProducts']->isEmpty());
     }
 }

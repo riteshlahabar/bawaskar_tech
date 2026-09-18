@@ -78,6 +78,15 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
             ->get();
     }
 
+    public function dealProducts(string $audience, int $limit): Collection
+    {
+        return $this->productQuery($audience)
+            ->where('is_deal_timer_product', true)
+            ->storefrontOrder()
+            ->limit($limit)
+            ->get();
+    }
+
     public function topbarMessages(): Collection
     {
         return StorefrontTopbarMessage::query()

@@ -126,10 +126,15 @@
                         @if(($module['key'] ?? '') === 'products')
                             @include('admin.products.partials.images.current-preview')
                         @else
+                            @php($isImageFile = in_array(strtolower(pathinfo((string) $value, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp'], true))
                             <div class="admin-gallery-preview-list d-flex flex-wrap gap-2 mt-2">
                                 <div class="admin-gallery-preview-item">
                                     <a href="{{ asset($value) }}" target="_blank">
-                                        <img src="{{ asset($value) }}" class="admin-gallery-preview-thumb" alt="Current image">
+                                        @if($isImageFile)
+                                            <img src="{{ asset($value) }}" class="admin-gallery-preview-thumb" alt="Current image">
+                                        @else
+                                            {{ basename((string) $value) }}
+                                        @endif
                                     </a>
                                 </div>
                             </div>

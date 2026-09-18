@@ -324,6 +324,7 @@ return [
                     'strip_offer_banner' => 'Strip Offer Banner',
                     'service_section' => 'Service Section',
                     'blog_section' => 'Blog Section',
+                    'video_section' => 'Video Section',
                 ], 'rules' => ['required', 'string', 'max:80']],
 
                 ['name' => 'layout_type', 'label' => 'Layout Type', 'type' => 'select', 'options' => [
@@ -340,6 +341,8 @@ return [
                     'text_strip' => 'Text Strip',
                     'service_icons' => 'Service Icons',
                     'blog_slider' => 'Blog Slider',
+                    'two_videos' => 'Two Videos',
+                    'video_text' => 'Video + Text',
                 ], 'rules' => ['nullable', 'string', 'max:80']],
 
                 ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['nullable', 'exists:categories,id'], 'help' => 'Use this only when Section Type is Product Section.'],
@@ -378,6 +381,9 @@ return [
                 ['name' => 'mobile_image_path', 'label' => 'Mobile Image', 'type' => 'image', 'upload_dir' => 'uploads/homepage/mobile', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120']],
                 ['name' => 'logo_image_path', 'label' => 'Coupon / Bank Logo', 'type' => 'image', 'upload_dir' => 'uploads/homepage/logos', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048']],
                 ['name' => 'offer_image_path', 'label' => 'Offer Image', 'type' => 'image', 'upload_dir' => 'uploads/homepage/offers', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120']],
+                ['name' => 'video_url', 'label' => 'Video Link', 'col' => 'col-12', 'help' => 'Video Section only. YouTube, Vimeo or a direct .mp4 link. A link is used even if a file is uploaded below.', 'rules' => ['nullable', 'string', 'max:2048']],
+                ['name' => 'video_file_path', 'label' => 'Video File (MP4)', 'type' => 'file', 'accept' => 'video/mp4,video/webm', 'upload_dir' => 'uploads/storefront/videos', 'help' => 'Use only when you have no link. Keep it small - large files slow the homepage down.', 'rules' => ['nullable', 'mimetypes:video/mp4,video/webm', 'max:51200']],
+                ['name' => 'video_autoplay', 'label' => 'Autoplay Video (muted)', 'type' => 'checkbox', 'rules' => ['boolean']],
                 ['name' => 'button_text', 'label' => 'Button Text', 'rules' => ['nullable', 'string', 'max:80']],
                 ['name' => 'button_url', 'label' => 'Button Link', 'rules' => ['nullable', 'string', 'max:255']],
                 ['name' => 'coupon_code', 'label' => 'Coupon Code', 'rules' => ['nullable', 'string', 'max:80']],

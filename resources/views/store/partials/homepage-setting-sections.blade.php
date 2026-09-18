@@ -376,6 +376,14 @@
             @endif
             @break
 
+        @case('video_section')
+            @include('store.partials.homepage-video-section', [
+                'videoSection' => $section,
+                'videoItems' => $items,
+                'videoLayout' => $section->layout_type,
+            ])
+            @break
+
     @endswitch
 @endforeach
 <script>

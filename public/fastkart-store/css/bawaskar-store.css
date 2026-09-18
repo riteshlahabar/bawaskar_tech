@@ -585,3 +585,75 @@
     -webkit-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out;
 }
+
+/* Homepage Video Section: two equal columns, either two players or a player and a text block. */
+.video-section .video-box {
+    position: relative;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+}
+
+.video-section .video-box iframe,
+.video-section .video-box video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    object-fit: cover;
+}
+
+.video-section .video-caption {
+    padding: 14px 18px;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.video-section .video-caption h4 {
+    margin: 0;
+    font-weight: 600;
+    color: #222;
+}
+
+.video-section .video-caption p {
+    margin: 6px 0 0;
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.video-section .video-text-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 10px;
+    background: #f8f8f8;
+}
+
+.video-section .video-text-box h4 {
+    margin: 0 0 6px;
+    color: var(--theme-color);
+    font-weight: 600;
+}
+
+.video-section .video-text-box h3 {
+    margin: 0 0 12px;
+    font-weight: 700;
+    color: #222;
+}
+
+.video-section .video-text-box p {
+    margin: 0;
+    color: #4a5568;
+    line-height: 1.8;
+}
+
+@media (max-width: 991px) {
+    .video-section .video-text-box {
+        padding: 22px;
+    }
+}

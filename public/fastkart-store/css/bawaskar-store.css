@@ -465,6 +465,16 @@
     position: relative;
 }
 
+/* INR is a label, not a dropdown: no caret, no pointer. */
+.store-topbar-currency-label {
+    cursor: default;
+    box-shadow: none;
+}
+
+.store-topbar-currency-label::after {
+    display: none !important;
+}
+
 .store-topbar-language .dropdown-menu,
 .store-topbar-currency .dropdown-menu {
     top: 100% !important;

@@ -29,12 +29,8 @@
     </div>
 </li>
 <li>
-    <div class="dropdown theme-form-select store-topbar-currency">
-        <button class="btn dropdown-toggle" type="button" id="select-currency" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-            <span>INR</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end sm-dropdown-menu">
-            <li><span class="dropdown-item active">INR</span></li>
-        </ul>
+    {{-- INR is the only currency, so this is a plain label: no caret and no one-item menu. --}}
+    <div class="theme-form-select store-topbar-currency">
+        <span class="btn store-topbar-currency-label" id="select-currency">INR</span>
     </div>
 </li>

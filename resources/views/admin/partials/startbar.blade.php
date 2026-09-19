@@ -29,6 +29,13 @@
         'sf-row-16-blog'=>'layout',
         'payments'=>'credit-card','collections'=>'dollar-sign','outstanding'=>'trending-up','internal-expenses'=>'clipboard','expense-categories'=>'list','expense-subcategories'=>'menu',
         'timesheet'=>'clock','attendance'=>'check-circle','leaves'=>'calendar','bulk-attendance'=>'grid','dealer-visits'=>'map-pin','tour-plans'=>'map','expenses'=>'dollar-sign','salary'=>'briefcase','targets'=>'target','assets'=>'monitor','holidays'=>'sun','shift-menu'=>'clock','shifts'=>'clock','shift-assignments'=>'user-check','announcements'=>'volume-2','employee-documents'=>'file-text','salary-advances'=>'credit-card','performance-reviews'=>'star',
+        'tasks'=>'check-square','resignations'=>'log-out','salary-revisions'=>'trending-up',
+        'training'=>'book-open','training-programs'=>'book','training-attendances'=>'user-check','employee-skills'=>'award',
+        'incentive-commission'=>'gift','incentive-rules'=>'zap','commission-rules'=>'percent',
+        'payroll-components'=>'sliders','allowance-types'=>'plus-circle','deduction-types'=>'minus-circle','employee-allowances'=>'user-plus','employee-deductions'=>'user-minus',
+        'hrms-setup'=>'settings','hrms-settings'=>'sliders','departments'=>'layers','designations'=>'bookmark','leave-policies'=>'clipboard','approval-workflows'=>'git-pull-request',
+        'delivery-areas'=>'map-pin','storefront-faqs'=>'help-circle','storefront-about'=>'info','storefront-about-items'=>'list','storefront-team-members'=>'users','contact-messages'=>'mail','storefront-topbar-messages'=>'message-square',
+        'users-menu'=>'users','admin-users'=>'user','admin-roles'=>'lock','audit-logs'=>'shield','backups'=>'database',
         'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','app-languages'=>'smartphone','translations'=>'type','web-translations'=>'monitor','support'=>'headphones','reports-overview'=>'pie-chart','erp-reports'=>'trending-up','hrms-reports'=>'users','email-templates'=>'mail'
     ];
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','reportsMenu'=>'bar-chart-2','translationMenu'=>'globe','systemMenu'=>'settings'];
@@ -39,13 +46,13 @@
     .sidebar-wrapper .admin-sidebar-submenu-link,
     .sidebar-wrapper .submenu-title,
     .sidebar-wrapper .sidebar-main-title h6 {
-        font-weight: 700 !important;
+        font-weight: 600 !important;
     }
 
     .sidebar-wrapper .sidebar-link span,
     .sidebar-wrapper .admin-sidebar-submenu-link span,
     .sidebar-wrapper .submenu-title span {
-        font-weight: 700 !important;
+        font-weight: 600 !important;
     }
 
     .sidebar-wrapper .sidebar-link svg,
@@ -54,8 +61,8 @@
     .sidebar-wrapper .admin-sidebar-submenu-icon,
     .sidebar-wrapper .fa-angle-right,
     .sidebar-wrapper .sub-arrow {
-        stroke-width: 2.4px !important;
-        font-weight: 700 !important;
+        stroke-width: 2px !important;
+        font-weight: 600 !important;
     }
 </style>
 

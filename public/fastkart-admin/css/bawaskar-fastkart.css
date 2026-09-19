@@ -591,6 +591,19 @@ input[type="file"].form-control::file-selector-button {
 
 .iconoir-nav-arrow-right::before { content: "\f105" !important; }
 
+/* Five classes the mapping above had missed, so they were still rendering the
+   generic dot: Translate, Undo, Run Backup, Cancel and the calculator. */
+.iconoir-translate::before,
+.iconoir-language::before { content: "\f1ab" !important; }
+
+.iconoir-undo-action::before { content: "\f0e2" !important; }
+
+.iconoir-database-backup::before { content: "\f1c0" !important; }
+
+.iconoir-cancel::before { content: "\f00d" !important; }
+
+.iconoir-calculator::before { content: "\f1ec" !important; }
+
 /* Professional smaller table header text */
 .page-wrapper table thead th,
 .page-wrapper .table thead th,
@@ -1724,4 +1737,101 @@ input[type="file"].form-control::file-selector-button {
     flex: 0 0 15px;
     margin-top: 2px;
     color: #0da487;
+}
+
+/* ==========================================================================
+   Sidebar rhythm and polish (2026-09-19)
+   The Fastkart template spaces a short demo menu: 12px padding plus an 8px
+   margin on every top-level row and 7px on every submenu row. This panel has
+   ten groups and about seventy leaves, so that rhythm pushes half the menu
+   below the fold. Only spacing, typography and state colours are changed here
+   — the sidebar background stays exactly as the template paints it.
+   ========================================================================== */
+
+.sidebar-wrapper .sidebar-main .sidebar-links > li > a,
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link {
+    padding: 9px 14px !important;
+    margin-top: 3px !important;
+    border-radius: 7px !important;
+    /* The template animates over half a second, which reads as lag on a menu. */
+    transition: background-color .15s ease, color .15s ease !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu {
+    padding-top: 2px !important;
+    padding-bottom: 4px !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a {
+    padding: 5px 14px 5px 26px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    transition: background-color .15s ease, color .15s ease !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li .nav-sub-childmenu li a {
+    padding: 4px 14px 4px 44px !important;
+}
+
+/* One clear active row: a left accent bar instead of only a faint tint. */
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link.active {
+    background-color: rgba(255, 255, 255, .14) !important;
+    box-shadow: inset 3px 0 0 0 var(--theme-color);
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a.active {
+    background-color: rgba(255, 255, 255, .12) !important;
+    box-shadow: inset 3px 0 0 0 var(--theme-color);
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a:hover {
+    background-color: rgba(255, 255, 255, .07) !important;
+}
+
+/* Group headings: quieter and closer to the rows they introduce, with a hair
+   line so the groups read as sections rather than one long list. */
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact {
+    margin: 10px 0 2px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255, 255, 255, .09) !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links > li:first-child .sidebar-main-title,
+.sidebar-wrapper .sidebar-main .sidebar-links > li:first-child .sidebar-main-title-compact,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title:first-child,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title-compact:first-child {
+    border-top: 0 !important;
+    margin-top: 2px !important;
+    padding-top: 0 !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title h6 {
+    font-size: 10.5px !important;
+    letter-spacing: .1em !important;
+    opacity: .72;
+}
+
+/* The icon column is fixed so every label starts on the same x, whatever the
+   glyph. Top level slightly larger than the submenu, as a hierarchy cue. */
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link svg {
+    width: 17px !important;
+    height: 17px !important;
+    min-width: 17px !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu .admin-sidebar-submenu-icon {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    opacity: .85;
+}
+
+/* A slim scrollbar: the default one is as wide as the icon column. */
+.sidebar-wrapper .sidebar-main .simplebar-scrollbar:before {
+    background: rgba(255, 255, 255, .28) !important;
+}
+
+.sidebar-wrapper .sidebar-main .simplebar-track.simplebar-vertical {
+    width: 6px !important;
 }

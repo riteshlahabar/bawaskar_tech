@@ -31,6 +31,7 @@ final class ProductCatalogPresenter implements ProductCatalogPresenterContract
             'category_id' => $product->category_id,
             'category_name' => $product->category?->storefront_name,
             'unit_name' => $this->translator->text($product->unit?->name, 'unit'),
+            'unit_short_name' => $product->unit?->short_name,
             'image_url' => $product->storefront_image_url,
             'homepage_image_url' => $this->assetUrl($product->homepage_image_path),
             'homepage_mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),

@@ -1,6 +1,10 @@
     @php
         $homeShopUrl = route('store.page', ['page' => 'shop-left-sidebar']);
         $homeCompanyPhone = filled(($companySetting ?? null)?->phone) ? trim((string) $companySetting->phone) : null;
+        $homeWishlistCount = (int) ($storeWishlistCount ?? 0);
+        $homeCartCount = rtrim(rtrim(number_format((float) ($storeCartCount ?? 0), 3, '.', ''), '0'), '.');
+        $homeCartCount = $homeCartCount !== '' ? $homeCartCount : '0';
+        $homeUserRole = $storeUser?->role === 'dealer' ? 'Dealer' : 'Customer';
     @endphp
     <header class="header-3">
         <div class="top-nav sticky-header sticky-header-2">
@@ -103,15 +107,9 @@
                                     </a>
                                 </li>
 
-                                <li>
-                                    <a href="{{ route('store.home') }}" class="header-icon">
-                                        <small class="badge-number badge-light">2</small>
-                                        <i class="iconly-Swap icli"></i>
-                                    </a>
-                                </li>
-
                                 <li class="onhover-dropdown">
-                                    <a href="javascript:void(0)" class="header-icon swap-icon">
+                                    <a href="{{ route('store.page', ['page' => 'wishlist']) }}" class="header-icon swap-icon" data-store-wishlist-link>
+                                        <small class="badge-number badge-light store-wishlist-count {{ $homeWishlistCount > 0 ? '' : 'd-none' }}">{{ $homeWishlistCount }}</small>
                                         <i class="iconly-Heart icli"></i>
                                     </a>
 
@@ -119,71 +117,31 @@
                                         <ul class="cart-list">
                                             <li>
                                                 <div class="drop-cart">
-                                                    <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="drop-image">
-                                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/1.png') }}"
-                                                            class="blur-up lazyload" alt="">
-                                                    </a>
-
                                                     <div class="drop-contain">
-                                                        <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                                            <h5>Fantasy Crunchy Choco Chip Cookies</h5>
-                                                        </a>
-                                                        <h6><span>1 x</span> $80.58</h6>
-                                                        <button class="close-button">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </li>
-
-                                            <li>
-                                                <div class="drop-cart">
-                                                    <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="drop-image">
-                                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/2.png') }}"
-                                                            class="blur-up lazyload" alt="">
-                                                    </a>
-
-                                                    <div class="drop-contain">
-                                                        <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                                            <h5>Peanut Butter Bite Premium Butter Cookies 600 g</h5>
-                                                        </a>
-                                                        <h6><span>1 x</span> $25.68</h6>
-                                                        <button class="close-button">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
+                                                        <h5>{{ web_t('header.wishlist_empty', 'Your wishlist is empty.') }}</h5>
+                                                        <h6>{{ web_t('header.wishlist_empty_hint', 'Save products to review them later.') }}</h6>
                                                     </div>
                                                 </div>
                                             </li>
                                         </ul>
-
-                                        <div class="price-box">
-                                            <h5>Price :</h5>
-                                            <h4 class="theme-color fw-bold">$106.58</h4>
-                                        </div>
-
-                                        <div class="button-group">
-                                            <a href="{{ route('store.page', ['page'=>'cart']) }}" class="btn btn-sm cart-button">View Cart</a>
-                                            <a href="{{ route('store.page', ['page'=>'checkout']) }}" class="btn btn-sm cart-button theme-bg-color
-                                                    text-white">Checkout</a>
-                                        </div>
                                     </div>
                                 </li>
 
                                 <li>
                                     <a href="{{ route('store.page', ['page'=>'cart']) }}" class="header-icon bag-icon">
-                                        <small class="badge-number badge-light">2</small>
+                                        <small class="badge-number badge-light">{{ $homeCartCount }}</small>
                                         <i class="iconly-Bag-2 icli"></i>
                                     </a>
                                 </li>
                             </ul>
 
-                            <a href="{{ route('store.page', ['page'=>'user-dashboard']) }}" class="user-box">
+                            <a href="{{ $storeUser ? route('store.page', ['page' => 'user-dashboard']) : route('store.page', ['page' => 'login']) }}" class="user-box">
                                 <span class="header-icon">
                                     <i class="iconly-Profile icli"></i>
                                 </span>
                                 <div class="user-name">
-                                    <h6 class="text-content">My Account</h6>
-                                    <h4 class="mt-1">Jennifer V. Ward</h4>
+                                    <h6 class="text-content">{{ $storeUser ? $homeUserRole : 'Hello,' }}</h6>
+                                    <h4 class="mt-1">{{ $storeUser?->name ?: 'My Account' }}</h4>
                                 </div>
                             </a>
 

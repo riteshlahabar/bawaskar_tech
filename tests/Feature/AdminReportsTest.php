@@ -13,13 +13,13 @@ use Tests\TestCase;
 
 class AdminReportsTest extends TestCase
 {
-    public function test_ten_erp_and_eight_hrms_reports_are_registered_with_unique_keys(): void
+    public function test_ten_erp_and_thirteen_hrms_reports_are_registered_with_unique_keys(): void
     {
         $registry = app(ReportRegistryContract::class);
 
-        $this->assertCount(18, $registry->all());
+        $this->assertCount(23, $registry->all());
         $this->assertCount(10, $registry->forSection(ReportContract::SECTION_ERP));
-        $this->assertCount(8, $registry->forSection(ReportContract::SECTION_HRMS));
+        $this->assertCount(13, $registry->forSection(ReportContract::SECTION_HRMS));
 
         foreach ($registry->all() as $key => $report) {
             $this->assertMatchesRegularExpression('/^[a-z0-9-]+$/', $key);
@@ -78,7 +78,7 @@ class AdminReportsTest extends TestCase
         $children = collect($reports['items'])->pluck('children')->filter()->flatten(1);
 
         $this->assertSame('admin.reports.index', $reports['items'][0]['route']);
-        $this->assertCount(18, $children);
+        $this->assertCount(23, $children);
         $this->assertTrue($children->every(fn (array $item): bool => $item['route'] === 'admin.report.show' && Route::has($item['route'])));
 
         $this->assertNotNull($groups->firstWhere('label', 'Settings'));

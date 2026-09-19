@@ -52,6 +52,7 @@ use App\Contracts\Hr\HrmsSettingsContract;
 use App\Contracts\Hr\IncentiveCalculationContract;
 use App\Contracts\Hr\LeavePolicyContract;
 use App\Contracts\Hr\PayrollComputationContract;
+use App\Contracts\Hr\SalaryRevisionContract;
 use App\Contracts\Localization\AppLanguageSettingsContract;
 use App\Contracts\Localization\AppStringTranslationContract;
 use App\Contracts\Localization\AppTranslationBatchContract;
@@ -82,6 +83,8 @@ use App\Contracts\Support\TransactionManagerContract;
 use App\Contracts\System\DatabaseBackupContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Invoice;
+use App\Models\SalesmanProfile;
+use App\Observers\Hr\SalesmanProfileSalaryObserver;
 use App\Observers\Sales\DispatchOrderStatusObserver;
 use App\Observers\Sales\InvoiceOrderStatusObserver;
 use App\Repositories\Catalog\EloquentProductRepository;
@@ -138,6 +141,7 @@ use App\Services\Hr\HrmsSettingsService;
 use App\Services\Hr\IncentiveCalculationService;
 use App\Services\Hr\LeavePolicyService;
 use App\Services\Hr\Payroll\PayrollComputationService;
+use App\Services\Hr\SalaryRevisionService;
 use App\Services\Localization\AppLanguageSettingsService;
 use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
@@ -262,6 +266,9 @@ class AppServiceProvider extends ServiceProvider
             DatabaseBackupContract::class => SqlDatabaseBackupService::class,
         ];
 
+        // A singleton, so the observer on the employee record can see that the
+        // service is already applying a revision and must not record it twice.
+        $this->app->singleton(SalaryRevisionContract::class, SalaryRevisionService::class);
         foreach ($bindings as $contract => $implementation) {
             $this->app->bind($contract, $implementation);
         }        // The gateway is built from configuration, not from the container, so
@@ -296,6 +303,10 @@ class AppServiceProvider extends ServiceProvider
         // Order status follows the sales actions instead of being typed in.
         Invoice::observe(InvoiceOrderStatusObserver::class);
         Dispatch::observe(DispatchOrderStatusObserver::class);
+
+        // Basic salary is only ever one number on the employee record, so every
+        // change to it is written to the revision history as it happens.
+        SalesmanProfile::observe(SalesmanProfileSalaryObserver::class);
 
         // The shared admin form and its field partials get the layout services
         // handed to them, so the Blade templates hold no static calls.

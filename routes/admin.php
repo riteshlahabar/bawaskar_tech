@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\Hr\LeavePolicyController;
 use App\Http\Controllers\Admin\Hr\PerformanceReviewController;
 use App\Http\Controllers\Admin\Hr\ResignationController;
 use App\Http\Controllers\Admin\Hr\SalaryAdvanceController;
+use App\Http\Controllers\Admin\Hr\SalaryRevisionController;
 use App\Http\Controllers\Admin\Hr\ShiftAssignmentController;
 use App\Http\Controllers\Admin\Hr\ShiftController;
 use App\Http\Controllers\Admin\Hr\TaskController;
@@ -110,7 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'attendance' => AttendanceController::class, 'dealer-visits' => DealerVisitController::class, 'tour-plans' => TourPlanController::class,
             'expenses' => ExpenseController::class, 'leaves' => LeaveController::class, 'salary' => SalaryController::class, 'targets' => TargetController::class, 'assets' => AssetController::class,
             'holidays' => HolidayController::class, 'shifts' => ShiftController::class, 'shift-assignments' => ShiftAssignmentController::class, 'announcements' => AnnouncementController::class,
-            'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'performance-reviews' => PerformanceReviewController::class,
+            'employee-documents' => EmployeeDocumentController::class, 'salary-advances' => SalaryAdvanceController::class, 'salary-revisions' => SalaryRevisionController::class, 'performance-reviews' => PerformanceReviewController::class,
             'departments' => DepartmentController::class, 'designations' => DesignationController::class, 'leave-policies' => LeavePolicyController::class, 'approval-workflows' => ApprovalWorkflowController::class,
             'allowance-types' => AllowanceTypeController::class, 'deduction-types' => DeductionTypeController::class, 'employee-allowances' => EmployeeAllowanceController::class, 'employee-deductions' => EmployeeDeductionController::class,
             'resignations' => ResignationController::class, 'tasks' => TaskController::class, 'incentive-rules' => IncentiveRuleController::class, 'commission-rules' => CommissionRuleController::class,

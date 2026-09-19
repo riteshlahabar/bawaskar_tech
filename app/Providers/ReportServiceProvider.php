@@ -18,9 +18,14 @@ use App\Services\Admin\Reports\Erp\StockExpiryReport;
 use App\Services\Admin\Reports\Hrms\AdvanceLoanReport;
 use App\Services\Admin\Reports\Hrms\AttendanceReport;
 use App\Services\Admin\Reports\Hrms\DealerVisitReport;
+use App\Services\Admin\Reports\Hrms\EmployeeReport;
 use App\Services\Admin\Reports\Hrms\ExpenseClaimReport;
+use App\Services\Admin\Reports\Hrms\GpsAttendanceReport;
+use App\Services\Admin\Reports\Hrms\IncentiveReport;
 use App\Services\Admin\Reports\Hrms\LeaveReport;
 use App\Services\Admin\Reports\Hrms\PayrollReport;
+use App\Services\Admin\Reports\Hrms\PerformanceReport;
+use App\Services\Admin\Reports\Hrms\SalaryRevisionReport;
 use App\Services\Admin\Reports\Hrms\TargetCommissionReport;
 use App\Services\Admin\Reports\Hrms\TourPlanReport;
 use App\Services\Admin\Reports\ReportExporter;
@@ -47,13 +52,18 @@ class ReportServiceProvider extends ServiceProvider
         ReturnsReport::class,
         GstSummaryReport::class,
         AttendanceReport::class,
+        GpsAttendanceReport::class,
         LeaveReport::class,
         DealerVisitReport::class,
         TourPlanReport::class,
         ExpenseClaimReport::class,
         PayrollReport::class,
+        SalaryRevisionReport::class,
         TargetCommissionReport::class,
+        IncentiveReport::class,
         AdvanceLoanReport::class,
+        PerformanceReport::class,
+        EmployeeReport::class,
     ];
 
     public function register(): void

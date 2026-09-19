@@ -3,6 +3,7 @@
 namespace App\Models\Catalog;
 
 use App\Casts\KeyValueRows;
+use App\Contracts\Files\PublicUploadContract;
 use App\Models\Inventory\InventoryBatch;
 use App\Support\ImageAsset;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    /**
+     * The product's own uploaded image/banner columns (not the gallery, which
+     * lives in product_images). Shared with ProductWorkflowService so a
+     * replaced image is deleted the same way a deleted product's images are.
+     */
+    public const IMAGE_FIELDS = [
+        'detail_banner_image',
+        'detail_sidebar_banner_image',
+        'seller_logo',
+        'homepage_image_path',
+        'homepage_mobile_image_path',
+        'homepage_logo_image_path',
+        'homepage_offer_image_path',
+        'storefront_banner_image',
+    ];
+
     protected $fillable = [
         'category_id',
         'brand_id',
@@ -116,6 +133,32 @@ class Product extends Model
         'homepage_section_id' => 'integer',
         'homepage_sort_order' => 'integer',
     ];
+
+    /**
+     * A deleted product's own images, gallery and media are cascade-deleted
+     * in the database via foreign keys, but that never touches the files on
+     * disk. This is what stops every deleted product leaving orphaned photos
+     * behind, the same way EmployeeDocument does for its file_path.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Product $product): void {
+            $uploads = app(PublicUploadContract::class);
+
+            foreach (self::IMAGE_FIELDS as $field) {
+                $uploads->delete($product->{$field});
+            }
+
+            foreach ($product->images as $image) {
+                $uploads->delete($image->path);
+            }
+
+            foreach ($product->media as $media) {
+                $uploads->delete($media->file_path);
+                $uploads->delete($media->thumbnail_path);
+            }
+        });
+    }
 
     public function category(): BelongsTo
     {

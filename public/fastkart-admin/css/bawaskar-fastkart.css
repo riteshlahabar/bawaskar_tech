@@ -1619,7 +1619,8 @@ input[type="file"].form-control::file-selector-button {
     width: 14px;
     height: 14px;
 }
-.people-page .people-info-card.card {
+.people-page .people-info-card.card,
+.sales-doc-page .people-info-card.card {
     padding: 0;
 }
 .people-info-icon {

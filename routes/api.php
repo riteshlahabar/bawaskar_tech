@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\Salesman\SalesmanAttendanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanCalendarController;
 use App\Http\Controllers\Api\Salesman\SalesmanDashboardController;
 use App\Http\Controllers\Api\Salesman\SalesmanDocumentController;
+use App\Http\Controllers\Api\Salesman\SalesmanExitController;
 use App\Http\Controllers\Api\Salesman\SalesmanFinanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanHrController;
 use App\Http\Controllers\Api\Salesman\SalesmanLeaveBalanceController;
@@ -40,6 +41,10 @@ use App\Http\Controllers\Api\Salesman\SalesmanOrderController;
 use App\Http\Controllers\Api\Salesman\SalesmanPayslipController;
 use App\Http\Controllers\Api\Salesman\SalesmanPerformanceController;
 use App\Http\Controllers\Api\Salesman\SalesmanProfileController;
+use App\Http\Controllers\Api\Salesman\SalesmanSalaryRevisionController;
+use App\Http\Controllers\Api\Salesman\SalesmanSkillController;
+use App\Http\Controllers\Api\Salesman\SalesmanTaskController;
+use App\Http\Controllers\Api\Salesman\SalesmanTrainingController;
 use App\Http\Controllers\Api\Shared\ChangePasswordController;
 use App\Http\Controllers\Api\Shared\DeviceTokenController;
 use App\Http\Controllers\Api\Shared\InvoiceController;
@@ -220,6 +225,19 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
 
             Route::get('profile', [SalesmanProfileController::class, 'profile']);
             Route::post('support', [SalesmanProfileController::class, 'support']);
+
+            Route::get('salary-revisions', [SalesmanSalaryRevisionController::class, 'index']);
+
+            Route::get('tasks', [SalesmanTaskController::class, 'index']);
+            Route::post('tasks/{task}', [SalesmanTaskController::class, 'update']);
+
+            Route::get('skills', [SalesmanSkillController::class, 'index']);
+
+            Route::get('trainings', [SalesmanTrainingController::class, 'index']);
+            Route::get('trainings/{attendance}/certificate', [SalesmanTrainingController::class, 'certificate']);
+
+            Route::get('resignation', [SalesmanExitController::class, 'index']);
+            Route::post('resignation', [SalesmanExitController::class, 'store']);
 
             $registerSharedAccountRoutes();
         });

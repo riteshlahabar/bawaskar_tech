@@ -51,6 +51,7 @@ class SalesmanPayslipController extends ApiController
         }
 
         $slip = SalarySlip::query()
+            ->with('lines')
             ->where('salesman_id', $user->id)
             ->where('status', '!=', 'draft')
             ->whereKey($payslip)

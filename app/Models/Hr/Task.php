@@ -22,6 +22,8 @@ class Task extends Model
         'priority', 'status', 'due_date', 'completed_at', 'completion_notes',
     ];
 
+    protected $appends = ['is_overdue'];
+
     protected function casts(): array
     {
         return ['due_date' => 'date', 'completed_at' => 'datetime'];
@@ -53,5 +55,10 @@ class Task extends Model
         }
 
         return $this->due_date->endOfDay()->isPast();
+    }
+
+    public function getIsOverdueAttribute(): bool
+    {
+        return $this->isOverdue();
     }
 }

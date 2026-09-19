@@ -716,3 +716,20 @@
         padding: 22px;
     }
 }
+
+/* Homepage product cards (.product-box-4) were different heights side by
+   side. The product name is already clamped to one line by the template, so
+   that wasn't it - the real causes were two unclamped/optional lines: the
+   struck-through MRP (only shown when the product has a discount) and the
+   category/unit line (wraps to 2 lines for a long category or unit name).
+   Reserve space for both so every card in a row is the same height. */
+.product-box-4 .price-box-4 {
+    min-height: 38px;
+}
+
+.product-box-4 .price-qty h5 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}

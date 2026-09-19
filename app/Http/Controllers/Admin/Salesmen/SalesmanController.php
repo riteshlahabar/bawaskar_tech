@@ -17,7 +17,11 @@ class SalesmanController extends PeopleModuleController
 
     protected string $profileModel = SalesmanProfile::class;
 
-    protected array $profileFields = ['employee_code', 'joining_date', 'basic_salary', 'target_amount', 'territory'];
+    protected array $profileFields = [
+        'employee_code', 'department_id', 'designation_id', 'reporting_to',
+        'joining_date', 'confirmation_date', 'employment_status', 'exit_date',
+        'basic_salary', 'target_amount', 'territory',
+    ];
 
     protected function prepareData(array $validated, Request $request, array $module): array
     {

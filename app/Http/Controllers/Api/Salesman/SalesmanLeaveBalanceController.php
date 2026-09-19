@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Salesman;
 
+use App\Contracts\Hr\LeavePolicyContract;
 use App\Models\Field\LeaveApplication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -9,22 +10,20 @@ use Illuminate\Http\Request;
 /**
  * Remaining leave balance per type for the current calendar year.
  *
- * Entitlements come from config so HR can change policy without a code change,
- * and only approved applications count against the balance.
+ * Entitlements come from the admin Leave Policies master (falling back to
+ * config/hrms.php), so HR can change policy without a code change, and only
+ * approved applications count against the balance.
  */
 final class SalesmanLeaveBalanceController extends SalesmanApiController
 {
+    public function __construct(private readonly LeavePolicyContract $leavePolicies) {}
+
     public function index(Request $request): JsonResponse
     {
         $salesman = $this->salesman($request);
         $year = (int) $request->integer('year', (int) now()->year);
 
-        $entitlements = config('hrms.leave_entitlements', [
-            'casual' => 12,
-            'sick' => 8,
-            'earned' => 15,
-            'unpaid' => 0,
-        ]);
+        $entitlements = $this->leavePolicies->entitlements();
 
         $taken = LeaveApplication::query()
             ->where('salesman_id', $salesman->id)
@@ -38,11 +37,11 @@ final class SalesmanLeaveBalanceController extends SalesmanApiController
                 fn (LeaveApplication $leave): int => $leave->from_date->diffInDays($leave->to_date) + 1
             ));
 
-        $balances = collect($entitlements)->map(fn (int $allowed, string $type): array => [
+        $balances = collect($entitlements)->map(fn ($allowed, string $type): array => [
             'leave_type' => $type,
-            'entitled' => $allowed,
+            'entitled' => (float) $allowed,
             'taken' => (int) ($taken[$type] ?? 0),
-            'balance' => max($allowed - (int) ($taken[$type] ?? 0), 0),
+            'balance' => max((float) $allowed - (int) ($taken[$type] ?? 0), 0),
         ])->values();
 
         return $this->success([

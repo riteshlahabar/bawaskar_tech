@@ -47,6 +47,11 @@ use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Finance\PaymentGatewayContract;
+use App\Contracts\Hr\EmployeeExitContract;
+use App\Contracts\Hr\HrmsSettingsContract;
+use App\Contracts\Hr\IncentiveCalculationContract;
+use App\Contracts\Hr\LeavePolicyContract;
+use App\Contracts\Hr\PayrollComputationContract;
 use App\Contracts\Localization\AppLanguageSettingsContract;
 use App\Contracts\Localization\AppStringTranslationContract;
 use App\Contracts\Localization\AppTranslationBatchContract;
@@ -74,6 +79,7 @@ use App\Contracts\Sales\SalesDocumentGstDetailsContract;
 use App\Contracts\Sales\SalesDocumentPdfContract;
 use App\Contracts\Support\AmountInWordsContract;
 use App\Contracts\Support\TransactionManagerContract;
+use App\Contracts\System\DatabaseBackupContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Invoice;
 use App\Observers\Sales\DispatchOrderStatusObserver;
@@ -127,6 +133,11 @@ use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
+use App\Services\Hr\EmployeeExitService;
+use App\Services\Hr\HrmsSettingsService;
+use App\Services\Hr\IncentiveCalculationService;
+use App\Services\Hr\LeavePolicyService;
+use App\Services\Hr\Payroll\PayrollComputationService;
 use App\Services\Localization\AppLanguageSettingsService;
 use App\Services\Localization\AppTranslationBatchService;
 use App\Services\Localization\AppTranslationCatalogService;
@@ -149,6 +160,7 @@ use App\Services\Sales\SalesDocumentDataService;
 use App\Services\Sales\SalesDocumentGstDetailsService;
 use App\Services\Support\IndianAmountInWordsService;
 use App\Services\Support\LaravelTransactionManager;
+use App\Services\System\SqlDatabaseBackupService;
 use App\Support\Admin\Forms\ConfigFormFieldViews;
 use App\Support\Admin\Forms\FormFieldTree;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -238,6 +250,16 @@ class AppServiceProvider extends ServiceProvider
             TransactionManagerContract::class => LaravelTransactionManager::class,
             PersonSummaryContract::class => PersonSummaryService::class,
             AppLanguageSettingsContract::class => AppLanguageSettingsService::class,
+
+            // HRMS settings and payroll
+            HrmsSettingsContract::class => HrmsSettingsService::class,
+            LeavePolicyContract::class => LeavePolicyService::class,
+            PayrollComputationContract::class => PayrollComputationService::class,
+            EmployeeExitContract::class => EmployeeExitService::class,
+            IncentiveCalculationContract::class => IncentiveCalculationService::class,
+
+            // System
+            DatabaseBackupContract::class => SqlDatabaseBackupService::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

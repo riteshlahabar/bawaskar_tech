@@ -26,6 +26,9 @@
             @if($module['key'] === 'translations' && $can['edit'])
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#appTranslateModal"><i class="iconoir-translate me-1"></i>Translate</button>
             @endif
+            @if($module['key'] === 'backups' && $can['create'])
+                <form method="POST" action="{{ route('admin.backups.run') }}">@csrf<button class="btn btn-success"><i class="iconoir-database-backup me-1"></i>Take Backup Now</button></form>
+            @endif
             @if(($module['can_create'] ?? true) && $can['create'])
                 <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $submenuSingular }}</a>
             @endif
@@ -161,6 +164,19 @@
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'invoice', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 
+                                            @if($module['key'] === 'resignations' && $can['edit'])
+                                                <div class="dropdown-divider"></div>
+                                                <button class="dropdown-item text-info" type="submit" form="suggestSettlement{{ $record->id }}"><i class="iconoir-calculator"></i><span>Fill F&amp;F From Records</span></button>
+                                            @endif
+
+                                            @if($module['key'] === 'backups' && $record->status === 'completed')
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="{{ route('admin.backups.download', $record->getKey()) }}"><i class="iconoir-download"></i><span>Download</span></a>
+                                                @if($can['delete'])
+                                                    <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal" data-bs-target="#restoreBackup{{ $record->id }}"><i class="iconoir-undo-action"></i><span>Restore Database</span></button>
+                                                @endif
+                                            @endif
+
                                             @if(in_array($module['key'], ['expenses','leaves']) && $record->status === 'pending' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-success" type="submit" form="decisionForm{{ $module['key'] }}{{ $record->id }}" name="status" value="approved"><i class="iconoir-check-circle"></i><span>Approve</span></button>
@@ -198,6 +214,12 @@
             @endif
             @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
                 <div class="modal fade" id="approveDealer{{ $record->id }}"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.dealers.approve', $record->id) }}">@csrf<div class="modal-header"><h5>Approve {{ $record->name }}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">Assign Salesman</label><select name="salesman_id" class="form-select" required>@foreach(\App\Models\User::where('role', 'salesman')->where('status', 'active')->orderBy('name')->get() as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach</select><label class="form-label mt-3">Credit Limit</label><input name="credit_limit" type="number" step="0.01" min="0" class="form-control" value="0"></div><div class="modal-footer"><button class="btn btn-success">Approve & Assign</button></div></form></div></div>
+            @endif
+            @if($module['key'] === 'resignations')
+                <form id="suggestSettlement{{ $record->id }}" method="POST" action="{{ route('admin.resignations.suggest-settlement', $record->getKey()) }}" class="d-none">@csrf</form>
+            @endif
+            @if($module['key'] === 'backups' && $record->status === 'completed')
+                <div class="modal fade" id="restoreBackup{{ $record->id }}"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.backups.restore', $record->getKey()) }}">@csrf<div class="modal-header"><h5>Restore from {{ $record->filename }}</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="alert alert-danger mb-3"><strong>This overwrites the live database.</strong> Every table in this backup is dropped and recreated, and anything entered since {{ $record->created_at?->format('d M Y H:i') }} is lost. Take a fresh backup first if you are not certain.</div><label class="form-label">Type <code>RESTORE</code> to confirm</label><input class="form-control" name="confirm" autocomplete="off" placeholder="RESTORE" required></div><div class="modal-footer"><button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger">Restore Database</button></div></form></div></div>
             @endif
             @if($module['key'] === 'orders')
                 <div class="modal fade" id="orderCancel{{ $record->id }}"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.orders.cancel', $record->id) }}">@csrf<div class="modal-header"><h5>Cancel {{ $record->order_no }}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">Reason for cancellation <span class="text-danger">*</span></label><textarea name="cancel_reason" class="form-control" rows="3" maxlength="500" required placeholder="Why is this order being cancelled?"></textarea><small class="text-muted">Every other status is set automatically by the invoice and dispatch steps.</small></div><div class="modal-footer"><button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button><button class="btn btn-danger">Cancel Order</button></div></form></div></div>

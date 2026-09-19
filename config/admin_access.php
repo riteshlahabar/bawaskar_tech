@@ -25,6 +25,11 @@ return [
         'email-templates' => ['view'],
         'company-settings' => ['view', 'edit'],
         'storefront-about' => ['view', 'edit'],
+        'hrms-settings' => ['view', 'edit'],
+        // The audit trail is read-only on purpose; backups are taken and
+        // restored, never typed in, so they offer no Add or Edit.
+        'audit-logs' => ['view'],
+        'backups' => ['view', 'create', 'delete'],
         'app-languages' => ['view', 'edit'],
         'bulk-attendance' => ['view', 'create'],
     ],
@@ -35,6 +40,11 @@ return [
         'create' => 'create', 'store' => 'create',
         'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'cancel' => 'edit',
         'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
+        'suggest-settlement' => 'edit',
+        // Taking a backup creates one; restoring overwrites the database, so
+        // it is the most destructive action the panel offers and is mapped to
+        // delete rather than edit.
+        'run' => 'create', 'restore' => 'delete',
         'destroy' => 'delete', 'bulk-destroy' => 'delete',
     ],
 

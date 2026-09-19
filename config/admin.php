@@ -26,13 +26,28 @@ use App\Models\Field\SalesmanAsset;
 use App\Models\Field\SalesmanTarget;
 use App\Models\Field\TourPlan;
 use App\Models\Finance\Payment;
+use App\Models\Hr\AllowanceType;
 use App\Models\Hr\Announcement;
+use App\Models\Hr\ApprovalWorkflow;
+use App\Models\Hr\CommissionRule;
+use App\Models\Hr\DeductionType;
+use App\Models\Hr\Department;
+use App\Models\Hr\Designation;
+use App\Models\Hr\EmployeeAllowance;
+use App\Models\Hr\EmployeeDeduction;
 use App\Models\Hr\EmployeeDocument;
+use App\Models\Hr\EmployeeSkill;
 use App\Models\Hr\Holiday;
+use App\Models\Hr\IncentiveRule;
+use App\Models\Hr\LeavePolicy;
 use App\Models\Hr\PerformanceReview;
+use App\Models\Hr\Resignation;
 use App\Models\Hr\SalaryAdvance;
 use App\Models\Hr\Shift;
 use App\Models\Hr\ShiftAssignment;
+use App\Models\Hr\Task;
+use App\Models\Hr\TrainingAttendance;
+use App\Models\Hr\TrainingProgram;
 use App\Models\InternalExpense;
 use App\Models\InternalExpenseCategory;
 use App\Models\InternalExpenseSubcategory;
@@ -44,6 +59,7 @@ use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\ProformaInvoice;
 use App\Models\Sales\ReturnRequest;
+use App\Models\SalesmanProfile;
 use App\Models\Storefront\ContactMessage;
 use App\Models\Storefront\DeliveryArea;
 use App\Models\Storefront\StorefrontAboutItem;
@@ -52,6 +68,8 @@ use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontServiceBlock;
 use App\Models\Storefront\StorefrontTeamMember;
 use App\Models\Storefront\StorefrontTopbarMessage;
+use App\Models\System\AuditLog;
+use App\Models\System\Backup;
 use App\Models\User;
 
 $active = ['1' => 'Active', '0' => 'Inactive'];
@@ -68,6 +86,29 @@ $documentTypes = ['aadhaar' => 'Aadhaar', 'pan' => 'PAN', 'driving_license' => '
 $documentStatus = ['pending' => 'Pending', 'verified' => 'Verified', 'rejected' => 'Rejected', 'expired' => 'Expired'];
 $advanceStatus = ['pending' => 'Pending', 'approved' => 'Approved', 'disbursed' => 'Disbursed', 'closed' => 'Closed', 'rejected' => 'Rejected'];
 $reviewStatus = ['draft' => 'Draft', 'published' => 'Published'];
+$allowanceCalculations = AllowanceType::CALCULATIONS;
+$deductionCalculations = DeductionType::CALCULATIONS;
+$statutoryKinds = DeductionType::STATUTORY_KINDS;
+$requestTypes = ApprovalWorkflow::REQUEST_TYPES;
+$approverRoles = ApprovalWorkflow::APPROVER_ROLES;
+// Blank on an employee allowance/deduction row means "use the type's own rule".
+$inheritCalculation = ['' => 'Same as the type'];
+$employmentStatuses = SalesmanProfile::EMPLOYMENT_STATUSES;
+$resignationStatuses = Resignation::STATUSES;
+$settlementStatuses = Resignation::SETTLEMENT_STATUSES;
+$incentiveBases = IncentiveRule::BASES;
+$incentiveRewards = IncentiveRule::REWARD_TYPES;
+$incentiveAudience = IncentiveRule::APPLIES_TO;
+$commissionBases = CommissionRule::BASES;
+$commissionAudience = CommissionRule::APPLIES_TO;
+$taskPriorities = Task::PRIORITIES;
+$taskStatuses = Task::STATUSES;
+$trainingModes = TrainingProgram::MODES;
+$trainingStatuses = TrainingProgram::STATUSES;
+$attendanceStatuses = TrainingAttendance::STATUSES;
+$skillLevels = EmployeeSkill::LEVELS;
+$auditEvents = AuditLog::EVENTS;
+$backupStatuses = Backup::STATUSES;
 
 return [
     'brand' => ['name' => 'Bawaskar ERP', 'short_name' => 'BERP'],
@@ -121,6 +162,30 @@ return [
             ['key' => 'employee-documents', 'label' => 'Employee Documents', 'route' => 'admin.employee-documents.index', 'icon' => 'iconoir-page'],
             ['key' => 'salary-advances', 'label' => 'Advances & Loans', 'route' => 'admin.salary-advances.index', 'icon' => 'iconoir-coins'],
             ['key' => 'performance-reviews', 'label' => 'Performance Reviews', 'route' => 'admin.performance-reviews.index', 'icon' => 'iconoir-star'],
+            ['key' => 'tasks', 'label' => 'Tasks', 'route' => 'admin.tasks.index', 'icon' => 'iconoir-task-list'],
+            ['key' => 'resignations', 'label' => 'Resignation & Exit', 'route' => 'admin.resignations.index', 'icon' => 'iconoir-log-out'],
+            ['key' => 'training', 'label' => 'Training', 'id' => 'trainingMenu', 'icon' => 'iconoir-graduation-cap', 'children' => [
+                ['key' => 'training-programs', 'label' => 'Training Programs', 'route' => 'admin.training-programs.index', 'icon' => 'iconoir-presentation'],
+                ['key' => 'training-attendances', 'label' => 'Training Attendance', 'route' => 'admin.training-attendances.index', 'icon' => 'iconoir-check-circle'],
+                ['key' => 'employee-skills', 'label' => 'Skill Records', 'route' => 'admin.employee-skills.index', 'icon' => 'iconoir-medal'],
+            ]],
+            ['key' => 'incentive-commission', 'label' => 'Incentive & Commission', 'id' => 'incentiveCommissionMenu', 'icon' => 'iconoir-gift', 'children' => [
+                ['key' => 'incentive-rules', 'label' => 'Incentive Rules', 'route' => 'admin.incentive-rules.index', 'icon' => 'iconoir-trophy'],
+                ['key' => 'commission-rules', 'label' => 'Commission Rules', 'route' => 'admin.commission-rules.index', 'icon' => 'iconoir-percentage'],
+            ]],
+            ['key' => 'payroll-components', 'label' => 'Allowances & Deductions', 'id' => 'payrollComponentsMenu', 'icon' => 'iconoir-calculator', 'children' => [
+                ['key' => 'allowance-types', 'label' => 'Allowance Types', 'route' => 'admin.allowance-types.index', 'icon' => 'iconoir-plus-circle'],
+                ['key' => 'deduction-types', 'label' => 'Deduction Types', 'route' => 'admin.deduction-types.index', 'icon' => 'iconoir-minus-circle'],
+                ['key' => 'employee-allowances', 'label' => 'Employee Allowances', 'route' => 'admin.employee-allowances.index', 'icon' => 'iconoir-user-plus'],
+                ['key' => 'employee-deductions', 'label' => 'Employee Deductions', 'route' => 'admin.employee-deductions.index', 'icon' => 'iconoir-user-xmark'],
+            ]],
+            ['key' => 'hrms-setup', 'label' => 'HRMS Settings', 'id' => 'hrmsSetupMenu', 'icon' => 'iconoir-settings', 'children' => [
+                ['key' => 'hrms-settings', 'label' => 'Attendance & Salary Rules', 'route' => 'admin.hrms-settings.edit', 'icon' => 'iconoir-tools'],
+                ['key' => 'departments', 'label' => 'Departments', 'route' => 'admin.departments.index', 'icon' => 'iconoir-building'],
+                ['key' => 'designations', 'label' => 'Designations', 'route' => 'admin.designations.index', 'icon' => 'iconoir-user-badge-check'],
+                ['key' => 'leave-policies', 'label' => 'Leave Policies', 'route' => 'admin.leave-policies.index', 'icon' => 'iconoir-calendar-minus'],
+                ['key' => 'approval-workflows', 'label' => 'Approval Workflow', 'route' => 'admin.approval-workflows.index', 'icon' => 'iconoir-check-circle'],
+            ]],
         ]],
         ['label' => 'Storefront', 'id' => 'storefrontMenu', 'icon' => 'iconoir-globe', 'items' => [
             ['key' => 'storefront-footer-links', 'label' => 'Footer Links', 'route' => 'admin.storefront-footer-links.index', 'icon' => 'iconoir-link'], ['key' => 'storefront-service-blocks', 'label' => 'Service Blocks', 'route' => 'admin.storefront-service-blocks.index', 'icon' => 'iconoir-delivery-truck'], ['key' => 'delivery-areas', 'label' => 'Delivery Areas', 'route' => 'admin.delivery-areas.index', 'icon' => 'iconoir-map-pin'], ['key' => 'storefront-faqs', 'label' => 'FAQs', 'route' => 'admin.storefront-faqs.index', 'icon' => 'iconoir-help-circle'], ['key' => 'storefront-about', 'label' => 'About Page', 'route' => 'admin.storefront-about.edit', 'icon' => 'iconoir-info-empty'], ['key' => 'storefront-about-items', 'label' => 'About Sections', 'route' => 'admin.storefront-about-items.index', 'icon' => 'iconoir-list'], ['key' => 'storefront-team-members', 'label' => 'Team Members', 'route' => 'admin.storefront-team-members.index', 'icon' => 'iconoir-group'], ['key' => 'contact-messages', 'label' => 'Contact Messages', 'route' => 'admin.contact-messages.index', 'icon' => 'iconoir-mail-open'], ]],
@@ -131,13 +196,15 @@ return [
         ['label' => 'Settings', 'id' => 'systemMenu', 'icon' => 'iconoir-settings', 'items' => [
             ['key' => 'company-settings', 'label' => 'Company Profile', 'route' => 'admin.company-settings.edit', 'icon' => 'iconoir-building'], ['key' => 'storefront-topbar-messages', 'label' => 'Top Bar Messages', 'route' => 'admin.storefront-topbar-messages.index', 'icon' => 'iconoir-megaphone'], ['key' => 'notifications', 'label' => 'Notifications', 'route' => 'admin.notifications.index', 'icon' => 'iconoir-bell'], ['key' => 'email-templates', 'label' => 'Email Templates', 'route' => 'admin.email-templates.index', 'icon' => 'iconoir-mail'], ['key' => 'support', 'label' => 'Support', 'route' => 'admin.support.index', 'icon' => 'iconoir-headset-help'],
             ['key' => 'users-menu', 'label' => 'Users', 'id' => 'usersMenu', 'icon' => 'iconoir-group', 'children' => [['key' => 'admin-users', 'label' => 'Admin Users', 'route' => 'admin.admin-users.index', 'icon' => 'iconoir-user'], ['key' => 'admin-roles', 'label' => 'Roles & Permissions', 'route' => 'admin.admin-roles.index', 'icon' => 'iconoir-lock']]],
+            ['key' => 'audit-logs', 'label' => 'Audit Logs', 'route' => 'admin.audit-logs.index', 'icon' => 'iconoir-eye'],
+            ['key' => 'backups', 'label' => 'Backup & Restore', 'route' => 'admin.backups.index', 'icon' => 'iconoir-database-backup'],
         ]],
     ],
     'modules' => [
         'salesmen' => [
-            'label' => 'Salesmen', 'group' => 'People', 'location_required' => false, 'filters' => [['name' => 'state_code', 'label' => 'State', 'column' => 'state_code', 'option_model' => LgdState::class, 'option_value' => 'state_code', 'option_label' => 'name']], 'where' => ['role' => User::ROLE_SALESMAN], 'description' => 'Company field-sales employees with email and password login.', 'model' => User::class, 'with' => ['salesmanProfile'], 'search' => ['name', 'email', 'mobile'], 'status_column' => 'status', 'status_options' => $userStatus,
-            'columns' => [['key' => 'salesmanProfile.employee_code', 'label' => 'Employee Code'], ['key' => 'name', 'label' => 'Name'], ['key' => 'email', 'label' => 'Email', 'type' => 'email'], ['key' => 'mobile', 'label' => 'Mobile'], ['key' => 'salesmanProfile.territory', 'label' => 'Territory'], ['key' => 'salesmanProfile.basic_salary', 'label' => 'Basic Salary', 'type' => 'money'], ['key' => 'district_name', 'label' => 'District'], ['key' => 'city_village', 'label' => 'City / Village'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
-            'fields' => [['name' => 'name', 'label' => 'Full Name', 'rules' => ['required', 'string', 'max:255']], ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'rules' => ['required', 'email', 'max:255', 'unique:users,email,{id}']], ['name' => 'mobile', 'label' => 'Mobile', 'rules' => ['nullable', 'string', 'max:20', 'unique:users,mobile,{id}']], ['name' => 'password', 'label' => 'Password', 'type' => 'password', 'rules' => ['required', 'string', 'min:8', 'confirmed']], ['name' => 'employee_code', 'label' => 'Employee Code', 'rules' => ['required', 'string', 'max:50', 'unique:salesman_profiles,employee_code,{id}']], ['name' => 'joining_date', 'label' => 'Joining Date', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'territory', 'label' => 'Territory', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'basic_salary', 'label' => 'Basic Salary', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'min:0']], ['name' => 'target_amount', 'label' => 'Monthly Target', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'min:0']], ['type' => 'location_picker', 'name' => 'location', 'label' => 'Location'], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $userStatus, 'rules' => ['required', 'in:active,inactive']]],
+            'label' => 'Salesmen', 'group' => 'People', 'location_required' => false, 'filters' => [['name' => 'state_code', 'label' => 'State', 'column' => 'state_code', 'option_model' => LgdState::class, 'option_value' => 'state_code', 'option_label' => 'name']], 'where' => ['role' => User::ROLE_SALESMAN], 'description' => 'Company field-sales employees with email and password login.', 'model' => User::class, 'with' => ['salesmanProfile.designation'], 'search' => ['name', 'email', 'mobile'], 'status_column' => 'status', 'status_options' => $userStatus,
+            'columns' => [['key' => 'salesmanProfile.employee_code', 'label' => 'Employee Code'], ['key' => 'name', 'label' => 'Name'], ['key' => 'email', 'label' => 'Email', 'type' => 'email'], ['key' => 'mobile', 'label' => 'Mobile'], ['key' => 'salesmanProfile.designation.name', 'label' => 'Designation'], ['key' => 'salesmanProfile.employment_status', 'label' => 'Employment'], ['key' => 'salesmanProfile.territory', 'label' => 'Territory'], ['key' => 'salesmanProfile.basic_salary', 'label' => 'Basic Salary', 'type' => 'money'], ['key' => 'district_name', 'label' => 'District'], ['key' => 'city_village', 'label' => 'City / Village'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'fields' => [['name' => 'name', 'label' => 'Full Name', 'rules' => ['required', 'string', 'max:255']], ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'rules' => ['required', 'email', 'max:255', 'unique:users,email,{id}']], ['name' => 'mobile', 'label' => 'Mobile', 'rules' => ['nullable', 'string', 'max:20', 'unique:users,mobile,{id}']], ['name' => 'password', 'label' => 'Password', 'type' => 'password', 'rules' => ['required', 'string', 'min:8', 'confirmed']], ['name' => 'employee_code', 'label' => 'Employee Code', 'rules' => ['required', 'string', 'max:50', 'unique:salesman_profiles,employee_code,{id}']], ['name' => 'department_id', 'label' => 'Department', 'type' => 'select', 'option_model' => Department::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:departments,id']], ['name' => 'designation_id', 'label' => 'Designation', 'type' => 'select', 'option_model' => Designation::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:designations,id']], ['name' => 'reporting_to', 'label' => 'Reporting Manager', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => User::ROLE_SALESMAN], 'rules' => ['nullable', 'exists:users,id']], ['name' => 'joining_date', 'label' => 'Joining Date', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'confirmation_date', 'label' => 'Confirmation Date', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'employment_status', 'label' => 'Employment Status', 'type' => 'select', 'options' => $employmentStatuses, 'default' => 'active', 'rules' => ['required', 'in:'.implode(',', array_keys($employmentStatuses))]], ['name' => 'exit_date', 'label' => 'Exit Date', 'type' => 'date', 'rules' => ['nullable', 'date'], 'help' => 'Filled automatically when a resignation is completed.'], ['name' => 'territory', 'label' => 'Territory', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'basic_salary', 'label' => 'Basic Salary', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'min:0']], ['name' => 'target_amount', 'label' => 'Monthly Target', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'min:0']], ['type' => 'location_picker', 'name' => 'location', 'label' => 'Location'], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $userStatus, 'rules' => ['required', 'in:active,inactive']]],
         ],
         'dealers' => [
             'label' => 'Dealers', 'group' => 'People', 'filters' => [['name' => 'state_code', 'label' => 'State', 'column' => 'state_code', 'option_model' => LgdState::class, 'option_value' => 'state_code', 'option_label' => 'name']], 'where' => ['role' => User::ROLE_DEALER], 'description' => 'B2B dealer registration, approval, salesman assignment, credit and outstanding.', 'model' => User::class, 'with' => ['dealerProfile.salesman'], 'search' => ['name', 'email', 'mobile'], 'status_column' => 'status', 'status_options' => $userStatus,
@@ -528,6 +595,262 @@ return [
             'label' => 'Salesman Assets', 'group' => 'Salesman HRMS', 'singular' => 'Asset', 'model' => SalesmanAsset::class, 'with' => ['salesman'], 'status_column' => 'status', 'status_options' => ['issued' => 'Issued', 'returned' => 'Returned', 'lost' => 'Lost', 'damaged' => 'Damaged'],
             'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'asset_type', 'label' => 'Type'], ['key' => 'asset_name', 'label' => 'Asset'], ['key' => 'serial_no', 'label' => 'Serial No.'], ['key' => 'issued_on', 'label' => 'Issued', 'type' => 'date'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
             'fields' => [['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']], ['name' => 'asset_type', 'label' => 'Asset Type', 'type' => 'select', 'options' => ['mobile' => 'Mobile', 'laptop' => 'Laptop', 'sim' => 'SIM Card', 'vehicle' => 'Vehicle', 'other' => 'Other'], 'rules' => ['required', 'string', 'max:40']], ['name' => 'asset_name', 'label' => 'Asset Name', 'rules' => ['required', 'string', 'max:255']], ['name' => 'serial_no', 'label' => 'Serial Number', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'issued_on', 'label' => 'Issued On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'returned_on', 'label' => 'Returned On', 'type' => 'date', 'rules' => ['nullable', 'date']], ['name' => 'condition', 'label' => 'Condition', 'rules' => ['nullable', 'string', 'max:255']], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['issued' => 'Issued', 'returned' => 'Returned', 'lost' => 'Lost', 'damaged' => 'Damaged'], 'rules' => ['required', 'string', 'max:40']]],
+        ],
+        'resignations' => [
+            'label' => 'Resignation & Exit', 'group' => 'Salesman HRMS', 'singular' => 'Resignation', 'description' => 'Resignation request, notice period, exit approval and full & final settlement.', 'model' => Resignation::class, 'with' => ['salesman', 'approver'], 'search' => ['reference_no'], 'status_column' => 'status', 'status_options' => $resignationStatuses, 'sort' => ['resignation_date', 'desc'],
+            'columns' => [['key' => 'reference_no', 'label' => 'Reference'], ['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'resignation_date', 'label' => 'Resigned On', 'type' => 'date'], ['key' => 'approved_last_working_date', 'label' => 'Last Working Day', 'type' => 'date'], ['key' => 'settlement_amount', 'label' => 'F&F Payable', 'type' => 'money'], ['key' => 'settlement_status', 'label' => 'Settlement'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'filters' => [['name' => 'settlement_status', 'label' => 'Settlement', 'options' => $settlementStatuses]],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'resignation_date', 'label' => 'Resignation Date', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'notice_period_days', 'label' => 'Notice Period (days)', 'type' => 'number', 'default' => 30, 'rules' => ['required', 'integer', 'min:0', 'max:365']],
+                ['name' => 'notice_period_waived', 'label' => 'Notice Period Waived', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'requested_last_working_date', 'label' => 'Requested Last Working Date', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'approved_last_working_date', 'label' => 'Approved Last Working Date', 'type' => 'date', 'rules' => ['nullable', 'date'], 'help' => 'Leave blank to use the notice period.'],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $resignationStatuses, 'default' => 'pending', 'rules' => ['required', 'in:'.implode(',', array_keys($resignationStatuses))]],
+                ['name' => 'reason', 'label' => 'Reason', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+                ['name' => 'exit_interview_notes', 'label' => 'Exit Interview Notes', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
+                ['name' => 'pending_salary', 'label' => 'Pending Salary', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'leave_encashment', 'label' => 'Leave Encashment', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'other_dues', 'label' => 'Other Dues', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'advance_recovery', 'label' => 'Advance / Loan Recovery', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'other_recovery', 'label' => 'Other Recovery', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'settlement_status', 'label' => 'Settlement Status', 'type' => 'select', 'options' => $settlementStatuses, 'default' => 'pending', 'rules' => ['required', 'in:'.implode(',', array_keys($settlementStatuses))]],
+                ['name' => 'settled_on', 'label' => 'Settled On', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'assets_returned', 'label' => 'Company Assets Returned', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'documents_handed_over', 'label' => 'Exit Documents Handed Over', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'settlement_notes', 'label' => 'Settlement Notes', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'incentive-rules' => [
+            'label' => 'Incentive Rules', 'group' => 'Salesman HRMS', 'singular' => 'Incentive Rule', 'description' => 'Slabs that turn target achievement, sales or collections into an incentive.', 'model' => IncentiveRule::class, 'with' => ['department', 'designation', 'salesman'], 'search' => ['name'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Rule'], ['key' => 'basis_label', 'label' => 'Basis'], ['key' => 'slab_from', 'label' => 'From'], ['key' => 'slab_to', 'label' => 'To'], ['key' => 'reward_value', 'label' => 'Reward'], ['key' => 'applies_to', 'label' => 'Applies To'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'basis', 'label' => 'Basis', 'options' => $incentiveBases]],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Rule Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'basis', 'label' => 'Measured On', 'type' => 'select', 'options' => $incentiveBases, 'default' => 'target_achievement', 'rules' => ['required', 'in:'.implode(',', array_keys($incentiveBases))]],
+                ['name' => 'slab_from', 'label' => 'Slab From', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0'], 'help' => 'Percent for target achievement, rupees for a value basis.'],
+                ['name' => 'slab_to', 'label' => 'Slab To', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0', 'gte:slab_from'], 'help' => 'Blank makes this the open-ended top slab.'],
+                ['name' => 'reward_type', 'label' => 'Reward Type', 'type' => 'select', 'options' => $incentiveRewards, 'default' => 'percent', 'rules' => ['required', 'in:'.implode(',', array_keys($incentiveRewards))]],
+                ['name' => 'reward_value', 'label' => 'Reward Value', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0']],
+                ['name' => 'max_reward', 'label' => 'Maximum Reward', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'applies_to', 'label' => 'Applies To', 'type' => 'select', 'options' => $incentiveAudience, 'default' => 'all', 'rules' => ['required', 'in:'.implode(',', array_keys($incentiveAudience))]],
+                ['name' => 'department_id', 'label' => 'Department', 'type' => 'select', 'option_model' => Department::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:departments,id'], 'help' => 'Only used when Applies To is One Department.'],
+                ['name' => 'designation_id', 'label' => 'Designation', 'type' => 'select', 'option_model' => Designation::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:designations,id']],
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['nullable', 'exists:users,id']],
+                ['name' => 'effective_from', 'label' => 'Effective From', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'effective_to', 'label' => 'Effective To', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:effective_from']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'commission-rules' => [
+            'label' => 'Commission Rules', 'group' => 'Salesman HRMS', 'singular' => 'Commission Rule', 'description' => 'Percentage commission on sales value, one product or one category.', 'model' => CommissionRule::class, 'with' => ['product', 'category', 'salesman'], 'search' => ['name'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Rule'], ['key' => 'basis_label', 'label' => 'Basis'], ['key' => 'commission_percent', 'label' => 'Commission %'], ['key' => 'min_sales_value', 'label' => 'Min Sales', 'type' => 'money'], ['key' => 'applies_to', 'label' => 'Applies To'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'basis', 'label' => 'Basis', 'options' => $commissionBases]],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Rule Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'basis', 'label' => 'Applies On', 'type' => 'select', 'options' => $commissionBases, 'default' => 'sales_value', 'rules' => ['required', 'in:'.implode(',', array_keys($commissionBases))]],
+                ['name' => 'product_id', 'label' => 'Product', 'type' => 'select', 'option_model' => Product::class, 'rules' => ['nullable', 'exists:products,id'], 'help' => 'Only used when Applies On is One Product.'],
+                ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['nullable', 'exists:categories,id']],
+                ['name' => 'commission_percent', 'label' => 'Commission %', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0', 'max:100']],
+                ['name' => 'min_sales_value', 'label' => 'Minimum Sales Value', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'max_commission', 'label' => 'Maximum Commission', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'applies_to', 'label' => 'Applies To', 'type' => 'select', 'options' => $commissionAudience, 'default' => 'all', 'rules' => ['required', 'in:'.implode(',', array_keys($commissionAudience))]],
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['nullable', 'exists:users,id']],
+                ['name' => 'effective_from', 'label' => 'Effective From', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'effective_to', 'label' => 'Effective To', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:effective_from']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'tasks' => [
+            'label' => 'Tasks', 'group' => 'Salesman HRMS', 'singular' => 'Task', 'description' => 'Work assigned to a salesman, with priority, due date and completion.', 'model' => Task::class, 'with' => ['assignee', 'assigner', 'dealer'], 'search' => ['title'], 'status_column' => 'status', 'status_options' => $taskStatuses, 'sort' => ['due_date', 'asc'],
+            'columns' => [['key' => 'title', 'label' => 'Task'], ['key' => 'assignee.name', 'label' => 'Assigned To'], ['key' => 'dealer.name', 'label' => 'Dealer'], ['key' => 'priority', 'label' => 'Priority'], ['key' => 'due_date', 'label' => 'Due', 'type' => 'date'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'filters' => [['name' => 'priority', 'label' => 'Priority', 'options' => $taskPriorities], ['name' => 'assigned_to', 'label' => 'Salesman', 'option_model' => User::class]],
+            'fields' => [
+                ['name' => 'title', 'label' => 'Task Title', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'assigned_to', 'label' => 'Assign To', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'dealer_id', 'label' => 'Related Dealer', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'dealer'], 'rules' => ['nullable', 'exists:users,id']],
+                ['name' => 'priority', 'label' => 'Priority', 'type' => 'select', 'options' => $taskPriorities, 'default' => 'normal', 'rules' => ['required', 'in:'.implode(',', array_keys($taskPriorities))]],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $taskStatuses, 'default' => 'pending', 'rules' => ['required', 'in:'.implode(',', array_keys($taskStatuses))]],
+                ['name' => 'due_date', 'label' => 'Due Date', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
+                ['name' => 'completion_notes', 'label' => 'Completion Notes', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'training-programs' => [
+            'label' => 'Training Programs', 'group' => 'Salesman HRMS', 'singular' => 'Training Program', 'description' => 'Scheduled training, its trainer, mode and duration.', 'model' => TrainingProgram::class, 'search' => ['title', 'trainer'], 'status_column' => 'status', 'status_options' => $trainingStatuses, 'sort' => ['starts_on', 'desc'],
+            'columns' => [['key' => 'title', 'label' => 'Program'], ['key' => 'trainer', 'label' => 'Trainer'], ['key' => 'mode', 'label' => 'Mode'], ['key' => 'starts_on', 'label' => 'Starts', 'type' => 'date'], ['key' => 'ends_on', 'label' => 'Ends', 'type' => 'date'], ['key' => 'duration_hours', 'label' => 'Hours'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'filters' => [['name' => 'mode', 'label' => 'Mode', 'options' => $trainingModes]],
+            'fields' => [
+                ['name' => 'title', 'label' => 'Program Title', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'trainer', 'label' => 'Trainer', 'rules' => ['nullable', 'string', 'max:255']],
+                ['name' => 'mode', 'label' => 'Mode', 'type' => 'select', 'options' => $trainingModes, 'default' => 'classroom', 'rules' => ['required', 'in:'.implode(',', array_keys($trainingModes))]],
+                ['name' => 'venue', 'label' => 'Venue / Link', 'rules' => ['nullable', 'string', 'max:255']],
+                ['name' => 'starts_on', 'label' => 'Starts On', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'ends_on', 'label' => 'Ends On', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:starts_on']],
+                ['name' => 'duration_hours', 'label' => 'Duration (hours)', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0', 'max:1000']],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $trainingStatuses, 'default' => 'planned', 'rules' => ['required', 'in:'.implode(',', array_keys($trainingStatuses))]],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'training-attendances' => [
+            'label' => 'Training Attendance', 'group' => 'Salesman HRMS', 'singular' => 'Training Attendance', 'description' => 'Who attended which training, their score and certificate.', 'model' => TrainingAttendance::class, 'with' => ['program', 'salesman'], 'status_column' => 'status', 'status_options' => $attendanceStatuses, 'sort' => ['id', 'desc'],
+            'columns' => [['key' => 'program.title', 'label' => 'Program'], ['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'score', 'label' => 'Score'], ['key' => 'certificate_issued', 'label' => 'Certificate', 'type' => 'boolean'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'filters' => [['name' => 'training_program_id', 'label' => 'Program', 'option_model' => TrainingProgram::class, 'option_label' => 'title']],
+            'fields' => [
+                ['name' => 'training_program_id', 'label' => 'Training Program', 'type' => 'select', 'option_model' => TrainingProgram::class, 'option_label' => 'title', 'option_where' => ['is_active' => true], 'rules' => ['required', 'exists:training_programs,id']],
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $attendanceStatuses, 'default' => 'enrolled', 'rules' => ['required', 'in:'.implode(',', array_keys($attendanceStatuses))]],
+                ['name' => 'score', 'label' => 'Score', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0', 'max:100']],
+                ['name' => 'certificate_issued', 'label' => 'Certificate Issued', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'certificate_path', 'label' => 'Certificate', 'type' => 'private_file', 'rules' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'], 'accept' => '.pdf,image/*'],
+                ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'employee-skills' => [
+            'label' => 'Skill Records', 'group' => 'Salesman HRMS', 'singular' => 'Skill Record', 'description' => 'Skills a salesman holds and when they were certified.', 'model' => EmployeeSkill::class, 'with' => ['salesman'], 'search' => ['skill'], 'sort' => ['id', 'desc'],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'skill', 'label' => 'Skill'], ['key' => 'level', 'label' => 'Level'], ['key' => 'certified_on', 'label' => 'Certified On', 'type' => 'date'], ['key' => 'certified_by', 'label' => 'Certified By']],
+            'filters' => [['name' => 'level', 'label' => 'Level', 'options' => $skillLevels]],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'skill', 'label' => 'Skill', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'level', 'label' => 'Level', 'type' => 'select', 'options' => $skillLevels, 'default' => 'beginner', 'rules' => ['required', 'in:'.implode(',', array_keys($skillLevels))]],
+                ['name' => 'certified_on', 'label' => 'Certified On', 'type' => 'date', 'rules' => ['nullable', 'date']],
+                ['name' => 'certified_by', 'label' => 'Certified By', 'rules' => ['nullable', 'string', 'max:255']],
+                ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+            ],
+        ],
+        'audit-logs' => [
+            'label' => 'Audit Logs', 'group' => 'Settings', 'singular' => 'Audit Log', 'description' => 'Every create, update and delete recorded with who did it.', 'model' => AuditLog::class, 'with' => ['user'], 'search' => ['label', 'user_name', 'auditable_type'], 'sort' => ['created_at', 'desc'], 'can_create' => false, 'can_edit' => false, 'can_delete' => false,
+            'columns' => [['key' => 'created_at', 'label' => 'When', 'type' => 'datetime'], ['key' => 'user_name', 'label' => 'User'], ['key' => 'event_label', 'label' => 'Action'], ['key' => 'record_type', 'label' => 'Record'], ['key' => 'auditable_id', 'label' => 'ID'], ['key' => 'label', 'label' => 'Name'], ['key' => 'change_summary', 'label' => 'Changed'], ['key' => 'ip_address', 'label' => 'IP']],
+            'filters' => [['name' => 'event', 'label' => 'Action', 'options' => $auditEvents], ['name' => 'user_id', 'label' => 'User', 'option_model' => User::class]],
+            'fields' => [],
+        ],
+        'backups' => [
+            'label' => 'Backup & Restore', 'group' => 'Settings', 'singular' => 'Backup', 'description' => 'Database backups: take one, download it, restore from it.', 'model' => Backup::class, 'with' => ['creator'], 'search' => ['filename'], 'status_column' => 'status', 'status_options' => $backupStatuses, 'sort' => ['created_at', 'desc'], 'can_create' => false, 'can_edit' => false,
+            'columns' => [['key' => 'created_at', 'label' => 'Taken', 'type' => 'datetime'], ['key' => 'filename', 'label' => 'File'], ['key' => 'size_label', 'label' => 'Size'], ['key' => 'table_count', 'label' => 'Tables'], ['key' => 'creator.name', 'label' => 'By'], ['key' => 'status', 'label' => 'Status', 'type' => 'status']],
+            'fields' => [],
+        ],
+        'departments' => [
+            'label' => 'Departments', 'group' => 'Salesman HRMS', 'singular' => 'Department', 'description' => 'Org chart departments used by designations and employee records.', 'model' => Department::class, 'search' => ['name', 'code'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Department'], ['key' => 'code', 'label' => 'Code'], ['key' => 'sort_order', 'label' => 'Position'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Department Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'code', 'label' => 'Code', 'rules' => ['required', 'string', 'max:40', 'unique:departments,code'], 'help' => 'Short unique code, e.g. SALES.'],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'designations' => [
+            'label' => 'Designations', 'group' => 'Salesman HRMS', 'singular' => 'Designation', 'description' => 'Job titles, optionally grouped under a department.', 'model' => Designation::class, 'with' => ['department'], 'search' => ['name', 'code'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Designation'], ['key' => 'code', 'label' => 'Code'], ['key' => 'department.name', 'label' => 'Department'], ['key' => 'level', 'label' => 'Level'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'department_id', 'label' => 'Department', 'option_model' => Department::class]],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Designation Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'code', 'label' => 'Code', 'rules' => ['required', 'string', 'max:40', 'unique:designations,code']],
+                ['name' => 'department_id', 'label' => 'Department', 'type' => 'select', 'option_model' => Department::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:departments,id']],
+                ['name' => 'level', 'label' => 'Level', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Higher number = more senior. Used for approval routing later.'],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'leave-policies' => [
+            'label' => 'Leave Policies', 'group' => 'Salesman HRMS', 'singular' => 'Leave Policy', 'description' => 'Days granted per leave type. Replaces the entitlements that used to be hardcoded.', 'model' => LeavePolicy::class, 'search' => ['leave_type', 'label'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'label', 'label' => 'Leave Type'], ['key' => 'leave_type', 'label' => 'Code'], ['key' => 'annual_days', 'label' => 'Days / Year'], ['key' => 'is_paid', 'label' => 'Paid', 'type' => 'boolean'], ['key' => 'carry_forward', 'label' => 'Carry Forward', 'type' => 'boolean'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'fields' => [
+                ['name' => 'label', 'label' => 'Leave Type Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'leave_type', 'label' => 'Code', 'rules' => ['required', 'string', 'max:40', 'unique:leave_policies,leave_type'], 'help' => 'The code the apps send, e.g. casual, sick, earned, unpaid.'],
+                ['name' => 'annual_days', 'label' => 'Days Per Year', 'type' => 'number', 'step' => '0.5', 'rules' => ['required', 'numeric', 'min:0', 'max:365']],
+                ['name' => 'is_paid', 'label' => 'Paid Leave', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Unpaid types are deducted from salary when HRMS Settings says so.'],
+                ['name' => 'carry_forward', 'label' => 'Allow Carry Forward', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'max_carry_forward_days', 'label' => 'Max Carry Forward Days', 'type' => 'number', 'step' => '0.5', 'rules' => ['nullable', 'numeric', 'min:0', 'max:365']],
+                ['name' => 'min_notice_days', 'label' => 'Minimum Notice (days)', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0', 'max:365']],
+                ['name' => 'max_consecutive_days', 'label' => 'Max Consecutive Days', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0', 'max:365'], 'help' => '0 means no limit.'],
+                ['name' => 'requires_approval', 'label' => 'Requires Approval', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'allowance-types' => [
+            'label' => 'Allowance Types', 'group' => 'Salesman HRMS', 'singular' => 'Allowance Type', 'description' => 'Travel, fuel, mobile, DA and any other allowance payroll can pay.', 'model' => AllowanceType::class, 'search' => ['name', 'code'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Allowance'], ['key' => 'code', 'label' => 'Code'], ['key' => 'calculation_type', 'label' => 'Calculation'], ['key' => 'default_value', 'label' => 'Default'], ['key' => 'applies_to_all', 'label' => 'All Staff', 'type' => 'boolean'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'calculation_type', 'label' => 'Calculation', 'options' => $allowanceCalculations]],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Allowance Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'code', 'label' => 'Code', 'rules' => ['required', 'string', 'max:40', 'unique:allowance_types,code']],
+                ['name' => 'calculation_type', 'label' => 'Calculation', 'type' => 'select', 'options' => $allowanceCalculations, 'default' => 'fixed', 'rules' => ['required', 'in:'.implode(',', array_keys($allowanceCalculations))]],
+                ['name' => 'default_value', 'label' => 'Default Amount / Percent', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0'], 'help' => 'Rupees for a fixed allowance, percent for % of basic.'],
+                ['name' => 'is_taxable', 'label' => 'Taxable', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'applies_to_all', 'label' => 'Applies To Every Salesman', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'On means payroll pays it without an individual assignment.'],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'deduction-types' => [
+            'label' => 'Deduction Types', 'group' => 'Salesman HRMS', 'singular' => 'Deduction Type', 'description' => 'PF, ESI, Professional Tax and any other salary deduction.', 'model' => DeductionType::class, 'search' => ['name', 'code'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['sort_order', 'asc'],
+            'columns' => [['key' => 'name', 'label' => 'Deduction'], ['key' => 'code', 'label' => 'Code'], ['key' => 'calculation_type', 'label' => 'Calculation'], ['key' => 'default_value', 'label' => 'Default'], ['key' => 'statutory_kind', 'label' => 'Statutory'], ['key' => 'applies_to_all', 'label' => 'All Staff', 'type' => 'boolean'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'statutory_kind', 'label' => 'Statutory', 'options' => $statutoryKinds]],
+            'fields' => [
+                ['name' => 'name', 'label' => 'Deduction Name', 'rules' => ['required', 'string', 'max:255']],
+                ['name' => 'code', 'label' => 'Code', 'rules' => ['required', 'string', 'max:40', 'unique:deduction_types,code']],
+                ['name' => 'calculation_type', 'label' => 'Calculation', 'type' => 'select', 'options' => $deductionCalculations, 'default' => 'fixed', 'rules' => ['required', 'in:'.implode(',', array_keys($deductionCalculations))]],
+                ['name' => 'default_value', 'label' => 'Default Amount / Percent', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0']],
+                ['name' => 'statutory_kind', 'label' => 'Statutory Type', 'type' => 'select', 'options' => $statutoryKinds, 'default' => 'none', 'rules' => ['required', 'in:'.implode(',', array_keys($statutoryKinds))], 'help' => 'PF, ESI and PT use their own legal formula and ignore the calculation above.'],
+                ['name' => 'employer_share_percent', 'label' => 'Employer Share %', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0', 'max:100'], 'help' => 'Reported on the payslip, never taken from net pay.'],
+                ['name' => 'wage_ceiling', 'label' => 'Wage Ceiling', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0'], 'help' => 'PF caps basic at this; ESI stops applying above this gross. Blank = no ceiling.'],
+                ['name' => 'applies_to_all', 'label' => 'Applies To Every Salesman', 'type' => 'checkbox', 'rules' => ['boolean']],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:2000']],
+                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'employee-allowances' => [
+            'label' => 'Employee Allowances', 'group' => 'Salesman HRMS', 'singular' => 'Employee Allowance', 'description' => 'Which salesman gets which allowance, and from when.', 'model' => EmployeeAllowance::class, 'with' => ['salesman', 'allowanceType'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['effective_from', 'desc'],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'allowanceType.name', 'label' => 'Allowance'], ['key' => 'amount', 'label' => 'Amount / %'], ['key' => 'effective_from', 'label' => 'From', 'type' => 'date'], ['key' => 'effective_to', 'label' => 'To', 'type' => 'date'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'allowance_type_id', 'label' => 'Allowance', 'option_model' => AllowanceType::class]],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'allowance_type_id', 'label' => 'Allowance Type', 'type' => 'select', 'option_model' => AllowanceType::class, 'option_where' => ['is_active' => true], 'rules' => ['required', 'exists:allowance_types,id']],
+                ['name' => 'calculation_type', 'label' => 'Calculation', 'type' => 'select', 'options' => $inheritCalculation + $allowanceCalculations, 'rules' => ['nullable', 'in:'.implode(',', array_keys($allowanceCalculations))]],
+                ['name' => 'amount', 'label' => 'Amount / Percent', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0'], 'help' => 'Leave blank to use the allowance type default.'],
+                ['name' => 'effective_from', 'label' => 'Effective From', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'effective_to', 'label' => 'Effective To', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:effective_from'], 'help' => 'Leave blank if it continues.'],
+                ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:500']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'employee-deductions' => [
+            'label' => 'Employee Deductions', 'group' => 'Salesman HRMS', 'singular' => 'Employee Deduction', 'description' => 'Which salesman has which deduction, and from when.', 'model' => EmployeeDeduction::class, 'with' => ['salesman', 'deductionType'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['effective_from', 'desc'],
+            'columns' => [['key' => 'salesman.name', 'label' => 'Salesman'], ['key' => 'deductionType.name', 'label' => 'Deduction'], ['key' => 'amount', 'label' => 'Amount / %'], ['key' => 'effective_from', 'label' => 'From', 'type' => 'date'], ['key' => 'effective_to', 'label' => 'To', 'type' => 'date'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'deduction_type_id', 'label' => 'Deduction', 'option_model' => DeductionType::class]],
+            'fields' => [
+                ['name' => 'salesman_id', 'label' => 'Salesman', 'type' => 'select', 'option_model' => User::class, 'option_where' => ['role' => 'salesman'], 'rules' => ['required', 'exists:users,id']],
+                ['name' => 'deduction_type_id', 'label' => 'Deduction Type', 'type' => 'select', 'option_model' => DeductionType::class, 'option_where' => ['is_active' => true], 'rules' => ['required', 'exists:deduction_types,id']],
+                ['name' => 'calculation_type', 'label' => 'Calculation', 'type' => 'select', 'options' => $inheritCalculation + $deductionCalculations, 'rules' => ['nullable', 'in:'.implode(',', array_keys($deductionCalculations))], 'help' => 'Ignored for PF, ESI and Professional Tax.'],
+                ['name' => 'amount', 'label' => 'Amount / Percent', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0'], 'help' => 'Leave blank to use the deduction type default.'],
+                ['name' => 'effective_from', 'label' => 'Effective From', 'type' => 'date', 'rules' => ['required', 'date']],
+                ['name' => 'effective_to', 'label' => 'Effective To', 'type' => 'date', 'rules' => ['nullable', 'date', 'after_or_equal:effective_from'], 'help' => 'Leave blank if it continues.'],
+                ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:500']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
+        ],
+        'approval-workflows' => [
+            'label' => 'Approval Workflow', 'group' => 'Salesman HRMS', 'singular' => 'Approval Step', 'description' => 'Who signs off each kind of request, level by level.', 'model' => ApprovalWorkflow::class, 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['request_type', 'asc'],
+            'columns' => [['key' => 'request_type_label', 'label' => 'Request'], ['key' => 'level', 'label' => 'Level'], ['key' => 'approver_role', 'label' => 'Approver'], ['key' => 'amount_from', 'label' => 'From', 'type' => 'money'], ['key' => 'amount_to', 'label' => 'To', 'type' => 'money'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
+            'filters' => [['name' => 'request_type', 'label' => 'Request Type', 'options' => $requestTypes]],
+            'fields' => [
+                ['name' => 'request_type', 'label' => 'Request Type', 'type' => 'select', 'options' => $requestTypes, 'rules' => ['required', 'in:'.implode(',', array_keys($requestTypes))]],
+                ['name' => 'level', 'label' => 'Approval Level', 'type' => 'number', 'default' => 1, 'rules' => ['required', 'integer', 'min:1', 'max:5']],
+                ['name' => 'approver_role', 'label' => 'Approved By', 'type' => 'select', 'options' => $approverRoles, 'default' => 'admin', 'rules' => ['required', 'in:'.implode(',', array_keys($approverRoles))]],
+                ['name' => 'amount_from', 'label' => 'Amount From', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0'], 'help' => 'Blank means the step applies to any amount.'],
+                ['name' => 'amount_to', 'label' => 'Amount To', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'min:0', 'gte:amount_from']],
+                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
+            ],
         ],
         'holidays' => [
             'label' => 'Holidays', 'group' => 'Salesman HRMS', 'singular' => 'Holiday', 'description' => 'Holiday calendar shown in the salesman app.', 'model' => Holiday::class, 'search' => ['title'], 'status_column' => 'is_active', 'status_options' => $active, 'sort' => ['holiday_date', 'desc'],

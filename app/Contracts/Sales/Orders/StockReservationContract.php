@@ -12,4 +12,11 @@ interface StockReservationContract
         array $lineItems,
         ?User $actor
     ): void;
+
+    /**
+     * Frees whatever this order still has reserved (a cancelled order never
+     * ships). Safe to call more than once on the same order — it only
+     * releases the amount not already released.
+     */
+    public function release(Order $order, ?int $actorId = null): void;
 }

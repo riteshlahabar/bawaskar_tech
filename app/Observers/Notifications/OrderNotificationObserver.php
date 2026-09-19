@@ -2,13 +2,12 @@
 
 namespace App\Observers\Notifications;
 
-use App\Models\DealerProfile;
 use App\Models\Sales\Order;
 use App\Models\User;
 
 /**
  * Customer/dealer: order placed and every later status change.
- * Salesman: a dealer's own order is waiting for their review.
+ * Salesman: a dealer's order is waiting for their review.
  */
 final class OrderNotificationObserver extends NotificationObserver
 {
@@ -16,14 +15,16 @@ final class OrderNotificationObserver extends NotificationObserver
     {
         $this->notify($this->ownerId($order), 'order', 'placed', $this->replace($order), $this->data($order));
 
-        // A salesman who placed the order does not need telling about it.
-        if ($order->status === 'salesman_review' && ! $order->salesman_id && $order->dealer_id) {
+        // The order already carries its assigned salesman by the time it is
+        // created (createForDealer/createBySalesman both fill it), so this
+        // is the only signal available — a salesman notified about their own
+        // order is a minor, harmless redundancy, not worth a schema change.
+        if ($order->status === 'salesman_review' && $order->salesman_id && $order->dealer_id) {
             $this->attempt(function () use ($order): void {
-                $salesmanId = DealerProfile::query()->where('user_id', $order->dealer_id)->value('salesman_id');
                 $dealer = User::query()->with('dealerProfile')->find($order->dealer_id);
                 $name = $dealer?->dealerProfile?->firm_name ?: ($dealer?->name ?: 'A dealer');
 
-                $this->notify($salesmanId ? (int) $salesmanId : null, 'order_review', 'salesman_review', $this->replace($order) + ['dealer' => $name], $this->data($order));
+                $this->notify((int) $order->salesman_id, 'order_review', 'salesman_review', $this->replace($order) + ['dealer' => $name], $this->data($order));
             });
         }
     }

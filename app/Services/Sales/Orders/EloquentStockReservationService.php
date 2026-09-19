@@ -86,4 +86,55 @@ final class EloquentStockReservationService implements StockReservationContract
             }
         }
     }
+
+    public function release(Order $order, ?int $actorId = null): void
+    {
+        if (! config('orders.enforce_stock', true)) {
+            return;
+        }
+
+        $reserved = StockMovement::query()
+            ->selectRaw('inventory_batch_id, product_variant_id, SUM(quantity) as qty')
+            ->where('reference_type', Order::class)
+            ->where('reference_id', $order->id)
+            ->where('movement_type', 'reserved')
+            ->groupBy('inventory_batch_id', 'product_variant_id')
+            ->get();
+
+        $alreadyReleased = StockMovement::query()
+            ->selectRaw('inventory_batch_id, SUM(quantity) as qty')
+            ->where('reference_type', Order::class)
+            ->where('reference_id', $order->id)
+            ->where('movement_type', 'released')
+            ->groupBy('inventory_batch_id')
+            ->pluck('qty', 'inventory_batch_id');
+
+        foreach ($reserved as $row) {
+            $toRelease = round((float) $row->qty - (float) ($alreadyReleased[$row->inventory_batch_id] ?? 0), 3);
+
+            if ($toRelease <= 0.0001) {
+                continue;
+            }
+
+            $batch = InventoryBatch::query()->lockForUpdate()->find($row->inventory_batch_id);
+
+            if ($batch === null) {
+                continue;
+            }
+
+            $batch->forceFill([
+                'reserved_quantity' => max(0, round((float) $batch->reserved_quantity - $toRelease, 3)),
+            ])->save();
+
+            StockMovement::query()->create([
+                'inventory_batch_id' => $batch->id,
+                'product_variant_id' => $row->product_variant_id,
+                'movement_type' => 'released',
+                'quantity' => $toRelease,
+                'reference_type' => Order::class,
+                'reference_id' => $order->id,
+                'created_by' => $actorId,
+            ]);
+        }
+    }
 }

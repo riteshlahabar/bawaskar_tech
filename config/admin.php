@@ -17,6 +17,7 @@ use App\Models\Communication\SupportTicket;
 use App\Models\Communication\WebTranslation;
 use App\Models\Courier;
 use App\Models\DealerProfile;
+use App\Models\Engagement\ProductReview;
 use App\Models\Field\AttendanceLog;
 use App\Models\Field\DealerVisit;
 use App\Models\Field\Expense;
@@ -144,6 +145,7 @@ return [
             ['key' => 'categories', 'label' => 'Category', 'route' => 'admin.categories.index', 'icon' => 'iconoir-list-select'],
             ['key' => 'brands', 'label' => 'Brand', 'route' => 'admin.brands.index', 'icon' => 'iconoir-medal'],
             ['key' => 'units', 'label' => 'Unit', 'route' => 'admin.units.index', 'icon' => 'iconoir-ruler'],
+            ['key' => 'product-reviews', 'label' => 'Product Reviews', 'route' => 'admin.product-reviews.index', 'icon' => 'iconoir-star'],
             ['key' => 'inventory', 'label' => 'Stock', 'route' => 'admin.inventory.index', 'icon' => 'iconoir-package'],
             ['key' => 'warehouses', 'label' => 'Warehouse', 'route' => 'admin.warehouses.index', 'icon' => 'iconoir-home-alt'],
             ['key' => 'homepage-settings', 'label' => 'Homepage Settings', 'route' => 'admin.homepage-settings.index', 'icon' => 'iconoir-www'],
@@ -480,6 +482,14 @@ return [
             'label' => 'Dealer & Customer Pricing', 'group' => 'Catalog', 'singular' => 'Product Price', 'model' => Product::class, 'with' => ['category'], 'search' => ['name', 'sku'], 'can_create' => false, 'can_delete' => false,
             'columns' => [['key' => 'sku', 'label' => 'SKU'], ['key' => 'name', 'label' => 'Product'], ['key' => 'mrp', 'label' => 'MRP', 'type' => 'money'], ['key' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'money'], ['key' => 'customer_price', 'label' => 'Customer Price', 'type' => 'money'], ['key' => 'gst_percent', 'label' => 'GST %']],
             'fields' => [['name' => 'mrp', 'label' => 'MRP', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0']], ['name' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0']], ['name' => 'customer_price', 'label' => 'Customer Price', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0']], ['name' => 'gst_percent', 'label' => 'GST %', 'type' => 'number', 'step' => '0.01', 'rules' => ['required', 'numeric', 'min:0', 'max:100'], 'help' => 'Enter GST percent. Use 0 if GST is not applicable.']],
+        ],
+        'product-reviews' => [
+            'label' => 'Product Reviews', 'group' => 'Catalog', 'singular' => 'Product Review', 'model' => ProductReview::class, 'with' => ['product', 'user'], 'search' => ['title', 'body'], 'status_column' => 'status', 'status_options' => ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'], 'can_create' => false,
+            'columns' => [['key' => 'product.name', 'label' => 'Product'], ['key' => 'user.name', 'label' => 'Customer'], ['key' => 'rating', 'label' => 'Rating'], ['key' => 'title', 'label' => 'Title'], ['key' => 'body', 'label' => 'Review'], ['key' => 'status', 'label' => 'Status', 'type' => 'status'], ['key' => 'created_at', 'label' => 'Submitted', 'type' => 'datetime']],
+            // Only the status is editable — a customer's review text is theirs, not admin's to rewrite; the columns above already show it in full for moderation.
+            'fields' => [
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'], 'rules' => ['required', 'in:pending,approved,rejected']],
+            ],
         ],
         'warehouses' => [
             'label' => 'Warehouses', 'group' => 'Inventory', 'model' => Warehouse::class, 'search' => ['name', 'code', 'city'], 'status_column' => 'is_active', 'status_options' => $active,

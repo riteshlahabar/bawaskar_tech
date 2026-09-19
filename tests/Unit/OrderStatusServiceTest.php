@@ -2,17 +2,34 @@
 
 namespace Tests\Unit;
 
+use App\Contracts\Sales\Orders\StockReservationContract;
 use App\Models\Sales\Order;
+use App\Models\User;
 use App\Services\Sales\Orders\OrderStatusService;
 use ReflectionMethod;
 use Tests\TestCase;
 
 class OrderStatusServiceTest extends TestCase
 {
+    private function stock(): StockReservationContract
+    {
+        return new class implements StockReservationContract
+        {
+            public array $released = [];
+
+            public function reserve(Order $order, array $lineItems, ?User $actor): void {}
+
+            public function release(Order $order, ?int $actorId = null): void
+            {
+                $this->released[] = [$order->getKey(), $actorId];
+            }
+        };
+    }
+
     public function test_each_dispatch_stage_maps_to_an_order_status(): void
     {
         $stage = new ReflectionMethod(OrderStatusService::class, 'dispatchStage');
-        $service = new OrderStatusService;
+        $service = new OrderStatusService($this->stock());
 
         $cases = [
             ['packing', false, false, false, 'packing'],
@@ -37,7 +54,7 @@ class OrderStatusServiceTest extends TestCase
     public function test_the_flow_only_runs_forward_and_stops_at_cancelled(): void
     {
         $isForward = new ReflectionMethod(OrderStatusService::class, 'isForward');
-        $service = new OrderStatusService;
+        $service = new OrderStatusService($this->stock());
 
         $this->assertTrue($isForward->invoke($service, 'admin_review', 'approved'));
         $this->assertTrue($isForward->invoke($service, 'approved', 'delivered'));
@@ -54,13 +71,14 @@ class OrderStatusServiceTest extends TestCase
     {
         $order = new Order(['status' => 'admin_review']);
 
-        $this->assertFalse((new OrderStatusService)->moveTo($order, 'nonsense'));
+        $this->assertFalse((new OrderStatusService($this->stock()))->moveTo($order, 'nonsense'));
         $this->assertSame('admin_review', $order->status);
     }
 
     public function test_a_delivered_or_cancelled_order_cannot_be_cancelled(): void
     {
-        $service = new OrderStatusService;
+        $stock = $this->stock();
+        $service = new OrderStatusService($stock);
 
         $delivered = new Order(['status' => 'delivered']);
         $cancelled = new Order(['status' => 'cancelled']);
@@ -68,6 +86,10 @@ class OrderStatusServiceTest extends TestCase
         $this->assertFalse($service->cancel($delivered, 'Customer changed mind', 1));
         $this->assertFalse($service->cancel($cancelled, 'Duplicate order', 1));
         $this->assertSame('delivered', $delivered->status);
+
+        // Neither refusal reaches the point of touching reserved stock —
+        // there is nothing to release for an order that was never cancelled.
+        $this->assertSame([], $stock->released);
     }
 
     public function test_the_flow_order_matches_the_admin_status_options(): void

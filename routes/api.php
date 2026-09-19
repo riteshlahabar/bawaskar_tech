@@ -147,6 +147,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('orders', [CustomerOrderController::class, 'index']);
             Route::post('orders', [CustomerOrderController::class, 'store']);
             Route::get('orders/{order}', [CustomerOrderController::class, 'show']);
+            Route::post('orders/{order}/cancel', [CustomerOrderController::class, 'cancel']);
 
             Route::get('wishlist', [CustomerWishlistController::class, 'index']);
             Route::post('wishlist', [CustomerWishlistController::class, 'store']);
@@ -171,6 +172,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('orders', [DealerOrderController::class, 'index']);
             Route::post('orders', [DealerOrderController::class, 'store']);
             Route::get('orders/{order}', [DealerOrderController::class, 'show']);
+            Route::post('orders/{order}/cancel', [DealerOrderController::class, 'cancel']);
 
             Route::get('outstanding', [DealerOutstandingController::class, 'index']);
             Route::get('credit-limit', [DealerOutstandingController::class, 'index']);
@@ -196,6 +198,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('orders', [SalesmanOrderController::class, 'index']);
             Route::post('orders', [SalesmanOrderController::class, 'store']);
             Route::post('orders/{order}/forward-to-admin', [SalesmanOrderController::class, 'forwardToAdmin']);
+            Route::post('orders/{order}/reject', [SalesmanOrderController::class, 'reject']);
             Route::get('deliveries', [SalesmanOrderController::class, 'deliveries']);
 
             Route::post('collections', [SalesmanFinanceController::class, 'collectPayment']);

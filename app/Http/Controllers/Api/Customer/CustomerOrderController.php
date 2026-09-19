@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Customer;
 
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
+use App\Contracts\Sales\OrderStatusContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Order;
 use App\Models\User;
@@ -172,5 +173,34 @@ class CustomerOrderController extends ApiController
         $images->attach([$order]);
 
         return $this->success(['order' => $order]);
+    }
+
+    /**
+     * Self-service cancel, only while the order has not yet been approved
+     * into production — a customer order has no salesman review stage, so
+     * this is the only status before packing starts.
+     */
+    public function cancel(Request $request, OrderStatusContract $status, Order $order): JsonResponse
+    {
+        $user = $this->requireUser($request, User::ROLE_CUSTOMER);
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+
+        if ((int) $order->customer_id !== (int) $user->id) {
+            return $this->fail('Order not found.', 404);
+        }
+
+        if ($order->status !== 'admin_review') {
+            return $this->fail('This order is already being processed and can no longer be cancelled here. Please contact support.', 422);
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        $status->cancel($order, $validated['reason'], $user->id);
+
+        return $this->success(['order' => $order->fresh('items.product')], 'Order cancelled.');
     }
 }

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\DealerVisits\DealerVisitController;
 use App\Http\Controllers\Admin\DeliveryAreas\DeliveryAreaController;
 use App\Http\Controllers\Admin\Dispatches\DispatchController;
 use App\Http\Controllers\Admin\EmailTemplates\EmailTemplateController;
+use App\Http\Controllers\Admin\Engagement\ProductReviewController;
 use App\Http\Controllers\Admin\ExpenseCategories\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expenses\ExpenseController;
 use App\Http\Controllers\Admin\ExpenseSubcategories\ExpenseSubcategoryController;
@@ -104,7 +105,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         $resources = [
             'dealers' => DealerController::class, 'customers' => CustomerController::class, 'salesmen' => SalesmanController::class, 'couriers' => CourierController::class,
-            'products' => ProductController::class, 'product-related-products' => ProductRelatedProductController::class, 'product-types' => ProductTypeController::class, 'categories' => CategoryController::class, 'brands' => BrandController::class, 'units' => UnitController::class, 'pricing' => PricingController::class, 'inventory' => InventoryController::class, 'warehouses' => WarehouseController::class, 'homepage-settings' => ProductHomepageSettingController::class, 'homepage-setting-items' => ProductHomepageSettingItemController::class,
+            'products' => ProductController::class, 'product-related-products' => ProductRelatedProductController::class, 'product-types' => ProductTypeController::class, 'categories' => CategoryController::class, 'brands' => BrandController::class, 'units' => UnitController::class, 'pricing' => PricingController::class, 'product-reviews' => ProductReviewController::class, 'inventory' => InventoryController::class, 'warehouses' => WarehouseController::class, 'homepage-settings' => ProductHomepageSettingController::class, 'homepage-setting-items' => ProductHomepageSettingItemController::class,
             'orders' => OrderController::class, 'proforma-invoices' => ProformaInvoiceController::class, 'invoices' => InvoiceController::class, 'dispatches' => DispatchController::class, 'returns' => ReturnController::class,
             'payments' => PaymentController::class, 'collections' => CollectionController::class, 'outstanding' => OutstandingController::class,
             'internal-expenses' => InternalExpenseController::class, 'expense-categories' => ExpenseCategoryController::class, 'expense-subcategories' => ExpenseSubcategoryController::class,

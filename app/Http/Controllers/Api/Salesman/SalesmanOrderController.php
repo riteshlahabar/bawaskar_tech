@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Salesman;
 
 use App\Contracts\Sales\Orders\OrderWorkflowContract;
+use App\Contracts\Sales\OrderStatusContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Order;
 use App\Models\User;
@@ -56,6 +57,32 @@ final class SalesmanOrderController extends SalesmanApiController
         $order->update(['status' => 'admin_review']);
 
         return $this->success(['order' => $order->fresh('items.product')], 'Order forwarded to admin.');
+    }
+
+    /**
+     * A dealer's order the salesman disagrees with — wrong items, pricing
+     * dispute, and so on. Only reachable while it still sits in the
+     * salesman's own review stage; once forwarded, only admin can cancel it.
+     */
+    public function reject(Request $request, OrderStatusContract $status, Order $order): JsonResponse
+    {
+        $user = $this->salesman($request);
+
+        if ((int) $order->salesman_id !== (int) $user->id) {
+            return $this->fail('Order not assigned to this salesman.', 403);
+        }
+
+        if ($order->status !== 'salesman_review') {
+            return $this->fail('Only orders waiting for your review can be rejected.', 422);
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        $status->cancel($order, $validated['reason'], $user->id);
+
+        return $this->success(['order' => $order->fresh('items.product')], 'Order rejected.');
     }
 
     public function deliveries(Request $request): JsonResponse

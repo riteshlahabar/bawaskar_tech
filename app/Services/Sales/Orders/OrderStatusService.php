@@ -2,11 +2,16 @@
 
 namespace App\Services\Sales\Orders;
 
+use App\Contracts\Sales\Orders\StockReservationContract;
 use App\Contracts\Sales\OrderStatusContract;
 use App\Models\Sales\Order;
 
 final class OrderStatusService implements OrderStatusContract
 {
+    public function __construct(
+        private readonly StockReservationContract $stock,
+    ) {}
+
     /** Statuses in the order they happen; position decides what counts as forward. */
     public const FLOW = [
         'salesman_review',
@@ -59,6 +64,8 @@ final class OrderStatusService implements OrderStatusContract
             'cancelled_by' => $userId,
             'cancelled_at' => now(),
         ])->save();
+
+        $this->stock->release($order, $userId);
 
         return true;
     }

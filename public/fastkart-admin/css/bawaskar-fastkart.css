@@ -1827,11 +1827,23 @@ input[type="file"].form-control::file-selector-button {
     opacity: .85;
 }
 
-/* A slim scrollbar: the default one is as wide as the icon column. */
-.sidebar-wrapper .sidebar-main .simplebar-scrollbar:before {
-    background: rgba(255, 255, 255, .28) !important;
+/* Sidebar scrollbar. Simplebar insets the thumb 2px on each side of an 11px
+   track and keeps it at opacity 0 until you are actually scrolling, so a 6px
+   track left a 2px thumb that was invisible on the dark sidebar. The track
+   stays slim but the thumb fills it and is always faintly visible, which is
+   also the only cue that the menu continues below the fold. */
+.sidebar-wrapper .sidebar-main .simplebar-track.simplebar-vertical {
+    width: 8px !important;
 }
 
-.sidebar-wrapper .sidebar-main .simplebar-track.simplebar-vertical {
-    width: 6px !important;
+.sidebar-wrapper .sidebar-main .simplebar-scrollbar:before {
+    background: #ffffff !important;
+    left: 1px !important;
+    right: 1px !important;
+    border-radius: 4px !important;
+    opacity: .32 !important;
+}
+
+.sidebar-wrapper .sidebar-main .simplebar-scrollbar.simplebar-visible:before {
+    opacity: .6 !important;
 }

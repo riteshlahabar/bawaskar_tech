@@ -1,3 +1,7 @@
+    @php
+        $homeShopUrl = route('store.page', ['page' => 'shop-left-sidebar']);
+        $homeCompanyPhone = filled(($companySetting ?? null)?->phone) ? trim((string) $companySetting->phone) : null;
+    @endphp
     <header class="header-3">
         <div class="top-nav sticky-header sticky-header-2">
             <div class="container-fluid-lg">
@@ -18,15 +22,17 @@
                             </a>
 
                             <div class="search-full">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i data-feather="search" class="font-light"></i>
-                                    </span>
-                                    <input type="text" class="form-control search-type" placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
-                                    <span class="input-group-text close-search">
-                                        <i data-feather="x" class="font-light"></i>
-                                    </span>
-                                </div>
+                                <form action="{{ $homeShopUrl }}" method="GET" role="search">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i data-feather="search" class="font-light"></i>
+                                        </span>
+                                        <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="form-control search-type" placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
+                                        <span class="input-group-text close-search">
+                                            <i data-feather="x" class="font-light"></i>
+                                        </span>
+                                    </div>
+                                </form>
                             </div>
 
                             <div class="middle-box">
@@ -40,31 +46,33 @@
                                         </button>
                                     </div>
 
-                                    <div class="searchbar-box-2 input-group d-xl-flex d-none">
-                                        <button class="btn search-icon" type="button">
+                                    <form action="{{ $homeShopUrl }}" method="GET" role="search" class="searchbar-box-2 input-group d-xl-flex d-none">
+                                        <button class="btn search-icon" type="submit">
                                             <i class="iconly-Search icli"></i>
                                         </button>
-                                        <input type="text" class="form-control"
+                                        <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="form-control"
                                             placeholder="{{ web_t('header.search_placeholder', 'Search for products') }}">
-                                        <button class="btn search-button" type="button">{{ web_t('header.search', 'Search') }}</button>
-                                    </div>
+                                        <button class="btn search-button" type="submit">{{ web_t('header.search', 'Search') }}</button>
+                                    </form>
 
                                     @include('store.partials.language-selector')
                                 </div>
                             </div>
 
+                            @if($homeCompanyPhone)
                             <div class="rightside-menu support-sidemenu">
-                                <div class="support-box">
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $homeCompanyPhone) }}" class="support-box">
                                     <div class="support-image">
                                         <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/support.png') }}" class="img-fluid blur-up lazyload"
                                             alt="">
                                     </div>
                                     <div class="support-number">
-                                        <h2>(123) 456 7890</h2>
+                                        <h2>{{ $homeCompanyPhone }}</h2>
                                         <h4>{{ web_t('header.support_center', '24/7 Support Center') }}</h4>
                                     </div>
-                                </div>
+                                </a>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

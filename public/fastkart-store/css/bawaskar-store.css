@@ -716,3 +716,14 @@
         padding: 22px;
     }
 }
+
+/* Homepage-only footer (footer-home.blade.php) has a near-black background
+   (.footer-color-2{background-color:#051616}), so the logo's default dark
+   green (.bawaskar-store-logo{color:#0b5f46}) is unreadable there. The
+   interior-page footer (footer.blade.php, .footer-logo wrapper) has a light
+   background and keeps the dark green as-is. */
+.foot-logo .bawaskar-store-logo,
+.foot-logo .bawaskar-store-logo-text,
+.foot-logo .bawaskar-store-logo small {
+    color: #fff;
+}

@@ -44,7 +44,7 @@
         return $cmsBanners->get($placement, collect())->values()->get($index);
     };
     $cmsField = fn ($record, string $field, $fallback = null) => in_array($field, ['title', 'subtitle', 'description', 'button_text'], true) ? storefront_public_t(data_get($record, $field) ?: $fallback, 'homepage_cms') : (data_get($record, $field) ?: $fallback);
-    $cmsAsset = fn ($path, string $fallback = '') => $path ? asset($path) : null;
+    $cmsAsset = fn ($path, string $fallback = '') => $path ? \App\Support\ImageAsset::url($path) : null;
     $cmsSectionTitle = fn (string $key, string $fallback) => storefront_public_t(data_get($cmsSections->get($key), 'title') ?: $fallback, 'homepage_section');
     $heroBanner = $cmsBanner('hero_main');
     $promoBanner0 = $cmsBanner('promo_small', 0);
@@ -147,7 +147,7 @@
                     <div class="slider-animate">
                         <div>
                             <div class="home-contain rounded-0 p-0">
-                                <img src="{{ $cmsAsset($cmsField($heroBanner, 'image_path')) }}"
+                                <img loading="eager" fetchpriority="high" decoding="async" src="{{ $cmsAsset($cmsField($heroBanner, 'image_path')) }}"
                                     class="img-fluid bg-img blur-up lazyload" alt="">
                                 <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                     <div class="container-fluid-lg">
@@ -191,7 +191,7 @@
                         <div>
                             <div class="banner-contain-3 hover-effect">
                                 <a href="{{ $promoUrl }}">
-                                    <img src="{{ $cmsAsset($cmsField($promoBanner, 'image_path')) }}" class="bg-img blur-up lazyload" alt="{{ $cmsField($promoBanner, 'title') }}">
+                                    <img loading="lazy" decoding="async" src="{{ $cmsAsset($cmsField($promoBanner, 'image_path')) }}" class="bg-img blur-up lazyload" alt="{{ $cmsField($promoBanner, 'title') }}">
                                 </a>
                                 <div class="banner-detail p-center-left w-75 banner-p-sm mend-auto">
                                     <div>
@@ -314,7 +314,7 @@
                     <div class="row g-sm-4 g-2">
                         <div class="col-lg-6">
                             <div class="slider-image">
-                                <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
+                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
                                     alt="">
                             </div>
                         </div>
@@ -409,7 +409,7 @@
     <div class="cookie-bar-box">
         <div class="cookie-box">
             <div class="cookie-image">
-                <img src="{{ asset('fastkart-store/images/cookie-bar.png') }}" class="blur-up lazyload" alt="">
+                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cookie-bar.png') }}" class="blur-up lazyload" alt="">
                 <h2>Cookies!</h2>
             </div>
 

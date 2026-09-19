@@ -143,7 +143,7 @@
                         <div class="col-6">
                             <div class="fresh-image-2">
                                 <div>
-                                    <img src="{{ $aboutMedia($aboutPage->image_one_path, 'fastkart-store/images/inner-page/about-us/1.jpg') }}"
+                                    <img loading="lazy" decoding="async" src="{{ $aboutMedia($aboutPage->image_one_path, 'fastkart-store/images/inner-page/about-us/1.jpg') }}"
                                         class="bg-img blur-up lazyload" alt="{{ $aboutPage->intro_heading }}">
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                         <div class="col-6">
                             <div class="fresh-image">
                                 <div>
-                                    <img src="{{ $aboutMedia($aboutPage->image_two_path, 'fastkart-store/images/inner-page/about-us/2.jpg') }}"
+                                    <img loading="lazy" decoding="async" src="{{ $aboutMedia($aboutPage->image_two_path, 'fastkart-store/images/inner-page/about-us/2.jpg') }}"
                                         class="bg-img blur-up lazyload" alt="{{ $aboutPage->intro_heading }}">
                                 </div>
                             </div>
@@ -184,7 +184,7 @@
                                                 <div class="delivery-box">
                                                     @if ($aboutMedia($aboutHighlight->icon_path))
                                                         <div class="delivery-icon">
-                                                            <img src="{{ $aboutMedia($aboutHighlight->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutHighlight->title }}">
+                                                            <img loading="lazy" decoding="async" src="{{ $aboutMedia($aboutHighlight->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutHighlight->title }}">
                                                         </div>
                                                     @endif
 
@@ -227,7 +227,7 @@
                                 <div class="clint-contain">
                                     @if ($aboutMedia($aboutStat->icon_path))
                                         <div class="client-icon">
-                                            <img src="{{ $aboutMedia($aboutStat->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutStat->title }}">
+                                            <img loading="lazy" decoding="async" src="{{ $aboutMedia($aboutStat->icon_path) }}" class="blur-up lazyload" alt="{{ $aboutStat->title }}">
                                         </div>
                                     @endif
                                     @if (filled($aboutStat->value))
@@ -268,7 +268,7 @@
                                 <div class="team-box">
                                     @if ($aboutMedia($aboutMember->photo_path))
                                         <div class="team-image">
-                                            <img src="{{ $aboutMedia($aboutMember->photo_path) }}" class="img-fluid blur-up lazyload" alt="{{ $aboutMember->name }}">
+                                            <img loading="lazy" decoding="async" src="{{ $aboutMedia($aboutMember->photo_path) }}" class="img-fluid blur-up lazyload" alt="{{ $aboutMember->name }}">
                                         </div>
                                     @endif
 

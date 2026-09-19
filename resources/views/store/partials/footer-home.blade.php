@@ -22,7 +22,7 @@
                     <div class="col-xxl-3 col-xl-4 col-sm-6">
                         <a href="{{ route('store.home') }}" class="foot-logo theme-logo">
                             <span class="bawaskar-store-logo">
-                                    <img src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
+                                    <img loading="lazy" decoding="async" src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
                                     <span class="bawaskar-store-logo-text">Dr. Bawasakar <small>Technology</small></span>
                                 </span>
                         </a>
@@ -153,19 +153,19 @@
 
                 <ul class="payment-box">
                     <li>
-                        <img src="{{ asset('fastkart-store/images/icon/paymant/visa.png') }}" class="blur-up lazyload" alt="">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/paymant/visa.png') }}" class="blur-up lazyload" alt="">
                     </li>
                     <li>
-                        <img src="{{ asset('fastkart-store/images/icon/paymant/discover.png') }}" alt="" class="blur-up lazyload">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/paymant/discover.png') }}" alt="" class="blur-up lazyload">
                     </li>
                     <li>
-                        <img src="{{ asset('fastkart-store/images/icon/paymant/american.png') }}" alt="" class="blur-up lazyload">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/paymant/american.png') }}" alt="" class="blur-up lazyload">
                     </li>
                     <li>
-                        <img src="{{ asset('fastkart-store/images/icon/paymant/master-card.png') }}" alt="" class="blur-up lazyload">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/paymant/master-card.png') }}" alt="" class="blur-up lazyload">
                     </li>
                     <li>
-                        <img src="{{ asset('fastkart-store/images/icon/paymant/giro-pay.png') }}" alt="" class="blur-up lazyload">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/paymant/giro-pay.png') }}" alt="" class="blur-up lazyload">
                     </li>
                 </ul>
             </div>

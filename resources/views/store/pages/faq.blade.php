@@ -156,7 +156,7 @@
                                     class="faq-top-link{{ $faqCategoryCard['active'] ? ' active' : '' }}">
                                     <div class="faq-top-box">
                                         <div class="faq-box-icon">
-                                            <img src="{{ asset($faqCategoryCard['image']) }}" class="blur-up lazyload"
+                                            <img loading="lazy" decoding="async" src="{{ asset($faqCategoryCard['image']) }}" class="blur-up lazyload"
                                                 alt="{{ $faqCategoryCard['label'] }}">
                                         </div>
 

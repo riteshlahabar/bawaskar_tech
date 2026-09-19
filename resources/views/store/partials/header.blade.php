@@ -63,7 +63,7 @@
                             </button>
                             <a href="{{ route('store.home') }}" class="web-logo nav-logo">
                                 <span class="bawaskar-store-logo">
-                                    <img src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
+                                    <img decoding="async" src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
                                     <span class="bawaskar-store-logo-text">Dr. Bawasakar <small>Technology</small></span>
                                 </span>
                             </a>
@@ -142,7 +142,7 @@
                                         @endphp
                                         <li class="onhover-category-list">
                                             <a href="{{ $menuCategoryUrl }}" class="category-name">
-                                                <img src="{{ $menuCategory->storefront_image_url ?: asset('fastkart-store/svg/1/grocery.svg') }}" alt="{{ $menuCategory->storefront_name }}">
+                                                <img loading="lazy" decoding="async" src="{{ $menuCategory->storefront_image_url ?: asset('fastkart-store/svg/1/grocery.svg') }}" alt="{{ $menuCategory->storefront_name }}">
                                                 <h6>{{ $menuCategory->storefront_name }}</h6>
                                                 @if($menuCategoryProducts->isNotEmpty())
                                                     <i class="fa-solid fa-angle-right"></i>
@@ -169,7 +169,7 @@
                                     @empty
                                         <li class="onhover-category-list">
                                             <a href="{{ $shopUrl }}" class="category-name">
-                                                <img src="{{ asset('fastkart-store/svg/1/grocery.svg') }}" alt="">
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/svg/1/grocery.svg') }}" alt="">
                                                 <h6>{{ web_t('nav.all_categories', 'All Categories') }}</h6>
                                             </a>
                                         </li>

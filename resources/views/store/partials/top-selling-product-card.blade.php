@@ -17,7 +17,7 @@
 @endif
     <div class="product-image product-image-2">
         <a href="{{ $productUrl }}">
-            <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
+            <img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
         </a>
 
         <ul class="option">

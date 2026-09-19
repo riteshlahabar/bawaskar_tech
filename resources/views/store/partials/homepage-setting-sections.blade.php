@@ -63,7 +63,7 @@
             }
         }
 
-        return $path ? asset($path) : null;
+        return $path ? \App\Support\ImageAsset::url($path) : null;
     };
 
     $entryUrl = function ($entry) use ($isProduct) {
@@ -138,7 +138,7 @@
                 <div class="container-fluid-lg">
                     <?php if ($stripImage) { ?>
                         <a href="{{ $entryUrl($entry) }}" class="d-block">
-                            <img src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
+                            <img loading="lazy" decoding="async" src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
                         </a>
                     <?php } else { ?>
                         <div class="offer-box hover-effect" style="{{ $entryBg($entry) ? 'background-color: '.$entryBg($entry).';' : '' }} {{ $entryColor($entry) ? 'color: '.$entryColor($entry).';' : '' }}">
@@ -161,7 +161,7 @@
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="home-contain rounded-0 p-0">
-                                        <img src="{{ $entryImage($entry, 'main') }}" class="img-fluid bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                        <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="img-fluid bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                         <div class="home-detail home-big-space p-center-left home-overlay position-relative">
                                             <div class="container-fluid-lg">
                                                 @if($entrySubtitle($entry))<h6 class="ls-expanded theme-color text-uppercase">{{ $entrySubtitle($entry) }}</h6>@endif
@@ -187,7 +187,7 @@
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="banner-contain-3 hover-effect">
-                                        <a href="{{ $entryUrl($entry) }}"><img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
+                                        <a href="{{ $entryUrl($entry) }}"><img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
                                         <div class="banner-detail p-center-left w-75 banner-p-sm mend-auto">
                                             @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
                                             @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
@@ -263,7 +263,7 @@
                                         <div class="bank-header">
                                             <div class="bank-left w-100">
                                                 <div class="bank-image">
-                                                    <img src="{{ $entryImage($entry, 'logo') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                    <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'logo') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
                                                 </div>
                                                 <div class="bank-name">
                                                     <h2>{{ $entryTitle($entry, $section->title) }}</h2>
@@ -272,7 +272,7 @@
                                                 </div>
                                             </div>
                                             <div class="bank-right w-100">
-                                                <img src="{{ $entryImage($entry, 'offer') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'offer') }}" class="img-fluid" alt="{{ $entryTitle($entry, $section->title) }}">
                                             </div>
                                         </div>
                                         @if($entryCoupon($entry))
@@ -314,7 +314,7 @@
                                 <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($section->layout_type === 'two_column_banner' ? 'col-md-6' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6')) }}">
                                     <div class="banner-contain hover-effect">
                                         <a href="{{ $entryUrl($entry) }}">
-                                            <img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                            <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                         </a>
                                     </div>
                                 </div>
@@ -336,7 +336,7 @@
                                     <div class="blog-box ratio_50">
                                         <div class="blog-box-image">
                                             <a href="{{ $entryUrl($entry) }}">
-                                                <img src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
                                             </a>
                                         </div>
                                         <div class="blog-detail">

@@ -30,7 +30,7 @@
                                 <li class="list-{{ ($loop->index % 3) + 1 }}">
                                     <div class="deal-offer-contain">
                                         <a href="{{ $dealUrl }}" class="deal-image">
-                                            <img src="{{ $dealProduct->storefront_image_url }}" class="blur-up lazyload"
+                                            <img loading="lazy" decoding="async" src="{{ $dealProduct->storefront_image_url }}" class="blur-up lazyload"
                                                 alt="{{ $dealName }}">
                                         </a>
 

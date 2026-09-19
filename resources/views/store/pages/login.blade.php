@@ -116,7 +116,7 @@
             <div class="row">
                 <div class="col-xxl-6 col-xl-5 col-lg-6 d-lg-block d-none ms-auto">
                     <div class="image-contain">
-                        <img src="{{ asset('fastkart-store/images/inner-page/log-in.png') }}" class="img-fluid" alt="">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/log-in.png') }}" class="img-fluid" alt="">
                     </div>
                 </div>
 
@@ -195,13 +195,13 @@
                             <ul>
                                 <li>
                                     <a href="https://www.google.com/" class="btn google-button w-100">
-                                        <img src="{{ asset('fastkart-store/images/inner-page/google.png') }}" class="blur-up lazyload"
+                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/google.png') }}" class="blur-up lazyload"
                                             alt=""> Log In with Google
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://www.facebook.com/" class="btn google-button w-100">
-                                        <img src="{{ asset('fastkart-store/images/inner-page/facebook.png') }}" class="blur-up lazyload"
+                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/facebook.png') }}" class="blur-up lazyload"
                                             alt=""> Log In with Facebook
                                     </a>
                                 </li>

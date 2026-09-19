@@ -2,6 +2,7 @@
 
 namespace App\Services\Files;
 
+use App\Contracts\Files\ImageOptimizerContract;
 use App\Contracts\Files\PublicUploadContract;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -21,6 +22,10 @@ final class PublicUploadService implements PublicUploadContract
         'pdf', 'csv', 'xlsx', 'zip',
     ];
 
+    public function __construct(
+        private readonly ImageOptimizerContract $optimizer
+    ) {}
+
     public function store(UploadedFile $file, string $directory): string
     {
         $directory = trim(str_replace('\\', '/', $directory), '/');
@@ -36,7 +41,9 @@ final class PublicUploadService implements PublicUploadContract
         $filename = now()->format('YmdHis').'-'.Str::random(16).'.'.$this->extension($file);
         $file->move($publicDirectory, $filename);
 
-        return $directory.'/'.$filename;
+        // Shrinking here rather than at the call sites means every module that
+        // uploads an image gets it, present and future.
+        return $this->optimizer->optimize($directory.'/'.$filename);
     }
 
     private function extension(UploadedFile $file): string

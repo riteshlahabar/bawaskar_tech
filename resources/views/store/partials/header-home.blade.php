@@ -12,7 +12,7 @@
                             </button>
                             <a href="{{ route('store.home') }}" class="web-logo nav-logo">
                                 <span class="bawaskar-store-logo">
-                                    <img src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
+                                    <img decoding="async" src="{{ asset('logo/logo.png') }}" alt="Dr. Bawasakar Technology" class="bawaskar-store-logo-img">
                                     <span class="bawaskar-store-logo-text">Dr. Bawasakar <small>Technology</small></span>
                                 </span>
                             </a>
@@ -56,7 +56,7 @@
                             <div class="rightside-menu support-sidemenu">
                                 <div class="support-box">
                                     <div class="support-image">
-                                        <img src="{{ asset('fastkart-store/images/icon/support.png') }}" class="img-fluid blur-up lazyload"
+                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/support.png') }}" class="img-fluid blur-up lazyload"
                                             alt="">
                                     </div>
                                     <div class="support-number">
@@ -112,7 +112,7 @@
                                             <li>
                                                 <div class="drop-cart">
                                                     <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="drop-image">
-                                                        <img src="{{ asset('fastkart-store/images/vegetable/product/1.png') }}"
+                                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/1.png') }}"
                                                             class="blur-up lazyload" alt="">
                                                     </a>
 
@@ -131,7 +131,7 @@
                                             <li>
                                                 <div class="drop-cart">
                                                     <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="drop-image">
-                                                        <img src="{{ asset('fastkart-store/images/vegetable/product/2.png') }}"
+                                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/2.png') }}"
                                                             class="blur-up lazyload" alt="">
                                                     </a>
 
@@ -182,7 +182,7 @@
                             <a target="_blank" class="btn mobile-app d-xxl-flex d-none"
                                 href="https://play.google.com/store/games?utm_source=apac_med&utm_medium=hasem&utm_content=Oct0121&utm_campaign=Evergreen&pcampaignid=MKT-EDR-apac-in-1003227-med-hasem-py-Evergreen-Oct0121-Text_Search_BKWS-BKWS%7CONSEM_kwid_43700065205026415_creativeid_535350509927_device_c&gclid=Cj0KCQjw8uOWBhDXARIsAOxKJ2H1K3VqdJFHodt0-XSnQzcuOuTP-s2aPBE6lG0QVOf8D5cJBsB-DxQaAkNAEALw_wcB&gclsrc=aw.ds">
                                 <div class="mobile-image">
-                                    <img src="{{ asset('fastkart-store/images/icon/mobile.png') }}" class="img-fluid blur-up lazyload"
+                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/icon/mobile.png') }}" class="img-fluid blur-up lazyload"
                                         alt="">
                                 </div>
 

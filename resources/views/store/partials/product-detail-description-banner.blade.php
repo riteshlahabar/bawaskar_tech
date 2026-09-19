@@ -6,7 +6,7 @@
 @if($product->detail_banner_image && $bannerPosition === $position)
     <div class="banner-contain nav-desh">
         <a href="{{ $product->detail_banner_url ?: 'javascript:void(0)' }}">
-            <img src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
+            <img loading="lazy" decoding="async" src="{{ asset($product->detail_banner_image) }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
         </a>
     </div>
 @endif

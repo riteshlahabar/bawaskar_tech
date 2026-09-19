@@ -45,6 +45,7 @@ use App\Contracts\Catalog\Product\ProductWorkflowContract;
 use App\Contracts\Catalog\ProductTranslationRepositoryContract;
 use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
+use App\Contracts\Files\ImageOptimizerContract;
 use App\Contracts\Files\PublicUploadContract;
 use App\Contracts\Finance\PaymentGatewayContract;
 use App\Contracts\Hr\EmployeeExitContract;
@@ -132,6 +133,7 @@ use App\Services\Catalog\Product\ProductVariantService;
 use App\Services\Catalog\Product\ProductVariantUnitService;
 use App\Services\Catalog\Product\ProductWorkflowService;
 use App\Services\Catalog\ProductTranslationService;
+use App\Services\Files\ImageOptimizerService;
 use App\Services\Files\PublicUploadService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
@@ -209,6 +211,7 @@ class AppServiceProvider extends ServiceProvider
             AppTranslationBatchContract::class => AppTranslationBatchService::class,
             WebsiteTranslationLookupContract::class => EloquentWebsiteTranslationLookup::class,
             PublicUploadContract::class => PublicUploadService::class,
+            ImageOptimizerContract::class => ImageOptimizerService::class,
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,
             PaymentGatewayContract::class => EazypayGateway::class,

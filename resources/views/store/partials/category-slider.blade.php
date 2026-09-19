@@ -16,7 +16,7 @@
             <div class="category-box-view">
                 @if($categoryImage)
                     <a href="{{ $categoryUrl }}">
-                        <img src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->storefront_name }}">
+                        <img loading="lazy" decoding="async" src="{{ $categoryImage }}" class="img-fluid blur-up lazyload" alt="{{ $category->storefront_name }}">
                     </a>
                 @endif
                 <button onclick="location.href='{{ $categoryUrl }}';" class="btn shop-button">

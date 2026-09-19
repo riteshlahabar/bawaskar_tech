@@ -113,7 +113,7 @@
             <div class="row">
                 <div class="col-xxl-6 col-xl-5 col-lg-6 d-lg-block d-none ms-auto">
                     <div class="image-contain">
-                        <img src="{{ asset('fastkart-store/images/inner-page/sign-up.png') }}" class="img-fluid" alt="">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/sign-up.png') }}" class="img-fluid" alt="">
                     </div>
                 </div>
 
@@ -229,14 +229,14 @@
                                 <li>
                                     <a href="https://accounts.google.com/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin"
                                         class="btn google-button w-100">
-                                        <img src="{{ asset('fastkart-store/images/inner-page/google.png') }}" class="blur-up lazyload"
+                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/google.png') }}" class="blur-up lazyload"
                                             alt="">
                                         Sign up with Google
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://www.facebook.com/" class="btn google-button w-100">
-                                        <img src="{{ asset('fastkart-store/images/inner-page/facebook.png') }}" class="blur-up lazyload"
+                                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/facebook.png') }}" class="blur-up lazyload"
                                             alt=""> Sign up with Facebook
                                     </a>
                                 </li>

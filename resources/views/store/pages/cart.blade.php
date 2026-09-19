@@ -167,7 +167,7 @@
                                                     <td class="product-detail">
                                                         <div class="product border-0">
                                                             <a href="{{ $productUrl }}" class="product-image">
-                                                                <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
+                                                                <img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                                                             </a>
                                                             <div class="product-detail">
                                                                 <ul>

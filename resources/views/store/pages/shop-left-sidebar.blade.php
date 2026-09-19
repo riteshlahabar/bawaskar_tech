@@ -111,7 +111,7 @@
                     <div class="row g-sm-4 g-2">
                         <div class="col-lg-6">
                             <div class="slider-image">
-                                <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
+                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
                                     alt="">
                             </div>
                         </div>
@@ -213,7 +213,7 @@
     <!-- Add to cart Modal Start -->
     <div class="add-cart-box">
         <div class="add-image">
-            <img src="{{ asset('fastkart-store/images/cake/pro/1.jpg') }}" class="img-fluid blur-up lazyload" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/pro/1.jpg') }}" class="img-fluid blur-up lazyload" alt="">
         </div>
 
         <div class="add-contain">

@@ -20,7 +20,7 @@
         <div class="product-header">
             <div class="product-image">
                 <a href="{{ $productUrl }}">
-                    <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
+                    <img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}">
                 </a>
                 <ul class="product-option">
                     <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">

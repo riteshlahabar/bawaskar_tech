@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Support\ImageAsset;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -32,6 +33,6 @@ class ProductImage extends Model
             return $this->path;
         }
 
-        return asset($this->path);
+        return ImageAsset::url($this->path);
     }
 }

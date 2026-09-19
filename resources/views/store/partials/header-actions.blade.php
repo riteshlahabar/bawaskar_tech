@@ -59,7 +59,7 @@
                         <li class="product-box-contain">
                             <div class="drop-cart">
                                 <a href="{{ $productUrl }}" class="drop-image">
-                                    <img src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $displayName }}">
+                                    <img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $displayName }}">
                                 </a>
 
                                 <div class="drop-contain">

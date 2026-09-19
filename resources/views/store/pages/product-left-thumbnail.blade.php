@@ -133,7 +133,7 @@
                                         <div class="product-main-2 no-arrow">
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" id="img-1"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" id="img-1"
                                                         data-zoom-image="../assets/images/product/category/1.jpg"
                                                         class="img-fluid image_zoom_cls-0 blur-up lazyload" alt="">
                                                 </div>
@@ -141,7 +141,7 @@
 
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/2.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/2.jpg') }}"
                                                         data-zoom-image="../assets/images/product/category/2.jpg"
                                                         class="img-fluid image_zoom_cls-1 blur-up lazyload" alt="">
                                                 </div>
@@ -149,7 +149,7 @@
 
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/3.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/3.jpg') }}"
                                                         data-zoom-image="../assets/images/product/category/3.jpg"
                                                         class="img-fluid image_zoom_cls-2 blur-up lazyload" alt="">
                                                 </div>
@@ -157,7 +157,7 @@
 
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/4.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/4.jpg') }}"
                                                         data-zoom-image="../assets/images/product/category/4.jpg"
                                                         class="img-fluid image_zoom_cls-3 blur-up lazyload" alt="">
                                                 </div>
@@ -165,7 +165,7 @@
 
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/5.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/5.jpg') }}"
                                                         data-zoom-image="../assets/images/product/category/5.jpg"
                                                         class="img-fluid image_zoom_cls-4 blur-up lazyload" alt="">
                                                 </div>
@@ -173,7 +173,7 @@
 
                                             <div>
                                                 <div class="slider-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/6.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/6.jpg') }}"
                                                         data-zoom-image="../assets/images/product/category/6.jpg"
                                                         class="img-fluid image_zoom_cls-5 blur-up lazyload" alt="">
                                                 </div>
@@ -185,42 +185,42 @@
                                         <div class="left-slider-image-2 left-slider no-arrow slick-top">
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/2.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/2.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/3.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/3.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/4.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/4.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/5.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/5.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <div class="sidebar-image">
-                                                    <img src="{{ asset('fastkart-store/images/product/category/6.jpg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/6.jpg') }}"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                 </div>
                                             </div>
@@ -401,31 +401,31 @@
                                     <ul>
                                         <li>
                                             <a href="javascript:void(0)">
-                                                <img src="{{ asset('fastkart-store/images/product/payment/1.svg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/payment/1.svg') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void(0)">
-                                                <img src="{{ asset('fastkart-store/images/product/payment/2.svg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/payment/2.svg') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void(0)">
-                                                <img src="{{ asset('fastkart-store/images/product/payment/3.svg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/payment/3.svg') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void(0)">
-                                                <img src="{{ asset('fastkart-store/images/product/payment/4.svg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/payment/4.svg') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void(0)">
-                                                <img src="{{ asset('fastkart-store/images/product/payment/5.svg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/payment/5.svg') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
@@ -492,7 +492,7 @@
                                             </div>
 
                                             <div class="banner-contain nav-desh">
-                                                <img src="{{ asset('fastkart-store/images/vegetable/banner/14.jpg') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/banner/14.jpg') }}"
                                                     class="bg-img blur-up lazyload" alt="">
                                                 <div class="banner-details p-center banner-b-space w-100 text-center">
                                                     <div>
@@ -689,7 +689,7 @@
                                                                 <div class="people-box">
                                                                     <div>
                                                                         <div class="people-image people-text">
-                                                                            <img alt="user" class="img-fluid "
+                                                                            <img loading="lazy" decoding="async" alt="user" class="img-fluid "
                                                                                 src="{{ asset('fastkart-store/images/review/1.jpg') }}">
                                                                         </div>
                                                                     </div>
@@ -742,7 +742,7 @@
                                                                 <div class="people-box">
                                                                     <div>
                                                                         <div class="people-image people-text">
-                                                                            <img alt="user" class="img-fluid "
+                                                                            <img loading="lazy" decoding="async" alt="user" class="img-fluid "
                                                                                 src="{{ asset('fastkart-store/images/review/2.jpg') }}">
                                                                         </div>
                                                                     </div>
@@ -797,7 +797,7 @@
                                                                 <div class="people-box">
                                                                     <div>
                                                                         <div class="people-image people-text">
-                                                                            <img alt="user" class="img-fluid "
+                                                                            <img loading="lazy" decoding="async" alt="user" class="img-fluid "
                                                                                 src="{{ asset('fastkart-store/images/review/3.jpg') }}">
                                                                         </div>
                                                                     </div>
@@ -852,7 +852,7 @@
                                                                 <div class="people-box">
                                                                     <div>
                                                                         <div class="people-image people-text">
-                                                                            <img alt="user" class="img-fluid "
+                                                                            <img loading="lazy" decoding="async" alt="user" class="img-fluid "
                                                                                 src="{{ asset('fastkart-store/images/review/4.jpg') }}">
                                                                         </div>
                                                                     </div>
@@ -906,7 +906,7 @@
                                                                 <div class="people-box">
                                                                     <div>
                                                                         <div class="people-image people-text">
-                                                                            <img alt="user" class="img-fluid "
+                                                                            <img loading="lazy" decoding="async" alt="user" class="img-fluid "
                                                                                 src="{{ asset('fastkart-store/images/review/5.jpg') }}">
                                                                         </div>
                                                                     </div>
@@ -970,7 +970,7 @@
                         <div class="vendor-box">
                             <div class="vendor-contain">
                                 <div class="vendor-image">
-                                    <img src="{{ asset('fastkart-store/images/product/vendor.png') }}" class="blur-up lazyload" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/vendor.png') }}" class="blur-up lazyload" alt="">
                                 </div>
 
                                 <div class="vendor-name">
@@ -1031,7 +1031,7 @@
                                     <li>
                                         <div class="offer-product">
                                             <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="offer-image">
-                                                <img src="{{ asset('fastkart-store/images/vegetable/product/23.png') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/23.png') }}"
                                                     class="img-fluid blur-up lazyload" alt="">
                                             </a>
 
@@ -1050,7 +1050,7 @@
                                     <li>
                                         <div class="offer-product">
                                             <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="offer-image">
-                                                <img src="{{ asset('fastkart-store/images/vegetable/product/24.png') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/24.png') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
 
@@ -1069,7 +1069,7 @@
                                     <li>
                                         <div class="offer-product">
                                             <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="offer-image">
-                                                <img src="{{ asset('fastkart-store/images/vegetable/product/25.png') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/25.png') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
 
@@ -1088,7 +1088,7 @@
                                     <li class="mb-0">
                                         <div class="offer-product">
                                             <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}" class="offer-image">
-                                                <img src="{{ asset('fastkart-store/images/vegetable/product/26.png') }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/product/26.png') }}"
                                                     class="blur-up lazyload" alt="">
                                             </a>
 
@@ -1111,12 +1111,12 @@
                         <div class="ratio_156 pt-25">
                             @if($storeProduct?->detail_sidebar_banner_image)
                                 <a href="{{ $storeProduct->detail_sidebar_banner_url ?: 'javascript:void(0)' }}" class="home-contain d-block">
-                                    <img src="{{ asset($storeProduct->detail_sidebar_banner_image) }}" class="bg-img blur-up lazyload"
+                                    <img loading="lazy" decoding="async" src="{{ asset($storeProduct->detail_sidebar_banner_image) }}" class="bg-img blur-up lazyload"
                                         alt="{{ $storeProduct->translatedName() }}">
                                 </a>
                             @else
                                 <div class="home-contain">
-                                    <img src="{{ asset('fastkart-store/images/vegetable/banner/8.jpg') }}" class="bg-img blur-up lazyload"
+                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/vegetable/banner/8.jpg') }}" class="bg-img blur-up lazyload"
                                         alt="">
                                     <div class="home-detail p-top-left home-p-medium">
                                         <div>
@@ -1158,7 +1158,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="product-left.htm">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/11.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/11.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1245,7 +1245,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/2.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/2.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1331,7 +1331,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/3.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/3.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1418,7 +1418,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/4.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/4.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1505,7 +1505,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/5.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/5.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1592,7 +1592,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/6.png') }}"
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/6.png') }}"
                                                 class="img-fluid blur-up lazyload" alt="">
                                         </a>
 
@@ -1681,7 +1681,7 @@
                                 <div class="product-header">
                                     <div class="product-image">
                                         <a href="{{ route('store.page', ['page'=>'product-left-thumbnail']) }}">
-                                            <img src="{{ asset('fastkart-store/images/cake/product/7.png') }}" class="img-fluid" alt="">
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/product/7.png') }}" class="img-fluid" alt="">
                                         </a>
 
                                         <ul class="product-option">
@@ -1788,7 +1788,7 @@
                     <div class="row g-sm-4 g-2">
                         <div class="col-lg-6">
                             <div class="slider-image">
-                                <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
+                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
                                     alt="">
                             </div>
                         </div>
@@ -1890,7 +1890,7 @@
     <!-- Add to cart Modal Start -->
     <div class="add-cart-box">
         <div class="add-image">
-            <img src="{{ asset('fastkart-store/images/cake/pro/1.jpg') }}" class="img-fluid" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/cake/pro/1.jpg') }}" class="img-fluid" alt="">
         </div>
 
         <div class="add-contain">
@@ -1962,7 +1962,7 @@
                 <div class="col-12">
                     <div class="cart-content">
                         <div class="product-image">
-                            <img src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
+                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/product/category/1.jpg') }}" class="img-fluid blur-up lazyload"
                                 alt="">
                             <div class="content">
                                 <h5>Creamy Chocolate Cake</h5>
@@ -2019,7 +2019,7 @@
                     <form class="product-review-form">
                         <div class="product-wrapper">
                             <div class="product-image">
-                                <img class="img-fluid" alt="Solid Collared Tshirts"
+                                <img loading="lazy" decoding="async" class="img-fluid" alt="Solid Collared Tshirts"
                                     src="{{ asset('fastkart-store/images/fashion/product/26.jpg') }}">
                             </div>
                             <div class="product-content">

@@ -45,7 +45,7 @@
                                 <div class="deal-box">
                                     <div class="circle-box">
                                         <div class="shape-circle">
-                                            <img src="{{ asset('fastkart-store/images/grocery/circle.svg') }}" class="blur-up lazyload" alt="">
+                                            <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/grocery/circle.svg') }}" class="blur-up lazyload" alt="">
                                             <div class="shape-text">
                                                 <h6>{{ web_t('offer.hot', 'Hot') }} <br> {{ web_t('offer.deal', 'Deal') }}</h6>
                                             </div>
@@ -57,7 +57,7 @@
                                     <div>
                                         <div class="product-image">
                                             <a href="{{ $dealUrl }}">
-                                                <img src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealDisplayName }}">
+                                                <img loading="lazy" decoding="async" src="{{ $dealImage }}" class="img-fluid product-image blur-up lazyload" alt="{{ $dealDisplayName }}">
                                             </a>
 
                                             <ul class="option">

@@ -153,7 +153,7 @@
                         <div class="row">
                             <div class="col-xl-12">
                                 <div class="contact-image">
-                                    <img src="{{ asset('fastkart-store/images/inner-page/contact-us.png') }}"
+                                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/contact-us.png') }}"
                                         class="img-fluid blur-up lazyloaded" alt="">
                                 </div>
                             </div>

@@ -40,7 +40,7 @@
                         <div class="col-xxl-10 col-lg-12 col-md-10 order-xxl-2 order-lg-1 order-md-2">
                             <div class="product-main-2 no-arrow">
                                 @foreach($detailImages as $image)
-                                    <div><div class="slider-image"><img src="{{ $image->url }}" class="img-fluid image_zoom_cls-{{ $loop->index }} blur-up lazyload" alt="{{ $displayName }}"></div></div>
+                                    <div><div class="slider-image"><img loading="lazy" decoding="async" src="{{ $image->url }}" class="img-fluid image_zoom_cls-{{ $loop->index }} blur-up lazyload" alt="{{ $displayName }}"></div></div>
                                 @endforeach
                                 @foreach($detailMedia as $media)
                                     <div><div class="slider-image">
@@ -56,10 +56,10 @@
                         <div class="col-xxl-2 col-lg-12 col-md-2 order-xxl-1 order-lg-2 order-md-1">
                             <div class="left-slider-image-2 left-slider no-arrow slick-top">
                                 @foreach($detailImages as $image)
-                                    <div><div class="sidebar-image"><img src="{{ $image->url }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"></div></div>
+                                    <div><div class="sidebar-image"><img loading="lazy" decoding="async" src="{{ $image->url }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"></div></div>
                                 @endforeach
                                 @foreach($detailMedia as $media)
-                                    <div><div class="sidebar-image position-relative"><img src="{{ $media->thumbnail_url ?: $product->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $media->title ?: $displayName }}"><i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle text-white"></i></div></div>
+                                    <div><div class="sidebar-image position-relative"><img loading="lazy" decoding="async" src="{{ $media->thumbnail_url ?: $product->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $media->title ?: $displayName }}"><i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle text-white"></i></div></div>
                                 @endforeach
                             </div>
                         </div>
@@ -174,7 +174,7 @@
             <div class="right-sidebar-box">
                 <div class="vendor-box">
                     <div class="vendor-contain">
-                        <div class="vendor-image"><img src="{{ $company?->logo_url ?: asset('fastkart-store/images/product/vendor.png') }}" class="blur-up lazyload" alt="{{ $company?->company_name ?: 'Bawaskar Technology' }}"></div>
+                        <div class="vendor-image"><img loading="lazy" decoding="async" src="{{ $company?->logo_url ?: asset('fastkart-store/images/product/vendor.png') }}" class="blur-up lazyload" alt="{{ $company?->company_name ?: 'Bawaskar Technology' }}"></div>
                         <div class="vendor-name"><h5 class="fw-500">{{ $company?->company_name ?: 'Bawaskar Technology' }}</h5></div>
                     </div>
                     @if($company?->short_intro)<p class="vendor-detail">{{ $company->short_intro }}</p>@endif
@@ -196,7 +196,7 @@
                                     $trendingPrice = $trendingVariant ? $trendingVariant->priceFor($audience) : (float) ($audience === 'dealer' ? $trendingProduct->dealer_price : $trendingProduct->customer_price);
                                 @endphp
                                 <li class="{{ $loop->last ? 'mb-0' : '' }}"><div class="offer-product">
-                                    <a href="{{ route('store.product', ['product' => $trendingProduct->id]) }}" class="offer-image"><img src="{{ $trendingProduct->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $trendingProduct->translatedName() }}"></a>
+                                    <a href="{{ route('store.product', ['product' => $trendingProduct->id]) }}" class="offer-image"><img loading="lazy" decoding="async" src="{{ $trendingProduct->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $trendingProduct->translatedName() }}"></a>
                                     <div class="offer-detail"><div><a href="{{ route('store.product', ['product' => $trendingProduct->id]) }}"><h6 class="name">{{ $trendingProduct->translatedName() }}</h6></a><span>{{ $trendingVariant?->display_name ?: (data_get($trendingProduct, 'unit.short_name') ?: 'Pack') }}</span><h6 class="price theme-color">Rs. {{ number_format($trendingPrice, 2) }}</h6></div></div>
                                 </div></li>
                             @endforeach
@@ -216,7 +216,7 @@
 
 <div class="sticky-bottom-cart" data-product-sticky-cart>
     <div class="container-fluid-lg"><div class="row"><div class="col-12"><div class="cart-content">
-        <div class="product-image"><img src="{{ $product->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"><div class="content"><h5>{{ $displayName }}</h5><h6>Rs. <span data-sticky-price>{{ number_format($price, 2) }}</span><del class="text-danger" data-sticky-mrp @if($mrp <= $price) style="display:none" @endif>Rs. <span>{{ number_format($mrp, 2) }}</span></del></h6></div></div>
+        <div class="product-image"><img loading="lazy" decoding="async" src="{{ $product->storefront_image_url }}" class="img-fluid blur-up lazyload" alt="{{ $displayName }}"><div class="content"><h5>{{ $displayName }}</h5><h6>Rs. <span data-sticky-price>{{ number_format($price, 2) }}</span><del class="text-danger" data-sticky-mrp @if($mrp <= $price) style="display:none" @endif>Rs. <span>{{ number_format($mrp, 2) }}</span></del></h6></div></div>
         <form method="POST" action="{{ route('store.cart.add') }}" class="selection-section" data-store-cart-add data-product-sticky-cart-form>
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}"><input type="hidden" name="variant_id" value="{{ $selectedVariant?->id }}" data-selected-variant-input>

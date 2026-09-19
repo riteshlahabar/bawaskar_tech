@@ -283,7 +283,7 @@
                                         @foreach($cartItems as $item)
                                             @php $imageUrl = $item['product']->storefront_image_url; $displayName = $item['product']->translatedName(); @endphp
                                             <li>
-                                                <img src="{{ $imageUrl }}" class="img-fluid blur-up lazyloaded checkout-image" alt="{{ $displayName }}">
+                                                <img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="img-fluid blur-up lazyloaded checkout-image" alt="{{ $displayName }}">
                                                 <h4>{{ $displayName }} <span>X {{ number_format((float) $item['quantity'], 3) }}</span></h4>
                                                 <h4 class="price">Rs. {{ number_format((float) $item['line_total'], 2) }}</h4>
                                             </li>
@@ -299,7 +299,7 @@
                                 </div>
                                 <div class="checkout-offer">
                                     <div class="offer-title">
-                                        <div class="offer-icon"><img src="{{ asset('fastkart-store/images/inner-page/offer.svg') }}" class="img-fluid" alt=""></div>
+                                        <div class="offer-icon"><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/offer.svg') }}" class="img-fluid" alt=""></div>
                                         <div class="offer-name"><h6>Available Offers</h6></div>
                                     </div>
                                     <ul class="offer-detail"><li><p>Pricing, stock validation, and order routing are applied automatically during checkout.</p></li></ul>

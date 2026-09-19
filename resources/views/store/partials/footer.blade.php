@@ -39,7 +39,7 @@
                                 @foreach($footerServices as $footerService)
                                     <div class="service-box">
                                         <div class="service-image">
-                                            <img src="{{ $footerMediaUrl($footerService) ?: asset('fastkart-store/svg/product.svg') }}" class="blur-up lazyload" alt="{{ data_get($footerService, 'title') }}">
+                                            <img loading="lazy" decoding="async" src="{{ $footerMediaUrl($footerService) ?: asset('fastkart-store/svg/product.svg') }}" class="blur-up lazyload" alt="{{ data_get($footerService, 'title') }}">
                                         </div>
 
                                         <div class="service-detail">
@@ -60,7 +60,7 @@
                             <div class="theme-logo">
                                 <a href="{{ route('store.home') }}">
                                     <span class="bawaskar-store-logo">
-                                    <img src="{{ $company?->logo_url ?: asset('logo/logo.png') }}" alt="{{ $companyName }}" class="bawaskar-store-logo-img">
+                                    <img loading="lazy" decoding="async" src="{{ $company?->logo_url ?: asset('logo/logo.png') }}" alt="{{ $companyName }}" class="bawaskar-store-logo-img">
                                     <span class="bawaskar-store-logo-text">Dr. Bawasakar <small>Technology</small></span>
                                 </span>
                                 </a>
@@ -212,13 +212,13 @@
                                     <ul>
                                         <li class="mb-0">
                                             <a href="https://play.google.com/store/apps" target="_blank">
-                                                <img src="{{ asset('fastkart-store/images/playstore.svg') }}" class="blur-up lazyload"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/playstore.svg') }}" class="blur-up lazyload"
                                                     alt="">
                                             </a>
                                         </li>
                                         <li class="mb-0">
                                             <a href="https://www.apple.com/in/app-store/" target="_blank">
-                                                <img src="{{ asset('fastkart-store/images/appstore.svg') }}" class="blur-up lazyload"
+                                                <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/appstore.svg') }}" class="blur-up lazyload"
                                                     alt="">
                                             </a>
                                         </li>
@@ -236,7 +236,7 @@
                 </div>
 
                 <div class="payment">
-                    <img src="{{ asset('fastkart-store/images/payment/1.png') }}" class="blur-up lazyload" alt="">
+                    <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/payment/1.png') }}" class="blur-up lazyload" alt="">
                 </div>
 
                 @if($footerSocials->isNotEmpty())

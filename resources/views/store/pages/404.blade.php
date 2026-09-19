@@ -121,7 +121,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="image-404">
-                        <img src="{{ asset('fastkart-store/images/inner-page/404.png') }}" class="img-fluid blur-up lazyload" alt="">
+                        <img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/404.png') }}" class="img-fluid blur-up lazyload" alt="">
                     </div>
                 </div>
 

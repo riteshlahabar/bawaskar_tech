@@ -4,11 +4,11 @@ namespace App\Models\Catalog;
 
 use App\Casts\KeyValueRows;
 use App\Models\Inventory\InventoryBatch;
+use App\Support\ImageAsset;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -318,7 +318,7 @@ class Product extends Model
 
         foreach ([$this->homepage_image_path, $this->storefront_banner_image] as $path) {
             if (filled($path)) {
-                return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+                return ImageAsset::url($path);
             }
         }
 
@@ -344,7 +344,7 @@ class Product extends Model
 
         foreach ([$this->homepage_offer_image_path, $this->homepage_image_path, $this->storefront_banner_image] as $path) {
             if (filled($path)) {
-                return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+                return ImageAsset::url($path);
             }
         }
 

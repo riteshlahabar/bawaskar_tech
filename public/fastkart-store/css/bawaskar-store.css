@@ -30,10 +30,6 @@
     margin-left: 18px !important;
 }
 
-.header-3 .navbar-nav .nav-item:last-child .nav-link {
-    padding-right: 0 !important;
-}
-
 .header-3 .navbar-nav .nav-link.no-dropdown-arrow {
     display: inline-flex !important;
     align-items: center !important;

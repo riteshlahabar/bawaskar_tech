@@ -39,7 +39,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></head>
 <body>
     <div class="toolbar">
-        <button class="btn" onclick="window.print()">Print A4</button>
+        <button class="btn" onclick="window.print()">Print</button>
         <a class="btn" href="{{ route('admin.sales-documents.pdf', ['document' => request()->route('document'), 'id' => request()->route('id')]) }}">Download PDF</a>
     </div>
 

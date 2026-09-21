@@ -155,7 +155,7 @@
                                                 <button class="dropdown-item text-info" type="submit" form="convertOrderToPi{{ $record->id }}"><i class="iconoir-page"></i><span>Convert to PI</span></button>
                                                 @endif
                                                 @endif
-                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'order', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
+                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'order', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'order', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 
@@ -166,7 +166,7 @@
                                                 @elseif($can['edit'])
                                                     <button class="dropdown-item text-info" type="submit" form="convertPiToInvoice{{ $record->id }}"><i class="iconoir-receipt"></i><span>Convert to Sale Invoice</span></button>
                                                 @endif
-                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'proforma', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
+                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'proforma', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'proforma', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 
@@ -179,7 +179,7 @@
                                                         <button class="dropdown-item text-info" type="submit" form="sendInvoiceToDispatch{{ $record->id }}"><i class="iconoir-truck"></i><span>Send to Dispatch</span></button>
                                                     @endif
                                                 @endif
-                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'invoice', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
+                                                <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'invoice', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'invoice', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
 

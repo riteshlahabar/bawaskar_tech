@@ -18,7 +18,9 @@
         'packing', 'dispatched', 'out_for_delivery', 'in_transit', 'sent' => 'badge-light-info',
         default => 'badge-light-warning',
     };
-    $statusLabel = str((string) $doc['status'])->replace('_', ' ')->title();
+    $statusLabel = $module['key'] === 'proforma-invoices' && $doc['status'] === 'converted'
+        ? 'Converted to Sale Invoice'
+        : str((string) $doc['status'])->replace('_', ' ')->title();
     $money = fn ($value) => 'Rs. '.number_format((float) $value, 2);
 @endphp
 
@@ -48,10 +50,18 @@
                         <a class="btn btn-theme report-apply" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], $query)) }}"><i data-feather="edit-2"></i>Edit</a>
                     @endif
                     @if($module['key'] === 'orders' && $can['edit'])
-                        <form method="POST" action="{{ route('admin.orders.convert-to-proforma', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to PI</button></form>
+                        @if($order->proformaInvoices->isNotEmpty())
+                            <a class="btn btn-outline-secondary" href="{{ route('admin.proforma-invoices.show', $order->proformaInvoices->first()->getKey()) }}"><i data-feather="repeat"></i>View PI</a>
+                        @else
+                            <form method="POST" action="{{ route('admin.orders.convert-to-proforma', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to PI</button></form>
+                        @endif
                     @endif
                     @if($module['key'] === 'proforma-invoices' && $can['edit'])
-                        <form method="POST" action="{{ route('admin.proforma-invoices.convert-to-invoice', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to Sale Invoice</button></form>
+                        @if($record->status === 'converted')
+                            @if($order->invoice)<a class="btn btn-outline-secondary" href="{{ route('admin.invoices.show', $order->invoice->getKey()) }}"><i data-feather="repeat"></i>View Sale Invoice</a>@endif
+                        @else
+                            <form method="POST" action="{{ route('admin.proforma-invoices.convert-to-invoice', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to Sale Invoice</button></form>
+                        @endif
                     @endif
                     <a class="btn btn-outline-secondary" href="{{ route('admin.sales-documents.print', ['document' => $documentType, 'id' => $record->getKey()]) }}" target="_blank"><i data-feather="printer"></i>Print A4</a>
                     <a class="btn btn-outline-danger" href="{{ route('admin.sales-documents.pdf', ['document' => $documentType, 'id' => $record->getKey()]) }}"><i data-feather="download"></i>PDF</a>

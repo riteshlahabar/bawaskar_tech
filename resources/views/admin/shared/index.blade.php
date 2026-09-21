@@ -100,7 +100,8 @@
                                         @elseif(($column['type'] ?? '') === 'boolean')
                                             <span class="badge {{ $value ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">{{ $value ? 'Active' : 'Inactive' }}</span>
                                         @elseif(($column['type'] ?? '') === 'status')
-                                            <span class="badge bg-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}-subtle text-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}">{{ str($value)->replace('_', ' ')->title() }}</span>
+                                            @php($statusText = $module['key'] === 'proforma-invoices' && $value === 'converted' ? 'Converted to Sale Invoice' : str($value)->replace('_', ' ')->title())
+                                            <span class="badge bg-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}-subtle text-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}">{{ $statusText }}</span>
                                             @if($module['key'] === 'orders' && $column['key'] === 'status' && $record->proformaInvoices->isNotEmpty())
                                                 <span class="badge bg-info-subtle text-info ms-1">Converted to PI</span>
                                             @endif
@@ -160,7 +161,11 @@
 
                                             @if($module['key'] === 'proforma-invoices')
                                                 <div class="dropdown-divider"></div>
-                                                @if($can['edit'])<button class="dropdown-item text-info" type="submit" form="convertPiToInvoice{{ $record->id }}"><i class="iconoir-receipt"></i><span>Convert to Sale Invoice</span></button>@endif
+                                                @if($record->status === 'converted')
+                                                    @if($record->order?->invoice)<a class="dropdown-item text-info" href="{{ route('admin.invoices.show', $record->order->invoice->getKey()) }}"><i class="iconoir-receipt"></i><span>View Sale Invoice</span></a>@endif
+                                                @elseif($can['edit'])
+                                                    <button class="dropdown-item text-info" type="submit" form="convertPiToInvoice{{ $record->id }}"><i class="iconoir-receipt"></i><span>Convert to Sale Invoice</span></button>
+                                                @endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'proforma', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'proforma', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif

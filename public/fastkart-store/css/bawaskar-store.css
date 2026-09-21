@@ -761,7 +761,7 @@
 
 .account-dropdown .user-box-name li a,
 .account-dropdown .user-box-name li button {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 22px;
     width: 100%;

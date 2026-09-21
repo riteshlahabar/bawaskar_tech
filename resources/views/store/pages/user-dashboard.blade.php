@@ -557,6 +557,7 @@
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
 
     @include('store.partials.wishlist-script')
+    <script src="{{ asset('js/location-picker.js') }}"></script>
 
     <!-- theme setting js -->
     <script src="{{ asset('fastkart-store/js/theme-setting.js') }}"></script>

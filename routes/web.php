@@ -11,6 +11,7 @@ use App\Http\Controllers\Storefront\StorefrontLanguageController;
 use App\Http\Controllers\Storefront\StorefrontPageController;
 use App\Http\Controllers\Storefront\StorefrontPreviewController;
 use App\Http\Controllers\Storefront\StorefrontProductController;
+use App\Http\Controllers\Storefront\StorefrontProfileController;
 use App\Http\Controllers\Storefront\StorefrontWishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ Route::get('/product/{product}', [StorefrontProductController::class, 'show'])->
 Route::post('/store/login', [StorefrontAuthController::class, 'login'])->middleware('throttle:login')->name('store.auth.login');
 Route::post('/store/register', [StorefrontAuthController::class, 'register'])->middleware('throttle:login')->name('store.auth.register');
 Route::post('/store/logout', [StorefrontAuthController::class, 'logout'])->name('store.auth.logout');
+Route::post('/store/profile', [StorefrontProfileController::class, 'update'])->name('store.profile.update');
 Route::post('/cart/add', [StorefrontCartController::class, 'add'])->name('store.cart.add');
 Route::post('/cart/update', [StorefrontCartController::class, 'update'])->name('store.cart.update');
 Route::post('/cart/remove/{lineKey}', [StorefrontCartController::class, 'remove'])->where('lineKey', '[0-9:]+')->name('store.cart.remove');

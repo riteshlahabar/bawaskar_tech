@@ -29,6 +29,7 @@ use App\Contracts\Storefront\StorefrontLanguageContract;
 use App\Contracts\Storefront\StorefrontNavigationContract;
 use App\Contracts\Storefront\StorefrontOrderContextContract;
 use App\Contracts\Storefront\StorefrontPageRendererContract;
+use App\Contracts\Storefront\StorefrontProfileContract;
 use App\Contracts\Storefront\StorefrontSessionContextContract;
 use App\Repositories\Storefront\EloquentDeliveryAreaRepository;
 use App\Repositories\Storefront\EloquentStorefrontAboutRepository;
@@ -58,6 +59,7 @@ use App\Services\Storefront\StorefrontLanguageService;
 use App\Services\Storefront\StorefrontNavigationService;
 use App\Services\Storefront\StorefrontOrderContextService;
 use App\Services\Storefront\StorefrontPageRenderer;
+use App\Services\Storefront\StorefrontProfileService;
 use Illuminate\Support\ServiceProvider;
 
 final class StorefrontServiceProvider extends ServiceProvider
@@ -93,6 +95,7 @@ final class StorefrontServiceProvider extends ServiceProvider
             StorefrontFaqContract::class => StorefrontFaqService::class,
             StorefrontFaqRepositoryContract::class => EloquentStorefrontFaqRepository::class,
             StorefrontPageRendererContract::class => StorefrontPageRenderer::class,
+            StorefrontProfileContract::class => StorefrontProfileService::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

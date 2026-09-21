@@ -125,6 +125,12 @@
             @if(! $storeUser)
                 <div class="row"><div class="col-12"><div class="alert alert-warning mb-0">Please <a href="{{ route('store.page', ['page' => 'login', 'redirect_to' => route('store.page', ['page' => 'user-dashboard'])]) }}">log in</a> to access your account dashboard.</div></div></div>
             @else
+                @if(session('success'))
+                    <div class="row"><div class="col-12"><div class="alert alert-success">{{ session('success') }}</div></div></div>
+                @endif
+                @if($errors->any())
+                    <div class="row"><div class="col-12"><div class="alert alert-danger mb-0">{{ $errors->first() }}</div></div></div>
+                @endif
                 <div class="row">
                     <div class="col-xxl-3 col-lg-4">
                         <div class="dashboard-left-sidebar">
@@ -154,7 +160,7 @@
                                         <div class="dashboard-user-name"><h6 class="text-content">{{ web_t('dashboard.hello', 'Hello') }}, <b class="text-title">{{ $storeUser->name }}</b></h6><p class="text-content">{{ web_t('dashboard.review_recent_orders_note', 'You can review recent orders, confirm shipping details, and manage your account information from this dashboard.') }}</p></div>
                                         <div class="total-box"><div class="row g-sm-4 g-3"><div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6"><div class="total-contain"><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/order.svg') }}" class="img-1 blur-up lazyload" alt=""><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/order.svg') }}" class="blur-up lazyload" alt=""><div class="total-detail"><h5>{{ web_t('dashboard.total_order', 'Total Order') }}</h5><h3>{{ $orderCount }}</h3></div></div></div><div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6"><div class="total-contain"><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/pending.svg') }}" class="img-1 blur-up lazyload" alt=""><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/pending.svg') }}" class="blur-up lazyload" alt=""><div class="total-detail"><h5>{{ web_t('dashboard.total_pending_order', 'Total Pending Order') }}</h5><h3>{{ $pendingOrderCount }}</h3></div></div></div><div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6"><div class="total-contain"><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/wishlist.svg') }}" class="img-1 blur-up lazyload" alt=""><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/svg/wishlist.svg') }}" class="blur-up lazyload" alt=""><div class="total-detail"><h5>{{ web_t('dashboard.saved_address', 'Saved Address') }}</h5><h3>{{ $addressCount }}</h3></div></div></div></div></div>
                                         <div class="dashboard-title"><h3>{{ web_t('dashboard.account_information', 'Account Information') }}</h3></div>
-                                        <div class="row g-4"><div class="col-xxl-6"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.contact_information', 'Contact Information') }}</h4></div><div class="dashboard-detail"><h6 class="text-content">{{ $storeUser->name }}</h6><h6 class="text-content">{{ $storeUser->email ?: web_t('dashboard.email_not_available', 'Email not available') }}</h6><h6 class="text-content">{{ $storeUser->mobile ?: web_t('dashboard.mobile_not_available', 'Mobile not available') }}</h6></div></div><div class="col-xxl-6"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.account_status', 'Account Status') }}</h4></div><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.account_type', 'Account Type') }}: {{ ucfirst($storeUser->role) }}</h6><h6 class="text-content">{{ web_t('dashboard.status', 'Status') }}: {{ ucwords(str_replace('_', ' ', (string) $storeUser->status)) }}</h6><h6 class="text-content">{{ web_t('dashboard.last_login', 'Last Login') }}: {{ $storeUser->last_login_at?->format('d M Y, h:i A') ?: web_t('dashboard.not_available', 'Not available') }}</h6></div></div><div class="col-12"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.default_address', 'Default Address') }}</h4></div><div class="row g-4"><div class="col-xxl-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.default_shipping_address', 'Default Shipping Address') }}</h6>@if($storePrimaryAddress)<h6 class="text-content">{{ $storePrimaryAddress->name }}</h6><h6 class="text-content">{{ $storePrimaryAddress->address_line1 }}{{ $storePrimaryAddress->address_line2 ? ', '.$storePrimaryAddress->address_line2 : '' }}</h6><h6 class="text-content">{{ $storePrimaryAddress->city }}, {{ $storePrimaryAddress->state }} - {{ $storePrimaryAddress->pincode }}</h6><h6 class="text-content">{{ $storePrimaryAddress->mobile }}</h6>@else<h6 class="text-content">{{ web_t('dashboard.no_default_address_saved', 'No default address saved yet.') }}</h6>@endif</div></div><div class="col-xxl-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.checkout_flow', 'Checkout Flow') }}</h6><h6 class="text-content">{{ web_t('dashboard.checkout_flow_note', 'You can update delivery address during checkout and place a new order directly from the storefront.') }}</h6><a href="{{ route('store.page', ['page' => 'checkout']) }}">{{ web_t('dashboard.go_to_checkout', 'Go to Checkout') }}</a></div></div></div></div></div>
+                                        <div class="row g-4"><div class="col-xxl-6"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.contact_information', 'Contact Information') }} <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editProfile">{{ web_t('dashboard.edit', 'Edit') }}</a></h4></div><div class="dashboard-detail"><h6 class="text-content">{{ $storeUser->name }}</h6><h6 class="text-content">{{ $storeUser->email ?: web_t('dashboard.email_not_available', 'Email not available') }}</h6><h6 class="text-content">{{ $storeUser->mobile ?: web_t('dashboard.mobile_not_available', 'Mobile not available') }}</h6></div></div><div class="col-xxl-6"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.account_status', 'Account Status') }}</h4></div><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.account_type', 'Account Type') }}: {{ ucfirst($storeUser->role) }}</h6><h6 class="text-content">{{ web_t('dashboard.status', 'Status') }}: {{ ucwords(str_replace('_', ' ', (string) $storeUser->status)) }}</h6><h6 class="text-content">{{ web_t('dashboard.last_login', 'Last Login') }}: {{ $storeUser->last_login_at?->format('d M Y, h:i A') ?: web_t('dashboard.not_available', 'Not available') }}</h6></div></div><div class="col-12"><div class="dashboard-content-title"><h4>{{ web_t('dashboard.default_address', 'Default Address') }}</h4></div><div class="row g-4"><div class="col-xxl-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.default_shipping_address', 'Default Shipping Address') }}</h6>@if($storePrimaryAddress)<h6 class="text-content">{{ $storePrimaryAddress->name }}</h6><h6 class="text-content">{{ $storePrimaryAddress->address_line1 }}{{ $storePrimaryAddress->address_line2 ? ', '.$storePrimaryAddress->address_line2 : '' }}</h6><h6 class="text-content">{{ $storePrimaryAddress->city }}, {{ $storePrimaryAddress->state }} - {{ $storePrimaryAddress->pincode }}</h6><h6 class="text-content">{{ $storePrimaryAddress->mobile }}</h6>@else<h6 class="text-content">{{ web_t('dashboard.no_default_address_saved', 'No default address saved yet.') }}</h6>@endif<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editProfile">{{ web_t('dashboard.edit_address', 'Edit Address') }}</a></div></div><div class="col-xxl-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.checkout_flow', 'Checkout Flow') }}</h6><h6 class="text-content">{{ web_t('dashboard.checkout_flow_note', 'You can update delivery address during checkout and place a new order directly from the storefront.') }}</h6><a href="{{ route('store.page', ['page' => 'checkout']) }}">{{ web_t('dashboard.go_to_checkout', 'Go to Checkout') }}</a></div></div></div></div></div>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="pills-order" role="tabpanel"><div class="dashboard-order"><div class="title"><h2>{{ web_t('dashboard.my_orders_history', 'My Orders History') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="order-contain">@forelse($recentOrders as $order)@php $firstItem = $order->items->first(); $product = $firstItem?->product; $imageUrl = optional($product?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); $status = ucwords(str_replace('_', ' ', (string) $order->status)); $statusClass = in_array((string) $order->status, ['delivered', 'completed'], true) ? 'success-bg' : ''; $quantityTotal = $order->items->sum('quantity'); @endphp<div class="order-box dashboard-bg-box"><div class="order-container"><div class="order-icon"><i data-feather="box"></i></div><div class="order-detail"><h4>{{ $order->order_no }} <span class="{{ $statusClass }}">{{ $status }}</span></h4><h6 class="text-content">{{ web_t('dashboard.placed_on', 'Placed on') }} {{ $order->created_at?->format('d M Y, h:i A') ?: 'N/A' }} | {{ web_t('dashboard.payment', 'Payment') }}: {{ ucwords(str_replace('_', ' ', (string) ($order->payment_method ?: 'cod'))) }}</h6></div></div><div class="product-order-detail"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="order-image"><img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $product?->translatedName() ?: web_t('dashboard.order_item', 'Order item') }}"></a><div class="order-wrap"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}"><h3>{{ $product?->translatedName() ?: web_t('dashboard.order_items', 'Order items') }}</h3></a><p class="text-content">{{ $order->items->count() }} {{ web_t('dashboard.line_items_order_note', 'line item(s) in this order. Delivery and stock movement are handled from the live ecommerce backend.') }}</p><ul class="product-size"><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.grand_total', 'Grand Total') }} : </h6><h5>Rs. {{ number_format((float) $order->grand_total, 2) }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.quantity', 'Quantity') }} : </h6><h5>{{ rtrim(rtrim(number_format((float) $quantityTotal, 3, '.', ''), '0'), '.') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.salesman', 'Salesman') }} : </h6><h5>{{ $order->salesman?->name ?: web_t('dashboard.assigned_later', 'Assigned later') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.order_view', 'Order View') }} : </h6><h5><a href="{{ route('store.page', ['page' => 'order-tracking', 'order' => $order->order_no]) }}">{{ web_t('nav.track_order', 'Track Order') }}</a></h5></div></li></ul></div></div></div>@empty<div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_orders_placed_yet', 'No orders placed yet.') }}</h6><a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ web_t('dashboard.start_shopping', 'Start Shopping') }}</a></div>@endforelse</div></div></div>
@@ -361,114 +367,72 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row g-4">
-                        <div class="col-xxl-12">
-                            <form>
+                    <form id="editProfileForm" method="POST" action="{{ route('store.profile.update') }}">
+                        @csrf
+                        <div class="row g-4">
+                            <div class="col-xxl-12">
                                 <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="pname" value="Jack Jennas">
+                                    <input type="text" class="form-control" name="name" id="pname" value="{{ old('name', $storeUser->name) }}">
                                     <label for="pname">Full Name</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-xxl-6">
-                            <form>
+                            <div class="col-xxl-6">
                                 <div class="form-floating theme-form-floating">
-                                    <input type="email" class="form-control" id="email1" value="vicki.pope@gmail.com">
+                                    <input type="email" class="form-control" name="email" id="email1" value="{{ old('email', $storeUser->email) }}">
                                     <label for="email1">Email address</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-xxl-6">
-                            <form>
+                            <div class="col-xxl-6">
                                 <div class="form-floating theme-form-floating">
-                                    <input class="form-control" type="tel" value="4567891234" name="mobile" id="mobile"
-                                        maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
-                                            this.value.slice(0, this.maxLength);">
-                                    <label for="mobile">Email address</label>
+                                    <input class="form-control" type="tel" value="{{ $storeUser->mobile }}" id="mobile" readonly>
+                                    <label for="mobile">Mobile Number (cannot be changed)</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-12">
-                            <form>
+                            <div class="col-12">
                                 <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address1"
-                                        value="8424 James Lane South San Francisco">
+                                    <input type="text" class="form-control" name="address_line1" id="address1"
+                                        value="{{ old('address_line1', $storePrimaryAddress->address_line1 ?? '') }}">
                                     <label for="address1">Add Address</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-12">
-                            <form>
+                            <div class="col-12">
                                 <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address2" value="CA 94080">
+                                    <input type="text" class="form-control" name="address_line2" id="address2" value="{{ old('address_line2', $storePrimaryAddress->address_line2 ?? '') }}">
                                     <label for="address2">Add Address 2</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-xxl-4">
-                            <form>
+                            <div class="col-xxl-4">
                                 <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect1">
-                                        <option selected>Choose Your Country</option>
-                                        <option value="kingdom">United Kingdom</option>
-                                        <option value="states">United States</option>
-                                        <option value="fra">France</option>
-                                        <option value="china">China</option>
-                                        <option value="spain">Spain</option>
-                                        <option value="italy">Italy</option>
-                                        <option value="turkey">Turkey</option>
-                                        <option value="germany">Germany</option>
-                                        <option value="russian">Russian Federation</option>
-                                        <option value="malay">Malaysia</option>
-                                        <option value="mexico">Mexico</option>
-                                        <option value="austria">Austria</option>
-                                        <option value="hong">Hong Kong SAR, China</option>
-                                        <option value="ukraine">Ukraine</option>
-                                        <option value="thailand">Thailand</option>
-                                        <option value="saudi">Saudi Arabia</option>
-                                        <option value="canada">Canada</option>
-                                        <option value="singa">Singapore</option>
-                                    </select>
-                                    <label for="floatingSelect">Country</label>
+                                    <input type="text" class="form-control" name="city" id="address-city" value="{{ old('city', $storePrimaryAddress->city ?? '') }}">
+                                    <label for="address-city">City</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-xxl-4">
-                            <form>
+                            <div class="col-xxl-4">
                                 <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect">
-                                        <option selected>Choose Your City</option>
-                                        <option value="kingdom">India</option>
-                                        <option value="states">Canada</option>
-                                        <option value="fra">Dubai</option>
-                                        <option value="china">Los Angeles</option>
-                                        <option value="spain">Thailand</option>
-                                    </select>
-                                    <label for="floatingSelect">City</label>
+                                    <input type="text" class="form-control" name="state" id="address-state" value="{{ old('state', $storePrimaryAddress->state ?? '') }}">
+                                    <label for="address-state">State</label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div class="col-xxl-4">
-                            <form>
+                            <div class="col-xxl-4">
                                 <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address3" value="94080">
+                                    <input type="text" class="form-control" name="pincode" id="address3" value="{{ old('pincode', $storePrimaryAddress->pincode ?? '') }}">
                                     <label for="address3">Pin Code</label>
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-animation btn-md fw-bold"
                         data-bs-dismiss="modal">Close</button>
-                    <button type="button" data-bs-dismiss="modal"
+                    <button type="submit" form="editProfileForm"
                         class="btn theme-bg-color btn-md fw-bold text-light">Save changes</button>
                 </div>
             </div>
@@ -636,6 +600,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+@if($errors->any())
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (!window.bootstrap) {
+        return;
+    }
+
+    const modalEl = document.getElementById('editProfile');
+    if (modalEl) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+});
+</script>
+@endif
 </body>
 
 </html>

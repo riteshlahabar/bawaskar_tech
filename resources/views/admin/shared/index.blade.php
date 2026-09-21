@@ -185,17 +185,14 @@
 
                                             @if($module['key'] === 'dispatches' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
-                                                <div class="px-3 py-2">
-                                                    <form method="POST" action="{{ route('admin.dispatches.status', $record->getKey()) }}">
-                                                        @csrf
-                                                        <label class="form-label small text-muted mb-1">Change Status</label>
-                                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                                                            @foreach($module['status_options'] as $statusKey => $statusLabel)
-                                                                <option value="{{ $statusKey }}" @selected($record->status === $statusKey)>{{ $statusLabel }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </form>
-                                                </div>
+                                                <form method="POST" action="{{ route('admin.dispatches.status', $record->getKey()) }}" class="dropdown-item-text">
+                                                    @csrf
+                                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                        @foreach($module['status_options'] as $statusKey => $statusLabel)
+                                                            <option value="{{ $statusKey }}" @selected($record->status === $statusKey)>{{ $statusLabel }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </form>
                                             @endif
 
                                             @if($module['key'] === 'resignations' && $can['edit'])

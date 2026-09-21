@@ -121,7 +121,7 @@
                                 @endforeach
                                 <td class="text-end">
                                     <div class="dropdown admin-row-action">
-                                        <button class="btn btn-sm btn-outline-secondary admin-row-action-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Actions" aria-label="Actions">
+                                        <button class="btn btn-sm btn-outline-secondary admin-row-action-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Actions" aria-label="Actions">
                                             <i class="fa-solid fa-ellipsis-vertical"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end admin-row-action-menu">
@@ -181,6 +181,21 @@
                                                 @endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'invoice', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'invoice', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
+                                            @endif
+
+                                            @if($module['key'] === 'dispatches' && $can['edit'])
+                                                <div class="dropdown-divider"></div>
+                                                <div class="px-3 py-2">
+                                                    <form method="POST" action="{{ route('admin.dispatches.status', $record->getKey()) }}">
+                                                        @csrf
+                                                        <label class="form-label small text-muted mb-1">Change Status</label>
+                                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                            @foreach($module['status_options'] as $statusKey => $statusLabel)
+                                                                <option value="{{ $statusKey }}" @selected($record->status === $statusKey)>{{ $statusLabel }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </form>
+                                                </div>
                                             @endif
 
                                             @if($module['key'] === 'resignations' && $can['edit'])

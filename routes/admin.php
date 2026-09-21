@@ -146,6 +146,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::post('proforma-invoices/{id}/convert-to-invoice', [ProformaInvoiceController::class, 'convertToInvoice'])->name('proforma-invoices.convert-to-invoice');
         Route::post('invoices/{id}/send-to-dispatch', [InvoiceController::class, 'sendToDispatch'])->name('invoices.send-to-dispatch');
+        Route::post('dispatches/{id}/status', [DispatchController::class, 'status'])->name('dispatches.status');
         Route::get('sales-documents/{document}/{id}/print', [SalesDocumentController::class, 'print'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.print');
         Route::get('sales-documents/{document}/{id}/pdf', [SalesDocumentController::class, 'pdf'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.pdf');
         Route::post('expenses/{expense}/decision', [ExpenseController::class, 'decision'])->name('expenses.decision');

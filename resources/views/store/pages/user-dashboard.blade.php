@@ -159,7 +159,60 @@
                                 </div>
                                 <div class="tab-pane fade" id="pills-order" role="tabpanel"><div class="dashboard-order"><div class="title"><h2>{{ web_t('dashboard.my_orders_history', 'My Orders History') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="order-contain">@forelse($recentOrders as $order)@php $firstItem = $order->items->first(); $product = $firstItem?->product; $imageUrl = optional($product?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); $status = ucwords(str_replace('_', ' ', (string) $order->status)); $statusClass = in_array((string) $order->status, ['delivered', 'completed'], true) ? 'success-bg' : ''; $quantityTotal = $order->items->sum('quantity'); @endphp<div class="order-box dashboard-bg-box"><div class="order-container"><div class="order-icon"><i data-feather="box"></i></div><div class="order-detail"><h4>{{ $order->order_no }} <span class="{{ $statusClass }}">{{ $status }}</span></h4><h6 class="text-content">{{ web_t('dashboard.placed_on', 'Placed on') }} {{ $order->created_at?->format('d M Y, h:i A') ?: 'N/A' }} | {{ web_t('dashboard.payment', 'Payment') }}: {{ ucwords(str_replace('_', ' ', (string) ($order->payment_method ?: 'cod'))) }}</h6></div></div><div class="product-order-detail"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="order-image"><img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $product?->translatedName() ?: web_t('dashboard.order_item', 'Order item') }}"></a><div class="order-wrap"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}"><h3>{{ $product?->translatedName() ?: web_t('dashboard.order_items', 'Order items') }}</h3></a><p class="text-content">{{ $order->items->count() }} {{ web_t('dashboard.line_items_order_note', 'line item(s) in this order. Delivery and stock movement are handled from the live ecommerce backend.') }}</p><ul class="product-size"><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.grand_total', 'Grand Total') }} : </h6><h5>Rs. {{ number_format((float) $order->grand_total, 2) }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.quantity', 'Quantity') }} : </h6><h5>{{ rtrim(rtrim(number_format((float) $quantityTotal, 3, '.', ''), '0'), '.') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.salesman', 'Salesman') }} : </h6><h5>{{ $order->salesman?->name ?: web_t('dashboard.assigned_later', 'Assigned later') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.order_view', 'Order View') }} : </h6><h5><a href="{{ route('store.page', ['page' => 'order-tracking', 'order' => $order->order_no]) }}">{{ web_t('nav.track_order', 'Track Order') }}</a></h5></div></li></ul></div></div></div>@empty<div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_orders_placed_yet', 'No orders placed yet.') }}</h6><a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ web_t('dashboard.start_shopping', 'Start Shopping') }}</a></div>@endforelse</div></div></div>
                                 <div class="tab-pane fade" id="pills-address" role="tabpanel"><div class="dashboard-address"><div class="title"><h2>{{ web_t('dashboard.saved_addresses', 'Saved Addresses') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="row g-sm-4 g-3">@forelse($storeUser->addresses as $address)<div class="col-xxl-6 col-xl-6 col-lg-12 col-md-6"><div class="dashboard-detail"><h5 class="text-title mb-2">{{ ucfirst($address->type ?: 'shipping') }} @if($address->is_default)<span class="badge bg-success ms-2">{{ web_t('dashboard.default', 'Default') }}</span>@endif</h5><h6 class="text-content">{{ $address->name }}</h6><h6 class="text-content">{{ $address->address_line1 }}{{ $address->address_line2 ? ', '.$address->address_line2 : '' }}</h6><h6 class="text-content">{{ $address->city }}, {{ $address->state }} - {{ $address->pincode }}</h6><h6 class="text-content">{{ $address->mobile }}</h6></div></div>@empty<div class="col-12"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_saved_addresses_note', 'No saved addresses yet. Add one during checkout and save it as default.') }}</h6></div></div>@endforelse</div></div></div>
-                                <div class="tab-pane fade" id="pills-profile" role="tabpanel"><div class="dashboard-profile"><div class="title"><h2>{{ web_t('dashboard.profile_details', 'Profile Details') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="row g-4"><div class="col-md-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.name', 'Name') }}: {{ $storeUser->name }}</h6><h6 class="text-content">{{ web_t('dashboard.email', 'Email') }}: {{ $storeUser->email ?: web_t('dashboard.not_available', 'Not available') }}</h6><h6 class="text-content">{{ web_t('dashboard.mobile', 'Mobile') }}: {{ $storeUser->mobile ?: web_t('dashboard.not_available', 'Not available') }}</h6><h6 class="text-content">{{ web_t('dashboard.role', 'Role') }}: {{ ucfirst($storeUser->role) }}</h6></div></div><div class="col-md-6"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.status', 'Status') }}: {{ ucwords(str_replace('_', ' ', (string) $storeUser->status)) }}</h6><h6 class="text-content">{{ web_t('dashboard.orders_available', 'Orders Available') }}: {{ $orderCount }}</h6><h6 class="text-content">{{ web_t('dashboard.saved_addresses', 'Saved Addresses') }}: {{ $addressCount }}</h6><form method="POST" action="{{ route('store.auth.logout') }}" class="mt-3">@csrf<button type="submit" class="btn theme-bg-color text-white btn-md fw-bold">{{ web_t('dashboard.logout', 'Logout') }}</button></form></div></div></div></div></div>
+                                <div class="tab-pane fade" id="pills-profile" role="tabpanel">
+                                    <div class="dashboard-profile">
+                                        <div class="title">
+                                            <h2>{{ web_t('dashboard.profile_details', 'Profile Details') }}</h2>
+                                            <span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span>
+                                        </div>
+
+                                        <div class="profile-detail dashboard-bg-box">
+                                            <div class="dashboard-title"><h3>{{ web_t('dashboard.profile_name', 'Profile Name') }}</h3></div>
+                                            <div class="profile-name-detail">
+                                                <div class="d-sm-flex align-items-center d-block"><h3>{{ $storeUser->name }}</h3></div>
+                                                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editProfile">{{ web_t('dashboard.edit', 'Edit') }}</a>
+                                            </div>
+                                            <div class="location-profile">
+                                                <ul>
+                                                    <li><div class="location-box"><i data-feather="mail"></i><h6>{{ $storeUser->email ?: web_t('dashboard.not_available', 'Not available') }}</h6></div></li>
+                                                    <li><div class="location-box"><i data-feather="phone"></i><h6>{{ $storeUser->mobile ?: web_t('dashboard.not_available', 'Not available') }}</h6></div></li>
+                                                    <li><div class="location-box"><i data-feather="check-square"></i><h6>{{ ucfirst($storeUser->role) }} {{ web_t('dashboard.account', 'Account') }}</h6></div></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="profile-about dashboard-bg-box">
+                                            <div class="row">
+                                                <div class="col-xxl-7">
+                                                    <div class="dashboard-title mb-3"><h3>{{ web_t('dashboard.account_details', 'Account Details') }}</h3></div>
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <tbody>
+                                                                <tr><td>{{ web_t('dashboard.status', 'Status') }} :</td><td>{{ ucwords(str_replace('_', ' ', (string) $storeUser->status)) }}</td></tr>
+                                                                <tr><td>{{ web_t('dashboard.orders_available', 'Orders Available') }} :</td><td>{{ $orderCount }}</td></tr>
+                                                                <tr><td>{{ web_t('dashboard.saved_addresses', 'Saved Addresses') }} :</td><td>{{ $addressCount }}</td></tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                    <div class="dashboard-title mb-3"><h3>{{ web_t('dashboard.login_details', 'Login Details') }}</h3></div>
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <tbody>
+                                                                <tr><td>{{ web_t('dashboard.email', 'Email') }} :</td><td><a href="javascript:void(0)">{{ $storeUser->email ?: web_t('dashboard.not_available', 'Not available') }} <span data-bs-toggle="modal" data-bs-target="#editProfile">{{ web_t('dashboard.edit', 'Edit') }}</span></a></td></tr>
+                                                                <tr><td>{{ web_t('dashboard.password', 'Password') }} :</td><td><a href="javascript:void(0)">●●●●●● <span data-bs-toggle="modal" data-bs-target="#editProfile">{{ web_t('dashboard.edit', 'Edit') }}</span></a></td></tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-xxl-5">
+                                                    <div class="profile-image"><img loading="lazy" decoding="async" src="{{ asset('fastkart-store/images/inner-page/dashboard-profile.png') }}" class="img-fluid blur-up lazyload" alt="{{ $storeUser->name }}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

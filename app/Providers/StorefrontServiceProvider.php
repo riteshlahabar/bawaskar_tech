@@ -20,6 +20,7 @@ use App\Contracts\Storefront\Session\StorefrontOrderSessionContract;
 use App\Contracts\Storefront\Session\StorefrontSessionProductRulesContract;
 use App\Contracts\Storefront\Session\StorefrontWishlistContract;
 use App\Contracts\Storefront\StorefrontAboutPageContract;
+use App\Contracts\Storefront\StorefrontAddressContract;
 use App\Contracts\Storefront\StorefrontCatalogContract;
 use App\Contracts\Storefront\StorefrontContactContract;
 use App\Contracts\Storefront\StorefrontDeliveryLocationContract;
@@ -50,6 +51,7 @@ use App\Services\Storefront\Session\StorefrontSessionProductRules;
 use App\Services\Storefront\Session\StorefrontSessionService;
 use App\Services\Storefront\Session\StorefrontWishlistService;
 use App\Services\Storefront\StorefrontAboutPageService;
+use App\Services\Storefront\StorefrontAddressService;
 use App\Services\Storefront\StorefrontCatalogService;
 use App\Services\Storefront\StorefrontContactService;
 use App\Services\Storefront\StorefrontDeliveryLocationService;
@@ -96,6 +98,7 @@ final class StorefrontServiceProvider extends ServiceProvider
             StorefrontFaqRepositoryContract::class => EloquentStorefrontFaqRepository::class,
             StorefrontPageRendererContract::class => StorefrontPageRenderer::class,
             StorefrontProfileContract::class => StorefrontProfileService::class,
+            StorefrontAddressContract::class => StorefrontAddressService::class,
         ];
 
         foreach ($bindings as $contract => $implementation) {

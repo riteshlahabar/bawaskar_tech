@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Payments\EazypayCallbackController;
+use App\Http\Controllers\Storefront\StorefrontAddressController;
 use App\Http\Controllers\Storefront\StorefrontAuthController;
 use App\Http\Controllers\Storefront\StorefrontCartController;
 use App\Http\Controllers\Storefront\StorefrontCategoryController;
@@ -29,6 +30,10 @@ Route::post('/store/login', [StorefrontAuthController::class, 'login'])->middlew
 Route::post('/store/register', [StorefrontAuthController::class, 'register'])->middleware('throttle:login')->name('store.auth.register');
 Route::post('/store/logout', [StorefrontAuthController::class, 'logout'])->name('store.auth.logout');
 Route::post('/store/profile', [StorefrontProfileController::class, 'update'])->name('store.profile.update');
+Route::post('/store/addresses', [StorefrontAddressController::class, 'store'])->name('store.addresses.store');
+Route::put('/store/addresses/{address}', [StorefrontAddressController::class, 'update'])->name('store.addresses.update');
+Route::delete('/store/addresses/{address}', [StorefrontAddressController::class, 'destroy'])->name('store.addresses.destroy');
+Route::post('/store/addresses/{address}/default', [StorefrontAddressController::class, 'makeDefault'])->name('store.addresses.default');
 Route::post('/cart/add', [StorefrontCartController::class, 'add'])->name('store.cart.add');
 Route::post('/cart/update', [StorefrontCartController::class, 'update'])->name('store.cart.update');
 Route::post('/cart/remove/{lineKey}', [StorefrontCartController::class, 'remove'])->where('lineKey', '[0-9:]+')->name('store.cart.remove');

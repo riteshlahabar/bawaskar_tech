@@ -164,7 +164,52 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="pills-order" role="tabpanel"><div class="dashboard-order"><div class="title"><h2>{{ web_t('dashboard.my_orders_history', 'My Orders History') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="order-contain">@forelse($recentOrders as $order)@php $firstItem = $order->items->first(); $product = $firstItem?->product; $imageUrl = optional($product?->images?->first())->url ?: asset('fastkart-store/images/vegetable/product/1.png'); $status = ucwords(str_replace('_', ' ', (string) $order->status)); $statusClass = in_array((string) $order->status, ['delivered', 'completed'], true) ? 'success-bg' : ''; $quantityTotal = $order->items->sum('quantity'); @endphp<div class="order-box dashboard-bg-box"><div class="order-container"><div class="order-icon"><i data-feather="box"></i></div><div class="order-detail"><h4>{{ $order->order_no }} <span class="{{ $statusClass }}">{{ $status }}</span></h4><h6 class="text-content">{{ web_t('dashboard.placed_on', 'Placed on') }} {{ $order->created_at?->format('d M Y, h:i A') ?: 'N/A' }} | {{ web_t('dashboard.payment', 'Payment') }}: {{ ucwords(str_replace('_', ' ', (string) ($order->payment_method ?: 'cod'))) }}</h6></div></div><div class="product-order-detail"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}" class="order-image"><img loading="lazy" decoding="async" src="{{ $imageUrl }}" class="blur-up lazyload" alt="{{ $product?->translatedName() ?: web_t('dashboard.order_item', 'Order item') }}"></a><div class="order-wrap"><a href="{{ $product ? route('store.product', ['product' => $product->id]) : route('store.page', ['page' => 'shop-left-sidebar']) }}"><h3>{{ $product?->translatedName() ?: web_t('dashboard.order_items', 'Order items') }}</h3></a><p class="text-content">{{ $order->items->count() }} {{ web_t('dashboard.line_items_order_note', 'line item(s) in this order. Delivery and stock movement are handled from the live ecommerce backend.') }}</p><ul class="product-size"><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.grand_total', 'Grand Total') }} : </h6><h5>Rs. {{ number_format((float) $order->grand_total, 2) }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.quantity', 'Quantity') }} : </h6><h5>{{ rtrim(rtrim(number_format((float) $quantityTotal, 3, '.', ''), '0'), '.') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.salesman', 'Salesman') }} : </h6><h5>{{ $order->salesman?->name ?: web_t('dashboard.assigned_later', 'Assigned later') }}</h5></div></li><li><div class="size-box"><h6 class="text-content">{{ web_t('dashboard.order_view', 'Order View') }} : </h6><h5><a href="{{ route('store.page', ['page' => 'order-tracking', 'order' => $order->order_no]) }}">{{ web_t('nav.track_order', 'Track Order') }}</a></h5></div></li></ul></div></div></div>@empty<div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_orders_placed_yet', 'No orders placed yet.') }}</h6><a href="{{ route('store.page', ['page' => 'shop-left-sidebar']) }}">{{ web_t('dashboard.start_shopping', 'Start Shopping') }}</a></div>@endforelse</div></div></div>
-                                <div class="tab-pane fade" id="pills-address" role="tabpanel"><div class="dashboard-address"><div class="title"><h2>{{ web_t('dashboard.saved_addresses', 'Saved Addresses') }}</h2><span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span></div><div class="row g-sm-4 g-3">@forelse($storeUser->addresses as $address)<div class="col-xxl-6 col-xl-6 col-lg-12 col-md-6"><div class="dashboard-detail"><h5 class="text-title mb-2">{{ ucfirst($address->type ?: 'shipping') }} @if($address->is_default)<span class="badge bg-success ms-2">{{ web_t('dashboard.default', 'Default') }}</span>@endif</h5><h6 class="text-content">{{ $address->name }}</h6><h6 class="text-content">{{ $address->address_line1 }}{{ $address->address_line2 ? ', '.$address->address_line2 : '' }}</h6><h6 class="text-content">{{ $address->city }}, {{ $address->state }} - {{ $address->pincode }}</h6><h6 class="text-content">{{ $address->mobile }}</h6></div></div>@empty<div class="col-12"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_saved_addresses_note', 'No saved addresses yet. Add one during checkout and save it as default.') }}</h6></div></div>@endforelse</div></div></div>
+                                <div class="tab-pane fade" id="pills-address" role="tabpanel">
+                                    <div class="dashboard-address">
+                                        <div class="title title-flex">
+                                            <div>
+                                                <h2>{{ web_t('dashboard.saved_addresses', 'Saved Addresses') }}</h2>
+                                                <span class="title-leaf title-leaf-gray"><svg class="icon-width bg-gray"><use xlink:href="{{ asset('fastkart-store/svg/leaf.svg') }}#leaf"></use></svg></span>
+                                            </div>
+                                            <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3" data-bs-toggle="modal" data-bs-target="#add-address"><i data-feather="plus" class="me-2"></i>{{ web_t('dashboard.add_new_address', 'Add New Address') }}</button>
+                                        </div>
+
+                                        <div class="row g-sm-4 g-3">
+                                            @forelse($storeUser->addresses as $address)
+                                                <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                    <div class="address-box">
+                                                        <div>
+                                                            <form method="POST" action="{{ route('store.addresses.default', $address->id) }}" class="form-check">
+                                                                @csrf
+                                                                <input class="form-check-input" type="radio" name="default_address" id="addressDefault{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }} onchange="this.form.submit()">
+                                                            </form>
+
+                                                            <div class="label"><label for="addressDefault{{ $address->id }}">{{ ucfirst($address->type ?: 'shipping') }}</label></div>
+
+                                                            <div class="table-responsive address-table">
+                                                                <table class="table">
+                                                                    <tbody>
+                                                                        <tr><td colspan="2">{{ $address->name }}</td></tr>
+                                                                        <tr><td>{{ web_t('dashboard.address', 'Address') }} :</td><td><p>{{ $address->address_line1 }}{{ $address->address_line2 ? ', '.$address->address_line2 : '' }}, {{ $address->city }}, {{ $address->state }}</p></td></tr>
+                                                                        <tr><td>{{ web_t('dashboard.pin_code', 'Pin Code') }} :</td><td>{{ $address->pincode }}</td></tr>
+                                                                        <tr><td>{{ web_t('dashboard.phone', 'Phone') }} :</td><td>{{ $address->mobile }}</td></tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="button-group">
+                                                            <button class="btn btn-sm add-button w-100" data-bs-toggle="modal" data-bs-target="#editAddress{{ $address->id }}"><i data-feather="edit"></i>{{ web_t('dashboard.edit', 'Edit') }}</button>
+                                                            <button class="btn btn-sm add-button w-100" data-bs-toggle="modal" data-bs-target="#removeAddress" data-address-id="{{ $address->id }}"><i data-feather="trash-2"></i>{{ web_t('dashboard.remove', 'Remove') }}</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <div class="col-12"><div class="dashboard-detail"><h6 class="text-content">{{ web_t('dashboard.no_saved_addresses_note', 'No saved addresses yet. Add one during checkout and save it as default.') }}</h6></div></div>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="tab-pane fade" id="pills-profile" role="tabpanel">
                                     <div class="dashboard-profile">
                                         <div class="title">
@@ -306,51 +351,125 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="addAddressForm" method="POST" action="{{ route('store.addresses.store') }}">
+                        @csrf
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="text" class="form-control" id="fname" placeholder="Enter First Name">
-                            <label for="fname">First Name</label>
+                            <input type="text" class="form-control" name="type" placeholder="Home / Office">
+                            <label>{{ web_t('dashboard.address_type', 'Address Type (Home / Office)') }}</label>
                         </div>
-                    </form>
-
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="text" class="form-control" id="lname" placeholder="Enter Last Name">
-                            <label for="lname">Last Name</label>
+                            <input type="text" class="form-control" name="name" placeholder="Enter Name" required>
+                            <label>{{ web_t('dashboard.name', 'Name') }}</label>
                         </div>
-                    </form>
-
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="email" class="form-control" id="email" placeholder="Enter Email Address">
-                            <label for="email">Email Address</label>
+                            <input type="tel" class="form-control" name="mobile" placeholder="Enter Mobile Number" maxlength="10" required>
+                            <label>{{ web_t('dashboard.mobile', 'Mobile') }}</label>
                         </div>
-                    </form>
-
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <textarea class="form-control" placeholder="Leave a comment here" id="address"
-                                style="height: 100px"></textarea>
-                            <label for="address">Enter Address</label>
+                            <input type="text" class="form-control" name="address_line1" placeholder="Enter Address" required>
+                            <label>{{ web_t('dashboard.add_address', 'Add Address') }}</label>
                         </div>
-                    </form>
-
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="email" class="form-control" id="pin" placeholder="Enter Pin Code">
-                            <label for="pin">Pin Code</label>
+                            <input type="text" class="form-control" name="address_line2" placeholder="Enter Address 2">
+                            <label>{{ web_t('dashboard.add_address_2', 'Add Address 2') }}</label>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" name="city" placeholder="City" required>
+                                    <label>{{ web_t('dashboard.city', 'City') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" name="state" placeholder="State" required>
+                                    <label>{{ web_t('dashboard.state', 'State') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" required>
+                                    <label>{{ web_t('dashboard.pin_code', 'Pin Code') }}</label>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn theme-bg-color btn-md text-white" data-bs-dismiss="modal">Save
+                    <button type="submit" form="addAddressForm" class="btn theme-bg-color btn-md text-white">Save
                         changes</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Add address modal box end -->
+
+    @if($storeUser)
+        @foreach($storeUser->addresses as $address)
+            <!-- Edit address modal for {{ $address->id }} -->
+            <div class="modal fade theme-modal" id="editAddress{{ $address->id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Address</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editAddressForm{{ $address->id }}" method="POST" action="{{ route('store.addresses.update', $address->id) }}">
+                                @csrf
+                                @method('PUT')
+                                <div class="form-floating mb-4 theme-form-floating">
+                                    <input type="text" class="form-control" name="type" value="{{ $address->type }}" placeholder="Home / Office">
+                                    <label>{{ web_t('dashboard.address_type', 'Address Type (Home / Office)') }}</label>
+                                </div>
+                                <div class="form-floating mb-4 theme-form-floating">
+                                    <input type="text" class="form-control" name="name" value="{{ $address->name }}" required>
+                                    <label>{{ web_t('dashboard.name', 'Name') }}</label>
+                                </div>
+                                <div class="form-floating mb-4 theme-form-floating">
+                                    <input type="tel" class="form-control" name="mobile" value="{{ $address->mobile }}" maxlength="10" required>
+                                    <label>{{ web_t('dashboard.mobile', 'Mobile') }}</label>
+                                </div>
+                                <div class="form-floating mb-4 theme-form-floating">
+                                    <input type="text" class="form-control" name="address_line1" value="{{ $address->address_line1 }}" required>
+                                    <label>{{ web_t('dashboard.add_address', 'Add Address') }}</label>
+                                </div>
+                                <div class="form-floating mb-4 theme-form-floating">
+                                    <input type="text" class="form-control" name="address_line2" value="{{ $address->address_line2 }}">
+                                    <label>{{ web_t('dashboard.add_address_2', 'Add Address 2') }}</label>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <div class="form-floating theme-form-floating">
+                                            <input type="text" class="form-control" name="city" value="{{ $address->city }}" required>
+                                            <label>{{ web_t('dashboard.city', 'City') }}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating theme-form-floating">
+                                            <input type="text" class="form-control" name="state" value="{{ $address->state }}" required>
+                                            <label>{{ web_t('dashboard.state', 'State') }}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating theme-form-floating">
+                                            <input type="text" class="form-control" name="pincode" value="{{ $address->pincode }}" required>
+                                            <label>{{ web_t('dashboard.pin_code', 'Pin Code') }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" form="editAddressForm{{ $address->id }}" class="btn theme-bg-color btn-md text-white">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
 
     <!-- Location Modal Start -->
     @include('store.partials.location-modal', ['locationModalLabelId' => 'exampleModalLabel1'])
@@ -505,20 +624,24 @@
     <div class="modal fade theme-modal remove-profile" id="removeAddress" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                <div class="modal-header d-block text-center">
+                    <h5 class="modal-title w-100" id="exampleModalLabel12">Remove this address?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="remove-box text-center">
-                        <h4 class="text-content">It's Removed.</h4>
+                        <p>This address will be removed from your account. This cannot be undone.</p>
                     </div>
                 </div>
                 <div class="modal-footer pt-0">
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
-                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                    <form id="removeAddressForm" method="POST" data-action-template="{{ route('store.addresses.destroy', ['address' => '__ID__']) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn theme-bg-color btn-md fw-bold text-light">Yes, Remove</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -580,6 +703,24 @@ document.addEventListener('DOMContentLoaded', function () {
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const removeModal = document.getElementById('removeAddress');
+    const removeForm = document.getElementById('removeAddressForm');
+    if (!removeModal || !removeForm) {
+        return;
+    }
+
+    removeModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const addressId = button ? button.getAttribute('data-address-id') : null;
+        const template = removeForm.getAttribute('data-action-template');
+        if (addressId && template) {
+            removeForm.setAttribute('action', template.replace('__ID__', addressId));
+        }
+    });
 });
 </script>
 @if($errors->any())

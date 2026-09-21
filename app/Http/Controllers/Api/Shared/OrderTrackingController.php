@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Order;
 use App\Services\Sales\Access\OrderOwnershipScope;
+use App\Services\Sales\Orders\OrderStatusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,43 +44,43 @@ class OrderTrackingController extends ApiController
      * The ordered checkpoint list the UI draws as a vertical stepper. Each
      * stage carries the moment it happened, or null while it is still ahead of
      * the order, so the app needs no status-to-step mapping of its own.
+     *
+     * "Done" for packed/dispatched/out-for-delivery/delivered comes from the
+     * order's own status position in OrderStatusService::FLOW — the single
+     * authority on order progress — not from a dispatch timestamp column,
+     * since admin can move status on Dispatch & Delivery (the quick status
+     * change, or the Status field) without ever filling those columns.
      */
     private function stages(Order $order, ?Dispatch $dispatch): array
     {
+        $orderFlowIndex = array_search($order->status, OrderStatusService::FLOW, true);
+        $fallbackAt = $dispatch?->updated_at ?? $order->updated_at;
+
         return [
-            $this->stage('placed', 'Order placed', $order->created_at),
-            $this->stage('approved', 'Approved', $order->approved_at),
-            $this->stage('packed', 'Packed', $dispatch?->created_at),
-            $this->stage('dispatched', 'Dispatched', $dispatch?->dispatched_at),
-            $this->stage('out_for_delivery', 'Out for delivery', $this->outForDeliveryAt($order, $dispatch)),
-            $this->stage('delivered', 'Delivered', $dispatch?->delivered_at),
+            $this->stage('placed', 'Order placed', $order->created_at, true),
+            $this->stage('approved', 'Approved', $order->approved_at, $order->approved_at !== null),
+            $this->flowStage('packed', 'Packed', 'packing', $orderFlowIndex, $dispatch?->created_at, $fallbackAt),
+            $this->flowStage('dispatched', 'Dispatched', 'dispatched', $orderFlowIndex, $dispatch?->dispatched_at, $fallbackAt),
+            $this->flowStage('out_for_delivery', 'Out for delivery', 'out_for_delivery', $orderFlowIndex, $dispatch?->out_for_delivery_at, $fallbackAt),
+            $this->flowStage('delivered', 'Delivered', 'delivered', $orderFlowIndex, $dispatch?->delivered_at, $fallbackAt),
         ];
     }
 
-    /**
-     * The recorded time first; otherwise inferred from the status, or from the
-     * delivery itself, so a delivered order never shows a skipped step.
-     */
-    private function outForDeliveryAt(Order $order, ?Dispatch $dispatch): ?object
+    private function flowStage(string $key, string $label, string $flowStatus, int|false $orderFlowIndex, ?object $recordedAt, ?object $fallbackAt): array
     {
-        if ($dispatch?->out_for_delivery_at) {
-            return $dispatch->out_for_delivery_at;
-        }
+        $stageIndex = array_search($flowStatus, OrderStatusService::FLOW, true);
+        $done = $orderFlowIndex !== false && $stageIndex !== false && $orderFlowIndex >= $stageIndex;
 
-        if ($order->status === 'out_for_delivery' || $dispatch?->status === 'out_for_delivery') {
-            return $dispatch?->updated_at ?? $order->updated_at;
-        }
-
-        return $dispatch?->delivered_at;
+        return $this->stage($key, $label, $recordedAt ?? ($done ? $fallbackAt : null), $done);
     }
 
-    private function stage(string $key, string $label, ?object $at): array
+    private function stage(string $key, string $label, ?object $at, bool $done): array
     {
         return [
             'key' => $key,
             'label' => $label,
             'at' => $at?->toIso8601String(),
-            'done' => $at !== null,
+            'done' => $done,
         ];
     }
 

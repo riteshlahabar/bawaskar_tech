@@ -81,7 +81,7 @@ final class OrderStatusService implements OrderStatusContract
             return 'out_for_delivery';
         }
 
-        if ($dispatched || in_array($dispatchStatus, ['dispatched', 'in_transit'], true)) {
+        if ($dispatched || $dispatchStatus === 'dispatched') {
             return 'dispatched';
         }
 

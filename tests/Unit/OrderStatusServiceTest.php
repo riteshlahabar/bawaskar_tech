@@ -34,7 +34,6 @@ class OrderStatusServiceTest extends TestCase
         $cases = [
             ['packing', false, false, false, 'packing'],
             ['dispatched', false, false, false, 'dispatched'],
-            ['in_transit', false, false, false, 'dispatched'],
             ['packing', true, false, false, 'dispatched'],
             ['packing', true, true, false, 'out_for_delivery'],
             ['out_for_delivery', false, false, false, 'out_for_delivery'],

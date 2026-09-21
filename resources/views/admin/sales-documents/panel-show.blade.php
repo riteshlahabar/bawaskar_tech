@@ -15,7 +15,7 @@
     $statusBadge = fn (?string $status): string => match (strtolower((string) $status)) {
         'active', 'approved', 'delivered', 'paid', 'accepted', 'converted', 'issued' => 'badge-light-success',
         'cancelled', 'rejected', 'failed' => 'badge-light-danger',
-        'packing', 'dispatched', 'out_for_delivery', 'in_transit', 'sent' => 'badge-light-info',
+        'packing', 'dispatched', 'out_for_delivery', 'sent' => 'badge-light-info',
         default => 'badge-light-warning',
     };
     $statusLabel = $module['key'] === 'proforma-invoices' && $doc['status'] === 'converted'

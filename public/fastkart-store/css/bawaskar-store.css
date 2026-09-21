@@ -754,7 +754,8 @@
 }
 
 .account-dropdown.onhover-div-login {
-    width: 240px;
+    width: max-content;
+    min-width: 240px;
     padding: 8px 0;
 }
 
@@ -762,7 +763,7 @@
 .account-dropdown .user-box-name li button {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
     width: 100%;
     background: transparent;
     border: 0;

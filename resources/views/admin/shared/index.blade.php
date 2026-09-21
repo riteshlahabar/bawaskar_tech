@@ -185,14 +185,12 @@
 
                                             @if($module['key'] === 'dispatches' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
-                                                <form method="POST" action="{{ route('admin.dispatches.status', $record->getKey()) }}" class="dropdown-item-text">
-                                                    @csrf
-                                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                                                        @foreach($module['status_options'] as $statusKey => $statusLabel)
-                                                            <option value="{{ $statusKey }}" @selected($record->status === $statusKey)>{{ $statusLabel }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </form>
+                                                @foreach($module['status_options'] as $statusKey => $statusLabel)
+                                                    <button class="dropdown-item {{ $record->status === $statusKey ? 'text-success' : '' }}" type="submit" form="dispatchStatus{{ $record->id }}" name="status" value="{{ $statusKey }}">
+                                                        <i class="fa-solid fa-check" style="{{ $record->status === $statusKey ? '' : 'opacity:0' }}"></i>
+                                                        <span>{{ $statusLabel }}</span>
+                                                    </button>
+                                                @endforeach
                                             @endif
 
                                             @if($module['key'] === 'resignations' && $can['edit'])
@@ -245,6 +243,9 @@
             @endif
             @if($module['key'] === 'invoices')
                 <form id="sendInvoiceToDispatch{{ $record->id }}" method="POST" action="{{ route('admin.invoices.send-to-dispatch', $record->getKey()) }}" class="d-none">@csrf</form>
+            @endif
+            @if($module['key'] === 'dispatches')
+                <form id="dispatchStatus{{ $record->id }}" method="POST" action="{{ route('admin.dispatches.status', $record->getKey()) }}" class="d-none">@csrf</form>
             @endif
             @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
                 <div class="modal fade" id="approveDealer{{ $record->id }}"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.dealers.approve', $record->id) }}">@csrf<div class="modal-header"><h5>Approve {{ $record->name }}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">Assign Salesman</label><select name="salesman_id" class="form-select" required>@foreach(\App\Models\User::where('role', 'salesman')->where('status', 'active')->orderBy('name')->get() as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach</select><label class="form-label mt-3">Credit Limit</label><input name="credit_limit" type="number" step="0.01" min="0" class="form-control" value="0"></div><div class="modal-footer"><button class="btn btn-success">Approve & Assign</button></div></form></div></div>

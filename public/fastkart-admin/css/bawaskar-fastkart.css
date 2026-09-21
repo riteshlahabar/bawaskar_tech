@@ -604,6 +604,8 @@ input[type="file"].form-control::file-selector-button {
 
 .iconoir-calculator::before { content: "\f1ec" !important; }
 
+.iconoir-truck::before { content: "\f0d1" !important; }
+
 /* Professional smaller table header text */
 .page-wrapper table thead th,
 .page-wrapper .table thead th,

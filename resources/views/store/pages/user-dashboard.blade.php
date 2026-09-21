@@ -406,26 +406,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-xxl-4">
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" name="city" id="address-city" value="{{ old('city', $storePrimaryAddress->city ?? '') }}">
-                                    <label for="address-city">City</label>
-                                </div>
-                            </div>
-
-                            <div class="col-xxl-4">
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" name="state" id="address-state" value="{{ old('state', $storePrimaryAddress->state ?? '') }}">
-                                    <label for="address-state">State</label>
-                                </div>
-                            </div>
-
-                            <div class="col-xxl-4">
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" name="pincode" id="address3" value="{{ old('pincode', $storePrimaryAddress->pincode ?? '') }}">
-                                    <label for="address3">Pin Code</label>
-                                </div>
-                            </div>
+                            @include('store.partials.location-fields')
                         </div>
                     </form>
                 </div>

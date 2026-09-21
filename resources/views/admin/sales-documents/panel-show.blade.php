@@ -33,6 +33,9 @@
                         <h4 class="report-hero-title">{{ $doc['number'] }}</h4>
                         <div class="people-hero-meta">
                             <span class="badge {{ $statusBadge($doc['status']) }}">{{ $statusLabel }}</span>
+                            @if($module['key'] === 'orders' && $order->proformaInvoices->isNotEmpty())
+                                <span class="badge badge-light-info">Converted to PI</span>
+                            @endif
                             <span><i data-feather="{{ $isDealer ? 'briefcase' : 'user' }}"></i>{{ $isDealer ? 'Dealer' : 'Customer' }}</span>
                             @if($doc['date'])<span><i data-feather="calendar"></i>{{ $doc['date']->format('d-m-Y') }}</span>@endif
                             @if($doc['validUntil'])<span><i data-feather="clock"></i>Valid until {{ $doc['validUntil']->format('d-m-Y') }}</span>@endif

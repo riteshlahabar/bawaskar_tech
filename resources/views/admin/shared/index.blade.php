@@ -101,6 +101,9 @@
                                             <span class="badge {{ $value ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">{{ $value ? 'Active' : 'Inactive' }}</span>
                                         @elseif(($column['type'] ?? '') === 'status')
                                             <span class="badge bg-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}-subtle text-{{ in_array($value, ['active','approved','paid','delivered','verified','collected']) ? 'success' : (in_array($value, ['rejected','cancelled','inactive']) ? 'danger' : 'warning') }}">{{ str($value)->replace('_', ' ')->title() }}</span>
+                                            @if($module['key'] === 'orders' && $column['key'] === 'status' && $record->proformaInvoices->isNotEmpty())
+                                                <span class="badge bg-info-subtle text-info ms-1">Converted to PI</span>
+                                            @endif
                                         @elseif(($column['type'] ?? '') === 'money')
                                             Rs. {{ number_format((float) $value, 2) }}
                                         @elseif(($column['type'] ?? '') === 'email')
@@ -145,7 +148,11 @@
                                                 @if(! in_array((string) $record->status, ['cancelled', 'delivered'], true))
                                                 <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal" data-bs-target="#orderCancel{{ $record->id }}"><i class="iconoir-cancel"></i><span>Cancel Order</span></button>
                                                 @endif
+                                                @if($record->proformaInvoices->isNotEmpty())
+                                                <a class="dropdown-item text-info" href="{{ route('admin.proforma-invoices.edit', $record->proformaInvoices->first()->getKey()) }}"><i class="iconoir-page"></i><span>View PI</span></a>
+                                                @else
                                                 <button class="dropdown-item text-info" type="submit" form="convertOrderToPi{{ $record->id }}"><i class="iconoir-page"></i><span>Convert to PI</span></button>
+                                                @endif
                                                 @endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'order', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'order', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>

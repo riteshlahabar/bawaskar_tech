@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin\Invoices;
 
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
+use App\Models\Sales\Dispatch;
+use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class InvoiceController extends AdminModuleController
@@ -27,5 +30,23 @@ class InvoiceController extends AdminModuleController
         }
 
         return $data;
+    }
+
+    public function sendToDispatch(int|string $id): RedirectResponse
+    {
+        $invoice = Invoice::query()->with('order')->findOrFail($id);
+        $order = $invoice->order;
+
+        abort_unless($order, 422, 'Sale Invoice is not linked to a Sale Order.');
+
+        $dispatch = Dispatch::query()->firstOrCreate(
+            ['order_id' => $order->id],
+            [
+                'dispatch_no' => 'DSP'.now()->format('ymdHis').str_pad((string) $order->id, 4, '0', STR_PAD_LEFT),
+                'status' => 'packing',
+            ]
+        );
+
+        return redirect()->route('admin.dispatches.edit', $dispatch->getKey())->with('success', 'Sale Invoice sent to Dispatch.');
     }
 }

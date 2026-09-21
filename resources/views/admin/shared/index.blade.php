@@ -172,6 +172,13 @@
 
                                             @if($module['key'] === 'invoices')
                                                 <div class="dropdown-divider"></div>
+                                                @if($can['edit'])
+                                                    @if($record->order?->dispatches->isNotEmpty())
+                                                        <a class="dropdown-item text-info" href="{{ route('admin.dispatches.edit', $record->order->dispatches->first()->getKey()) }}"><i class="iconoir-truck"></i><span>View Dispatch</span></a>
+                                                    @else
+                                                        <button class="dropdown-item text-info" type="submit" form="sendInvoiceToDispatch{{ $record->id }}"><i class="iconoir-truck"></i><span>Send to Dispatch</span></button>
+                                                    @endif
+                                                @endif
                                                 <a class="dropdown-item" href="{{ route('admin.sales-documents.print', ['document' => 'invoice', 'id' => $record->getKey()]) }}" target="_blank"><i class="fa-solid fa-print"></i><span>Print A4</span></a>
                                                 <a class="dropdown-item text-danger" href="{{ route('admin.sales-documents.pdf', ['document' => 'invoice', 'id' => $record->getKey()]) }}"><i class="fa-solid fa-file-pdf"></i><span>Download PDF</span></a>
                                             @endif
@@ -223,6 +230,9 @@
             @endif
             @if($module['key'] === 'proforma-invoices')
                 <form id="convertPiToInvoice{{ $record->id }}" method="POST" action="{{ route('admin.proforma-invoices.convert-to-invoice', $record->getKey()) }}" class="d-none">@csrf</form>
+            @endif
+            @if($module['key'] === 'invoices')
+                <form id="sendInvoiceToDispatch{{ $record->id }}" method="POST" action="{{ route('admin.invoices.send-to-dispatch', $record->getKey()) }}" class="d-none">@csrf</form>
             @endif
             @if($module['key'] === 'dealers' && $record->status === 'pending_approval')
                 <div class="modal fade" id="approveDealer{{ $record->id }}"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.dealers.approve', $record->id) }}">@csrf<div class="modal-header"><h5>Approve {{ $record->name }}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">Assign Salesman</label><select name="salesman_id" class="form-select" required>@foreach(\App\Models\User::where('role', 'salesman')->where('status', 'active')->orderBy('name')->get() as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach</select><label class="form-label mt-3">Credit Limit</label><input name="credit_limit" type="number" step="0.01" min="0" class="form-control" value="0"></div><div class="modal-footer"><button class="btn btn-success">Approve & Assign</button></div></form></div></div>

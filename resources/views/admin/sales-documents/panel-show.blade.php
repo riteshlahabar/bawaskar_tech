@@ -63,6 +63,13 @@
                             <form method="POST" action="{{ route('admin.proforma-invoices.convert-to-invoice', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to Sale Invoice</button></form>
                         @endif
                     @endif
+                    @if($module['key'] === 'invoices' && $can['edit'])
+                        @if($order->dispatches->isNotEmpty())
+                            <a class="btn btn-outline-secondary" href="{{ route('admin.dispatches.edit', $order->dispatches->first()->getKey()) }}"><i data-feather="truck"></i>View Dispatch</a>
+                        @else
+                            <form method="POST" action="{{ route('admin.invoices.send-to-dispatch', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="truck"></i>Send to Dispatch</button></form>
+                        @endif
+                    @endif
                     <a class="btn btn-outline-secondary" href="{{ route('admin.sales-documents.print', ['document' => $documentType, 'id' => $record->getKey()]) }}" target="_blank"><i data-feather="printer"></i>Print A4</a>
                     <a class="btn btn-outline-danger" href="{{ route('admin.sales-documents.pdf', ['document' => $documentType, 'id' => $record->getKey()]) }}"><i data-feather="download"></i>PDF</a>
                 </div>

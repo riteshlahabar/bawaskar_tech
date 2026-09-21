@@ -39,7 +39,7 @@ return [
         'index' => 'view', 'show' => 'view', 'export' => 'view', 'sample' => 'view', 'download' => 'view', 'print' => 'view', 'pdf' => 'view',
         'create' => 'create', 'store' => 'create',
         'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'cancel' => 'edit',
-        'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
+        'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'send-to-dispatch' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
         'suggest-settlement' => 'edit',
         // Taking a backup creates one; restoring overwrites the database, so
         // it is the most destructive action the panel offers and is mapped to

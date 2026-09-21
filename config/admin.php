@@ -537,7 +537,7 @@ return [
             ],
         ],
         'invoices' => [
-            'label' => 'Sale Invoices', 'group' => 'Sales', 'channel' => ['relation' => 'order', 'column' => 'order_type'], 'singular' => 'Sale Invoice', 'model' => Invoice::class, 'with' => ['order.customer', 'order.dealer.dealerProfile'], 'search' => ['invoice_no'], 'filters' => [['name' => 'type', 'relation' => 'order', 'column' => 'order_type']], 'can_delete' => false, 'form_layout' => 'tabs',
+            'label' => 'Sale Invoices', 'group' => 'Sales', 'channel' => ['relation' => 'order', 'column' => 'order_type'], 'singular' => 'Sale Invoice', 'model' => Invoice::class, 'with' => ['order.customer', 'order.dealer.dealerProfile', 'order.dispatches'], 'search' => ['invoice_no'], 'filters' => [['name' => 'type', 'relation' => 'order', 'column' => 'order_type']], 'can_delete' => false, 'form_layout' => 'tabs',
             'columns' => [['key' => 'invoice_no', 'label' => 'Invoice No.'], ['key' => 'order.order_no', 'label' => 'Sale Order'], ['key' => 'order.dealer.dealerProfile.firm_name', 'label' => 'Dealer'], ['key' => 'order.customer.name', 'label' => 'Customer'], ['key' => 'invoice_date', 'label' => 'Date', 'type' => 'date'], ['key' => 'grand_total', 'label' => 'Total', 'type' => 'money']],
             'fields' => [
                 ['type' => 'section_heading', 'label' => '1. Document Info'],

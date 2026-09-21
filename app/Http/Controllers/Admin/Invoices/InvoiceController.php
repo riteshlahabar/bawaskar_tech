@@ -44,6 +44,7 @@ class InvoiceController extends AdminModuleController
             [
                 'dispatch_no' => 'DSP'.now()->format('ymdHis').str_pad((string) $order->id, 4, '0', STR_PAD_LEFT),
                 'status' => 'packing',
+                'packing_at' => now(),
             ]
         );
 

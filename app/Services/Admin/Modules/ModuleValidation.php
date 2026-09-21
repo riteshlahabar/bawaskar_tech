@@ -39,6 +39,17 @@ final class ModuleValidation implements ModuleValidationContract
                 continue;
             }
 
+            // A field the form does not render for this action (create_only /
+            // edit_only) must not be required either, or saving would fail on
+            // a value the user was never shown.
+            if (($field['create_only'] ?? false) && $record) {
+                continue;
+            }
+
+            if (($field['edit_only'] ?? false) && ! $record) {
+                continue;
+            }
+
             $fieldRules = $field['rules'] ?? ['nullable'];
             $fieldRules = is_array($fieldRules) ? $fieldRules : explode('|', $fieldRules);
 

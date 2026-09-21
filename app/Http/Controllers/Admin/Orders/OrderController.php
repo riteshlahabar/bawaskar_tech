@@ -82,7 +82,7 @@ class OrderController extends AdminModuleController
             ]
         );
 
-        return redirect()->route('admin.proforma-invoices.edit', $proforma->getKey())->with('success', 'Sale Order converted to Proforma Invoice.');
+        return redirect()->route('admin.proforma-invoices.show', $proforma->getKey())->with('success', 'Sale Order converted to Proforma Invoice.');
     }
 
     /**

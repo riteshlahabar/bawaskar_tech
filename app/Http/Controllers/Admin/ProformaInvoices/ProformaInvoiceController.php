@@ -64,6 +64,6 @@ class ProformaInvoiceController extends AdminModuleController
             return $invoice;
         });
 
-        return redirect()->route('admin.invoices.edit', $invoice->getKey())->with('success', 'Proforma Invoice converted to Sale Invoice.');
+        return redirect()->route('admin.invoices.show', $invoice->getKey())->with('success', 'Proforma Invoice converted to Sale Invoice.');
     }
 }

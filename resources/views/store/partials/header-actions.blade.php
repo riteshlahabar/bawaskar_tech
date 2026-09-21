@@ -111,33 +111,39 @@
             </div>
         </div>
 
-        <div class="onhover-div onhover-div-login">
+        <div class="onhover-div onhover-div-login account-dropdown">
+            @if($storeUser)
+                <div class="account-dropdown-header">
+                    <h6>{{ $storeUser->name }}</h6>
+                    <span>{{ $headerUserRole }}</span>
+                </div>
+            @endif
             <ul class="user-box-name">
                 @if($storeUser)
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'user-dashboard']) }}">{{ $headerUserRole }} Dashboard</a>
+                        <a href="{{ route('store.page', ['page' => 'user-dashboard']) }}"><i data-feather="grid"></i>{{ $headerUserRole }} Dashboard</a>
                     </li>
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'user-dashboard']) }}#pills-order">Recent Order</a>
+                        <a href="{{ route('store.page', ['page' => 'user-dashboard']) }}#pills-order"><i data-feather="shopping-bag"></i>Recent Order</a>
                     </li>
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'order-tracking']) }}">Track Order</a>
+                        <a href="{{ route('store.page', ['page' => 'order-tracking']) }}"><i data-feather="truck"></i>Track Order</a>
                     </li>
-                    <li class="product-box-contain">
+                    <li class="product-box-contain account-dropdown-logout">
                         <form method="POST" action="{{ route('store.auth.logout') }}">
                             @csrf
-                            <button type="submit" class="btn btn-link p-0 text-start text-decoration-none">Logout</button>
+                            <button type="submit"><i data-feather="log-out"></i>Logout</button>
                         </form>
                     </li>
                 @else
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'login']) }}">Log In</a>
+                        <a href="{{ route('store.page', ['page' => 'login']) }}"><i data-feather="log-in"></i>Log In</a>
                     </li>
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'sign-up']) }}">Register</a>
+                        <a href="{{ route('store.page', ['page' => 'sign-up']) }}"><i data-feather="user-plus"></i>Register</a>
                     </li>
                     <li class="product-box-contain">
-                        <a href="{{ route('store.page', ['page' => 'forgot']) }}">Forgot Password</a>
+                        <a href="{{ route('store.page', ['page' => 'forgot']) }}"><i data-feather="key"></i>Forgot Password</a>
                     </li>
                 @endif
             </ul>

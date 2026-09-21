@@ -727,3 +727,59 @@
 .foot-logo .bawaskar-store-logo small {
     color: #fff;
 }
+
+/* Header account dropdown (header-actions.blade.php). The Fastkart template
+   never ships a "logged in" version of this menu (every template page only
+   has the logged-out Log In / Register / Forgot Password state), so this
+   matches its own icon-and-list visual language rather than copying a block
+   that does not exist: a name/role header, an icon per link, and Logout set
+   apart with a divider and danger colour since it is not a navigation link. */
+.account-dropdown-header {
+    padding: 10px 16px 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #eee;
+}
+
+.account-dropdown-header h6 {
+    margin: 0;
+    font-weight: 700;
+    color: #222;
+}
+
+.account-dropdown-header span {
+    font-size: 11px;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.account-dropdown .user-box-name li a,
+.account-dropdown .user-box-name li button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.account-dropdown .user-box-name li a svg,
+.account-dropdown .user-box-name li button svg {
+    width: 15px;
+    height: 15px;
+    color: var(--theme-color);
+    flex-shrink: 0;
+}
+
+.account-dropdown-logout {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid #eee;
+}
+
+.account-dropdown-logout button,
+.account-dropdown-logout button svg {
+    color: #e5484d;
+}

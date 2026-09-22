@@ -7,19 +7,24 @@ use App\Contracts\Sales\OrderStatusContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Order;
 use App\Models\User;
+use App\Services\Sales\Orders\OrderItemImageAttacher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 final class SalesmanOrderController extends SalesmanApiController
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, OrderItemImageAttacher $images): JsonResponse
     {
         $orders = Order::query()
-            ->with('dealer.dealerProfile', 'items.product', 'items.variant', 'dispatches')
+            ->with('dealer.dealerProfile', 'items.product.images', 'items.variant', 'dispatches')
             ->where('salesman_id', $this->salesman($request)->id)
             ->latest()
             ->paginate($request->integer('per_page', 20));
+
+        // Same `product_image_url` the dealer and customer apps already get,
+        // so the salesman's order detail screen can show thumbnails too.
+        $images->attach($orders->getCollection());
 
         return $this->success(['orders' => $orders]);
     }

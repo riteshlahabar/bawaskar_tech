@@ -28,6 +28,8 @@ final class ProductCatalogPresenter implements ProductCatalogPresenterContract
             'product_type' => $product->product_type,
             'description' => $product->storefront_description,
             'short_description' => $product->short_description,
+            'additional_info' => $product->additional_info,
+            'care_instructions' => $product->care_instructions,
             'category_id' => $product->category_id,
             'category_name' => $product->category?->storefront_name,
             'unit_name' => $this->translator->text($product->unit?->name, 'unit'),

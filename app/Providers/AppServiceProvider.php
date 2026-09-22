@@ -47,6 +47,7 @@ use App\Contracts\Catalog\ProductTranslationServiceContract;
 use App\Contracts\Catalog\TextTranslatorContract;
 use App\Contracts\Files\ImageOptimizerContract;
 use App\Contracts\Files\PublicUploadContract;
+use App\Contracts\Finance\DealerOutstandingContract;
 use App\Contracts\Finance\PaymentGatewayContract;
 use App\Contracts\Hr\EmployeeExitContract;
 use App\Contracts\Hr\HrmsSettingsContract;
@@ -135,6 +136,7 @@ use App\Services\Catalog\Product\ProductWorkflowService;
 use App\Services\Catalog\ProductTranslationService;
 use App\Services\Files\ImageOptimizerService;
 use App\Services\Files\PublicUploadService;
+use App\Services\Finance\DealerOutstandingService;
 use App\Services\Finance\Eazypay\EazypayCipher;
 use App\Services\Finance\Eazypay\EazypayGateway;
 use App\Services\Finance\Eazypay\EazypaySignature;
@@ -215,6 +217,7 @@ class AppServiceProvider extends ServiceProvider
             ApiTokenGuardContract::class => ApiTokenGuard::class,
             OtpContract::class => OtpService::class,
             PaymentGatewayContract::class => EazypayGateway::class,
+            DealerOutstandingContract::class => DealerOutstandingService::class,
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,
             RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,

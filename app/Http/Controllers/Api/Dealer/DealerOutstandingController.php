@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Dealer;
 
+use App\Contracts\Finance\DealerOutstandingContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Finance\DealerStatement;
 use App\Models\Finance\Payment;
@@ -16,6 +17,8 @@ use Illuminate\Http\Request;
  */
 class DealerOutstandingController extends ApiController
 {
+    public function __construct(private readonly DealerOutstandingContract $outstandingCalculator) {}
+
     public function index(Request $request): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_DEALER);
@@ -23,9 +26,8 @@ class DealerOutstandingController extends ApiController
             return $user;
         }
 
-        $profile = $user->dealerProfile;
-        $creditLimit = (float) ($profile->credit_limit ?? 0);
-        $outstanding = (float) ($profile->outstanding_balance ?? 0);
+        $creditLimit = (float) ($user->dealerProfile?->credit_limit ?? 0);
+        $outstanding = $this->outstandingCalculator->outstandingBalance($user->id);
 
         return $this->success([
             'credit_limit' => $creditLimit,

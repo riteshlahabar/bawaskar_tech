@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Dealer;
 
+use App\Contracts\Finance\DealerOutstandingContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Communication\SupportTicket;
 use App\Models\Finance\DealerStatement;
@@ -12,6 +13,8 @@ use Illuminate\Http\Request;
 
 class DealerController extends ApiController
 {
+    public function __construct(private readonly DealerOutstandingContract $outstanding) {}
+
     public function profile(Request $request): JsonResponse
     {
         $user = $this->requireUser($request, User::ROLE_DEALER);
@@ -93,7 +96,7 @@ class DealerController extends ApiController
 
         return $this->success([
             'credit_limit' => $user->dealerProfile?->credit_limit ?? 0,
-            'outstanding_balance' => $user->dealerProfile?->outstanding_balance ?? 0,
+            'outstanding_balance' => $this->outstanding->outstandingBalance($user->id),
             'assigned_salesman' => $user->dealerProfile?->salesman,
             'orders_count' => Order::query()->where('dealer_id', $user->id)->count(),
             'pending_orders' => Order::query()->where('dealer_id', $user->id)->whereNotIn('status', ['delivered', 'cancelled'])->count(),

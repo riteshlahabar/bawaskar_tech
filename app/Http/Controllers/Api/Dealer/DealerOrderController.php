@@ -38,15 +38,53 @@ class DealerOrderController extends ApiController
             return $user;
         }
 
+        // The delivery and payment fields are optional so an older build of
+        // the dealer app keeps working; when they are sent they land in the
+        // real order columns instead of being crammed into `notes`, which is
+        // what the app used to do.
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
             'items.*.variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.001'],
+            'contact_name' => ['nullable', 'string', 'max:255'],
+            'contact_mobile' => ['nullable', 'string', 'max:20'],
+            'address_type' => ['nullable', 'string', 'max:30'],
+            'address_line1' => ['nullable', 'string', 'max:255'],
+            'address_line2' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:100'],
+            'pincode' => ['nullable', 'string', 'max:12'],
+            // `credit` is dealer-only: buying against the credit limit is the
+            // normal B2B case, and is what the outstanding-balance figures
+            // are built on.
+            'payment_method' => ['nullable', 'in:cod,credit,bank_transfer,upi'],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $order = $orders->createForDealer($user, $validated['items'], $validated['notes'] ?? null);
+        $paymentMethod = $validated['payment_method'] ?? null;
+
+        $checkoutData = [
+            'contact_name' => $validated['contact_name'] ?? null,
+            'contact_mobile' => $validated['contact_mobile'] ?? null,
+            'address_type' => $validated['address_type'] ?? 'shipping',
+            'address_line1' => $validated['address_line1'] ?? null,
+            'address_line2' => $validated['address_line2'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'state' => $validated['state'] ?? null,
+            'pincode' => $validated['pincode'] ?? null,
+            'payment_method' => $paymentMethod,
+            'payment_status' => in_array($paymentMethod, [null, 'cod', 'credit'], true)
+                ? 'pending'
+                : 'awaiting_confirmation',
+        ];
+
+        $order = $orders->createForDealer(
+            $user,
+            $validated['items'],
+            $validated['notes'] ?? null,
+            $checkoutData,
+        );
 
         return $this->success(['order' => $order], 'Dealer order sent to assigned salesman.', 201);
     }

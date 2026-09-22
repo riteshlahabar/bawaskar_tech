@@ -61,6 +61,10 @@ final class SalesmanDashboardController extends SalesmanApiController
                 'check_in_latitude' => $todayAttendance->check_in_latitude,
                 'check_in_longitude' => $todayAttendance->check_in_longitude,
                 'check_out_at' => $todayAttendance->check_out_at,
+                // `on_break` is what restores the app's Break/Resume button after
+                // a restart — an unfinished break row means the break is running.
+                'on_break' => (bool) $todayAttendance->openBreak(),
+                'break_minutes' => (int) $todayAttendance->breaks()->sum('break_minutes'),
             ] : null,
         ]);
     }

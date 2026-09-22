@@ -191,6 +191,8 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
 
             Route::post('attendance/check-in', [SalesmanAttendanceController::class, 'checkIn']);
             Route::post('attendance/check-out', [SalesmanAttendanceController::class, 'checkOut']);
+            Route::post('attendance/break', [SalesmanAttendanceController::class, 'startBreak']);
+            Route::post('attendance/resume', [SalesmanAttendanceController::class, 'resumeBreak']);
             Route::get('attendance', [SalesmanCalendarController::class, 'attendance']);
             Route::get('visits', [SalesmanAttendanceController::class, 'visits']);
             Route::post('visits', [SalesmanAttendanceController::class, 'storeVisit']);

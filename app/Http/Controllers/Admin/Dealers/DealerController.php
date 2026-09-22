@@ -18,7 +18,7 @@ class DealerController extends PeopleModuleController
 
     protected string $profileModel = DealerProfile::class;
 
-    protected array $profileFields = ['salesman_id', 'dealer_code', 'firm_name', 'gst_number', 'credit_limit', 'outstanding_balance'];
+    protected array $profileFields = ['salesman_id', 'dealer_code', 'firm_name', 'gst_number', 'credit_limit'];
 
     public function approve(Request $request, int|string $id): RedirectResponse
     {

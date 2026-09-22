@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Demo Dealer', 'mobile' => '9000000003', 'password' => Hash::make('Dealer@123'), 'role' => User::ROLE_DEALER, 'status' => 'active', 'mobile_verified_at' => now(),
         ]);
         DealerProfile::query()->updateOrCreate(['user_id' => $dealer->id], [
-            'salesman_id' => $salesman->id, 'dealer_code' => 'DLR000001', 'firm_name' => 'Demo Agro Agency', 'gst_number' => '27AAAAA0000A1Z5', 'credit_limit' => 100000, 'outstanding_balance' => 0, 'approved_at' => now(), 'approved_by' => $admin->id,
+            'salesman_id' => $salesman->id, 'dealer_code' => 'DLR000001', 'firm_name' => 'Demo Agro Agency', 'gst_number' => '27AAAAA0000A1Z5', 'credit_limit' => 100000, 'approved_at' => now(), 'approved_by' => $admin->id,
         ]);
         $customer = User::query()->updateOrCreate(['email' => 'customer@bawaskarerp.com'], [
             'name' => 'Demo Customer', 'mobile' => '9000000004', 'password' => Hash::make('Customer@123'), 'role' => User::ROLE_CUSTOMER, 'status' => 'active', 'mobile_verified_at' => now(),

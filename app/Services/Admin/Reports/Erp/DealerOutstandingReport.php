@@ -45,11 +45,11 @@ final class DealerOutstandingReport extends Report
             ->with(['user:id,name,mobile', 'salesman:id,name'])
             ->when($filters->salesmanId, fn ($query, int $id) => $query->where('salesman_id', $id))
             ->when($filters->dealerId, fn ($query, int $id) => $query->where('user_id', $id))
-            ->orderByDesc('outstanding_balance')
-            ->limit(self::MAX_ROWS)
             ->get()
             ->map(function (DealerProfile $profile): array {
                 $limit = (float) $profile->credit_limit;
+                // Reads the outstanding_balance accessor, which is computed
+                // live from invoices minus payments, not a stored column.
                 $outstanding = (float) $profile->outstanding_balance;
 
                 return [
@@ -63,6 +63,11 @@ final class DealerOutstandingReport extends Report
                     'used' => $this->percent($outstanding, $limit),
                 ];
             })
+            // Sorted here, not in SQL, because the outstanding value no
+            // longer lives in a database column.
+            ->sortByDesc('outstanding')
+            ->take(self::MAX_ROWS)
+            ->values()
             ->all();
 
         return new ReportResult(

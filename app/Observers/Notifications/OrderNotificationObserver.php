@@ -34,6 +34,18 @@ final class OrderNotificationObserver extends NotificationObserver
         if ($this->statusChanged($order)) {
             $this->notify($this->ownerId($order), 'order', (string) $order->status, $this->replace($order), $this->data($order));
         }
+
+        // The salesman's stock answer does not move the order, so it would
+        // never reach the dealer through the status change above.
+        if ($this->statusChanged($order, 'availability')) {
+            $this->notify(
+                $this->ownerId($order),
+                'order_availability',
+                (string) $order->availability,
+                $this->replace($order) + ['available_on' => $this->dateTime($order->available_on)],
+                $this->data($order),
+            );
+        }
     }
 
     private function ownerId(Order $order): ?int

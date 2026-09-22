@@ -52,7 +52,8 @@
                     @if($module['key'] === 'orders' && $can['edit'])
                         @if($order->proformaInvoices->isNotEmpty())
                             <a class="btn btn-outline-secondary" href="{{ route('admin.proforma-invoices.show', $order->proformaInvoices->first()->getKey()) }}"><i data-feather="repeat"></i>View PI</a>
-                        @else
+                        {{-- A dealer order still with its salesman is not the admin's to convert yet. --}}
+                        @elseif($order->status !== 'salesman_review')
                             <form method="POST" action="{{ route('admin.orders.convert-to-proforma', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="repeat"></i>Convert to PI</button></form>
                         @endif
                     @endif
@@ -76,6 +77,21 @@
             </div>
         </div>
     </div>
+
+    {{-- The salesman's stock answer, while the order is still in their review. --}}
+    @if($module['key'] === 'orders' && $order->availability)
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+            <i data-feather="alert-triangle"></i>
+            <span>
+                @if($order->availability === 'available_on')
+                    Salesman marked the stock <strong>available on {{ $order->available_on?->format('d M Y, g:i A') }}</strong>.
+                @else
+                    Salesman marked the stock <strong>not available right now</strong>.
+                @endif
+                @if($order->availability_note){{ $order->availability_note }}@endif
+            </span>
+        </div>
+    @endif
 
     <div class="row g-3 mb-3">
         @foreach([

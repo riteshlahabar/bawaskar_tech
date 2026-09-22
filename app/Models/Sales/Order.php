@@ -10,6 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
+    /** Salesman's stock answer while the order sits in `salesman_review`. */
+    public const AVAILABILITY_NOT_AVAILABLE = 'not_available';
+
+    public const AVAILABILITY_AVAILABLE_ON = 'available_on';
+
+    /** @var list<string> */
+    public const AVAILABILITY_OPTIONS = [
+        self::AVAILABILITY_NOT_AVAILABLE,
+        self::AVAILABILITY_AVAILABLE_ON,
+    ];
+
     protected $fillable = [
         'order_no',
         'order_type',
@@ -18,6 +29,9 @@ class Order extends Model
         'salesman_id',
         'approved_by',
         'status',
+        'availability',
+        'available_on',
+        'availability_note',
         'subtotal',
         'gst_total',
         'discount_total',
@@ -44,6 +58,7 @@ class Order extends Model
         return [
             'approved_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'available_on' => 'datetime',
             'subtotal' => 'decimal:2',
             'gst_total' => 'decimal:2',
             'discount_total' => 'decimal:2',

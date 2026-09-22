@@ -151,7 +151,8 @@
                                                 @endif
                                                 @if($record->proformaInvoices->isNotEmpty())
                                                 <a class="dropdown-item text-info" href="{{ route('admin.proforma-invoices.edit', $record->proformaInvoices->first()->getKey()) }}"><i class="iconoir-page"></i><span>View PI</span></a>
-                                                @else
+                                                {{-- A dealer order still with its salesman is not the admin's to convert yet. --}}
+                                                @elseif($record->status !== 'salesman_review')
                                                 <button class="dropdown-item text-info" type="submit" form="convertOrderToPi{{ $record->id }}"><i class="iconoir-page"></i><span>Convert to PI</span></button>
                                                 @endif
                                                 @endif

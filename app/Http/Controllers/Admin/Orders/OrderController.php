@@ -67,6 +67,13 @@ class OrderController extends AdminModuleController
     {
         $order = Order::query()->findOrFail($id);
 
+        // The buttons are hidden at this stage, but the route must refuse it
+        // too — a dealer order is not the admin's to convert until the
+        // salesman has approved it.
+        if ($order->status === 'salesman_review') {
+            return back()->with('error', 'This order is still waiting for the salesman to approve it.');
+        }
+
         $proforma = ProformaInvoice::query()->firstOrCreate(
             ['order_id' => $order->id],
             [

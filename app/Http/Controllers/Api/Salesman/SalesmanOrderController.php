@@ -9,6 +9,7 @@ use App\Models\Sales\Order;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 final class SalesmanOrderController extends SalesmanApiController
 {
@@ -54,9 +55,58 @@ final class SalesmanOrderController extends SalesmanApiController
             return $this->fail('Only orders waiting for salesman review can be forwarded to admin.', 422);
         }
 
-        $order->update(['status' => 'admin_review']);
+        $order->update([
+            'status' => 'admin_review',
+            // Approving settles the stock question, so a stale "not available
+            // now" note never travels with the order to the admin.
+            'availability' => null,
+            'available_on' => null,
+            'availability_note' => null,
+        ]);
 
         return $this->success(['order' => $order->fresh('items.product')], 'Order forwarded to admin.');
+    }
+
+    /**
+     * The salesman's stock answer on an order they are still reviewing:
+     * "not available now", or "available on <date/time>".
+     *
+     * This does not move the order — it stays in `salesman_review` so the
+     * same salesman can still approve or cancel it later. The dealer is told
+     * by the order notification observer, which watches these columns.
+     */
+    public function availability(Request $request, Order $order): JsonResponse
+    {
+        $user = $this->salesman($request);
+
+        if ((int) $order->salesman_id !== (int) $user->id) {
+            return $this->fail('Order not assigned to this salesman.', 403);
+        }
+
+        if ($order->status !== 'salesman_review') {
+            return $this->fail('Only orders waiting for your review can be marked.', 422);
+        }
+
+        $validated = $request->validate([
+            'availability' => ['required', 'string', Rule::in(Order::AVAILABILITY_OPTIONS)],
+            'available_on' => [
+                'nullable',
+                'date',
+                'after:now',
+                Rule::requiredIf($request->input('availability') === Order::AVAILABILITY_AVAILABLE_ON),
+            ],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $order->update([
+            'availability' => $validated['availability'],
+            'available_on' => $validated['availability'] === Order::AVAILABILITY_AVAILABLE_ON
+                ? $validated['available_on']
+                : null,
+            'availability_note' => $validated['note'] ?? null,
+        ]);
+
+        return $this->success(['order' => $order->fresh('items.product')], 'Availability updated.');
     }
 
     /**

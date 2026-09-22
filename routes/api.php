@@ -198,6 +198,7 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('orders', [SalesmanOrderController::class, 'index']);
             Route::post('orders', [SalesmanOrderController::class, 'store']);
             Route::post('orders/{order}/forward-to-admin', [SalesmanOrderController::class, 'forwardToAdmin']);
+            Route::post('orders/{order}/availability', [SalesmanOrderController::class, 'availability']);
             Route::post('orders/{order}/reject', [SalesmanOrderController::class, 'reject']);
             Route::get('deliveries', [SalesmanOrderController::class, 'deliveries']);
 

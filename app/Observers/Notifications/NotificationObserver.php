@@ -66,6 +66,12 @@ abstract class NotificationObserver implements ShouldHandleEventsAfterCommit
         return $value ? Carbon::parse($value)->format('d M Y') : '';
     }
 
+    /** Same as {@see date()} but with the time, for promises like "available on". */
+    protected function dateTime(mixed $value): string
+    {
+        return $value ? Carbon::parse($value)->format('d M Y, g:i A') : '';
+    }
+
     protected function label(mixed $value): string
     {
         return ucwords(str_replace('_', ' ', (string) $value));

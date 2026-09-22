@@ -45,6 +45,12 @@ return [
         'order_review' => [
             'salesman_review' => ['New order to review', ':dealer placed order :order_no. Please review it.'],
         ],
+        // Stock answer from the salesman while the order is still in their
+        // review. The order has not moved; only the stock note changed.
+        'order_availability' => [
+            'not_available' => ['Stock not available', 'The items in your order :order_no are not available right now. We will update you as soon as they are.'],
+            'available_on' => ['Stock available soon', 'The items in your order :order_no will be available on :available_on.'],
+        ],
         'return' => [
             'approved' => ['Return approved', 'Your return :return_no has been approved.'],
             'rejected' => ['Return rejected', 'Your return :return_no has been rejected.'],

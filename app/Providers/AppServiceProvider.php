@@ -80,6 +80,7 @@ use App\Contracts\Sales\OrderStatusContract;
 use App\Contracts\Sales\SalesDocumentDataContract;
 use App\Contracts\Sales\SalesDocumentGstDetailsContract;
 use App\Contracts\Sales\SalesDocumentPdfContract;
+use App\Contracts\Sales\TargetAchievementContract;
 use App\Contracts\Support\AmountInWordsContract;
 use App\Contracts\Support\TransactionManagerContract;
 use App\Contracts\System\DatabaseBackupContract;
@@ -166,6 +167,7 @@ use App\Services\Sales\Orders\OrderWorkflowService;
 use App\Services\Sales\Orders\TimestampOrderNumberGenerator;
 use App\Services\Sales\SalesDocumentDataService;
 use App\Services\Sales\SalesDocumentGstDetailsService;
+use App\Services\Sales\TargetAchievementService;
 use App\Services\Support\IndianAmountInWordsService;
 use App\Services\Support\LaravelTransactionManager;
 use App\Services\System\SqlDatabaseBackupService;
@@ -218,6 +220,7 @@ class AppServiceProvider extends ServiceProvider
             OtpContract::class => OtpService::class,
             PaymentGatewayContract::class => EazypayGateway::class,
             DealerOutstandingContract::class => DealerOutstandingService::class,
+            TargetAchievementContract::class => TargetAchievementService::class,
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,
             RegistrationTokenContract::class => EncryptedRegistrationTokenService::class,

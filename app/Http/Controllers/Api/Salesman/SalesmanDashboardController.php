@@ -36,7 +36,9 @@ final class SalesmanDashboardController extends SalesmanApiController
             ->where('period_start', '<=', today())
             ->where('period_end', '>=', today())
             ->latest('period_start')
-            ->first(['target_amount', 'achieved_amount']);
+            // The whole row, not a two-column select: `achieved_amount` is a
+            // computed accessor that needs salesman_id and the period dates.
+            ->first();
 
         $currentSlip = SalarySlip::query()
             ->where('salesman_id', $user->id)

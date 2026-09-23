@@ -128,7 +128,12 @@ class IncentiveCalculationService implements IncentiveCalculationContract
             ->orderByDesc('period_start')
             ->first();
 
-        $achieved = $target !== null && (float) $target->achieved_amount > 0
+        // A target's achievement is now computed from delivered orders, so a
+        // zero is a real answer — "nothing delivered yet" — not the missing
+        // value it used to be when the column was typed in by hand. The
+        // broader order-value fallback is therefore only for a month with no
+        // target row at all.
+        $achieved = $target !== null
             ? (float) $target->achieved_amount
             : $this->orderValue($salesmanId, $monthStart, $monthEnd);
 

@@ -75,7 +75,10 @@ class DashboardController extends Controller
             'issuedAssets' => SalesmanAsset::where('status', 'issued')->count(),
             'monthlyPayroll' => SalarySlip::where('salary_year', now()->year)->where('salary_month', now()->month)->sum('net_salary'),
             'targetTotal' => SalesmanTarget::whereDate('period_start', '<=', $monthEnd)->whereDate('period_end', '>=', $monthStart)->sum('target_amount'),
-            'achievedTotal' => SalesmanTarget::whereDate('period_start', '<=', $monthEnd)->whereDate('period_end', '>=', $monthStart)->sum('achieved_amount'),
+            // Summed in PHP, not SQL: `achieved_amount` is computed per target
+            // from delivered orders, so a database SUM would add up the stale
+            // stored column instead.
+            'achievedTotal' => SalesmanTarget::whereDate('period_start', '<=', $monthEnd)->whereDate('period_end', '>=', $monthStart)->get()->sum('achieved_amount'),
             'pendingExpenseAmount' => Expense::where('status', 'pending')->sum('amount'),
         ]);
     }

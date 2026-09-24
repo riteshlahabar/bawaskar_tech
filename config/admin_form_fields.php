@@ -19,6 +19,9 @@ return [
     'product_media_repeater' => [
         'view' => 'admin.products.partials.media.repeater',
     ],
+    'key_value_repeater' => [
+        'view' => 'admin.shared.fields.key-value-repeater',
+    ],
     'checkbox_list' => [
         'view' => 'admin.shared.fields.checkbox-list',
     ],

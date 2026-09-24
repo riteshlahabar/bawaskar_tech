@@ -58,6 +58,11 @@ final class PerformanceReport extends Report
             'collection' => (float) $review->collection_score,
             'visits' => (float) $review->visit_score,
             'overall' => (float) $review->overall_rating,
+            // Flattened to one cell: a report row is a single line, and the
+            // KPI count varies per review so it cannot become columns.
+            'kpis' => collect($review->kpis ?? [])
+                ->map(fn (array $kpi): string => trim(($kpi['label'] ?? '').': '.($kpi['value'] ?? ''), ': '))
+                ->implode(' | '),
             'reviewer' => $review->reviewer?->name,
             'status' => $review->status,
         ])->all();
@@ -82,6 +87,7 @@ final class PerformanceReport extends Report
                 ['key' => 'collection', 'label' => 'Collection Score', 'type' => 'number'],
                 ['key' => 'visits', 'label' => 'Visit Score', 'type' => 'number'],
                 ['key' => 'overall', 'label' => 'Overall Rating', 'type' => 'number'],
+                ['key' => 'kpis', 'label' => 'KPIs'],
                 ['key' => 'reviewer', 'label' => 'Reviewed By'],
                 ['key' => 'status', 'label' => 'Status', 'type' => 'status'],
             ],

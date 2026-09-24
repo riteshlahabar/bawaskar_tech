@@ -977,6 +977,7 @@ return [
                 ['name' => 'visit_score', 'label' => 'Visit Score', 'type' => 'number', 'step' => '0.01', 'default' => 0, 'rules' => ['nullable', 'numeric', 'between:0,100']],
                 ['name' => 'overall_rating', 'label' => 'Overall Rating', 'type' => 'number', 'step' => '0.01', 'rules' => ['nullable', 'numeric', 'between:0,100'], 'help' => 'Leave blank to use the average of the three scores.'],
                 ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => $reviewStatus, 'default' => 'draft', 'rules' => ['required', 'in:'.implode(',', array_keys($reviewStatus))]],
+                ['name' => 'kpis', 'label' => 'KPIs', 'type' => 'key_value_repeater', 'col' => 'col-12', 'rules' => ['nullable', 'array'], 'label_placeholder' => 'KPI - example: New Dealers Onboarded', 'value_placeholder' => 'Result - example: 7 of 10', 'help' => 'Any KPI beyond the three scores above. Shown to the salesman in the app and included in the Performance report. Empty rows are ignored.'],
                 ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string', 'max:5000']],
             ],
         ],

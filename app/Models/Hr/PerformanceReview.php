@@ -2,6 +2,7 @@
 
 namespace App\Models\Hr;
 
+use App\Casts\KeyValueRows;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ class PerformanceReview extends Model
             'collection_score' => 'decimal:2',
             'visit_score' => 'decimal:2',
             'overall_rating' => 'decimal:2',
-            'kpis' => 'array',
+            'kpis' => KeyValueRows::class,
         ];
     }
 

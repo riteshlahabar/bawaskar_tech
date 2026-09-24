@@ -224,7 +224,9 @@
                     @if(filled($body))
                         <div class="col-lg-6">
                             <span class="people-info-label d-block mb-1">{{ $label }}</span>
-                            <div class="people-info-value" style="white-space:pre-line;">{{ $body }}</div>
+                            {{-- text-align:left is deliberate: .people-info-value is right-aligned for the
+                                 label-left/value-right rows, which reads wrong on a block of prose. --}}
+                            <div class="people-info-value" style="white-space:pre-line;text-align:left;">{{ $body }}</div>
                         </div>
                     @endif
                 @endforeach

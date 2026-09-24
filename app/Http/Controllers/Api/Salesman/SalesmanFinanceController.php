@@ -81,10 +81,20 @@ final class SalesmanFinanceController extends SalesmanApiController
         return $this->success(['expense' => $expense], 'Expense submitted.', 201);
     }
 
+    /**
+     * Draft slips are excluded here for the same reason SalesmanPayslipController
+     * excludes them: payroll must not reach the employee until HR has finalised
+     * the month. This endpoint had no such filter and was leaking drafts.
+     *
+     * The salesman app no longer calls this — its Salary screen reads
+     * /salesman/payslips, which also carries the year totals and line
+     * breakdown — but it stays available and is now safe if used again.
+     */
     public function salary(Request $request): JsonResponse
     {
         $slips = SalarySlip::query()
             ->where('salesman_id', $this->salesman($request)->id)
+            ->where('status', '!=', 'draft')
             ->latest()
             ->paginate(12);
 

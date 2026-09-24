@@ -43,9 +43,46 @@ final class SalesmanHrController extends SalesmanApiController
         $assets = SalesmanAsset::query()
             ->where('salesman_id', $this->salesman($request)->id)
             ->latest()
-            ->get();
+            ->paginate(20);
 
         return $this->success(['assets' => $assets]);
+    }
+
+    /**
+     * What the salesman can say about an asset they hold.
+     *
+     * Lost and damaged move the status — they are the only one who knows.
+     * A return request does not: handing the asset back is confirmed by the
+     * admin, so this only stamps `return_requested_at`.
+     */
+    public function reportAsset(Request $request, SalesmanAsset $asset): JsonResponse
+    {
+        $user = $this->salesman($request);
+
+        if ((int) $asset->salesman_id !== (int) $user->id) {
+            return $this->fail('This asset belongs to another salesman.', 403);
+        }
+
+        if ($asset->status === 'returned') {
+            return $this->fail('This asset has already been returned.', 422);
+        }
+
+        $validated = $request->validate([
+            'issue' => ['required', 'string', Rule::in(SalesmanAsset::REPORTABLE_ISSUES)],
+            'remarks' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $changes = ['salesman_remarks' => $validated['remarks'] ?? null];
+
+        if ($validated['issue'] === SalesmanAsset::ISSUE_RETURN_REQUEST) {
+            $changes['return_requested_at'] = now();
+        } else {
+            $changes['status'] = $validated['issue'];
+        }
+
+        $asset->update($changes);
+
+        return $this->success(['asset' => $asset], 'Asset report submitted.');
     }
 
     public function tourPlans(Request $request): JsonResponse

@@ -11,24 +11,11 @@ use Illuminate\Http\Request;
  */
 final class SalesmanProfileController extends SalesmanApiController
 {
-    /**
-     * The department, designation and reporting manager are eager-loaded so
-     * the app can name them: the profile row carries only their ids, and
-     * loading `salesmanProfile` alone left the app with numbers it could not
-     * resolve. Department, Designation and Joining Date are all Employee
-     * Profile items in the Phase 1 spec.
-     */
     public function profile(Request $request): JsonResponse
     {
         $user = $this->salesman($request);
 
-        return $this->success([
-            'user' => $user->load([
-                'salesmanProfile.department:id,name',
-                'salesmanProfile.designation:id,name',
-                'salesmanProfile.reportingManager:id,name',
-            ]),
-        ]);
+        return $this->success(['user' => $user->load('salesmanProfile')]);
     }
 
     public function support(Request $request): JsonResponse

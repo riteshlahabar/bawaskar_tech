@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Hr\Department;
-use App\Models\Hr\Designation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,8 +15,15 @@ class SalesmanProfile extends Model
         'exited' => 'Exited',
     ];
 
+    /**
+     * `department_id`, `designation_id` and `reporting_to` are deliberately
+     * absent: those three were dropped from the Salesmen module on 2026-09-24
+     * because the Phase 1 spec places the whole HRMS list under "HRMS Modules
+     * (Admin Panel)" and never describes a reporting hierarchy. The columns
+     * are left on the table, unread, rather than migrated away.
+     */
     protected $fillable = [
-        'user_id', 'employee_code', 'department_id', 'designation_id', 'reporting_to',
+        'user_id', 'employee_code',
         'joining_date', 'employment_status', 'confirmation_date', 'exit_date',
         'basic_salary', 'target_amount', 'territory',
     ];
@@ -37,20 +42,5 @@ class SalesmanProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
-    }
-
-    public function designation(): BelongsTo
-    {
-        return $this->belongsTo(Designation::class);
-    }
-
-    public function reportingManager(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'reporting_to');
     }
 }

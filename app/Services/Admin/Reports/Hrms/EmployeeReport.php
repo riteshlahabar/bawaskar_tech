@@ -48,23 +48,20 @@ final class EmployeeReport extends Report
         $employees = User::query()
             ->where('role', User::ROLE_SALESMAN)
             ->when($filters->salesmanId, fn ($query, int $id) => $query->whereKey($id))
-            ->with(['salesmanProfile.department:id,name', 'salesmanProfile.designation:id,name'])
+            ->with('salesmanProfile')
             ->orderBy('name')
             ->limit(self::MAX_ROWS)
             ->get();
 
-        $managers = $this->userNames($employees->pluck('salesmanProfile.reporting_to'));
-
-        $rows = $employees->map(function (User $employee) use ($managers): array {
+        // Department, Designation and Reporting To were dropped on 2026-09-24
+        // along with the fields themselves — see SalesmanProfile.
+        $rows = $employees->map(function (User $employee): array {
             $profile = $employee->salesmanProfile;
 
             return [
                 'code' => $profile?->employee_code,
                 'name' => $employee->name,
                 'mobile' => $employee->mobile,
-                'department' => $profile?->department?->name,
-                'designation' => $profile?->designation?->name,
-                'reporting_to' => $profile?->reporting_to ? ($managers[$profile->reporting_to] ?? null) : null,
                 'joining_date' => $profile?->joining_date,
                 'confirmation_date' => $profile?->confirmation_date,
                 'exit_date' => $profile?->exit_date,
@@ -89,9 +86,6 @@ final class EmployeeReport extends Report
                 ['key' => 'code', 'label' => 'Employee Code'],
                 ['key' => 'name', 'label' => 'Name'],
                 ['key' => 'mobile', 'label' => 'Mobile'],
-                ['key' => 'department', 'label' => 'Department'],
-                ['key' => 'designation', 'label' => 'Designation'],
-                ['key' => 'reporting_to', 'label' => 'Reporting To'],
                 ['key' => 'joining_date', 'label' => 'Joining Date', 'type' => 'date'],
                 ['key' => 'confirmation_date', 'label' => 'Confirmed On', 'type' => 'date'],
                 ['key' => 'exit_date', 'label' => 'Exit Date', 'type' => 'date'],

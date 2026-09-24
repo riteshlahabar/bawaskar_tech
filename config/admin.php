@@ -934,7 +934,7 @@ return [
             'fields' => [
                 ['name' => 'title', 'label' => 'Title', 'rules' => ['required', 'string', 'max:255']],
                 ['name' => 'audience', 'label' => 'Audience', 'type' => 'select', 'options' => $audiences, 'default' => 'salesman', 'rules' => ['required', 'in:'.implode(',', array_keys($audiences))]],
-                ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => ['announcement' => 'Announcement', 'policy' => 'Policy', 'circular' => 'Circular', 'event' => 'Event'], 'default' => 'announcement', 'rules' => ['required', 'in:announcement,policy,circular,event']],
+                ['name' => 'category', 'label' => 'Category', 'type' => 'select', 'options' => ['announcement' => 'Announcement', 'notice' => 'Notice', 'circular' => 'Circular', 'policy' => 'Policy', 'event' => 'Event'], 'default' => 'announcement', 'rules' => ['required', 'in:announcement,notice,circular,policy,event']],
                 ['name' => 'body', 'label' => 'Message', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 6, 'rules' => ['required', 'string', 'max:10000']],
                 ['name' => 'published_at', 'label' => 'Publish At', 'type' => 'datetime-local', 'rules' => ['nullable', 'date']],
                 ['name' => 'expires_at', 'label' => 'Expires At', 'type' => 'datetime-local', 'rules' => ['nullable', 'date']],

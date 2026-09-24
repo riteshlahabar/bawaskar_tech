@@ -16,23 +16,24 @@ class SalesmanProfile extends Model
     ];
 
     /**
-     * `department_id`, `designation_id` and `reporting_to` are deliberately
-     * absent: those three were dropped from the Salesmen module on 2026-09-24
-     * because the Phase 1 spec places the whole HRMS list under "HRMS Modules
-     * (Admin Panel)" and never describes a reporting hierarchy. The columns
-     * are left on the table, unread, rather than migrated away.
+     * Five columns are deliberately absent, all dropped on 2026-09-24 with
+     * their columns left on the table, unread, rather than migrated away:
+     * `department_id`, `designation_id` and `reporting_to`, because the Phase 1
+     * spec places the whole HRMS list under "HRMS Modules (Admin Panel)" and
+     * never describes a reporting hierarchy; `territory`, because the LGD
+     * location picker already records where a salesman works; and
+     * `confirmation_date`, which nothing ever read or acted on.
      */
     protected $fillable = [
         'user_id', 'employee_code',
-        'joining_date', 'employment_status', 'confirmation_date', 'exit_date',
-        'basic_salary', 'target_amount', 'territory',
+        'joining_date', 'employment_status', 'exit_date',
+        'basic_salary', 'target_amount',
     ];
 
     protected function casts(): array
     {
         return [
             'joining_date' => 'date',
-            'confirmation_date' => 'date',
             'exit_date' => 'date',
             'basic_salary' => 'decimal:2',
             'target_amount' => 'decimal:2',

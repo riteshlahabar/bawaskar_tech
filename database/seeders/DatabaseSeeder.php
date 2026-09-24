@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Demo Salesman', 'mobile' => '9000000002', 'password' => Hash::make('Salesman@123'), 'role' => User::ROLE_SALESMAN, 'status' => 'active', 'email_verified_at' => now(),
         ]);
         SalesmanProfile::query()->updateOrCreate(['user_id' => $salesman->id], [
-            'employee_code' => 'EMP0001', 'joining_date' => today(), 'basic_salary' => 25000, 'target_amount' => 500000, 'territory' => 'Pune',
+            'employee_code' => 'EMP0001', 'joining_date' => today(), 'basic_salary' => 25000, 'target_amount' => 500000,
         ]);
         $dealer = User::query()->updateOrCreate(['email' => 'dealer@bawaskarerp.com'], [
             'name' => 'Demo Dealer', 'mobile' => '9000000003', 'password' => Hash::make('Dealer@123'), 'role' => User::ROLE_DEALER, 'status' => 'active', 'mobile_verified_at' => now(),

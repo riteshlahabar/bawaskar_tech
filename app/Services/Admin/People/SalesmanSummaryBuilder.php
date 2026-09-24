@@ -39,7 +39,6 @@ final class SalesmanSummaryBuilder implements PersonSummaryBuilderContract
             details: [
                 'Employee Code' => $this->formatter->format($profile?->employee_code),
                 'Joining Date' => $this->formatter->format($profile?->joining_date, 'date'),
-                'Territory' => $this->formatter->format($profile?->territory),
                 'Basic Salary' => $this->formatter->format($profile?->basic_salary ?? 0, 'money'),
                 'Monthly Target' => $this->formatter->format($profile?->target_amount ?? 0, 'money'),
             ],

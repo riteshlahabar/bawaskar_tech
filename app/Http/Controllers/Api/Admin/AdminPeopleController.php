@@ -24,7 +24,6 @@ final class AdminPeopleController extends AdminApiController
             'mobile' => ['nullable', 'string', 'max:20', 'unique:users,mobile'],
             'password' => ['required', 'string', 'min:8'],
             'employee_code' => ['required', 'string', 'max:50', 'unique:salesman_profiles,employee_code'],
-            'territory' => ['nullable', 'string', 'max:255'],
             'basic_salary' => ['nullable', 'numeric'],
             'target_amount' => ['nullable', 'numeric'],
         ]);
@@ -41,7 +40,6 @@ final class AdminPeopleController extends AdminApiController
         SalesmanProfile::query()->create([
             'user_id' => $salesman->id,
             'employee_code' => $validated['employee_code'],
-            'territory' => $validated['territory'] ?? null,
             'basic_salary' => $validated['basic_salary'] ?? 0,
             'target_amount' => $validated['target_amount'] ?? 0,
         ]);

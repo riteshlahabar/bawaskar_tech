@@ -63,7 +63,6 @@ final class EmployeeReport extends Report
                 'name' => $employee->name,
                 'mobile' => $employee->mobile,
                 'joining_date' => $profile?->joining_date,
-                'confirmation_date' => $profile?->confirmation_date,
                 'exit_date' => $profile?->exit_date,
                 'basic' => (float) ($profile?->basic_salary ?? 0),
                 // The account can be blocked while the employment record still
@@ -87,7 +86,6 @@ final class EmployeeReport extends Report
                 ['key' => 'name', 'label' => 'Name'],
                 ['key' => 'mobile', 'label' => 'Mobile'],
                 ['key' => 'joining_date', 'label' => 'Joining Date', 'type' => 'date'],
-                ['key' => 'confirmation_date', 'label' => 'Confirmed On', 'type' => 'date'],
                 ['key' => 'exit_date', 'label' => 'Exit Date', 'type' => 'date'],
                 ['key' => 'basic', 'label' => 'Basic Salary', 'type' => 'money'],
                 ['key' => 'employment_status', 'label' => 'Employment'],

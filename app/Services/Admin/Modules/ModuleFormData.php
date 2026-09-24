@@ -144,6 +144,13 @@ final class ModuleFormData implements ModuleFormDataContract
     }
 
     /**
+     * Field types whose options are resolved here rather than written out in
+     * config: a single-choice `select` and a multi-choice `checkbox_list`,
+     * which both read `options` or an `option_model`.
+     */
+    private const OPTION_FIELD_TYPES = ['select', 'checkbox_list'];
+
+    /**
      * @param  array<string, mixed>  $module
      * @return array<int, array<string, mixed>>
      */
@@ -151,7 +158,8 @@ final class ModuleFormData implements ModuleFormDataContract
     {
         return array_values(array_filter(
             $module['fields'] ?? [],
-            fn (array $field): bool => ($field['type'] ?? null) === 'select' && ! empty($field['name']),
+            fn (array $field): bool => in_array($field['type'] ?? null, self::OPTION_FIELD_TYPES, true)
+                && ! empty($field['name']),
         ));
     }
 

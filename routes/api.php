@@ -233,7 +233,12 @@ $registerBawaskarApi = static function () use ($registerSharedAccountRoutes): vo
             Route::get('documents', [SalesmanDocumentController::class, 'index']);
 
             Route::get('profile', [SalesmanProfileController::class, 'profile']);
-            Route::post('support', [SalesmanProfileController::class, 'support']);
+            // Commented out 2026-09-26: the salesman app no longer offers Help
+            // & Support. A salesman is a company employee in direct contact
+            // with the admin office, so a ticket queue only delays what a phone
+            // call settles. Customers and dealers keep their own support routes
+            // above. `SalesmanProfileController::support()` is left in place.
+            // Route::post('support', [SalesmanProfileController::class, 'support']);
 
             Route::get('salary-revisions', [SalesmanSalaryRevisionController::class, 'index']);
 

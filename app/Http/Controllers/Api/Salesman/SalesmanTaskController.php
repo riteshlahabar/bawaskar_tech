@@ -15,7 +15,7 @@ final class SalesmanTaskController extends SalesmanApiController
     public function index(Request $request): JsonResponse
     {
         $tasks = Task::query()
-            ->with('dealer:id,name')
+            ->with(['dealer:id,name', 'assigner:id,name'])
             ->where('assigned_to', $this->salesman($request)->id)
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->orderByRaw("field(status, 'pending', 'in_progress', 'completed', 'cancelled')")
@@ -43,6 +43,6 @@ final class SalesmanTaskController extends SalesmanApiController
         $task->completed_at = $validated['status'] === 'completed' ? now() : null;
         $task->save();
 
-        return $this->success(['task' => $task->fresh('dealer:id,name')], 'Task updated.');
+        return $this->success(['task' => $task->fresh(['dealer:id,name', 'assigner:id,name'])], 'Task updated.');
     }
 }

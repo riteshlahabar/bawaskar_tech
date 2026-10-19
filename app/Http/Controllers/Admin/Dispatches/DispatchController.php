@@ -24,14 +24,19 @@ class DispatchController extends AdminModuleController
     /**
      * The order_id dropdown needs the party name alongside the invoice number,
      * which the generic option builder can't produce (it only plucks one plain
-     * column), so this one field is built by hand.
+     * column), so this one field is built by hand. Being hand built, it also
+     * has to apply the channel scope itself.
      */
-    protected function formOptions(array $module): array
+    protected function formOptions(array $module, ?string $channel = null): array
     {
-        $options = parent::formOptions($module);
+        $options = parent::formOptions($module, $channel);
 
         $options['order_id'] = Invoice::query()
             ->with(['order.customer', 'order.dealer.dealerProfile'])
+            ->when($channel, fn ($query, string $type) => $query->whereHas(
+                'order',
+                fn ($order) => $order->where('order_type', $type),
+            ))
             ->orderBy('invoice_no')
             ->get()
             ->mapWithKeys(fn (Invoice $invoice) => [

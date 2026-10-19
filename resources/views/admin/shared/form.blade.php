@@ -19,7 +19,7 @@
         $currentGroup = null;
 
         foreach ($fieldNodes as $node) {
-            if (! $fieldTree->shouldRender($node['field'], (bool) $record)) {
+            if (! $fieldTree->shouldRender($node['field'], (bool) $record, $formChannel ?? null)) {
                 continue;
             }
 
@@ -86,6 +86,13 @@
                         @endif
                     @endforeach
 
+                    {{-- Inside a Sales submenu the channel is not asked for, but
+                         it is still posted so its own rules and every
+                         required_if that depends on it keep working. --}}
+                    @foreach($lockedChannelValues ?? [] as $lockedName => $lockedValue)
+                        <input type="hidden" name="{{ $lockedName }}" value="{{ $lockedValue }}">
+                    @endforeach
+
                     @if($useTabs)
                         <ul class="nav nav-tabs admin-form-tabs" role="tablist">
                             @foreach($tabGroups as $tabIndex => $group)
@@ -130,7 +137,7 @@
                     @else
                         <div class="row g-3">
                             @foreach($fieldNodes as $node)
-                                @continue(! $fieldTree->shouldRender($node['field'], (bool) $record))
+                                @continue(! $fieldTree->shouldRender($node['field'], (bool) $record, $formChannel ?? null))
                                 @include('admin.shared.fields.field', ['field' => $node['field'], 'children' => $node['children']])
                             @endforeach
                         </div>

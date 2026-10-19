@@ -18,9 +18,9 @@ class DeliveryAreaController extends AdminModuleController
         parent::__construct($modules);
     }
 
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
-        $rules = parent::rules($module, $record) + $this->district->rules();
+        $rules = parent::rules($module, $record, $channel) + $this->district->rules();
         $rules['district_code'][] = Rule::unique('delivery_areas', 'district_code')->ignore($record?->getKey());
 
         return $rules;

@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\User;
 use App\Services\Admin\Modules\ModuleValidation;
+use App\Support\Admin\Forms\ChannelFields;
 use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
@@ -11,7 +12,7 @@ class PeoplePasswordFieldTest extends TestCase
 {
     public function test_people_forms_have_a_confirmed_password_that_is_optional_when_editing(): void
     {
-        $validation = new ModuleValidation;
+        $validation = new ModuleValidation(new ChannelFields);
         $existing = new User;
         $existing->id = 7;
 

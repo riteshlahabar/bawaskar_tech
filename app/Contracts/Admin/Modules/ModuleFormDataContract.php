@@ -25,10 +25,13 @@ interface ModuleFormDataContract
     public function forRecord(Model $record, array $module): array;
 
     /**
+     * A field declaring `option_channel` has its choices narrowed to the sales
+     * channel of the page, so a Customer page never offers a dealer's records.
+     *
      * @param  array<string, mixed>  $module
      * @return array<string, array<mixed>>
      */
-    public function options(array $module): array;
+    public function options(array $module, ?string $channel = null): array;
 
     /**
      * Extra data-* attributes per select option, used by conditional fields.

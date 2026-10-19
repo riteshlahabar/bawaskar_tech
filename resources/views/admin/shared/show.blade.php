@@ -15,7 +15,7 @@
         </div>
 
         <div class="row g-3">
-            @foreach($module['columns'] as $column)
+            @foreach($visibleColumns as $column)
                 @php($value = data_get($record, $column['key']))
                 <div class="col-md-6">
                     <div class="border rounded p-3 h-100">

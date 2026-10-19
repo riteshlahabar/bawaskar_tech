@@ -171,6 +171,7 @@ use App\Services\Sales\TargetAchievementService;
 use App\Services\Support\IndianAmountInWordsService;
 use App\Services\Support\LaravelTransactionManager;
 use App\Services\System\SqlDatabaseBackupService;
+use App\Support\Admin\Forms\ChannelFields;
 use App\Support\Admin\Forms\ConfigFormFieldViews;
 use App\Support\Admin\Forms\FormFieldTree;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -321,14 +322,38 @@ class AppServiceProvider extends ServiceProvider
         // handed to them, so the Blade templates hold no static calls.
         View::composer('admin.shared.form', function ($view): void {
             $tree = app(FormFieldTreeContract::class);
-            $module = $view->getData()['module'] ?? [];
+            $channels = app(ChannelFields::class);
+            $data = $view->getData();
+            $module = $data['module'] ?? [];
+
+            // Which Sales submenu the form was opened from, so a Customer page
+            // never renders the Dealer and Salesman fields.
+            $channel = app(ModuleDefinitionContract::class)
+                ->channel($module, request(), $data['record'] ?? null);
 
             $view->with([
                 'fieldTree' => $tree,
                 'fieldViews' => app(FormFieldViewContract::class),
                 'fieldNodes' => $tree->build($module['fields'] ?? []),
+                'formChannel' => $channel,
+                'lockedChannelValues' => $channels->lockedValues($module['fields'] ?? [], $channel),
             ]);
         });
+
+        // A Sales listing or detail page drops the other channel's columns:
+        // Dealer and Salesman on a Customer page, Customer on a Dealer one.
+        View::composer(['admin.shared.index', 'admin.shared.show'], function ($view): void {
+            $data = $view->getData();
+            $module = $data['module'] ?? [];
+            $channels = app(ChannelFields::class);
+
+            $channel = app(ModuleDefinitionContract::class)
+                ->channel($module, request(), $data['record'] ?? null);
+
+            $view->with('visibleColumns', collect($module['columns'] ?? [])
+                ->filter(fn (array $column): bool => $channels->belongsTo($column, $channel)));
+        });
+
         RateLimiter::for('api', function (Request $request): Limit {
             $key = $request->bearerToken()
                 ? 'token:'.hash('sha256', $request->bearerToken())

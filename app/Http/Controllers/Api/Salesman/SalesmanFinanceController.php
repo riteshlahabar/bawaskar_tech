@@ -54,6 +54,24 @@ final class SalesmanFinanceController extends SalesmanApiController
         return $this->success(['payment' => $payment], 'Payment collected.', 201);
     }
 
+    /**
+     * Payments this salesman has collected, newest first.
+     *
+     * Scoped by `collected_by`, never by the dealer: a dealer can also pay the
+     * office directly, and those payments are not this salesman's collections
+     * even though they reduce the same outstanding balance.
+     */
+    public function collections(Request $request): JsonResponse
+    {
+        $payments = Payment::query()
+            ->with('payer:id,name', 'order:id,order_no')
+            ->where('collected_by', $this->salesman($request)->id)
+            ->latest('paid_at')
+            ->paginate($request->integer('per_page', 20));
+
+        return $this->success(['collections' => $payments]);
+    }
+
     public function expenses(Request $request): JsonResponse
     {
         $expenses = Expense::query()

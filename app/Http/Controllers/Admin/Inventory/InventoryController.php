@@ -10,9 +10,9 @@ class InventoryController extends AdminModuleController
 {
     protected string $moduleKey = 'inventory';
 
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
-        $rules = parent::rules($module, $record);
+        $rules = parent::rules($module, $record, $channel);
         $rules['product_variant_id'] = [
             'nullable',
             Rule::exists('product_variants', 'id')->where(fn ($query) => $query->where('product_id', request()->integer('product_id'))),

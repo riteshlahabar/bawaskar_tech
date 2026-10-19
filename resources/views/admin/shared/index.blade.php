@@ -48,7 +48,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="bulk-select-col">@if($can['delete'])<input class="form-check-input admin-select-all" type="checkbox" title="Select all">@endif</th>
-                            @foreach($module['columns'] as $index => $column)
+                            @foreach($visibleColumns as $index => $column)
                                 <th data-column-index="{{ $index }}">{{ $column['label'] }}</th>
                             @endforeach
                             <th class="text-end">Actions</th>
@@ -58,7 +58,7 @@
                         @forelse($records as $record)
                             <tr>
                                 <td class="bulk-select-col">@if($can['delete'])<input class="form-check-input admin-row-checkbox" type="checkbox" name="selected_ids[]" value="{{ $record->getKey() }}">@endif</td>
-                                @foreach($module['columns'] as $index => $column)
+                                @foreach($visibleColumns as $index => $column)
                                     @php
                                         $value = data_get($record, $column['key']);
                                         if (($column['type'] ?? '') === 'image' && empty($value)) {
@@ -222,7 +222,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="{{ count($module['columns']) + 2 }}" class="text-center py-5 text-muted">No records found.</td></tr>
+                            <tr><td colspan="{{ $visibleColumns->count() + 2 }}" class="text-center py-5 text-muted">No records found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

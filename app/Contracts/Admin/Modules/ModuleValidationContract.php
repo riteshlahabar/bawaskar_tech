@@ -14,7 +14,7 @@ interface ModuleValidationContract
      * @param  array<string, mixed>  $module
      * @return array<string, array<int, mixed>>
      */
-    public function rules(array $module, ?Model $record = null): array;
+    public function rules(array $module, ?Model $record = null, ?string $channel = null): array;
 
     /**
      * @param  array<string, mixed>  $module

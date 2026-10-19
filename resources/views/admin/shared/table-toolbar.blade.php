@@ -139,7 +139,7 @@
             <div class="dropdown">
                 <button class="btn btn-outline-secondary admin-toolbar-icon dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="iconoir-view-grid"></i></button>
                 <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">
-                    @foreach($module['columns'] as $index => $column)
+                    @foreach($visibleColumns as $index => $column)
                         <label class="dropdown-item d-flex align-items-center gap-2 mb-0">
                             <input class="form-check-input m-0 admin-column-toggle" type="checkbox" data-column-index="{{ $index }}" checked>
                             <span>{{ $column['label'] }}</span>

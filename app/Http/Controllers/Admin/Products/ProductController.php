@@ -31,10 +31,10 @@ final class ProductController extends AdminModuleController
         parent::__construct($modules);
     }
 
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
         return $this->validation->extend(
-            parent::rules($module, $record),
+            parent::rules($module, $record, $channel),
             $record instanceof Product ? $record : null,
         );
     }
@@ -77,8 +77,8 @@ final class ProductController extends AdminModuleController
             : $data;
     }
 
-    protected function formOptions(array $module): array
+    protected function formOptions(array $module, ?string $channel = null): array
     {
-        return $this->form->augmentOptions(parent::formOptions($module));
+        return $this->form->augmentOptions(parent::formOptions($module, $channel));
     }
 }

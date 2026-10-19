@@ -3,11 +3,14 @@
 namespace App\Services\Admin\Modules;
 
 use App\Contracts\Admin\Modules\ModuleValidationContract;
+use App\Support\Admin\Forms\ChannelFields;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 final class ModuleValidation implements ModuleValidationContract
 {
+    public function __construct(private readonly ChannelFields $channels) {}
+
     /**
      * Rule name => message template, with :label replaced by the field label.
      */
@@ -30,12 +33,19 @@ final class ModuleValidation implements ModuleValidationContract
         'in' => 'Select valid :label.',
     ];
 
-    public function rules(array $module, ?Model $record = null): array
+    public function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
         $rules = [];
 
         foreach ($module['fields'] ?? [] as $field) {
             if (($field['display_only'] ?? false) || ($field['name'] ?? '') === '') {
+                continue;
+            }
+
+            // A field belonging to the other sales channel is not rendered on
+            // this page, so it must not carry a rule either - a `required_if`
+            // left behind would fail on a value the user never saw.
+            if (! $this->channels->belongsTo($field, $channel)) {
                 continue;
             }
 

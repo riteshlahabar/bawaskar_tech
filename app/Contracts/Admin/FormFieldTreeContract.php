@@ -18,9 +18,15 @@ interface FormFieldTreeContract
     public function build(array $fields): array;
 
     /**
+     * A field is dropped when it belongs to the other sales channel: `channels`
+     * lists the channels it appears on, while `channel_locked` marks the one
+     * (the order's own Channel select) whose value the submenu decides - the
+     * form posts that as a hidden input instead. A null channel means the page
+     * is not channel scoped, so nothing is hidden.
+     *
      * @param  array<string, mixed>  $field
      */
-    public function shouldRender(array $field, bool $editing): bool;
+    public function shouldRender(array $field, bool $editing, ?string $channel = null): bool;
 
     /**
      * Subsections declared by a container field, keyed by their `render_group`.

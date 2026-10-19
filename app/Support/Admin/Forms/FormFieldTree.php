@@ -6,6 +6,8 @@ use App\Contracts\Admin\FormFieldTreeContract;
 
 final class FormFieldTree implements FormFieldTreeContract
 {
+    public function __construct(private readonly ChannelFields $channels) {}
+
     public function build(array $fields): array
     {
         $nodes = [];
@@ -33,9 +35,13 @@ final class FormFieldTree implements FormFieldTreeContract
         return $nodes;
     }
 
-    public function shouldRender(array $field, bool $editing): bool
+    public function shouldRender(array $field, bool $editing, ?string $channel = null): bool
     {
         if ($field['display_only'] ?? false) {
+            return false;
+        }
+
+        if (! $this->channels->belongsTo($field, $channel) || $this->channels->isLocked($field, $channel)) {
             return false;
         }
 

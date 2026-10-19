@@ -17,9 +17,9 @@ class CourierController extends AdminModuleController
         parent::__construct($modules);
     }
 
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
-        return parent::rules($module, $record) + $this->location->rules((bool) ($module['location_required'] ?? true));
+        return parent::rules($module, $record, $channel) + $this->location->rules((bool) ($module['location_required'] ?? true));
     }
 
     /**

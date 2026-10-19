@@ -41,9 +41,9 @@ trait InteractsWithModuleServices
      * @param  array<string, mixed>  $module
      * @return array<string, array<int, mixed>>
      */
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
-        return $this->modules->validation->rules($module, $record);
+        return $this->modules->validation->rules($module, $record, $channel);
     }
 
     /**
@@ -53,10 +53,21 @@ trait InteractsWithModuleServices
     protected function validateRequest(Request $request, array $module, ?Model $record = null): array
     {
         return $request->validate(
-            $this->rules($module, $record),
+            $this->rules($module, $record, $this->salesChannel($module, $request, $record)),
             $this->modules->validation->messages($module),
             $this->modules->validation->attributes($module),
         );
+    }
+
+    /**
+     * The sales channel the current page is scoped to, or null when the module
+     * has none. Kept here so the form, its rules and its dropdowns all agree.
+     *
+     * @param  array<string, mixed>  $module
+     */
+    protected function salesChannel(array $module, ?Request $request = null, ?Model $record = null): ?string
+    {
+        return $this->modules->definition->channel($module, $request, $record);
     }
 
     /**
@@ -81,9 +92,9 @@ trait InteractsWithModuleServices
      * @param  array<string, mixed>  $module
      * @return array<string, array<mixed>>
      */
-    protected function formOptions(array $module): array
+    protected function formOptions(array $module, ?string $channel = null): array
     {
-        return $this->modules->formData->options($module);
+        return $this->modules->formData->options($module, $channel);
     }
 
     /**

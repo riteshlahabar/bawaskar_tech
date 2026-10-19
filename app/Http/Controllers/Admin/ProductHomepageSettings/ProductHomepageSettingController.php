@@ -10,9 +10,9 @@ class ProductHomepageSettingController extends AdminModuleController
 {
     protected string $moduleKey = 'homepage-settings';
 
-    protected function rules(array $module, $record = null): array
+    protected function rules(array $module, $record = null, ?string $channel = null): array
     {
-        $rules = parent::rules($module, $record);
+        $rules = parent::rules($module, $record, $channel);
 
         $uniqueSortOrder = Rule::unique('product_homepage_sections', 'sort_order');
 

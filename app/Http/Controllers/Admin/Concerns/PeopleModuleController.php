@@ -39,9 +39,9 @@ abstract class PeopleModuleController extends AdminModuleController
         return $view->with('summary', $record instanceof User ? $this->summaries->for($record) : PersonSummary::empty());
     }
 
-    protected function rules(array $module, ?Model $record = null): array
+    protected function rules(array $module, ?Model $record = null, ?string $channel = null): array
     {
-        $rules = parent::rules($module, $record) + $this->location->rules((bool) ($module['location_required'] ?? true));
+        $rules = parent::rules($module, $record, $channel) + $this->location->rules((bool) ($module['location_required'] ?? true));
         if ($record) {
             $relationName = explode('.', $this->profileRelation)[0];
             $profileId = $record->{$relationName}?->getKey();

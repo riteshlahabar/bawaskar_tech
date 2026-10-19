@@ -2,6 +2,7 @@
 
 namespace App\Contracts\Admin\Modules;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 /**
@@ -25,4 +26,14 @@ interface ModuleDefinitionContract
      * @param  array<string, mixed>  $module
      */
     public function pageTitle(array $module, Request $request): string;
+
+    /**
+     * Which sales channel ("customer" or "dealer") the page being rendered
+     * belongs to, or null for a module that has no channel or a page opened
+     * outside either submenu. A record answers for itself; otherwise the
+     * submenu's ?type= decides.
+     *
+     * @param  array<string, mixed>  $module
+     */
+    public function channel(array $module, ?Request $request = null, ?Model $record = null): ?string;
 }

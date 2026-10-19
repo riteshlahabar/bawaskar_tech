@@ -59,7 +59,7 @@ final class ModuleFormData implements ModuleFormDataContract
         return $data;
     }
 
-    public function options(array $module): array
+    public function options(array $module, ?string $channel = null): array
     {
         $options = [];
 
@@ -76,7 +76,7 @@ final class ModuleFormData implements ModuleFormDataContract
 
             $label = $field['option_label'] ?? 'name';
 
-            $options[$field['name']] = $this->optionQuery($field)
+            $options[$field['name']] = $this->optionQuery($field, $channel)
                 ->orderBy($label)
                 ->pluck($label, $field['option_value'] ?? 'id')
                 ->all();
@@ -166,7 +166,7 @@ final class ModuleFormData implements ModuleFormDataContract
     /**
      * @param  array<string, mixed>  $field
      */
-    private function optionQuery(array $field): mixed
+    private function optionQuery(array $field, ?string $channel = null): mixed
     {
         $query = $field['option_model']::query();
 
@@ -174,7 +174,33 @@ final class ModuleFormData implements ModuleFormDataContract
             $query->where($column, $value);
         }
 
+        if ($channel !== null && filled($field['option_channel'] ?? null)) {
+            $this->scopeToChannel($query, (string) $field['option_channel'], $channel);
+        }
+
         return $query;
+    }
+
+    /**
+     * `option_channel` is a dotted path on the option model: the last segment
+     * is the column holding the channel, anything before it is the relation to
+     * reach it through ("order.order_type" on an invoice, "role" on a user).
+     */
+    private function scopeToChannel(mixed $query, string $path, string $channel): void
+    {
+        $segments = explode('.', $path);
+        $column = (string) array_pop($segments);
+
+        if ($segments === []) {
+            $query->where($column, $channel);
+
+            return;
+        }
+
+        $query->whereHas(
+            implode('.', $segments),
+            fn ($relation) => $relation->where($column, $channel),
+        );
     }
 
     /**

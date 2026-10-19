@@ -53,7 +53,7 @@ abstract class AdminModuleController extends Controller
             'breadcrumbs' => ['Admin', $module['label'], 'Add'],
             'record' => null,
             'formData' => $this->createFormData($request, $module),
-            'options' => $this->formOptions($module),
+            'options' => $this->formOptions($module, $this->salesChannel($module, $request)),
             'optionAttributes' => $this->formOptionAttributes($module),
         ]);
     }
@@ -95,7 +95,7 @@ abstract class AdminModuleController extends Controller
             'breadcrumbs' => ['Admin', $module['label'], 'Edit'],
             'record' => $record,
             'formData' => $this->formData($record, $module),
-            'options' => $this->formOptions($module),
+            'options' => $this->formOptions($module, $this->salesChannel($module, null, $record)),
             'optionAttributes' => $this->formOptionAttributes($module),
         ]);
     }

@@ -120,6 +120,9 @@
 </head>
 <body>
 
+@includeWhen($printToolbar ?? false, 'invoices.pdf.partials.print-toolbar')
+
+
 {{-- ── header ───────────────────────────────────────────── --}}
 <table class="hdr">
     <tr>

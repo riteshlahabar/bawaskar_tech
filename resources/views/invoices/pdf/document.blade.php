@@ -56,6 +56,9 @@
 </head>
 <body>
 
+@includeWhen($printToolbar ?? false, 'invoices.pdf.partials.print-toolbar')
+
+
 <div class="sheet">
     <div class="box title-bar">{{ strtoupper($title) }}</div>
 

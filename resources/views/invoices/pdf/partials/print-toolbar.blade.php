@@ -54,22 +54,13 @@
         font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 8px;
         flex-wrap: wrap;
         margin: 0 0 14px;
         padding-bottom: 12px;
         border-bottom: 1px solid #e5e9ee;
     }
-
-    .doc-toolbar .note {
-        flex: 1 1 auto;
-        min-width: 180px;
-        color: #6b7280;
-        font-size: 12px;
-        line-height: 1.5;
-    }
-
-    .doc-toolbar .note strong { color: #2a2d2d; }
 
     .doc-toolbar a,
     .doc-toolbar button {
@@ -93,10 +84,6 @@
 </style>
 
 <div class="doc-toolbar">
-    <span class="note">
-        Design: <strong>{{ $designLabel ?? 'Classic' }}</strong>
-        &nbsp;·&nbsp; change it in Settings &rarr; Company Profile &rarr; Invoice &amp; Document Design
-    </span>
     <button type="button" onclick="window.print()">Print</button>
     <a href="{{ route('admin.sales-documents.pdf', ['document' => request()->route('document'), 'id' => request()->route('id')]) }}">Download PDF</a>
     <a class="ghost" href="javascript:window.close()">Close</a>

@@ -35,13 +35,7 @@ class SalesDocumentController extends Controller
             $company instanceof CompanySetting
                 ? $company->invoiceTemplateView()
                 : 'invoices.pdf.document',
-            [
-                ...$data,
-                'printToolbar' => true,
-                'designLabel' => $company instanceof CompanySetting
-                    ? (CompanySetting::INVOICE_TEMPLATES[$company->invoice_template] ?? 'Classic')
-                    : 'Classic',
-            ]
+            [...$data, 'printToolbar' => true]
         );
     }
 

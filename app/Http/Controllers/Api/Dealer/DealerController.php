@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Dealer;
 
+use App\Contracts\Finance\DealerLedgerContract;
 use App\Contracts\Finance\DealerOutstandingContract;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Communication\SupportTicket;
-use App\Models\Finance\DealerStatement;
 use App\Models\Sales\Order;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,10 @@ use Illuminate\Http\Request;
 
 class DealerController extends ApiController
 {
-    public function __construct(private readonly DealerOutstandingContract $outstanding) {}
+    public function __construct(
+        private readonly DealerOutstandingContract $outstanding,
+        private readonly DealerLedgerContract $ledger,
+    ) {}
 
     public function profile(Request $request): JsonResponse
     {
@@ -111,7 +114,8 @@ class DealerController extends ApiController
             return $user;
         }
 
-        $statements = DealerStatement::query()->where('dealer_id', $user->id)->latest()->paginate($request->integer('per_page', 20));
+        // Derived from invoices and settled payments — see DealerLedgerService.
+        $statements = $this->ledger->paginate($user->id, $request->integer('per_page', 20), max((int) $request->integer('page', 1), 1));
 
         return $this->success(['statements' => $statements]);
     }

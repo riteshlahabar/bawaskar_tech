@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Dealer;
 
+use App\Contracts\Finance\DealerLedgerContract;
 use App\Contracts\Finance\DealerOutstandingContract;
 use App\Http\Controllers\Api\ApiController;
-use App\Models\Finance\DealerStatement;
 use App\Models\Finance\Payment;
 use App\Models\Sales\Order;
 use App\Models\User;
@@ -17,7 +17,10 @@ use Illuminate\Http\Request;
  */
 class DealerOutstandingController extends ApiController
 {
-    public function __construct(private readonly DealerOutstandingContract $outstandingCalculator) {}
+    public function __construct(
+        private readonly DealerOutstandingContract $outstandingCalculator,
+        private readonly DealerLedgerContract $ledger,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -54,10 +57,11 @@ class DealerOutstandingController extends ApiController
             return $user;
         }
 
-        $entries = DealerStatement::query()
-            ->where('dealer_id', $user->id)
-            ->latest()
-            ->paginate(min((int) $request->integer('per_page', 25), 100));
+        $entries = $this->ledger->paginate(
+            $user->id,
+            min((int) $request->integer('per_page', 25), 100),
+            max((int) $request->integer('page', 1), 1),
+        );
 
         return $this->success([
             'entries' => $entries->items(),

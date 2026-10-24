@@ -8,9 +8,6 @@ use App\Models\Sales\Invoice;
 
 final class DealerOutstandingService implements DealerOutstandingContract
 {
-    /** @var list<string> payment statuses that actually reduce what's owed */
-    private const COLLECTED_STATUSES = ['paid', 'collected', 'verified'];
-
     public function outstandingBalance(int $dealerId): float
     {
         $billed = (float) Invoice::query()
@@ -19,9 +16,12 @@ final class DealerOutstandingService implements DealerOutstandingContract
                 ->where('status', '!=', 'cancelled'))
             ->sum('grand_total');
 
+        // Payment::SETTLED_STATUSES is the authority. The list used to live
+        // here privately and left out the gateway's own `success`, so a paid
+        // online order never reduced what the dealer owed.
         $collected = (float) Payment::query()
             ->where('payer_id', $dealerId)
-            ->whereIn('status', self::COLLECTED_STATUSES)
+            ->settled()
             ->sum('amount');
 
         return round(max($billed - $collected, 0), 2);

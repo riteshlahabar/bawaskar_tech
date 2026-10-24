@@ -28,14 +28,17 @@ class DealerPaymentController extends ApiController
 
         return $this->success([
             'payments' => $payments->items(),
+            // Both totals read Payment's own status lists. They used to name
+            // 'completed' and 'pending' inline, and 'completed' is a status no
+            // writer ever sets, so a dealer who had paid still saw "Paid: 0".
             'totals' => [
                 'paid' => (float) Payment::query()
                     ->where('payer_id', $user->id)
-                    ->where('status', 'completed')
+                    ->settled()
                     ->sum('amount'),
                 'pending' => (float) Payment::query()
                     ->where('payer_id', $user->id)
-                    ->where('status', 'pending')
+                    ->awaiting()
                     ->sum('amount'),
             ],
             'meta' => [

@@ -42,6 +42,17 @@
                                 ['chairman_name', 'Chairman', 'text', false],
                                 ['managing_director_name', 'Managing Director', 'text', false],
                             ],
+                            'Bank / Account Details' => [
+                                ['account_name', 'Account Holder Name', 'text', false],
+                                ['bank_name', 'Bank Name', 'text', false],
+                                ['bank_branch', 'Branch', 'text', false],
+                                ['account_number', 'Account Number', 'text', false],
+                                ['ifsc_code', 'IFSC Code', 'text', false],
+                                ['upi_id', 'UPI ID', 'text', false],
+                            ],
+                            'Invoice & Document Design' => [
+                                ['invoice_template', 'PDF Design', 'select', true],
+                            ],
                             'Google & Social Links' => [
                                 ['google_business_url', 'Google Business URL', 'url', false],
                                 ['facebook_url', 'Facebook URL', 'url', false],
@@ -49,18 +60,33 @@
                                 ['youtube_url', 'YouTube URL', 'url', false],
                             ],
                         ];
+
+                        $sectionHelp = [
+                            'Bank / Account Details' => 'Printed in the footer of every Sale Order, Proforma Invoice and Sale Invoice PDF, for both Customer and Dealer. Leave blank to hide the block.',
+                            'Invoice & Document Design' => 'Applies to every Sale Order, Proforma Invoice and Sale Invoice PDF, for both Customer and Dealer.',
+                        ];
                     @endphp
 
                     <div class="row g-3">
                         @foreach($sections as $section => $fields)
                             <div class="col-12">
                                 <div class="admin-form-section-heading border rounded px-3 py-2 mt-2 fw-bold text-dark" style="background-color:#f3f6fb;border-color:#dbe3ef !important;color:#1f2937 !important;">{{ $section }}</div>
+                                @if(! empty($sectionHelp[$section]))
+                                    <div class="form-text mt-1">{{ $sectionHelp[$section] }}</div>
+                                @endif
                             </div>
                             @foreach($fields as [$name, $label, $type, $required])
                                 <div class="{{ in_array($name, ['short_intro','description','address'], true) ? 'col-12' : 'col-md-6' }}">
                                     <label class="form-label">{{ $label }} @if($required)<span class="text-danger">*</span>@endif</label>
                                     @if($type === 'textarea')
                                         <textarea class="form-control @error($name)is-invalid @enderror" name="{{ $name }}" rows="{{ $name === 'description' ? 5 : 3 }}">{{ old($name, $setting->{$name}) }}</textarea>
+                                    @elseif($type === 'select')
+                                        @php $current = old($name, $setting->{$name} ?: \App\Models\CompanySetting::DEFAULT_INVOICE_TEMPLATE); @endphp
+                                        <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" @required($required)>
+                                            @foreach(\App\Models\CompanySetting::INVOICE_TEMPLATES as $key => $label)
+                                                <option value="{{ $key }}" @selected($current === $key)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
                                     @elseif($type === 'file')
                                         <input class="form-control @error($name)is-invalid @enderror" type="file" name="{{ $name }}" accept="image/*">
                                         @if($setting->logo_url)

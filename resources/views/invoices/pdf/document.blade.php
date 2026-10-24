@@ -45,6 +45,13 @@
         .tax-line { background: #d8e4bc; font-weight: bold; padding: 4px 6px; line-height: 1.5; }
         .foot td { vertical-align: top; padding: 8px; }
         .sign-box { border-left: 1px solid #555; height: 90px; }
+        .taxtbl { border-top: 1px solid #555; }
+        .taxtbl th { background: #d8e4bc; font-family: "DejaVu Serif", serif; font-weight: bold; font-size: 9px; padding: 4px 3px; border-left: 1px solid #555; border-bottom: 1px solid #555; }
+        .taxtbl th.sub { background: #e8f0d8; font-size: 8.5px; padding: 3px; }
+        .taxtbl th:first-child { border-left: 0; }
+        .taxtbl td { padding: 4px 3px; border-left: 1px solid #555; border-bottom: 1px solid #bbb; }
+        .taxtbl td:first-child { border-left: 0; }
+        .taxtbl .taxtotal td { background: #eef3e2; font-weight: bold; border-bottom: 1px solid #555; }
     </style>
 </head>
 <body>
@@ -144,18 +151,62 @@
 
     <div class="box words">{{ $taxSummary['in_words'] }}</div>
 
-    <div class="box tax-line">
-        @foreach($taxSummary['rows'] as $row)
-            Sale @ {{ rtrim(rtrim(number_format($row['rate'], 2), '0'), '.') }}% = {{ $money($row['taxable']) }},
-            @if($taxSummary['intra_state'])
-                CGST = {{ $money($row['tax'] / 2) }}, SGST = {{ $money($row['tax'] / 2) }}
-            @else
-                IGST = {{ $money($row['tax']) }}
-            @endif
-            |
-        @endforeach
-        Total Sale = {{ $money($taxSummary['taxable']) }}, Tax = {{ $money($taxSummary['tax']) }}
-    </div>
+    <table class="taxtbl">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width: 16%;">Tax Rate</th>
+                <th rowspan="2" style="width: 20%;">Taxable Value</th>
+                @if($taxSummary['intra_state'])
+                    <th colspan="2" style="width: 24%;">CGST</th>
+                    <th colspan="2" style="width: 24%;">SGST</th>
+                @else
+                    <th colspan="2" style="width: 48%;">IGST</th>
+                @endif
+                <th rowspan="2" style="width: 16%;">Total Tax</th>
+            </tr>
+            <tr>
+                @if($taxSummary['intra_state'])
+                    <th class="sub">Rate</th><th class="sub">Amount</th>
+                    <th class="sub">Rate</th><th class="sub">Amount</th>
+                @else
+                    <th class="sub">Rate</th><th class="sub">Amount</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($taxSummary['rows'] as $row)
+                @php $half = rtrim(rtrim(number_format((float) $row['rate'] / 2, 2), '0'), '.'); @endphp
+                <tr>
+                    <td class="c">{{ rtrim(rtrim(number_format($row['rate'], 2), '0'), '.') }}%</td>
+                    <td class="r">{{ $money($row['taxable']) }}</td>
+                    @if($taxSummary['intra_state'])
+                        <td class="c">{{ $half }}%</td>
+                        <td class="r">{{ $money($row['tax'] / 2) }}</td>
+                        <td class="c">{{ $half }}%</td>
+                        <td class="r">{{ $money($row['tax'] / 2) }}</td>
+                    @else
+                        <td class="c">{{ rtrim(rtrim(number_format($row['rate'], 2), '0'), '.') }}%</td>
+                        <td class="r">{{ $money($row['tax']) }}</td>
+                    @endif
+                    <td class="r">{{ $money($row['tax']) }}</td>
+                </tr>
+            @endforeach
+            <tr class="taxtotal">
+                <td class="c">Total</td>
+                <td class="r">{{ $money($taxSummary['taxable']) }}</td>
+                @if($taxSummary['intra_state'])
+                    <td class="c">&mdash;</td>
+                    <td class="r">{{ $money($taxSummary['tax'] / 2) }}</td>
+                    <td class="c">&mdash;</td>
+                    <td class="r">{{ $money($taxSummary['tax'] / 2) }}</td>
+                @else
+                    <td class="c">&mdash;</td>
+                    <td class="r">{{ $money($taxSummary['tax']) }}</td>
+                @endif
+                <td class="r">{{ $money($taxSummary['tax']) }}</td>
+            </tr>
+        </tbody>
+    </table>
 
     <table class="foot">
         <tr>

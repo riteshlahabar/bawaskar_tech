@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CompanySettingController extends Controller
 {
@@ -42,6 +43,13 @@ class CompanySettingController extends Controller
             'facebook_url' => ['nullable', 'url', 'max:2048'],
             'instagram_url' => ['nullable', 'url', 'max:2048'],
             'youtube_url' => ['nullable', 'url', 'max:2048'],
+            'account_name' => ['nullable', 'string', 'max:191'],
+            'bank_name' => ['nullable', 'string', 'max:191'],
+            'bank_branch' => ['nullable', 'string', 'max:191'],
+            'account_number' => ['nullable', 'string', 'max:40'],
+            'ifsc_code' => ['nullable', 'string', 'max:20'],
+            'upi_id' => ['nullable', 'string', 'max:191'],
+            'invoice_template' => ['required', 'string', Rule::in(array_keys(CompanySetting::INVOICE_TEMPLATES))],
         ]);
 
         unset($validated['logo']);

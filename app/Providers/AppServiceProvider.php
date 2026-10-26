@@ -66,6 +66,7 @@ use App\Contracts\Localization\WebsiteTranslationLookupContract;
 use App\Contracts\Location\DistrictSelectionContract;
 use App\Contracts\Location\LocationDirectoryContract;
 use App\Contracts\Location\UserLocationContract;
+use App\Contracts\Mail\EmailTemplateContract;
 use App\Contracts\Mail\MailConfiguratorContract;
 use App\Contracts\Mail\MailSenderContract;
 use App\Contracts\Sales\InvoiceMailerContract;
@@ -90,8 +91,12 @@ use App\Contracts\Support\TransactionManagerContract;
 use App\Contracts\System\DatabaseBackupContract;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Invoice;
+use App\Models\Sales\Order;
 use App\Models\SalesmanProfile;
+use App\Models\User;
 use App\Observers\Hr\SalesmanProfileSalaryObserver;
+use App\Observers\Mail\OrderPlacedMailObserver;
+use App\Observers\Mail\WelcomeMailObserver;
 use App\Observers\Sales\DispatchOrderStatusObserver;
 use App\Observers\Sales\InvoiceMailObserver;
 use App\Observers\Sales\InvoiceOrderStatusObserver;
@@ -161,6 +166,7 @@ use App\Services\Localization\WebTranslationAppStringService;
 use App\Services\Location\DistrictSelectionService;
 use App\Services\Location\UserLocationService;
 use App\Services\Mail\DatabaseMailConfigurator;
+use App\Services\Mail\EmailTemplateService;
 use App\Services\Mail\MailSender;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
 use App\Services\Sales\InvoiceMailer;
@@ -219,6 +225,7 @@ class AppServiceProvider extends ServiceProvider
             SalesDocumentGstDetailsContract::class => SalesDocumentGstDetailsService::class,
             MailConfiguratorContract::class => DatabaseMailConfigurator::class,
             MailSenderContract::class => MailSender::class,
+            EmailTemplateContract::class => EmailTemplateService::class,
             InvoiceMailerContract::class => InvoiceMailer::class,
             AmountInWordsContract::class => IndianAmountInWordsService::class,
             SupportedLocalesContract::class => DatabaseSupportedLocalesService::class,
@@ -327,9 +334,12 @@ class AppServiceProvider extends ServiceProvider
         Invoice::observe(InvoiceOrderStatusObserver::class);
         Dispatch::observe(DispatchOrderStatusObserver::class);
 
-        // Mails the invoice to its buyer, but only while both switches in
-        // Settings -> Mail Settings are on.
+        // Automatic e-mails. Each one is gated by the master switch in Mail
+        // Settings plus its own template switch, so these can all be hung
+        // unconditionally.
         Invoice::observe(InvoiceMailObserver::class);
+        Order::observe(OrderPlacedMailObserver::class);
+        User::observe(WelcomeMailObserver::class);
 
         // Basic salary is only ever one number on the employee record, so every
         // change to it is written to the revision history as it happens.

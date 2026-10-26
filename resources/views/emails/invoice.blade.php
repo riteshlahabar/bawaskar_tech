@@ -1,20 +1,16 @@
 @extends('emails.layout')
 
 {{--
-    The covering note for a Sale Invoice. The full GST document is the attached
-    PDF - this body only has to tell the reader what arrived and what is owed,
-    so it stays short and prints the same figures as the PDF totals block.
+    The covering note for a Sale Invoice. The wording above comes from
+    Settings -> Email Templates; the summary and bank blocks below are built
+    from the record, so admin can reword the mail but never change a figure.
+    The full GST document is the attached PDF.
 --}}
 
 @section('content')
-    <p style="margin:0 0 14px;">Dear {{ $party }},</p>
+    @include('emails.partials.paragraphs')
 
-    <p style="margin:0 0 18px;">
-        Please find attached your Sale Invoice <strong>{{ $number }}</strong>
-        dated {{ $date?->format('d M Y') }}.
-    </p>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-bottom:18px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:18px 0;">
         <tr>
             <td style="padding:8px 10px;background-color:#f7f9fc;border:1px solid #e2e6ed;font-size:13px;width:45%;">Invoice Number</td>
             <td style="padding:8px 10px;border:1px solid #e2e6ed;font-size:13px;"><strong>{{ $number }}</strong></td>
@@ -39,7 +35,7 @@
 
     @if($company?->hasBankDetails())
         <div style="font-size:13px;font-weight:bold;margin-bottom:6px;">Payment Details</div>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-bottom:18px;font-size:13px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:13px;">
             @foreach ([
                 'Account Name' => $company->account_name,
                 'Bank' => $company->bank_name,
@@ -57,6 +53,4 @@
             @endforeach
         </table>
     @endif
-
-    <p style="margin:0;">Thank you for your business.</p>
 @endsection

@@ -33,14 +33,12 @@ class MailSetting extends Model
     protected $fillable = [
         'is_enabled', 'mailer', 'host', 'port', 'username', 'password',
         'encryption', 'from_address', 'from_name', 'reply_to_address',
-        'invoice_email_enabled',
     ];
 
     protected function casts(): array
     {
         return [
             'is_enabled' => 'boolean',
-            'invoice_email_enabled' => 'boolean',
             'port' => 'integer',
             // Never readable in the database, and never shown back in the form.
             'password' => 'encrypted',
@@ -69,12 +67,6 @@ class MailSetting extends Model
     public function canSend(): bool
     {
         return $this->is_enabled && $this->isConfigured();
-    }
-
-    /** Automatic invoice mail needs both switches on. */
-    public function canSendInvoiceEmail(): bool
-    {
-        return $this->canSend() && $this->invoice_email_enabled;
     }
 
     /** Laravel 13 SMTP scheme: smtps is implicit TLS, smtp is plain/STARTTLS. */

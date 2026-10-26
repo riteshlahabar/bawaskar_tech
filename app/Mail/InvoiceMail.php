@@ -2,10 +2,8 @@
 
 namespace App\Mail;
 
-use Illuminate\Mail\Mailable;
+use App\Support\Mail\RenderedTemplate;
 use Illuminate\Mail\Mailables\Attachment;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 
 /**
  * The Sale Invoice covering mail, with the real GST PDF attached.
@@ -14,32 +12,28 @@ use Illuminate\Mail\Mailables\Envelope;
  * either of those is InvoiceMailer's job, so this class never touches the
  * database and can be rendered in a test from a plain array.
  */
-class InvoiceMail extends Mailable
+class InvoiceMail extends TemplatedMail
 {
     /**
      * @param  array<string, mixed>  $document  payload from SalesDocumentDataContract
      */
     public function __construct(
+        RenderedTemplate $template,
         private readonly array $document,
         private readonly string $pdf,
         private readonly string $pdfName,
-    ) {}
-
-    public function envelope(): Envelope
-    {
-        $company = $this->document['company'] ?? null;
-
-        return new Envelope(
-            subject: 'Invoice '.($this->document['number'] ?? '').' from '.($company?->company_name ?: config('app.name'))
-        );
+    ) {
+        parent::__construct($template);
     }
 
-    public function content(): Content
+    protected function templateView(): string
     {
-        return new Content(
-            view: 'emails.invoice',
-            with: $this->document + ['subjectLine' => 'Sale Invoice '.($this->document['number'] ?? '')]
-        );
+        return 'emails.invoice';
+    }
+
+    protected function data(): array
+    {
+        return $this->document;
     }
 
     /**

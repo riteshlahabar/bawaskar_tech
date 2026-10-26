@@ -17,6 +17,7 @@ use App\Models\Communication\SupportTicket;
 use App\Models\Communication\WebTranslation;
 use App\Models\Courier;
 use App\Models\DealerProfile;
+use App\Models\EmailTemplate;
 use App\Models\Engagement\ProductReview;
 use App\Models\Field\AttendanceLog;
 use App\Models\Field\DealerVisit;
@@ -1106,6 +1107,11 @@ return [
             'label' => 'Roles & Permissions', 'group' => 'Settings', 'singular' => 'Role', 'description' => 'A role decides which sections its users can view, add, edit and delete.', 'model' => AdminRole::class, 'with_count' => ['users', 'permissions'], 'search' => ['name', 'description'], 'sort' => ['id', 'asc'],
             'columns' => [['key' => 'name', 'label' => 'Role'], ['key' => 'description', 'label' => 'Description'], ['key' => 'users_count', 'label' => 'Users'], ['key' => 'permissions_count', 'label' => 'Sections'], ['key' => 'updated_at', 'label' => 'Updated', 'type' => 'datetime']],
             'fields' => [['name' => 'name', 'label' => 'Role Name', 'rules' => ['required', 'string', 'max:100', 'unique:admin_roles,name,{id}']], ['name' => 'description', 'label' => 'Description', 'rules' => ['nullable', 'string', 'max:255']]],
+        ],
+        'email-templates' => [
+            'label' => 'Email Templates', 'group' => 'Settings', 'singular' => 'Email Template', 'description' => 'The subject and wording of every automatic email. Switch one off here to stop just that email; Mail Settings switches off all of them.', 'model' => EmailTemplate::class, 'search' => ['name', 'subject'], 'status_column' => 'is_enabled', 'status_options' => ['1' => 'On', '0' => 'Off'], 'sort' => ['id', 'asc'], 'can_create' => false, 'can_delete' => false,
+            'columns' => [['key' => 'name', 'label' => 'Email'], ['key' => 'subject', 'label' => 'Subject'], ['key' => 'is_enabled', 'label' => 'Sending', 'type' => 'boolean'], ['key' => 'updated_at', 'label' => 'Updated', 'type' => 'datetime']],
+            'fields' => [['name' => 'subject', 'label' => 'Subject', 'col' => 'col-12', 'rules' => ['required', 'string', 'max:255']], ['name' => 'body', 'label' => 'Message', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 10, 'rules' => ['required', 'string', 'max:5000'], 'help' => 'Plain text only. Leave a blank line between paragraphs. The figures (invoice totals, order lines, bank details) are added automatically below your text and cannot be edited here.'], ['name' => 'is_enabled', 'label' => 'Send this email', 'type' => 'checkbox', 'rules' => ['boolean']]],
         ],
         'notifications' => [
             'label' => 'Notifications', 'group' => 'Settings', 'singular' => 'Notification', 'model' => Notification::class, 'with' => ['user'], 'search' => ['title', 'message'], 'can_delete' => true,

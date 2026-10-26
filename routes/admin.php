@@ -126,6 +126,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'web-translations' => WebTranslationController::class,
             'admin-users' => AdminUserController::class, 'admin-roles' => AdminRoleController::class,
             'notifications' => NotificationController::class, 'languages' => LanguageController::class, 'translations' => TranslationController::class, 'support' => SupportController::class,
+            'email-templates' => EmailTemplateController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
@@ -171,7 +172,6 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/{report}/export/{format}', [ReportController::class, 'export'])->where('report', '[a-z0-9-]+')->whereIn('format', ['excel', 'pdf'])->name('report.export');
         Route::get('reports/{report}', [ReportController::class, 'show'])->where('report', '[a-z0-9-]+')->name('report.show');
-        Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
-        Route::get('email-templates/{template}', [EmailTemplateController::class, 'show'])->name('email-templates.show');
+        Route::get('email-templates/{id}/preview', [EmailTemplateController::class, 'preview'])->name('email-templates.preview');
     });
 });

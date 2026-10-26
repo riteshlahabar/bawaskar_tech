@@ -35,9 +35,6 @@
                                 ['from_name', 'From Name', 'text', false],
                                 ['reply_to_address', 'Reply-To Address', 'email', false],
                             ],
-                            'Automatic Emails' => [
-                                ['invoice_email_enabled', 'Email the Sale Invoice when it is raised', 'checkbox', false],
-                            ],
                         ];
 
                         $options = [
@@ -46,10 +43,9 @@
                         ];
 
                         $sectionHelp = [
-                            'Sending' => 'Turn this off to stop every email at once. Nothing is sent while it is off.',
+                            'Sending' => 'Turn this off to stop every email at once. Which emails go out, and their wording, is set in Settings → Email Templates.',
                             'SMTP Server' => 'Use the mail account details from cPanel → Email Accounts → Connect Devices. Required only for the SMTP method.',
                             'Sender' => 'The From Address should be a real mailbox on this domain, or the mail may be treated as spam.',
-                            'Automatic Emails' => 'Sent to the customer or dealer the invoice belongs to, with the GST PDF attached in the design chosen in Company Profile.',
                         ];
 
                         $fieldHelp = [

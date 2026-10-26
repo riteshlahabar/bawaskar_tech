@@ -32,7 +32,6 @@ class MailSettingController extends Controller
         $setting = MailSetting::current();
 
         $validated['is_enabled'] = $request->boolean('is_enabled');
-        $validated['invoice_email_enabled'] = $request->boolean('invoice_email_enabled');
 
         // The form never shows the saved password back, so an empty box means
         // "leave it alone", not "clear it".

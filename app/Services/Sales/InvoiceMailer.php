@@ -2,11 +2,13 @@
 
 namespace App\Services\Sales;
 
+use App\Contracts\Mail\EmailTemplateContract;
 use App\Contracts\Mail\MailSenderContract;
 use App\Contracts\Sales\InvoiceMailerContract;
 use App\Contracts\Sales\SalesDocumentDataContract;
 use App\Contracts\Sales\SalesDocumentPdfContract;
 use App\Mail\InvoiceMail;
+use App\Models\EmailTemplate;
 use App\Models\MailSetting;
 use App\Models\Sales\Invoice;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +28,7 @@ final class InvoiceMailer implements InvoiceMailerContract
         private readonly SalesDocumentDataContract $documents,
         private readonly SalesDocumentPdfContract $pdf,
         private readonly MailSenderContract $mail,
+        private readonly EmailTemplateContract $templates,
     ) {}
 
     public function recipient(Invoice $invoice): ?string
@@ -47,7 +50,7 @@ final class InvoiceMailer implements InvoiceMailerContract
     {
         // Checked before anything is built: rendering the PDF of an invoice
         // nobody can receive is the most expensive way to do nothing.
-        if (! MailSetting::current()->canSend() || $this->recipient($invoice) === null) {
+        if (! $this->templates->enabled(EmailTemplate::INVOICE) || $this->recipient($invoice) === null) {
             return false;
         }
 
@@ -86,8 +89,16 @@ final class InvoiceMailer implements InvoiceMailerContract
     {
         $document = $this->documents->forDocument('invoice', $invoice->getKey());
 
+        $template = $this->templates->render(EmailTemplate::INVOICE, [
+            'name' => $document['party'] ?? '',
+            'invoice_no' => $document['number'] ?? '',
+            'invoice_date' => $document['date']?->format('d M Y') ?? '',
+            'order_no' => $document['order']->order_no ?? '',
+            'amount' => number_format((float) ($document['totals']['grand_total'] ?? 0), 2),
+        ]);
+
         return [
-            new InvoiceMail($document, $this->pdf->render($document), $this->pdf->filename($document)),
+            new InvoiceMail($template, $document, $this->pdf->render($document), $this->pdf->filename($document)),
             $this->recipient($invoice),
         ];
     }

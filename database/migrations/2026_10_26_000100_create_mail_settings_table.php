@@ -32,8 +32,8 @@ return new class extends Migration
             $table->string('from_address', 191)->nullable();
             $table->string('from_name', 191)->nullable();
             $table->string('reply_to_address', 191)->nullable();
-            // Separate switch: mail can be on while the automatic invoice mail is off.
-            $table->boolean('invoice_email_enabled')->default(false);
+            // Per-email switches live on email_templates.is_enabled, not here.
+            // This row is only the master switch and the server credentials.
             $table->timestamps();
         });
     }

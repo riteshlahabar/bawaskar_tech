@@ -22,7 +22,7 @@ return [
         'dashboard-hrms' => ['view'],
         'reports-overview' => ['view'],
         'report-*' => ['view'],
-        'email-templates' => ['view'],
+        'email-templates' => ['view', 'edit'],
         'company-settings' => ['view', 'edit'],
         'mail-settings' => ['view', 'edit'],
         'storefront-about' => ['view', 'edit'],
@@ -37,7 +37,7 @@ return [
 
     // Last part of a route name => action.
     'route_actions' => [
-        'index' => 'view', 'show' => 'view', 'export' => 'view', 'sample' => 'view', 'download' => 'view', 'print' => 'view', 'pdf' => 'view',
+        'index' => 'view', 'show' => 'view', 'export' => 'view', 'sample' => 'view', 'download' => 'view', 'print' => 'view', 'pdf' => 'view', 'preview' => 'view',
         'create' => 'create', 'store' => 'create',
         'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'cancel' => 'edit',
         'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'send-to-dispatch' => 'edit', 'email' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',

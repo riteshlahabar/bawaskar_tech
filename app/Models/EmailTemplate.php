@@ -34,6 +34,7 @@ class EmailTemplate extends Model
         'dispatched' => 'order_dispatched',
         'out_for_delivery' => 'order_out_for_delivery',
         'delivered' => 'order_delivered',
+        'cancelled' => 'order_cancelled',
     ];
 
     /**
@@ -85,6 +86,12 @@ class EmailTemplate extends Model
             'subject' => 'Your order :order_no has been delivered',
             'body' => "Dear :name,\n\nYour order :order_no has been delivered. We hope everything is in order.\n\nThank you for your business.",
             'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
+        ],
+        'order_cancelled' => [
+            'name' => 'Order Cancelled',
+            'subject' => 'Your order :order_no has been cancelled',
+            'body' => "Dear :name,\n\nYour order :order_no has been cancelled.\n\nReason: :reason\n\nIf this was not expected, please contact us and we will help.",
+            'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':reason', ':company'],
         ],
     ];
 

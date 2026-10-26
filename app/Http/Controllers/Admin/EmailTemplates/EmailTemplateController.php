@@ -53,5 +53,6 @@ class EmailTemplateController extends AdminModuleController
         'order_no' => 'CO0000001',
         'order_date' => '26 Oct 2026',
         'amount' => '1,232.00',
+        'reason' => 'Out of stock',
     ];
 }

@@ -48,6 +48,8 @@ final class OrderStatusMailObserver implements ShouldHandleEventsAfterCommit
                 'order_no' => $order->order_no,
                 'order_date' => $order->created_at?->format('d M Y') ?? '',
                 'amount' => number_format((float) $order->grand_total, 2),
+                // Only the cancellation template uses this; the rest ignore it.
+                'reason' => trim((string) $order->cancel_reason) ?: 'Not stated',
             ]);
 
             $this->mail->send(new OrderStatusMail($template, $order), $buyer->email);

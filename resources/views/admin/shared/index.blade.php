@@ -194,6 +194,11 @@
                                                 @endforeach
                                             @endif
 
+                                            @if($module['key'] === 'email-templates')
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item text-info" href="{{ route('admin.email-templates.preview', $record->getKey()) }}" target="_blank"><i class="iconoir-eye"></i><span>Preview Email</span></a>
+                                            @endif
+
                                             @if($module['key'] === 'resignations' && $can['edit'])
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item text-info" type="submit" form="suggestSettlement{{ $record->id }}"><i class="iconoir-calculator"></i><span>Fill F&amp;F From Records</span></button>

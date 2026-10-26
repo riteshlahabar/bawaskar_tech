@@ -96,6 +96,7 @@ use App\Models\SalesmanProfile;
 use App\Models\User;
 use App\Observers\Hr\SalesmanProfileSalaryObserver;
 use App\Observers\Mail\OrderPlacedMailObserver;
+use App\Observers\Mail\OrderStatusMailObserver;
 use App\Observers\Mail\WelcomeMailObserver;
 use App\Observers\Sales\DispatchOrderStatusObserver;
 use App\Observers\Sales\InvoiceMailObserver;
@@ -339,6 +340,7 @@ class AppServiceProvider extends ServiceProvider
         // unconditionally.
         Invoice::observe(InvoiceMailObserver::class);
         Order::observe(OrderPlacedMailObserver::class);
+        Order::observe(OrderStatusMailObserver::class);
         User::observe(WelcomeMailObserver::class);
 
         // Basic salary is only ever one number on the employee record, so every

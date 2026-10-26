@@ -23,6 +23,20 @@ class EmailTemplate extends Model
     public const ORDER_PLACED = 'order_placed';
 
     /**
+     * Order statuses that e-mail the buyer, status => template key.
+     *
+     * Only these four. `approved` is deliberately absent: approval is the
+     * moment the invoice is raised, so the buyer already receives the Sale
+     * Invoice mail and a second one would arrive at the same instant.
+     */
+    public const ORDER_STATUS_TEMPLATES = [
+        'packing' => 'order_packing',
+        'dispatched' => 'order_dispatched',
+        'out_for_delivery' => 'order_out_for_delivery',
+        'delivered' => 'order_delivered',
+    ];
+
+    /**
      * Shipped wording, used to seed the table and as the fallback when a row
      * is missing or has been emptied - a blank template must never go out as
      * a blank e-mail.
@@ -46,6 +60,30 @@ class EmailTemplate extends Model
             'name' => 'Order Placed',
             'subject' => 'We have received your order :order_no',
             'body' => "Dear :name,\n\nThank you for your order :order_no placed on :order_date.\n\nWe are reviewing it now and will let you know as soon as it is approved.",
+            'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
+        ],
+        'order_packing' => [
+            'name' => 'Order Being Packed',
+            'subject' => 'Your order :order_no is being packed',
+            'body' => "Dear :name,\n\nGood news - your order :order_no has been approved and is now being packed.\n\nWe will write again as soon as it leaves our warehouse.",
+            'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
+        ],
+        'order_dispatched' => [
+            'name' => 'Order Dispatched',
+            'subject' => 'Your order :order_no has been dispatched',
+            'body' => "Dear :name,\n\nYour order :order_no has left our warehouse and is on its way to you.\n\nWe will let you know when it is out for delivery.",
+            'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
+        ],
+        'order_out_for_delivery' => [
+            'name' => 'Out For Delivery',
+            'subject' => 'Your order :order_no is out for delivery',
+            'body' => "Dear :name,\n\nYour order :order_no is out for delivery today.\n\nPlease keep the payment ready if you have chosen Cash on Delivery.",
+            'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
+        ],
+        'order_delivered' => [
+            'name' => 'Order Delivered',
+            'subject' => 'Your order :order_no has been delivered',
+            'body' => "Dear :name,\n\nYour order :order_no has been delivered. We hope everything is in order.\n\nThank you for your business.",
             'placeholders' => [':name', ':order_no', ':order_date', ':amount', ':company'],
         ],
     ];

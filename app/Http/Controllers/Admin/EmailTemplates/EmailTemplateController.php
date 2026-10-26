@@ -27,7 +27,7 @@ class EmailTemplateController extends AdminModuleController
     public function preview(EmailTemplateContract $templates, int|string $id): View
     {
         $record = EmailTemplate::query()->findOrFail($id);
-        $rendered = $templates->render($record->key, self::SAMPLES[$record->key] ?? []);
+        $rendered = $templates->render($record->key, self::SAMPLES);
 
         return view('emails.preview', [
             'paragraphs' => $rendered->paragraphs(),
@@ -37,10 +37,21 @@ class EmailTemplateController extends AdminModuleController
         ]);
     }
 
-    /** Stand-in values so the preview reads like a real message. */
+    /**
+     * Stand-in values so the preview reads like a real message.
+     *
+     * One list covering every placeholder in EmailTemplate::DEFAULTS, not a
+     * map per template - a per-template map silently leaves a new template's
+     * placeholders unfilled, which is exactly what happened when the four
+     * order-status templates were added.
+     */
     private const SAMPLES = [
-        EmailTemplate::INVOICE => ['name' => 'Demo Customer', 'invoice_no' => 'INV0000001', 'invoice_date' => '26 Oct 2026', 'order_no' => 'CO0000001', 'amount' => '1,232.00'],
-        EmailTemplate::WELCOME => ['name' => 'Demo Customer', 'role' => 'Customer'],
-        EmailTemplate::ORDER_PLACED => ['name' => 'Demo Customer', 'order_no' => 'CO0000001', 'order_date' => '26 Oct 2026', 'amount' => '1,232.00'],
+        'name' => 'Demo Customer',
+        'role' => 'Customer',
+        'invoice_no' => 'INV0000001',
+        'invoice_date' => '26 Oct 2026',
+        'order_no' => 'CO0000001',
+        'order_date' => '26 Oct 2026',
+        'amount' => '1,232.00',
     ];
 }

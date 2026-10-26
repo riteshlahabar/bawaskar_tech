@@ -36,7 +36,7 @@
         'hrms-setup'=>'settings','hrms-settings'=>'sliders','departments'=>'layers','designations'=>'bookmark','leave-policies'=>'clipboard','approval-workflows'=>'git-pull-request',
         'delivery-areas'=>'map-pin','storefront-faqs'=>'help-circle','storefront-about'=>'info','storefront-about-items'=>'list','storefront-team-members'=>'users','contact-messages'=>'mail','storefront-topbar-messages'=>'message-square',
         'users-menu'=>'users','admin-users'=>'user','admin-roles'=>'lock','audit-logs'=>'shield','backups'=>'database',
-        'company-settings'=>'home','notifications'=>'bell','languages'=>'globe','app-languages'=>'smartphone','translations'=>'type','web-translations'=>'monitor','support'=>'headphones','reports-overview'=>'pie-chart','erp-reports'=>'trending-up','hrms-reports'=>'users','email-templates'=>'mail'
+        'company-settings'=>'home','mail-settings'=>'at-sign','notifications'=>'bell','languages'=>'globe','app-languages'=>'smartphone','translations'=>'type','web-translations'=>'monitor','support'=>'headphones','reports-overview'=>'pie-chart','erp-reports'=>'trending-up','hrms-reports'=>'users','email-templates'=>'mail'
     ];
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','reportsMenu'=>'bar-chart-2','translationMenu'=>'globe','systemMenu'=>'settings'];
 @endphp

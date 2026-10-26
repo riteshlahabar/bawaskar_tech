@@ -24,6 +24,7 @@ return [
         'report-*' => ['view'],
         'email-templates' => ['view'],
         'company-settings' => ['view', 'edit'],
+        'mail-settings' => ['view', 'edit'],
         'storefront-about' => ['view', 'edit'],
         'hrms-settings' => ['view', 'edit'],
         // The audit trail is read-only on purpose; backups are taken and
@@ -39,7 +40,7 @@ return [
         'index' => 'view', 'show' => 'view', 'export' => 'view', 'sample' => 'view', 'download' => 'view', 'print' => 'view', 'pdf' => 'view',
         'create' => 'create', 'store' => 'create',
         'edit' => 'edit', 'update' => 'edit', 'generate' => 'edit', 'status' => 'edit', 'decision' => 'edit', 'approve' => 'edit', 'cancel' => 'edit',
-        'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'send-to-dispatch' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
+        'convert-to-proforma' => 'edit', 'convert-to-invoice' => 'edit', 'send-to-dispatch' => 'edit', 'email' => 'edit', 'translate' => 'edit', 'translate-batch' => 'edit',
         'suggest-settlement' => 'edit',
         // Taking a backup creates one; restoring overwrites the database, so
         // it is the most destructive action the panel offers and is mapped to
@@ -60,6 +61,9 @@ return [
         'admin.report.export' => ['report-{report}', 'view'],
         'admin.company-settings.edit' => ['company-settings', 'view'],
         'admin.company-settings.update' => ['company-settings', 'edit'],
+        'admin.mail-settings.edit' => ['mail-settings', 'view'],
+        'admin.mail-settings.update' => ['mail-settings', 'edit'],
+        'admin.mail-settings.test' => ['mail-settings', 'edit'],
         'admin.storefront-about.edit' => ['storefront-about', 'view'],
         'admin.storefront-about.update' => ['storefront-about', 'edit'],
         'admin.app-languages.edit' => ['app-languages', 'view'],

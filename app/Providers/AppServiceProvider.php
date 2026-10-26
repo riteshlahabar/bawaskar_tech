@@ -66,6 +66,9 @@ use App\Contracts\Localization\WebsiteTranslationLookupContract;
 use App\Contracts\Location\DistrictSelectionContract;
 use App\Contracts\Location\LocationDirectoryContract;
 use App\Contracts\Location\UserLocationContract;
+use App\Contracts\Mail\MailConfiguratorContract;
+use App\Contracts\Mail\MailSenderContract;
+use App\Contracts\Sales\InvoiceMailerContract;
 use App\Contracts\Sales\Orders\DealerOrderContextContract;
 use App\Contracts\Sales\Orders\OrderCheckoutMapperContract;
 use App\Contracts\Sales\Orders\OrderLineBuilderContract;
@@ -90,6 +93,7 @@ use App\Models\Sales\Invoice;
 use App\Models\SalesmanProfile;
 use App\Observers\Hr\SalesmanProfileSalaryObserver;
 use App\Observers\Sales\DispatchOrderStatusObserver;
+use App\Observers\Sales\InvoiceMailObserver;
 use App\Observers\Sales\InvoiceOrderStatusObserver;
 use App\Repositories\Catalog\EloquentProductRepository;
 use App\Repositories\Catalog\EloquentProductTranslationRepository;
@@ -156,7 +160,10 @@ use App\Services\Localization\DatabaseSupportedLocalesService;
 use App\Services\Localization\WebTranslationAppStringService;
 use App\Services\Location\DistrictSelectionService;
 use App\Services\Location\UserLocationService;
+use App\Services\Mail\DatabaseMailConfigurator;
+use App\Services\Mail\MailSender;
 use App\Services\Sales\DompdfSalesDocumentPdfService;
+use App\Services\Sales\InvoiceMailer;
 use App\Services\Sales\Orders\DealerOrderContextService;
 use App\Services\Sales\Orders\EloquentStockAvailabilityService;
 use App\Services\Sales\Orders\EloquentStockReservationService;
@@ -210,6 +217,9 @@ class AppServiceProvider extends ServiceProvider
             SalesDocumentDataContract::class => SalesDocumentDataService::class,
             SalesDocumentPdfContract::class => DompdfSalesDocumentPdfService::class,
             SalesDocumentGstDetailsContract::class => SalesDocumentGstDetailsService::class,
+            MailConfiguratorContract::class => DatabaseMailConfigurator::class,
+            MailSenderContract::class => MailSender::class,
+            InvoiceMailerContract::class => InvoiceMailer::class,
             AmountInWordsContract::class => IndianAmountInWordsService::class,
             SupportedLocalesContract::class => DatabaseSupportedLocalesService::class,
             AppStringTranslationContract::class => WebTranslationAppStringService::class,
@@ -316,6 +326,10 @@ class AppServiceProvider extends ServiceProvider
         // Order status follows the sales actions instead of being typed in.
         Invoice::observe(InvoiceOrderStatusObserver::class);
         Dispatch::observe(DispatchOrderStatusObserver::class);
+
+        // Mails the invoice to its buyer, but only while both switches in
+        // Settings -> Mail Settings are on.
+        Invoice::observe(InvoiceMailObserver::class);
 
         // Basic salary is only ever one number on the employee record, so every
         // change to it is written to the revision history as it happens.

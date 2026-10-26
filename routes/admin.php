@@ -70,6 +70,7 @@ use App\Http\Controllers\Admin\Salary\SalaryController;
 use App\Http\Controllers\Admin\SalesDocuments\SalesDocumentController;
 use App\Http\Controllers\Admin\Salesmen\SalesmanController;
 use App\Http\Controllers\Admin\Settings\CompanySettingController;
+use App\Http\Controllers\Admin\Settings\MailSettingController;
 use App\Http\Controllers\Admin\StorefrontAbout\StorefrontAboutPageController;
 use App\Http\Controllers\Admin\StorefrontAboutItems\StorefrontAboutItemController;
 use App\Http\Controllers\Admin\StorefrontFaqs\StorefrontFaqController;
@@ -129,6 +130,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
         Route::put('settings/company', [CompanySettingController::class, 'update'])->name('company-settings.update');
+        Route::get('settings/mail', [MailSettingController::class, 'edit'])->name('mail-settings.edit');
+        Route::put('settings/mail', [MailSettingController::class, 'update'])->name('mail-settings.update');
+        Route::post('settings/mail/test', [MailSettingController::class, 'test'])->name('mail-settings.test');
         Route::get('storefront/about-page', [StorefrontAboutPageController::class, 'edit'])->name('storefront-about.edit');
         Route::put('storefront/about-page', [StorefrontAboutPageController::class, 'update'])->name('storefront-about.update');
         Route::delete('products/{product}/images/{image}', [ProductImageController::class, 'destroy'])->name('products.images.destroy');
@@ -146,6 +150,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::post('proforma-invoices/{id}/convert-to-invoice', [ProformaInvoiceController::class, 'convertToInvoice'])->name('proforma-invoices.convert-to-invoice');
         Route::post('invoices/{id}/send-to-dispatch', [InvoiceController::class, 'sendToDispatch'])->name('invoices.send-to-dispatch');
+        Route::post('invoices/{id}/email', [InvoiceController::class, 'email'])->name('invoices.email');
         Route::post('dispatches/{id}/status', [DispatchController::class, 'status'])->name('dispatches.status');
         Route::get('sales-documents/{document}/{id}/print', [SalesDocumentController::class, 'print'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.print');
         Route::get('sales-documents/{document}/{id}/pdf', [SalesDocumentController::class, 'pdf'])->whereIn('document', ['order', 'proforma', 'invoice'])->name('sales-documents.pdf');

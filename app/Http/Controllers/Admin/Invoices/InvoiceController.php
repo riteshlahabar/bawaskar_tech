@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Invoices;
 
+use App\Contracts\Sales\InvoiceMailerContract;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Sales\Dispatch;
 use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class InvoiceController extends AdminModuleController
 {
@@ -49,5 +51,24 @@ class InvoiceController extends AdminModuleController
         );
 
         return redirect()->route('admin.dispatches.edit', $dispatch->getKey())->with('success', 'Sale Invoice sent to Dispatch.');
+    }
+
+    /**
+     * Mail this invoice to its buyer on demand - the retry for an automatic
+     * send that was switched off, bounced, or happened before the account had
+     * an e-mail address. Injected on the method so the parent constructor,
+     * which six other modules share, stays untouched.
+     */
+    public function email(InvoiceMailerContract $mailer, int|string $id): RedirectResponse
+    {
+        $invoice = Invoice::query()->with('order')->findOrFail($id);
+
+        try {
+            $mailer->sendOrFail($invoice);
+        } catch (Throwable $failure) {
+            return back()->with('error', 'Invoice email failed: '.$failure->getMessage());
+        }
+
+        return back()->with('success', 'Sale Invoice emailed to '.$mailer->recipient($invoice).'.');
     }
 }

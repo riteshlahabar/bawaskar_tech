@@ -70,6 +70,7 @@
                         @else
                             <form method="POST" action="{{ route('admin.invoices.send-to-dispatch', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="truck"></i>Send to Dispatch</button></form>
                         @endif
+                        <form method="POST" action="{{ route('admin.invoices.email', $record->getKey()) }}" class="d-inline">@csrf<button class="btn btn-outline-secondary" type="submit"><i data-feather="mail"></i>Email Invoice</button></form>
                     @endif
                     <a class="btn btn-outline-secondary" href="{{ route('admin.sales-documents.print', ['document' => $documentType, 'id' => $record->getKey()]) }}" target="_blank"><i data-feather="printer"></i>Print</a>
                     <a class="btn btn-outline-danger" href="{{ route('admin.sales-documents.pdf', ['document' => $documentType, 'id' => $record->getKey()]) }}"><i data-feather="download"></i>PDF</a>

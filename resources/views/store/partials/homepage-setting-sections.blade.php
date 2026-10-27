@@ -28,9 +28,11 @@
         return storefront_public_t($entry->subtitle, 'homepage_entry');
     };
 
+    // Same rule as the heading: an admin-entered banner description only, never
+    // the product's short description, which belongs on the detail page.
     $entryDescription = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
-            return storefront_public_t($entry->homepage_description ?: $entry->short_description, 'homepage_entry');
+            return storefront_public_t($entry->homepage_description, 'homepage_entry');
         }
 
         return storefront_public_t($entry->description, 'homepage_entry');

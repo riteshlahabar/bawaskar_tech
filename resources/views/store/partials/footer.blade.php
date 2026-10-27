@@ -26,6 +26,8 @@
         ['url' => $company?->instagram_url, 'icon' => 'fa-brands fa-instagram'],
         ['url' => $company?->youtube_url, 'icon' => 'fa-brands fa-youtube'],
         ['url' => $company?->google_business_url, 'icon' => 'fa-brands fa-google'],
+        ['url' => $company?->twitter_url, 'icon' => 'fa-brands fa-x-twitter'],
+        ['url' => $company?->threads_url, 'icon' => 'fa-brands fa-threads'],
     ])->filter(fn (array $social): bool => filled($social['url']))->values();
 @endphp
 

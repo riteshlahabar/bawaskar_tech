@@ -43,6 +43,8 @@ class CompanySettingController extends Controller
             'facebook_url' => ['nullable', 'url', 'max:2048'],
             'instagram_url' => ['nullable', 'url', 'max:2048'],
             'youtube_url' => ['nullable', 'url', 'max:2048'],
+            'twitter_url' => ['nullable', 'url', 'max:2048'],
+            'threads_url' => ['nullable', 'url', 'max:2048'],
             'account_name' => ['nullable', 'string', 'max:191'],
             'bank_name' => ['nullable', 'string', 'max:191'],
             'bank_branch' => ['nullable', 'string', 'max:191'],

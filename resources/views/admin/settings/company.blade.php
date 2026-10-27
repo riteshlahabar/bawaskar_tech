@@ -58,6 +58,8 @@
                                 ['facebook_url', 'Facebook URL', 'url', false],
                                 ['instagram_url', 'Instagram URL', 'url', false],
                                 ['youtube_url', 'YouTube URL', 'url', false],
+                                ['twitter_url', 'X (Twitter) URL', 'url', false],
+                                ['threads_url', 'Threads URL', 'url', false],
                             ],
                         ];
 

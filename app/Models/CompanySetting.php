@@ -25,7 +25,7 @@ class CompanySetting extends Model
         'company_name', 'logo_path', 'short_intro', 'description', 'address',
         'phone', 'whatsapp', 'email', 'website', 'map_embed_url', 'gst_number', 'cin_number',
         'founder_name', 'chairman_name', 'managing_director_name',
-        'google_business_url', 'facebook_url', 'instagram_url', 'youtube_url',
+        'google_business_url', 'facebook_url', 'instagram_url', 'youtube_url', 'twitter_url', 'threads_url',
         'account_name', 'bank_name', 'bank_branch', 'account_number', 'ifsc_code', 'upi_id',
         'invoice_template',
     ];

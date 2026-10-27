@@ -788,16 +788,18 @@
 }
 
 /* Homepage Special Offer card (top-selling-section.blade.php) must cover the
-   full height of the 2-row product stack beside it. The Bootstrap row already
-   makes both columns equal height; this walks that height down through the card
-   so the deal image absorbs whatever space the text and timer leave over,
-   instead of the image deciding the card's height.
+   full height of the 2-row product stack beside it, with the deal image fitting
+   inside. The Bootstrap row already makes both columns equal height; this walks
+   that height down through the card so the image fills what the text leaves
+   over, instead of the image deciding the card's height - the live deal image
+   is 785x1600, so left to itself it made the card half as tall again.
 
    .top-selling-slider is slick with the default rows:1 (custom_slick.js:1254),
    so the slide is .slick-slide itself - no extra wrapper - with .slick-list and
-   .slick-track in between, and each needs the height passed on. Everything is
-   scoped to .special-offer-box, so no other card or slider on the site is
-   affected; delete this block to revert. */
+   .slick-track in between, and each needs the height passed on.
+
+   Scoped to .special-offer-box, which exists on exactly one element in the
+   codebase; delete this block to revert. */
 .special-offer-box {
     display: flex;
     flex-direction: column;
@@ -833,23 +835,32 @@
     flex-direction: column;
 }
 
-/* The elastic part: the image takes the leftover height, while the detail block
-   keeps its natural size so the price, progress bar and timer are not squashed. */
-.special-offer-box .product-image {
+/* The image is taken OUT of the flow (the anchor is absolute), so it can never
+   add to the card's height - it only ever fills the box the flex layout leaves.
+   Note the selectors say div.product-image: the <img> carries that same class,
+   and a bare .product-image rule collapses the image to 0x0, which also stops
+   loading="lazy" from ever fetching it. */
+.special-offer-box div.product-image {
     flex: 1 1 auto;
     min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    display: block;
 }
 
-.special-offer-box .product-image img {
-    width: auto;
-    max-width: 100%;
+.special-offer-box div.product-image > a {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.special-offer-box div.product-image > a > img {
+    width: 100%;
     height: 100%;
+    max-width: 100%;
     max-height: 100%;
     margin: 0;
     object-fit: contain;
+    display: block;
 }
 
 .special-offer-box .product-detail {

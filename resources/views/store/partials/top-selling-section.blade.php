@@ -22,7 +22,13 @@
         $dealPrice = (float) ($audience === 'dealer' ? $dealProduct->dealer_price : $dealProduct->customer_price);
         $dealMrp = (float) $dealProduct->mrp;
         $dealStock = max(0, (float) ($dealProduct->available_stock ?? 0));
-        $progressWidth = min(100, max(16, (int) round(min($dealStock, 50) * 2)));
+
+        // Real sold quantity, totalled by the repository over non-cancelled
+        // order lines. The bar is sold out of everything ever offered
+        // (sold + what is still on the shelf), so it only ever fills up.
+        $dealSold = max(0, (float) ($dealProduct->sold_quantity ?? 0));
+        $dealOffered = $dealSold + $dealStock;
+        $progressWidth = $dealOffered > 0 ? (int) round($dealSold / $dealOffered * 100) : 0;
     }
 @endphp
 
@@ -103,7 +109,7 @@
                                                 <div class="progress-bar" style="width: {{ $progressWidth }}%" role="progressbar"></div>
                                             </div>
 
-                                            <h5 class="text-content">{{ web_t('offer.sold', 'Sold') }} : <span class="text-dark">{{ rtrim(rtrim(number_format($dealStock, 3, '.', ''), '0'), '.') ?: '0' }} {{ web_t('offer.items', 'items') }}</span>
+                                            <h5 class="text-content">{{ web_t('offer.sold', 'Sold') }} : <span class="text-dark">{{ rtrim(rtrim(number_format($dealSold, 3, '.', ''), '0'), '.') ?: '0' }} {{ web_t('offer.items', 'items') }}</span>
                                                 <span class="ms-auto text-content">{{ web_t('offer.hurry_up_offer_end_in', 'Hurry up offer end in') }}</span></h5>
 
                                             @if($showDealTimer)

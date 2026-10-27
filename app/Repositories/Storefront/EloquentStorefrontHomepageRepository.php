@@ -9,6 +9,7 @@ use App\Models\Storefront\StorefrontBanner;
 use App\Models\Storefront\StorefrontFooterLink;
 use App\Models\Storefront\StorefrontSection;
 use App\Models\Storefront\StorefrontServiceBlock;
+use App\Services\Sales\Orders\OrderStatusService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -198,6 +199,17 @@ final class EloquentStorefrontHomepageRepository implements StorefrontHomepageRe
                 'inventoryBatches',
                 'variants.inventoryBatches',
             ])
+            // Feeds the deal card's "Sold" counter and its progress bar. It
+            // sits here, not on dealTimerProduct(), because the homepage picks
+            // the deal product out of this list as often as it takes the
+            // dedicated one. Cancelled orders are excluded; everything still in
+            // flight counts as sold.
+            ->withSum(
+                ['orderItems as sold_quantity' => fn (Builder $query): Builder => $query
+                    ->whereHas('order', fn (Builder $order): Builder => $order
+                        ->where('status', '!=', OrderStatusService::CANCELLED)), ],
+                'quantity'
+            )
             ->visibleFor($audience);
     }
 }

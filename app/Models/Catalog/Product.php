@@ -5,6 +5,7 @@ namespace App\Models\Catalog;
 use App\Casts\KeyValueRows;
 use App\Contracts\Files\PublicUploadContract;
 use App\Models\Inventory\InventoryBatch;
+use App\Models\Sales\OrderItem;
 use App\Support\ImageAsset;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -296,6 +297,15 @@ class Product extends Model
     public function inventoryBatches(): HasMany
     {
         return $this->hasMany(InventoryBatch::class);
+    }
+
+    /**
+     * Sold lines for this product. Only used to total quantities (the
+     * storefront "Sold" counter) — never load it to read an order.
+     */
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function variants(): HasMany

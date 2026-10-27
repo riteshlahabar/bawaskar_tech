@@ -197,7 +197,7 @@
                                             <div>
                                                 @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
                                                 @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
-                                                <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn theme-bg-color btn-md text-white fw-bold mt-3 mend-auto">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>
+                                                <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn theme-bg-color btn-sm text-white fw-bold mt-3 mend-auto">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>
                                             </div>
                                         </div>
                                     </div>

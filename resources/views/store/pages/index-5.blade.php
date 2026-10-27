@@ -542,6 +542,9 @@
     <!-- script js -->
     <script src="{{ asset('fastkart-store/js/script.js') }}"></script>
 
+    <!-- cookie bar js -->
+    <script src="{{ asset('js/cookie-bar.js') }}"></script>
+
     @include('store.partials.wishlist-script')
 
     <!-- theme setting js -->

@@ -368,7 +368,10 @@
                                 <div>
                                     <div class="service-contain-2">
                                         @if($entryIcon($entry))
-                                            <svg class="icon-width"><use xlink:href="{{ asset('fastkart-store/svg/svg/service-icon.svg#'.$entryIcon($entry)) }}"></use></svg>
+                                            {{-- service-icon-4.svg is the sprite the icon keys belong to
+                                                 (shipping, service, pay, offer, return) — service-icon.svg
+                                                 names them differently and renders blank. --}}
+                                            <svg class="icon-width"><use xlink:href="{{ asset('fastkart-store/svg/svg/service-icon-4.svg') }}#{{ $entryIcon($entry) }}"></use></svg>
                                         @endif
                                         <div class="service-detail">
                                             <h3>{{ $entryTitle($entry, $section->title) }}</h3>

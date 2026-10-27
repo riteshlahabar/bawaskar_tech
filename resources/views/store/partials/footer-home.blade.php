@@ -29,17 +29,6 @@
                         @if($companyIntro)
                             <p class="information-text information-text-2">{{ storefront_public_t($companyIntro, 'footer') }}</p>
                         @endif
-                        @if($footerSocials->isNotEmpty())
-                            <ul class="social-icon">
-                                @foreach($footerSocials as $footerSocial)
-                                    <li class="light-bg">
-                                        <a href="{{ $footerSocial['url'] }}" class="footer-link-color" target="_blank" rel="noopener">
-                                            <i class="{{ $footerSocial['icon'] }}"></i>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
                     </div>
 
                     <div class="col-xxl-2 col-xl-4 col-sm-6">
@@ -142,6 +131,17 @@
                                 </li>
                             @endif
                         </ul>
+                        @if($footerSocials->isNotEmpty())
+                            <ul class="social-icon">
+                                @foreach($footerSocials as $footerSocial)
+                                    <li class="light-bg">
+                                        <a href="{{ $footerSocial['url'] }}" class="footer-link-color" target="_blank" rel="noopener">
+                                            <i class="{{ $footerSocial['icon'] }}"></i>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                 </div>
             </div>

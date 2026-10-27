@@ -191,9 +191,13 @@
                                     <div class="banner-contain-3 hover-effect">
                                         <a href="{{ $entryUrl($entry) }}"><img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
                                         <div class="banner-detail p-center-left w-75 banner-p-sm mend-auto">
-                                            @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
-                                            @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
-                                            <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn shop-now-button mt-3 ps-0 mend-auto theme-color fw-bold">{{ $entryButton($entry) }} <i class="fa-solid fa-chevron-right"></i></button>
+                                            {{-- p-center-left is a flex row: the template's inner div keeps the text and
+                                                 the button as one stacked block instead of three items side by side. --}}
+                                            <div>
+                                                @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
+                                                @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
+                                                <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn shop-now-button mt-3 ps-0 mend-auto theme-color fw-bold">{{ $entryButton($entry) }} <i class="fa-solid fa-chevron-right"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

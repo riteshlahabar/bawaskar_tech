@@ -15,8 +15,9 @@ use App\Contracts\Admin\Modules\ModuleValidationContract;
  * constructor argument instead of six - and adding a seventh later does not
  * touch any of them.
  *
- * Each property is a real contract resolved by the container; this only bundles
- * them, it does not resolve anything itself.
+ * Each property is resolved by the container - the six module contracts plus
+ * the save-failure message formatter; this only bundles them, it does not
+ * resolve anything itself.
  */
 final class AdminModuleServices
 {
@@ -27,5 +28,6 @@ final class AdminModuleServices
         public readonly ModuleFormDataContract $formData,
         public readonly ModuleInputContract $input,
         public readonly ModuleExportContract $export,
+        public readonly SaveFailureMessage $saveFailures,
     ) {}
 }

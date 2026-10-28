@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Concerns;
 use App\Http\Controllers\Controller;
 use App\Support\Admin\Modules\AdminModuleServices;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -64,7 +65,12 @@ abstract class AdminModuleController extends Controller
         abort_unless(($module['can_create'] ?? true), 403);
 
         $validated = $this->validateRequest($request, $module);
-        $record = $this->persist($this->prepareData($validated, $request, $module), null);
+
+        try {
+            $record = $this->persist($this->prepareData($validated, $request, $module), null);
+        } catch (QueryException $exception) {
+            return $this->saveFailed($exception, $module);
+        }
 
         return redirect()
             ->route($module['route'].'.edit', array_merge([$record->getKey()], $request->only(self::SUBMENU_KEYS)))
@@ -107,9 +113,27 @@ abstract class AdminModuleController extends Controller
 
         $record = $this->findRecord($id);
         $validated = $this->validateRequest($request, $module, $record);
-        $this->persist($this->prepareData($validated, $request, $module), $record);
+
+        try {
+            $this->persist($this->prepareData($validated, $request, $module), $record);
+        } catch (QueryException $exception) {
+            return $this->saveFailed($exception, $module);
+        }
 
         return back()->with('success', $module['singular'].' updated successfully.');
+    }
+
+    /**
+     * A write the database refused: back to the filled-in form with a readable
+     * red alert rather than a blank 500 page.
+     *
+     * @param  array<string, mixed>  $module
+     */
+    protected function saveFailed(QueryException $exception, array $module): RedirectResponse
+    {
+        report($exception);
+
+        return back()->withInput()->with('error', $this->modules->saveFailures->forModule($module, $exception));
     }
 
     public function destroy(int|string $id): RedirectResponse

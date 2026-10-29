@@ -129,6 +129,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             'email-templates' => EmailTemplateController::class,
         ];
         Route::post('products/translate', [ProductTranslationController::class, 'store'])->name('products.translate');
+        Route::post('homepage-settings/{id}/transfer-products', [ProductHomepageSettingController::class, 'transferProducts'])->name('homepage-settings.transfer-products');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
         Route::put('settings/company', [CompanySettingController::class, 'update'])->name('company-settings.update');
         Route::get('settings/mail', [MailSettingController::class, 'edit'])->name('mail-settings.edit');

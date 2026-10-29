@@ -15,6 +15,8 @@
                 <p class="mb-1"><strong>Sort Order:</strong> {{ $record->sort_order }}</p>
                 <p class="mb-0"><strong>Status:</strong> {{ $record->is_active ? 'Active' : 'Inactive' }}</p>
 
+                <p class="mb-0 mt-2"><strong>Products On This Row:</strong> {{ $record->products->count() }}</p>
+
                 <div class="d-flex gap-2 mt-4">
                     <a class="btn btn-primary" href="{{ route('admin.homepage-settings.edit', $record->id) }}">Edit Section</a>
                     <a class="btn btn-outline-secondary" href="{{ route('admin.homepage-settings.index') }}">Back</a>
@@ -86,6 +88,75 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- This row cannot be deleted while products are placed on it, so the
+         products and the one-click transfer live on the same page as the
+         delete, instead of leaving the admin to edit each product by hand. --}}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mb-1">Products On This Row</h5>
+                <small class="text-muted">Assigned from Product Add/Edit using Homepage Section Title.</small>
+
+                @if($record->products->isEmpty())
+                    <div class="alert alert-success mt-3 mb-0">
+                        No products are placed on this row, so it can be deleted.
+                    </div>
+                @else
+                    <div class="alert alert-warning mt-3">
+                        <strong>{{ $record->products->count() }} product(s) are placed on this row, so it cannot be deleted yet.</strong>
+                        Move them to another homepage section below, or delete them from Products, and then delete this row.
+                    </div>
+
+                    <form method="POST" action="{{ route('admin.homepage-settings.transfer-products', $record->id) }}" class="row g-2 align-items-end mb-3">
+                        @csrf
+                        <div class="col-md-6">
+                            <label class="form-label" for="target_section_id">Transfer all {{ $record->products->count() }} product(s) to</label>
+                            <select class="form-select @error('target_section_id')is-invalid @enderror" name="target_section_id" id="target_section_id" required>
+                                <option value="">Select homepage section</option>
+                                @foreach($transferTargets ?? [] as $target)
+                                    <option value="{{ $target->id }}" @selected(old('target_section_id') == $target->id)>
+                                        {{ $target->title }} ({{ str($target->section_type)->replace('_', ' ')->title() }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('target_section_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Transfer Products</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($record->products as $product)
+                                    <tr>
+                                        <td>{{ $product->sku ?: '-' }}</td>
+                                        <td>{{ $product->name }}</td>
+                                        <td>{{ $product->category?->name ?: '-' }}</td>
+                                        <td>{{ $product->is_active ? 'Active' : 'Inactive' }}</td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.products.edit', $product->id) }}">Edit</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

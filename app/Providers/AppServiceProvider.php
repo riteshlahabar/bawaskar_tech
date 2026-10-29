@@ -28,6 +28,7 @@ use App\Contracts\Auth\OtpContract;
 use App\Contracts\Auth\PasswordChangeContract;
 use App\Contracts\Auth\PhoneCredentialContract;
 use App\Contracts\Auth\RegistrationTokenContract;
+use App\Contracts\Catalog\HomepageSectionProductsContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
@@ -133,6 +134,7 @@ use App\Services\Auth\OtpService;
 use App\Services\Auth\PasswordChangeService;
 use App\Services\Auth\PhoneCredentialService;
 use App\Services\Catalog\GoogleTextTranslator;
+use App\Services\Catalog\HomepageSectionProductsService;
 use App\Services\Catalog\Product\ProductFormService;
 use App\Services\Catalog\Product\ProductImageService;
 use App\Services\Catalog\Product\ProductInputService;
@@ -242,6 +244,7 @@ class AppServiceProvider extends ServiceProvider
             PaymentGatewayContract::class => EazypayGateway::class,
             DealerOutstandingContract::class => DealerOutstandingService::class,
             DealerLedgerContract::class => DealerLedgerService::class,
+            HomepageSectionProductsContract::class => HomepageSectionProductsService::class,
             TargetAchievementContract::class => TargetAchievementService::class,
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,

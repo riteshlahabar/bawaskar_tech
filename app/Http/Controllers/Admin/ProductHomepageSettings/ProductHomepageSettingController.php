@@ -2,13 +2,85 @@
 
 namespace App\Http\Controllers\Admin\ProductHomepageSettings;
 
+use App\Contracts\Catalog\HomepageSectionProductsContract;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
+use App\Models\Catalog\ProductHomepageSection;
+use App\Support\Admin\Modules\AdminModuleServices;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProductHomepageSettingController extends AdminModuleController
 {
     protected string $moduleKey = 'homepage-settings';
+
+    public function __construct(AdminModuleServices $modules, private readonly HomepageSectionProductsContract $sectionProducts)
+    {
+        parent::__construct($modules);
+    }
+
+    /**
+     * A row that still has products on it is not deleted. The database would
+     * only unlink them (`nullOnDelete`), leaving products with no homepage
+     * placement and no trace of where they were, so admin is asked to transfer
+     * or delete those products first.
+     */
+    public function destroy(int|string $id): RedirectResponse
+    {
+        $module = $this->module();
+        abort_unless(($module['can_delete'] ?? true), 403);
+
+        $section = $this->findRecord($id);
+        $attached = $this->sectionProducts->attachedCount($section);
+
+        if ($attached > 0) {
+            return back()->with('error', $attached.' product(s) are still placed on "'.$section->title.'". Transfer them to another homepage section, or delete them, before deleting this row.');
+        }
+
+        return parent::destroy($id);
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $blocked = $this->sectionProducts->blockedTitles((array) $request->input('selected_ids', []));
+
+        if ($blocked !== []) {
+            return back()->with('error', 'These rows still have products placed on them: '.implode(', ', $blocked).'. Transfer or delete those products first.');
+        }
+
+        return parent::bulkDestroy($request);
+    }
+
+    public function show(int|string $id): View
+    {
+        return parent::show($id)->with([
+            'transferTargets' => $this->sectionProducts->transferTargets($this->findRecord($id)),
+        ]);
+    }
+
+    /** Moves every product on this row onto another row in one step. */
+    public function transferProducts(Request $request, int|string $id): RedirectResponse
+    {
+        $module = $this->module();
+        abort_unless(($module['can_edit'] ?? true), 403);
+
+        $section = $this->findRecord($id);
+
+        $data = $request->validate([
+            'target_section_id' => ['required', 'integer', Rule::exists('product_homepage_sections', 'id'), Rule::notIn([$section->getKey()])],
+        ], [
+            'target_section_id.required' => 'Choose the homepage section to move these products into.',
+            'target_section_id.not_in' => 'Choose a different homepage section.',
+            'target_section_id.exists' => 'That homepage section no longer exists.',
+        ]);
+
+        $target = ProductHomepageSection::query()->findOrFail($data['target_section_id']);
+        $moved = $this->sectionProducts->transfer($section, $target);
+        $this->bumpCacheVersionForModule();
+
+        return back()->with('success', $moved.' product(s) moved to "'.$target->title.'".');
+    }
 
     protected function rules(array $module, $record = null, ?string $channel = null): array
     {

@@ -8,7 +8,7 @@
     <meta name="description" content="Bawaskar Farmer Store">
     <meta name="keywords" content="Bawaskar Farmer Store">
     <meta name="author" content="Bawaskar Farmer Store">
-    <link rel="icon" href="{{ asset('fastkart-store/images/favicon/1.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('logo/logo.png') }}" type="image/png">
     <title>Bawaskar Farmer Store</title>
 
     <!-- Google font -->

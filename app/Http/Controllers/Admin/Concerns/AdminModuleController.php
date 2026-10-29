@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class AdminModuleController extends Controller
 {
     use InteractsWithModuleServices;
+    use ReportsWriteFailures;
 
     private const SUBMENU_KEYS = ['type', 'placement', 'section_key', 'row_title'];
 
@@ -123,24 +124,16 @@ abstract class AdminModuleController extends Controller
         return back()->with('success', $module['singular'].' updated successfully.');
     }
 
-    /**
-     * A write the database refused: back to the filled-in form with a readable
-     * red alert rather than a blank 500 page.
-     *
-     * @param  array<string, mixed>  $module
-     */
-    protected function saveFailed(QueryException $exception, array $module): RedirectResponse
-    {
-        report($exception);
-
-        return back()->withInput()->with('error', $this->modules->saveFailures->forModule($module, $exception));
-    }
-
     public function destroy(int|string $id): RedirectResponse
     {
         $module = $this->module();
         abort_unless(($module['can_delete'] ?? true), 403);
-        $this->findRecord($id)->delete();
+
+        try {
+            $this->findRecord($id)->delete();
+        } catch (QueryException $exception) {
+            return $this->saveFailed($exception, $module, 'deleted');
+        }
 
         return redirect()
             ->route($module['route'].'.index', request()->only(self::SUBMENU_KEYS))
@@ -159,7 +152,13 @@ abstract class AdminModuleController extends Controller
 
         $records = $this->recordsQuery($module)->whereKey($data['selected_ids'])->get();
         $count = $records->count();
-        $records->each->delete();
+
+        try {
+            $records->each->delete();
+        } catch (QueryException $exception) {
+            return $this->saveFailed($exception, $module, 'deleted');
+        }
+
         $this->bumpCacheVersionForModule();
 
         return back()->with('success', $count.' '.$module['label'].' deleted successfully.');

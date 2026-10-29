@@ -38,6 +38,17 @@ class ProductHomepageSection extends Model
         return $this->hasMany(ProductHomepageSectionItem::class, 'section_id')->orderBy('sort_order')->orderBy('id');
     }
 
+    /**
+     * Products placed on this homepage row. The column is `nullOnDelete`, so
+     * the database would happily unlink them if the row were deleted - the
+     * admin refuses that instead and asks for a transfer first
+     * (HomepageSectionProductsContract).
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'homepage_section_id')->orderBy('sort_order')->orderBy('id');
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true)

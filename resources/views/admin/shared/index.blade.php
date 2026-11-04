@@ -124,7 +124,12 @@
                                 @endforeach
                                 @if($module['key'] === 'homepage-settings')
                                     <td class="text-end">
-                                        <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->getKey(), 'row_title' => $record->title.' Content']) }}">Add Content</a>
+                                        {{-- A section can hold several content rows, so Edit Content opens the
+                                             section's View page, where each row already has its own Edit button. --}}
+                                        <div class="d-flex gap-1 justify-content-end">
+                                            <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->getKey(), 'row_title' => $record->title.' Content']) }}">Add Content</a>
+                                            <a class="btn btn-sm btn-outline-primary text-nowrap" href="{{ route('admin.homepage-settings.show', $record->getKey()) }}">Edit Content</a>
+                                        </div>
                                     </td>
                                 @endif
                                 <td class="text-end">

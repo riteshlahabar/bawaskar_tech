@@ -51,6 +51,9 @@
                             @foreach($visibleColumns as $index => $column)
                                 <th data-column-index="{{ $index }}">{{ $column['label'] }}</th>
                             @endforeach
+                            @if($module['key'] === 'homepage-settings')
+                                <th class="text-end">Content</th>
+                            @endif
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -119,6 +122,11 @@
                                         @endif
                                     </td>
                                 @endforeach
+                                @if($module['key'] === 'homepage-settings')
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->getKey(), 'row_title' => $record->title.' Content']) }}">Add Content</a>
+                                    </td>
+                                @endif
                                 <td class="text-end">
                                     <div class="dropdown admin-row-action">
                                         <button class="btn btn-sm btn-outline-secondary admin-row-action-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Actions" aria-label="Actions">

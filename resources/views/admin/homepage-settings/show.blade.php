@@ -31,11 +31,17 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h5 class="mb-1">Section Content</h5>
-                        <small class="text-muted">Products are assigned from Product Add/Edit using Homepage Section Title. This page only defines homepage row/design.</small>
+                        @if($record->isProductSection() || $record->section_type === 'category_section')
+                            <small class="text-muted">Products are assigned from Product Add/Edit using Homepage Section Title. This page only defines homepage row/design.</small>
+                        @else
+                            <small class="text-muted">Banner, offer, coupon, service, blog and video content is added here &mdash; not from the Products form.</small>
+                        @endif
                     </div>
-                    <a class="btn btn-success" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->id, 'row_title' => $record->title.' Content']) }}">
-                        Add Content
-                    </a>
+                    @if($record->isContentSection())
+                        <a class="btn btn-success" href="{{ route('admin.homepage-settings.content', $record->id) }}">
+                            Add / Edit Content
+                        </a>
+                    @endif
                 </div>
 
                 @if(in_array($record->section_type, ['product_section', 'category_section', 'top_selling_section'], true))
@@ -57,6 +63,7 @@
                             <tr>
                                 <th>Image/Icon</th>
                                 <th>Title</th>
+                                <th>Linked Product</th>
                                 <th>Coupon</th>
                                 <th>Sort</th>
                                 <th>Status</th>
@@ -75,15 +82,16 @@
                                         @endif
                                     </td>
                                     <td>{{ $item->title ?: $item->highlight_text ?: '-' }}</td>
+                                    <td>{{ $item->product?->name ?: '-' }}</td>
                                     <td>{{ $item->coupon_code ?: '-' }}</td>
                                     <td>{{ $item->sort_order }}</td>
                                     <td>{{ $item->is_active ? 'Active' : 'Inactive' }}</td>
                                     <td class="text-end">
-                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.homepage-setting-items.edit', $item->id) }}">Edit</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ $record->isContentSection() ? route('admin.homepage-settings.content', $record->id) : route('admin.homepage-setting-items.edit', $item->id) }}">Edit</a>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-center text-muted py-4">No content added yet.</td></tr>
+                                <tr><td colspan="7" class="text-center text-muted py-4">No content added yet.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

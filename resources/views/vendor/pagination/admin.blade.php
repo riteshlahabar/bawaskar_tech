@@ -2,7 +2,11 @@
      are rendered by admin.shared.index, so this view deliberately omits the
      "Showing x to y of z results" line that ships with pagination::bootstrap-5. --}}
 @if ($paginator->hasPages())
-    <nav aria-label="{{ __('Pagination') }}">
+    {{-- A literal, not __('Pagination'): that key matches the `pagination` lang
+         FILE on a case-insensitive filesystem and returns the whole array, which
+         blows up htmlspecialchars. Harmless on the live Linux server, fatal on a
+         Windows checkout - and it only shows on a listing with 2+ pages. --}}
+    <nav aria-label="Pagination">
         <ul class="pagination admin-pagination mb-0">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())

@@ -21,6 +21,8 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
                     ->where('is_active', true)
                     ->orderBy('sort_order')
                     ->orderBy('id'),
+                // The product a banner links to, so it is not one query per banner.
+                'items.product',
             ])
             ->active()
             ->orderBy('sort_order')

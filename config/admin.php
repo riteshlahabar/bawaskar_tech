@@ -256,7 +256,10 @@ return [
                 ['type' => 'section_heading', 'label' => '1. Basic Information'],
                 ['name' => 'name', 'label' => 'Product Name', 'rules' => ['required', 'string', 'max:255']],
                 ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['required', 'exists:categories,id']],
-                ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Select any Homepage Settings section. Product will display according to selected section type.'],
+                // Only product rows are offered: a banner is never built from a
+                // product any more, it points at one from Homepage Settings ->
+                // Add Content (item 47).
+                ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true, 'section_type' => ProductHomepageSection::PRODUCT_SECTION_TYPES], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Only homepage product rows are listed. Banner, offer, coupon, service, blog and video content is added from Homepage Settings - Add Content.'],
                 ['name' => 'brand_id', 'label' => 'Brand', 'type' => 'select', 'option_model' => Brand::class, 'rules' => ['nullable', 'exists:brands,id']],
                 ['name' => 'sort_order', 'label' => 'Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls the overall listing order of this product.'],
                 ['name' => 'short_description', 'label' => 'Short Description', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 2, 'maxlength' => 160, 'character_counter' => true, 'rules' => ['nullable', 'string', 'max:160'], 'help' => 'Maximum 160 characters. Product cards show up to 80 characters.'],
@@ -317,27 +320,11 @@ return [
                 ['name' => 'additional_info', 'label' => 'Additional Information', 'type' => 'product_additional_information_repeater', 'rules' => ['nullable', 'array'], 'render_inside' => 'product_bottom_details', 'render_group' => 'additional_information'],
                 ['name' => 'care_instructions', 'label' => 'Care Instructions', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 3, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'care_instructions'],
 
-                ['type' => 'section_heading', 'label' => '9. Homepage Display Fields', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'product_section', 'coupon_section', 'top_selling_section', 'offer_section', 'strip_offer_banner', 'service_section', 'blog_section']],
-                ['name' => 'homepage_title', 'label' => 'Homepage Title', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'coupon_section', 'strip_offer_banner', 'blog_section', 'service_section']],
-                ['name' => 'homepage_subtitle', 'label' => 'Homepage Subtitle', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'blog_section', 'service_section']],
-                ['name' => 'homepage_description', 'label' => 'Homepage Description', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 3, 'rules' => ['nullable', 'string'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'blog_section']],
-                ['name' => 'homepage_image_path', 'label' => 'Homepage Image / Banner Image', 'type' => 'image', 'upload_dir' => 'uploads/products/homepage', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'help' => 'Hero: 1920x637, Product card: 500x500, Small banner: 375x243, Offer banner depends on layout.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'offer_section', 'strip_offer_banner', 'blog_section']],
-                ['name' => 'homepage_mobile_image_path', 'label' => 'Homepage Mobile Image', 'type' => 'image', 'upload_dir' => 'uploads/products/homepage/mobile', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'offer_section', 'strip_offer_banner', 'blog_section']],
-                ['name' => 'homepage_logo_image_path', 'label' => 'Homepage Logo Image / Coupon Logo', 'type' => 'image', 'upload_dir' => 'uploads/products/homepage/logos', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'], 'help' => 'Coupon logo recommended 290x90.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['coupon_section']],
-                ['name' => 'homepage_offer_image_path', 'label' => 'Homepage Offer Image', 'type' => 'image', 'upload_dir' => 'uploads/products/homepage/offers', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'help' => 'Coupon offer image recommended 250x200.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['coupon_section']],
-                ['name' => 'homepage_highlight_text', 'label' => 'Homepage Highlight Text', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['strip_offer_banner']],
-                ['name' => 'homepage_discount_text', 'label' => 'Homepage Discount Text', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['coupon_section', 'strip_offer_banner']],
-                ['name' => 'homepage_validity_text', 'label' => 'Homepage Validity Text', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['coupon_section']],
-                ['name' => 'homepage_coupon_code', 'label' => 'Homepage Coupon Code', 'rules' => ['nullable', 'string', 'max:80'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['coupon_section']],
-                ['name' => 'homepage_button_text', 'label' => 'Homepage Button Text', 'rules' => ['nullable', 'string', 'max:120'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'strip_offer_banner']],
-                ['name' => 'homepage_button_url', 'label' => 'Homepage Button Link', 'rules' => ['nullable', 'string', 'max:255'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'offer_section', 'strip_offer_banner', 'blog_section']],
-                ['name' => 'homepage_icon_key', 'label' => 'Homepage Service Icon / SVG Key', 'rules' => ['nullable', 'string', 'max:120'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['service_section']],
-                ['name' => 'homepage_slot', 'label' => 'Homepage Slot / Position', 'rules' => ['nullable', 'string', 'max:80'], 'help' => 'Example: big, small, left, right, first, second.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['top_small_banners', 'offer_section']],
-                ['name' => 'homepage_background_color', 'label' => 'Homepage Background Color', 'rules' => ['nullable', 'string', 'max:30'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['strip_offer_banner']],
-                ['name' => 'homepage_text_color', 'label' => 'Homepage Text Color', 'rules' => ['nullable', 'string', 'max:30'], 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['strip_offer_banner']],
-                ['name' => 'homepage_sort_order', 'label' => 'Homepage Section Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls only this product position inside the selected homepage section. It does not change the normal catalog listing order.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ['hero_slider', 'top_small_banners', 'product_section', 'coupon_section', 'top_selling_section', 'offer_section', 'strip_offer_banner', 'service_section', 'blog_section']],
-
                 ['type' => 'section_heading', 'label' => '10. Homepage / Display Flags'],
+                // The banner fields that used to sit above this heading moved to
+                // Homepage Settings -> Add Content (item 47). Only the ordering
+                // of a product INSIDE a product row stays here.
+                ['name' => 'homepage_sort_order', 'label' => 'Homepage Section Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls only this product position inside the selected homepage section. It does not change the normal catalog listing order.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ProductHomepageSection::PRODUCT_SECTION_TYPES],
                 ['name' => 'is_featured', 'label' => 'Featured Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Marks this product as featured for highlighted listings.'],
                 ['name' => 'is_top_selling', 'label' => 'Top Selling Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Uses this product in top-selling product collections.'],
                 ['name' => 'is_trending', 'label' => 'Trending Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Marks this product for trending product sections.'],
@@ -419,13 +406,18 @@ return [
             'group' => 'Catalog',
             'description' => 'Banners, coupon cards, strip text and service blocks used inside Homepage Settings.',
             'model' => ProductHomepageSectionItem::class,
-            'with' => ['section'],
+            'with' => ['section', 'product'],
             'search' => ['title', 'subtitle', 'coupon_code', 'slot'],
             'status_column' => 'is_active',
             'status_options' => $active,
+            // Rows are created from Homepage Settings -> Add Content, which
+            // knows which fields the section type actually needs. This listing
+            // stays as a read-across of every row, with single-row edit.
+            'can_create' => false,
             'columns' => [
                 ['key' => 'section.title', 'label' => 'Homepage Section'],
                 ['key' => 'title', 'label' => 'Title'],
+                ['key' => 'product.name', 'label' => 'Linked Product'],
                 ['key' => 'slot', 'label' => 'Slot'],
                 ['key' => 'coupon_code', 'label' => 'Coupon Code'],
                 ['key' => 'sort_order', 'label' => 'Sort Order'],

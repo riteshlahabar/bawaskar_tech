@@ -10,6 +10,49 @@ use Illuminate\Support\Str;
 
 class ProductHomepageSection extends Model
 {
+    /**
+     * Section types whose content is banners/text rows, edited from
+     * Homepage Settings -> Add Content. A product never feeds one of these:
+     * the content row points AT a product instead, through its own product_id.
+     */
+    public const CONTENT_SECTION_TYPES = [
+        'hero_slider',
+        'top_small_banners',
+        'coupon_section',
+        'offer_section',
+        'strip_offer_banner',
+        'service_section',
+        'blog_section',
+        'video_section',
+    ];
+
+    /** Section types fed by products assigned on the Products form. */
+    public const PRODUCT_SECTION_TYPES = [
+        'product_section',
+        'top_selling_section',
+    ];
+
+    /**
+     * How many content rows the editor offers per section type.
+     * null = unlimited, so the + button is shown.
+     *
+     * Keyed on SECTION TYPE, never on layout_type: live "Awards" (27) is a
+     * blog_section sitting on a product_slider layout and holds 6 rows, and
+     * "Store Services" (24) is a service_section with a NULL layout holding 5
+     * - a layout-keyed limit would hide their rows.
+     */
+    public const CONTENT_ROW_LIMITS = [
+        'hero_slider' => null,
+        'top_small_banners' => null,
+        'blog_section' => null,
+        'coupon_section' => null,
+        'offer_section' => 2,
+        'video_section' => 2,
+        'service_section' => 5,
+        'strip_offer_banner' => 1,
+    ];
+
+    /** `category_section` is deliberately in neither type list. */
     protected $fillable = [
         'section_key', 'title', 'subtitle', 'section_type', 'layout_type', 'source_type', 'category_id',
         'product_limit', 'item_limit', 'image_size_note', 'sort_order', 'start_at', 'end_at', 'settings', 'is_active',
@@ -47,6 +90,32 @@ class ProductHomepageSection extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'homepage_section_id')->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function isContentSection(): bool
+    {
+        return in_array((string) $this->section_type, self::CONTENT_SECTION_TYPES, true);
+    }
+
+    public function isProductSection(): bool
+    {
+        return in_array((string) $this->section_type, self::PRODUCT_SECTION_TYPES, true);
+    }
+
+    /**
+     * Rows the content editor offers, or null for unlimited.
+     *
+     * `offer_section` is the one type whose count really is a layout question:
+     * a two column / big-small banner shows 2, a full width banner shows 1.
+     * Everything else reads CONTENT_ROW_LIMITS.
+     */
+    public function contentRowLimit(): ?int
+    {
+        if ((string) $this->section_type === 'offer_section') {
+            return (string) $this->layout_type === 'full_width_banner' ? 1 : 2;
+        }
+
+        return self::CONTENT_ROW_LIMITS[(string) $this->section_type] ?? null;
     }
 
     public function scopeActive(Builder $query): Builder

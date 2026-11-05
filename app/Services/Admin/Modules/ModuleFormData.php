@@ -171,7 +171,11 @@ final class ModuleFormData implements ModuleFormDataContract
         $query = $field['option_model']::query();
 
         foreach ($field['option_where'] ?? [] as $column => $value) {
-            $query->where($column, $value);
+            // An array value means "any of these", which is how the Products
+            // form limits its Homepage Section dropdown to the product rows.
+            is_array($value)
+                ? $query->whereIn($column, $value)
+                : $query->where($column, $value);
         }
 
         if ($channel !== null && filled($field['option_channel'] ?? null)) {

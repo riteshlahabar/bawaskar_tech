@@ -17,12 +17,6 @@ use Illuminate\Support\Collection;
 
 final class HomepageCatalogService implements HomepageCatalogContract
 {
-    /**
-     * Sections the storefront template builds from "products first, section
-     * items only when no product is assigned".
-     */
-    private const ENTRY_SECTIONS = ['hero_slider', 'top_small_banners', 'coupon_section', 'offer_section'];
-
     public function __construct(
         private readonly HomepageCatalogRepositoryContract $homepage,
         private readonly CategoryCatalogPresenterContract $categories,
@@ -90,20 +84,13 @@ final class HomepageCatalogService implements HomepageCatalogContract
     {
         $type = (string) $section->section_type;
 
-        if (in_array($type, self::ENTRY_SECTIONS, true)) {
-            // Banners never show the product name on top of the image; bank
-            // offer cards still use it as the offer name.
-            $nameAsTitle = $type === 'coupon_section';
-
+        // Every content section - banners, coupons, offers, the strip, service
+        // blocks, blog cards and videos - is fed by its content rows only. A
+        // product assigned to such a row used to win and silently hide the
+        // uploaded banner; a row points AT a product instead (item 47).
+        if (in_array($type, ProductHomepageSection::CONTENT_SECTION_TYPES, true)) {
             return [
-                'items' => $products->isNotEmpty() ? $this->productEntries($products, $nameAsTitle) : $this->sectionItems($section),
-                'products' => collect(),
-            ];
-        }
-
-        if ($type === 'strip_offer_banner') {
-            return [
-                'items' => $this->productEntries($products, false)->concat($this->sectionItems($section))->values(),
+                'items' => $this->sectionItems($section),
                 'products' => collect(),
             ];
         }
@@ -114,13 +101,6 @@ final class HomepageCatalogService implements HomepageCatalogContract
                 ->map(fn (Product $product): array => $this->products->present($product))
                 ->values(),
         ];
-    }
-
-    private function productEntries(Collection $products, bool $nameAsTitle): Collection
-    {
-        return $products
-            ->map(fn (Product $product): array => $this->presenter->productEntry($product, $nameAsTitle))
-            ->values();
     }
 
     private function sectionItems(ProductHomepageSection $section): Collection

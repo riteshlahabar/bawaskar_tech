@@ -68,12 +68,19 @@
         return $path ? \App\Support\ImageAsset::url($path) : null;
     };
 
+    // A content row links through the product it points at. Returns null when
+    // there is nowhere to go, so the caller can drop the button entirely
+    // rather than render one that does nothing.
     $entryUrl = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
             return $entry->homepage_button_url ?: route('store.product', $entry);
         }
 
-        return $entry->button_url ?: 'javascript:void(0)';
+        if ($entry->product ?? null) {
+            return route('store.product', $entry->product);
+        }
+
+        return $entry->button_url ?: null;
     };
 
     $entryButton = function ($entry, $default = 'Shop Now') use ($isProduct) {
@@ -114,11 +121,18 @@
         $section = $homepageRow['section'];
         $items = collect($homepageRow['items'] ?? collect());
         $products = collect($homepageRow['products'] ?? collect());
-        $entries = $products->isNotEmpty() ? $products : $items;
+        // Banner/offer/coupon/service/blog/video rows are content only. Letting
+        // products win here is what silently hid an uploaded hero banner as
+        // soon as one product was assigned to the row (item 47).
+        $entries = $section->isContentSection()
+            ? $items
+            : ($products->isNotEmpty() ? $products : $items);
     @endphp
 
     <?php if ((string) $section->section_type === 'strip_offer_banner') {
-        $stripEntries = $items->concat($products);
+        // The strip is a content section: its image comes from a content row,
+        // never from a product assigned to the section.
+        $stripEntries = $items;
         $entry = null;
         $stripImage = null;
 
@@ -132,20 +146,24 @@
             }
         }
 
-        $entry = $entry ?: $items->first() ?: $products->first();
+        $entry = $entry ?: $items->first();
         $stripImage = $stripImage ?: ($entry ? $entryImage($entry, 'main') : null);
     ?>
         <?php if ($entry) { ?>
             <section class="offer-section" id="home-section-{{ $section->section_key }}">
                 <div class="container-fluid-lg">
                     <?php if ($stripImage) { ?>
-                        <a href="{{ $entryUrl($entry) }}" class="d-block">
+                        @if($entryUrl($entry))
+                            <a href="{{ $entryUrl($entry) }}" class="d-block">
+                                <img loading="lazy" decoding="async" src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
+                            </a>
+                        @else
                             <img loading="lazy" decoding="async" src="{{ $stripImage }}" class="img-fluid w-100 rounded-3 blur-up lazyload" style="min-height: 70px; max-height: 125px; object-fit: cover;" alt="{{ $entryTitle($entry, $section->title) }}">
-                        </a>
+                        @endif
                     <?php } else { ?>
                         <div class="offer-box hover-effect" style="{{ $entryBg($entry) ? 'background-color: '.$entryBg($entry).';' : '' }} {{ $entryColor($entry) ? 'color: '.$entryColor($entry).';' : '' }}">
                             <h2>{{ $entryTitle($entry, $section->title) }} <span>{{ $entryDiscount($entry) }}</span></h2>
-                            <button class="btn theme-bg-color text-white" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }}</button>
+                            @if($entryUrl($entry))<button class="btn theme-bg-color text-white" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }}</button>@endif
                         </div>
                     <?php } ?>
                 </div>
@@ -169,7 +187,7 @@
                                                 @if($entrySubtitle($entry))<h6 class="ls-expanded theme-color text-uppercase">{{ $entrySubtitle($entry) }}</h6>@endif
                                                 @if($entryHeading($entry))<h1 class="heding-2">{{ $entryHeading($entry) }}</h1>@endif
                                                 @if($entryDescription($entry))<h5 class="text-content">{{ $entryDescription($entry) }}</h5>@endif
-                                                <button class="btn theme-bg-color btn-md text-white fw-bold mt-md-4 mt-2 mend-auto" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>
+                                                @if($entryUrl($entry))<button class="btn theme-bg-color btn-md text-white fw-bold mt-md-4 mt-2 mend-auto" onclick="location.href='{{ $entryUrl($entry) }}';">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>@endif
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +207,11 @@
                             @foreach($entries as $entry)
                                 <div>
                                     <div class="banner-contain-3 hover-effect">
-                                        <a href="{{ $entryUrl($entry) }}"><img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
+                                        @if($entryUrl($entry))
+                                            <a href="{{ $entryUrl($entry) }}"><img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}"></a>
+                                        @else
+                                            <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                        @endif
                                         <div class="banner-detail p-bottom-left w-75 banner-p-sm mend-auto">
                                             {{-- p-bottom-left is a flex row aligned to the bottom: the template's inner
                                                  div keeps the text and the button as one stacked block sitting at the
@@ -197,7 +219,7 @@
                                             <div>
                                                 @if($entrySubtitle($entry))<h5 class="fw-light mb-2">{{ $entrySubtitle($entry) }}</h5>@endif
                                                 @if($entryHeading($entry))<h4 class="fw-bold mb-0">{{ $entryHeading($entry) }}</h4>@endif
-                                                <button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn theme-bg-color btn-sm text-white fw-bold mt-3 mend-auto">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>
+                                                @if($entryUrl($entry))<button onclick="location.href='{{ $entryUrl($entry) }}';" class="btn theme-bg-color btn-sm text-white fw-bold mt-3 mend-auto">{{ $entryButton($entry) }} <i class="fa-solid fa-arrow-right icon"></i></button>@endif
                                             </div>
                                         </div>
                                     </div>
@@ -320,9 +342,13 @@
                             @foreach($entries as $entry)
                                 <div class="{{ $section->layout_type === 'full_width_banner' ? 'col-12' : ($section->layout_type === 'two_column_banner' ? 'col-md-6' : ($loop->first && $section->layout_type === 'big_small_banner' ? 'col-lg-8' : 'col-lg-4 col-md-6')) }}">
                                     <div class="banner-contain hover-effect">
-                                        <a href="{{ $entryUrl($entry) }}">
+                                        @if($entryUrl($entry))
+                                            <a href="{{ $entryUrl($entry) }}">
+                                                <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                            </a>
+                                        @else
                                             <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
-                                        </a>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -342,13 +368,21 @@
                                 <div>
                                     <div class="blog-box ratio_50">
                                         <div class="blog-box-image">
-                                            <a href="{{ $entryUrl($entry) }}">
+                                            @if($entryUrl($entry))
+                                                <a href="{{ $entryUrl($entry) }}">
+                                                    <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
+                                                </a>
+                                            @else
                                                 <img loading="lazy" decoding="async" src="{{ $entryImage($entry, 'main') }}" class="bg-img blur-up lazyload" alt="{{ $entryTitle($entry, $section->title) }}">
-                                            </a>
+                                            @endif
                                         </div>
                                         <div class="blog-detail">
                                             @if($entrySubtitle($entry))<label>{{ $entrySubtitle($entry) }}</label>@endif
-                                            <a href="{{ $entryUrl($entry) }}"><h2>{{ $entryTitle($entry, $section->title) }}</h2></a>
+                                            @if($entryUrl($entry))
+                                                <a href="{{ $entryUrl($entry) }}"><h2>{{ $entryTitle($entry, $section->title) }}</h2></a>
+                                            @else
+                                                <h2>{{ $entryTitle($entry, $section->title) }}</h2>
+                                            @endif
                                             @if($entryDescription($entry))<p class="text-content">{{ str($entryDescription($entry))->limit(120) }}</p>@endif
                                         </div>
                                     </div>

@@ -127,8 +127,15 @@
                                         {{-- A section can hold several content rows, so Edit Content opens the
                                              section's View page, where each row already has its own Edit button. --}}
                                         <div class="d-flex gap-1 justify-content-end">
-                                            <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-setting-items.create', ['section_id' => $record->getKey(), 'row_title' => $record->title.' Content']) }}">Add Content</a>
-                                            <a class="btn btn-sm btn-outline-primary text-nowrap" href="{{ route('admin.homepage-settings.show', $record->getKey()) }}">Edit Content</a>
+                                            {{-- One editor either way: a section owns its content rows, and the
+                                                 page shows only the fields that section type renders. Product and
+                                                 category rows have no content of their own. --}}
+                                            @if($record->isContentSection())
+                                                <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Add Content</a>
+                                                <a class="btn btn-sm btn-outline-primary text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Edit Content</a>
+                                            @else
+                                                <span class="text-muted small text-nowrap">Products only</span>
+                                            @endif
                                         </div>
                                     </td>
                                 @endif

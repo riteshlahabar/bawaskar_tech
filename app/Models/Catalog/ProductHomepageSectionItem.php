@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class ProductHomepageSectionItem extends Model
 {
     protected $fillable = [
-        'section_id', 'slot', 'title', 'subtitle', 'description', 'highlight_text', 'discount_text', 'validity_text',
+        'section_id', 'product_id', 'slot', 'title', 'subtitle', 'description', 'highlight_text', 'discount_text', 'validity_text',
         'coupon_code', 'button_text', 'button_url', 'image_path', 'mobile_image_path', 'logo_image_path', 'offer_image_path', 'icon_key',
         'video_url', 'video_file_path', 'video_autoplay',
         'background_color', 'text_color', 'sort_order', 'settings', 'is_active',
@@ -64,5 +64,15 @@ class ProductHomepageSectionItem extends Model
     public function section(): BelongsTo
     {
         return $this->belongsTo(ProductHomepageSection::class, 'section_id');
+    }
+
+    /**
+     * The product this banner points at, chosen in the content editor. The
+     * column is `nullOnDelete`: deleting a product breaks the link but never
+     * deletes the banner.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }

@@ -30,6 +30,7 @@ use App\Contracts\Auth\PhoneCredentialContract;
 use App\Contracts\Auth\RegistrationTokenContract;
 use App\Contracts\Catalog\BulkProductCategoryContract;
 use App\Contracts\Catalog\BulkProductSectionContract;
+use App\Contracts\Catalog\Homepage\HomepageSectionContentContract;
 use App\Contracts\Catalog\HomepageSectionProductsContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
@@ -138,6 +139,7 @@ use App\Services\Auth\PhoneCredentialService;
 use App\Services\Catalog\BulkProductCategoryService;
 use App\Services\Catalog\BulkProductSectionService;
 use App\Services\Catalog\GoogleTextTranslator;
+use App\Services\Catalog\Homepage\HomepageSectionContentService;
 use App\Services\Catalog\HomepageSectionProductsService;
 use App\Services\Catalog\Product\ProductFormService;
 use App\Services\Catalog\Product\ProductImageService;
@@ -249,6 +251,7 @@ class AppServiceProvider extends ServiceProvider
             DealerOutstandingContract::class => DealerOutstandingService::class,
             DealerLedgerContract::class => DealerLedgerService::class,
             HomepageSectionProductsContract::class => HomepageSectionProductsService::class,
+            HomepageSectionContentContract::class => HomepageSectionContentService::class,
             BulkProductCategoryContract::class => BulkProductCategoryService::class,
             BulkProductSectionContract::class => BulkProductSectionService::class,
             TargetAchievementContract::class => TargetAchievementService::class,

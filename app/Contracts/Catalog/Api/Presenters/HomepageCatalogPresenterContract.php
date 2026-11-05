@@ -2,21 +2,17 @@
 
 namespace App\Contracts\Catalog\Api\Presenters;
 
-use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSectionItem;
 use App\Models\Storefront\StorefrontBanner;
 
 interface HomepageCatalogPresenterContract
 {
-    public function item(ProductHomepageSectionItem $item): array;
-
     /**
-     * A product configured as a homepage banner / offer entry, in the same
-     * shape as item() so the apps render both the same way. With
-     * $nameAsTitle false the product name is never used as the title (banner
-     * images show only an admin-entered banner title).
+     * One homepage content row. `productEntry()` used to present a product
+     * built as a banner; a banner is a content row now and carries the product
+     * it links to in `product_id`, so this is the only entry shape left.
      */
-    public function productEntry(Product $product, bool $nameAsTitle = true): array;
+    public function item(ProductHomepageSectionItem $item): array;
 
     public function fallbackBanner(StorefrontBanner $banner): array;
 

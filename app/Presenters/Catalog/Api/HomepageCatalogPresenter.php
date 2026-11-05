@@ -4,7 +4,6 @@ namespace App\Presenters\Catalog\Api;
 
 use App\Contracts\Catalog\Api\CatalogTextTranslatorContract;
 use App\Contracts\Catalog\Api\Presenters\HomepageCatalogPresenterContract;
-use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSectionItem;
 use App\Models\Storefront\StorefrontBanner;
 use Illuminate\Support\Str;
@@ -17,6 +16,10 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
     {
         return [
             'id' => $item->id,
+            // The banner's link. `productEntry()` already sent this key, so the
+            // payload shape is unchanged for the apps now that a content row
+            // carries the product instead of the other way round.
+            'product_id' => $item->product_id,
             'slot' => $item->slot,
             'title' => $this->entry($item->title),
             'subtitle' => $this->entry($item->subtitle),
@@ -33,36 +36,6 @@ final class HomepageCatalogPresenter implements HomepageCatalogPresenterContract
             'offer_image_url' => $this->assetUrl($item->offer_image_path),
             'background_color' => $item->background_color,
             'text_color' => $item->text_color,
-        ];
-    }
-
-    /**
-     * Mirrors the storefront template's product entry helpers, so the apps
-     * show the same banner / offer content as the website.
-     */
-    public function productEntry(Product $product, bool $nameAsTitle = true): array
-    {
-        $image = $product->homepage_image_path ?: data_get($product, 'images.0.path');
-
-        return [
-            'id' => $product->id,
-            'product_id' => $product->id,
-            'slot' => 'product',
-            'title' => filled($product->homepage_title) ? $this->entry($product->homepage_title) : ($nameAsTitle ? $product->storefront_name : null),
-            'subtitle' => $this->entry($product->homepage_subtitle ?: $product->sale_badge_text),
-            'description' => $this->entry($product->homepage_description ?: $product->short_description),
-            'highlight_text' => $this->entry($product->homepage_highlight_text),
-            'discount_text' => $this->entry($product->homepage_discount_text),
-            'validity_text' => $this->entry($product->homepage_validity_text),
-            'coupon_code' => $product->homepage_coupon_code,
-            'button_text' => $this->button($product->homepage_button_text),
-            'button_url' => $product->homepage_button_url,
-            'image_url' => $this->assetUrl($image),
-            'mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),
-            'logo_image_url' => $this->assetUrl($product->homepage_logo_image_path ?: $image),
-            'offer_image_url' => $this->assetUrl($product->homepage_offer_image_path ?: $image),
-            'background_color' => $product->homepage_background_color,
-            'text_color' => $product->homepage_text_color,
         ];
     }
 

@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\Outstanding\OutstandingController;
 use App\Http\Controllers\Admin\Payments\PaymentController;
 use App\Http\Controllers\Admin\Pricing\PricingController;
 use App\Http\Controllers\Admin\ProductHomepageSettingItems\ProductHomepageSettingItemController;
+use App\Http\Controllers\Admin\ProductHomepageSettings\HomepageSectionContentController;
 use App\Http\Controllers\Admin\ProductHomepageSettings\ProductHomepageSettingController;
 use App\Http\Controllers\Admin\ProductRelatedProducts\ProductRelatedProductController;
 use App\Http\Controllers\Admin\Products\ProductController;
@@ -131,6 +132,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('products/bulk-category', [ProductController::class, 'bulkCategory'])->name('products.bulk-category');
         Route::post('products/bulk-section', [ProductController::class, 'bulkSection'])->name('products.bulk-section');
         Route::post('homepage-settings/{id}/transfer-products', [ProductHomepageSettingController::class, 'transferProducts'])->name('homepage-settings.transfer-products');
+        Route::get('homepage-settings/{id}/content', [HomepageSectionContentController::class, 'content'])->name('homepage-settings.content');
+        Route::post('homepage-settings/{id}/content', [HomepageSectionContentController::class, 'saveContent'])->name('homepage-settings.save-content');
         Route::get('settings/company', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
         Route::put('settings/company', [CompanySettingController::class, 'update'])->name('company-settings.update');
         Route::get('settings/mail', [MailSettingController::class, 'edit'])->name('mail-settings.edit');

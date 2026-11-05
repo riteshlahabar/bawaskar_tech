@@ -30,38 +30,45 @@ class HomepageCatalogServiceTest extends TestCase
         $this->assertSame([], $result['banners']->all());
     }
 
-    public function test_banner_sections_use_assigned_products_as_entries_like_the_storefront(): void
+    /**
+     * The rule item 47 introduced: a banner, offer, coupon, strip, service,
+     * blog or video row is built from its content rows only. Before, a product
+     * assigned to such a row won and silently hid the uploaded banner.
+     */
+    public function test_content_sections_ignore_assigned_products(): void
     {
-        foreach (['top_small_banners', 'offer_section'] as $type) {
+        foreach (ProductHomepageSection::CONTENT_SECTION_TYPES as $type) {
             $row = $this->homepageFor($type)['rows']->first();
 
-            $this->assertSame([['entry' => 13, 'no_name' => true]], $row['items']->all(), "{$type} should show the product entry without the product name.");
-            $this->assertSame([], $row['products']->all(), "{$type} should not also send product cards.");
+            $this->assertSame([['id' => 11]], $row['items']->all(), "{$type} must show its content row, not the assigned product.");
+            $this->assertSame([], $row['products']->all(), "{$type} must not send product cards.");
         }
     }
 
-    public function test_bank_offers_keep_the_product_name_as_offer_title(): void
+    public function test_product_sections_still_send_their_products(): void
     {
-        $row = $this->homepageFor('coupon_section')['rows']->first();
+        foreach (ProductHomepageSection::PRODUCT_SECTION_TYPES as $type) {
+            $row = $this->homepageFor($type)['rows']->first();
 
-        $this->assertSame([['entry' => 13]], $row['items']->all());
-        $this->assertSame([], $row['products']->all());
+            $this->assertSame([['id' => 13]], $row['products']->all(), "{$type} must still send its products.");
+        }
     }
 
-    public function test_hero_banners_come_from_assigned_products_without_the_product_name(): void
+    public function test_a_content_section_with_no_rows_falls_back_to_storefront_banners(): void
     {
-        $this->assertSame([['entry' => 13, 'no_name' => true]], $this->homepageFor('hero_slider')['banners']->all());
+        $row = $this->homepageFor('coupon_section', withProduct: false, withItem: false, withFallback: true)['rows']->first();
+
+        // Live proof this branch matters: the coupon row has no content rows and
+        // no products, and renders from `storefront_banners`.
+        $this->assertSame([['id' => 99]], $row['items']->all());
     }
 
-    public function test_banner_sections_fall_back_to_items_without_products(): void
-    {
-        $row = $this->homepageFor('coupon_section', withProduct: false)['rows']->first();
-
-        $this->assertSame([['id' => 11]], $row['items']->all());
-    }
-
-    private function homepageFor(string $sectionType, bool $withProduct = true): array
-    {
+    private function homepageFor(
+        string $sectionType,
+        bool $withProduct = true,
+        bool $withItem = true,
+        bool $withFallback = false
+    ): array {
         $section = new ProductHomepageSection([
             'section_key' => 'featured',
             'title' => 'Featured',
@@ -76,7 +83,7 @@ class HomepageCatalogServiceTest extends TestCase
 
         $item = new ProductHomepageSectionItem(['is_active' => true, 'sort_order' => 1]);
         $item->id = 11;
-        $section->setRelation('items', collect([$item]));
+        $section->setRelation('items', $withItem ? collect([$item]) : collect());
 
         $category = new Category;
         $category->id = 12;
@@ -84,12 +91,16 @@ class HomepageCatalogServiceTest extends TestCase
         $product = new Product;
         $product->id = 13;
 
-        $repository = new class($section, $category, $withProduct ? collect([$product]) : collect()) implements HomepageCatalogRepositoryContract
+        $banner = new StorefrontBanner;
+        $banner->id = 99;
+
+        $repository = new class($section, $category, $withProduct ? collect([$product]) : collect(), $withFallback ? collect([$banner]) : collect()) implements HomepageCatalogRepositoryContract
         {
             public function __construct(
                 private readonly ProductHomepageSection $section,
                 private readonly Category $category,
-                private readonly Collection $products
+                private readonly Collection $products,
+                private readonly Collection $banners
             ) {}
 
             public function activeSections(): Collection
@@ -112,7 +123,7 @@ class HomepageCatalogServiceTest extends TestCase
 
             public function fallbackBanners(ProductHomepageSection $section): Collection
             {
-                return collect();
+                return $this->banners;
             }
 
             public function legacyBanners(): Collection
@@ -142,11 +153,6 @@ class HomepageCatalogServiceTest extends TestCase
             public function item(ProductHomepageSectionItem $item): array
             {
                 return ['id' => $item->id];
-            }
-
-            public function productEntry(Product $product, bool $nameAsTitle = true): array
-            {
-                return $nameAsTitle ? ['entry' => $product->id] : ['entry' => $product->id, 'no_name' => true];
             }
 
             public function fallbackBanner(StorefrontBanner $banner): array

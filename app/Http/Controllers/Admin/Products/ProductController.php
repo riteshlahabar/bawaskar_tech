@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Products;
 
 use App\Contracts\Catalog\BulkProductCategoryContract;
+use App\Contracts\Catalog\BulkProductSectionContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
 use App\Contracts\Catalog\Product\ProductValidationContract;
@@ -11,6 +12,7 @@ use App\Data\Catalog\ProductSaveData;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductHomepageSection;
 use App\Support\Admin\Modules\AdminModuleServices;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -32,6 +34,7 @@ final class ProductController extends AdminModuleController
         private readonly ProductWorkflowContract $workflow,
         private readonly ProductFormContract $form,
         private readonly BulkProductCategoryContract $bulkCategories,
+        private readonly BulkProductSectionContract $bulkSections,
     ) {
         parent::__construct($modules);
     }
@@ -67,6 +70,45 @@ final class ProductController extends AdminModuleController
         return back()->with('success', $moved === 0
             ? 'No change: all '.$selected.' selected product(s) were already in "'.$category->name.'".'
             : 'Moved '.$moved.' of '.$selected.' selected product(s) into "'.$category->name.'".');
+    }
+
+    /**
+     * The same bulk move for the homepage Section Title. An empty target is a
+     * real choice here — it takes the products off the homepage — so
+     * `section_id` is nullable rather than required.
+     */
+    public function bulkSection(Request $request): RedirectResponse
+    {
+        $module = $this->module();
+        abort_unless(($module['can_edit'] ?? true), 403);
+
+        $data = $request->validate([
+            'product_ids' => ['required', 'array', 'min:1'],
+            'product_ids.*' => ['integer', Rule::exists('products', 'id')],
+            'section_id' => ['nullable', 'integer', Rule::exists('product_homepage_sections', 'id')],
+        ], [
+            'product_ids.required' => 'Select at least one product first.',
+            'section_id.exists' => 'That homepage section no longer exists.',
+        ]);
+
+        $section = filled($data['section_id'] ?? null)
+            ? ProductHomepageSection::query()->findOrFail($data['section_id'])
+            : null;
+
+        $selected = count($data['product_ids']);
+        $moved = $this->bulkSections->move($data['product_ids'], $section);
+
+        $this->bumpCacheVersionForModule();
+
+        if ($moved === 0) {
+            return back()->with('success', $section === null
+                ? 'No change: none of the '.$selected.' selected product(s) was on a homepage section.'
+                : 'No change: all '.$selected.' selected product(s) were already on "'.$section->title.'".');
+        }
+
+        return back()->with('success', $section === null
+            ? 'Removed '.$moved.' of '.$selected.' selected product(s) from their homepage section.'
+            : 'Moved '.$moved.' of '.$selected.' selected product(s) onto "'.$section->title.'".');
     }
 
     protected function rules(array $module, ?Model $record = null, ?string $channel = null): array

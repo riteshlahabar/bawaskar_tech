@@ -307,20 +307,22 @@
     @include('admin.translations.translate-modal')
 @endif
 @if($module['key'] === 'products' && $can['edit'])
-    {{-- Bulk category change. The ids cannot come from #bulkActionForm (that
-         form is a DELETE), so table-toolbar.js copies the ticked
-         checkboxes into the hidden container below when the modal opens. --}}
-    <div class="modal fade" id="bulkCategoryModal" tabindex="-1" aria-hidden="true">
+    {{-- Bulk moves. The ids cannot come from #bulkActionForm (that form is a
+         DELETE), so table-toolbar.js copies the ticked checkboxes into each
+         modal's own hidden container when it opens. Every such modal is marked
+         with data-bulk-selection-modal and carries one ids container and one
+         count span, so adding a third needs no JS change. --}}
+    <div class="modal fade" id="bulkCategoryModal" tabindex="-1" aria-hidden="true" data-bulk-selection-modal>
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content" method="POST" action="{{ route('admin.products.bulk-category') }}" id="bulkCategoryForm">
+            <form class="modal-content" method="POST" action="{{ route('admin.products.bulk-category') }}">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Change Category</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-3"><span class="fw-semibold" data-bulk-category-count>0</span> product(s) selected.</p>
-                    <div id="bulkCategoryIds"></div>
+                    <p class="mb-3"><span class="fw-semibold" data-bulk-selection-count>0</span> product(s) selected.</p>
+                    <div data-bulk-selection-ids></div>
                     <label class="form-label" for="bulkCategoryTarget">Move to Category <span class="text-danger">*</span></label>
                     <select class="form-select" id="bulkCategoryTarget" name="category_id" required>
                         <option value="">Select a category</option>
@@ -329,6 +331,36 @@
                         @endforeach
                     </select>
                     <small class="text-muted d-block mt-2">Homepage sections built from a category show products by category, so moving a product can change which homepage row it appears on.</small>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Move Products</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bulkSectionModal" tabindex="-1" aria-hidden="true" data-bulk-selection-modal>
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="POST" action="{{ route('admin.products.bulk-section') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Section Title</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3"><span class="fw-semibold" data-bulk-selection-count>0</span> product(s) selected.</p>
+                    <div data-bulk-selection-ids></div>
+                    <label class="form-label" for="bulkSectionTarget">Move to Homepage Section</label>
+                    {{-- Not `required`: an empty choice is a real instruction here,
+                         it takes the products off the homepage. --}}
+                    <select class="form-select" id="bulkSectionTarget" name="section_id">
+                        <option value="">— No Section (remove from homepage) —</option>
+                        @foreach(($filterOptions['homepage_section_id'] ?? []) as $sectionId => $sectionTitle)
+                            <option value="{{ $sectionId }}">{{ $sectionTitle }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted d-block mt-2">Only the placement changes — each product keeps its own homepage title, image and button.</small>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>

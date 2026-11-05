@@ -29,6 +29,7 @@ use App\Contracts\Auth\PasswordChangeContract;
 use App\Contracts\Auth\PhoneCredentialContract;
 use App\Contracts\Auth\RegistrationTokenContract;
 use App\Contracts\Catalog\BulkProductCategoryContract;
+use App\Contracts\Catalog\BulkProductSectionContract;
 use App\Contracts\Catalog\HomepageSectionProductsContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductImageContract;
@@ -135,6 +136,7 @@ use App\Services\Auth\OtpService;
 use App\Services\Auth\PasswordChangeService;
 use App\Services\Auth\PhoneCredentialService;
 use App\Services\Catalog\BulkProductCategoryService;
+use App\Services\Catalog\BulkProductSectionService;
 use App\Services\Catalog\GoogleTextTranslator;
 use App\Services\Catalog\HomepageSectionProductsService;
 use App\Services\Catalog\Product\ProductFormService;
@@ -248,6 +250,7 @@ class AppServiceProvider extends ServiceProvider
             DealerLedgerContract::class => DealerLedgerService::class,
             HomepageSectionProductsContract::class => HomepageSectionProductsService::class,
             BulkProductCategoryContract::class => BulkProductCategoryService::class,
+            BulkProductSectionContract::class => BulkProductSectionService::class,
             TargetAchievementContract::class => TargetAchievementService::class,
             FirebaseIdTokenContract::class => FirebaseIdTokenService::class,
             PhoneCredentialContract::class => PhoneCredentialService::class,

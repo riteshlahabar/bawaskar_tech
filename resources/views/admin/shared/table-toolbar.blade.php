@@ -164,6 +164,7 @@
 
             @if($module['key'] === 'products' && $can['edit'])
                 <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#bulkCategoryModal" title="Change Category Of Selected" aria-label="Change Category Of Selected"><i class="fa-solid fa-folder"></i></button>
+                <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#bulkSectionModal" title="Change Section Title Of Selected" aria-label="Change Section Title Of Selected"><i class="fa-solid fa-table-cells-large"></i></button>
             @endif
 
             @if(($module['can_delete'] ?? true) && $can['delete'])

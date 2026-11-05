@@ -266,6 +266,9 @@ return [
             'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'productType', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active, 'form_layout' => 'tabs',
             'filters' => [
                 ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title'],
+                // Lists one category's products so they can be selected and
+                // moved together with the Change Category bulk action.
+                ['name' => 'category_id', 'label' => 'Category', 'column' => 'category_id', 'option_model' => Category::class],
             ],
             'columns' => [['key' => 'images.0.path', 'label' => 'Image', 'type' => 'image'], ['key' => 'sku', 'label' => 'SKU'], ['key' => 'name', 'label' => 'Product Name'], ['key' => 'productType.name', 'label' => 'Product Type'], ['key' => 'category.name', 'label' => 'Category'], ['key' => 'brand.name', 'label' => 'Brand'], ['key' => 'homepageSection.title', 'label' => 'Section Title'], ['key' => 'unit.short_name', 'label' => 'Unit'], ['key' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'money'], ['key' => 'customer_price', 'label' => 'Customer Price', 'type' => 'money']],
             'fields' => [

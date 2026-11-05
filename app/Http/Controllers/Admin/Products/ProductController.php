@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Admin\Products;
 
+use App\Contracts\Catalog\BulkProductCategoryContract;
 use App\Contracts\Catalog\Product\ProductFormContract;
 use App\Contracts\Catalog\Product\ProductInputContract;
 use App\Contracts\Catalog\Product\ProductValidationContract;
 use App\Contracts\Catalog\Product\ProductWorkflowContract;
 use App\Data\Catalog\ProductSaveData;
 use App\Http\Controllers\Admin\Concerns\AdminModuleController;
+use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Support\Admin\Modules\AdminModuleServices;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * SRP: Product CRUD orchestration only.
@@ -27,8 +31,37 @@ final class ProductController extends AdminModuleController
         private readonly ProductInputContract $input,
         private readonly ProductWorkflowContract $workflow,
         private readonly ProductFormContract $form,
+        private readonly BulkProductCategoryContract $bulkCategories,
     ) {
         parent::__construct($modules);
+    }
+
+    /**
+     * Moves the products ticked on the listing into one category in a single
+     * update, instead of reopening the full form (which forces at least one
+     * variant) for every product.
+     */
+    public function bulkCategory(Request $request): RedirectResponse
+    {
+        $module = $this->module();
+        abort_unless(($module['can_edit'] ?? true), 403);
+
+        $data = $request->validate([
+            'product_ids' => ['required', 'array', 'min:1'],
+            'product_ids.*' => ['integer', Rule::exists('products', 'id')],
+            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')],
+        ], [
+            'product_ids.required' => 'Select at least one product first.',
+            'category_id.required' => 'Choose the category to move these products into.',
+            'category_id.exists' => 'That category no longer exists.',
+        ]);
+
+        $category = Category::query()->findOrFail($data['category_id']);
+        $moved = $this->bulkCategories->move($data['product_ids'], $category);
+
+        $this->bumpCacheVersionForModule();
+
+        return back()->with('success', $moved.' product(s) moved to "'.$category->name.'".');
     }
 
     protected function rules(array $module, ?Model $record = null, ?string $channel = null): array

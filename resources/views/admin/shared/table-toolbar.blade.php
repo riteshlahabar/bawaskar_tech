@@ -162,6 +162,10 @@
             <a class="btn btn-outline-danger admin-toolbar-icon" href="{{ route($module['route'].'.export', ['format' => 'pdf'] + $exportQuery) }}" title="Export PDF" aria-label="Export PDF"><i class="fa-solid fa-file-pdf"></i></a>
             <button class="btn btn-outline-secondary admin-toolbar-icon" type="button" onclick="window.print()" title="Print" aria-label="Print"><i class="fa-solid fa-print"></i></button>
 
+            @if($module['key'] === 'products' && $can['edit'])
+                <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#bulkCategoryModal" title="Change Category Of Selected" aria-label="Change Category Of Selected"><i class="fa-solid fa-folder"></i></button>
+            @endif
+
             @if(($module['can_delete'] ?? true) && $can['delete'])
                 <button class="btn btn-outline-danger admin-toolbar-icon" type="submit" form="bulkActionForm" onclick="return confirm('Delete selected records?')" title="Delete Selected" aria-label="Delete Selected"><i class="fa-solid fa-trash-can"></i></button>
             @endif

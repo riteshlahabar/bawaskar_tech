@@ -53,5 +53,45 @@
                 }
             });
         }
+
+        // Products only: the bulk Change Category modal sits outside the card
+        // and posts its own form, because #bulkActionForm is a DELETE. The
+        // ticked rows are copied into it each time the modal opens.
+        var categoryModal = document.getElementById('bulkCategoryModal');
+        var categoryForm = document.getElementById('bulkCategoryForm');
+        var categoryIds = document.getElementById('bulkCategoryIds');
+
+        if (categoryModal && categoryForm && categoryIds) {
+            var checkedIds = function () {
+                return rowCheckboxes
+                    .filter(function (checkbox) { return checkbox.checked; })
+                    .map(function (checkbox) { return checkbox.value; });
+            };
+
+            categoryModal.addEventListener('show.bs.modal', function () {
+                var ids = checkedIds();
+                categoryIds.innerHTML = '';
+
+                ids.forEach(function (id) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'product_ids[]';
+                    input.value = id;
+                    categoryIds.appendChild(input);
+                });
+
+                var counter = categoryModal.querySelector('[data-bulk-category-count]');
+                if (counter) {
+                    counter.textContent = ids.length;
+                }
+            });
+
+            categoryForm.addEventListener('submit', function (event) {
+                if (checkedIds().length === 0) {
+                    event.preventDefault();
+                    alert('Select at least one product first.');
+                }
+            });
+        }
     });
 })();

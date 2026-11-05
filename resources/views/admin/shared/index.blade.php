@@ -306,6 +306,38 @@
 @if($module['key'] === 'translations')
     @include('admin.translations.translate-modal')
 @endif
+@if($module['key'] === 'products' && $can['edit'])
+    {{-- Bulk category change. The ids cannot come from #bulkActionForm (that
+         form is a DELETE), so table-toolbar.js copies the ticked
+         checkboxes into the hidden container below when the modal opens. --}}
+    <div class="modal fade" id="bulkCategoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="POST" action="{{ route('admin.products.bulk-category') }}" id="bulkCategoryForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Category</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3"><span class="fw-semibold" data-bulk-category-count>0</span> product(s) selected.</p>
+                    <div id="bulkCategoryIds"></div>
+                    <label class="form-label" for="bulkCategoryTarget">Move to Category <span class="text-danger">*</span></label>
+                    <select class="form-select" id="bulkCategoryTarget" name="category_id" required>
+                        <option value="">Select a category</option>
+                        @foreach(($filterOptions['category_id'] ?? []) as $categoryId => $categoryName)
+                            <option value="{{ $categoryId }}">{{ $categoryName }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted d-block mt-2">Homepage sections built from a category show products by category, so moving a product can change which homepage row it appears on.</small>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Move Products</button>
+                </div>
+            </form>
+        </div>
+    </div>
+@endif
 @if($module['key'] === 'salary')
     <div class="modal fade" id="salaryModal"><div class="modal-dialog"><form class="modal-content" method="POST" action="{{ route('admin.salary.generate') }}">@csrf<div class="modal-header"><h5>Generate Monthly Salary</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-6"><label>Year</label><input class="form-control" type="number" name="salary_year" value="{{ now()->year }}" required></div><div class="col-6"><label>Month</label><select class="form-select" name="salary_month">@foreach(range(1, 12) as $m)<option value="{{ $m }}" @selected($m === now()->month)>{{ DateTime::createFromFormat('!m', $m)->format('F') }}</option>@endforeach</select></div></div></div><div class="modal-footer"><button class="btn btn-success">Generate</button></div></form></div></div>
 @endif

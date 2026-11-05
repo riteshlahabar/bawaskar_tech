@@ -9,13 +9,22 @@
     $visibilityLayoutTypes = array_values(array_filter((array) ($field['show_for_layout_types'] ?? [])));
     $hasVisibility = filled($visibilitySource) && ($visibilitySectionTypes !== [] || $visibilityLayoutTypes !== []);
 
+    // Normally the section/layout type is read from the SELECTED OPTION of the
+    // source select (the Products form picks a homepage section by id, and each
+    // option carries its section_type). When the source select's own value IS
+    // the section type - the Homepage Settings form's `section_type` field -
+    // there are no per-option attributes, so this flag tells the JS to compare
+    // against the selected value itself.
+    $visibilitySourceIsValue = (bool) ($field['visibility_source_is_value'] ?? false);
+
     $visibilityAttributes = $hasVisibility
-        ? [
+        ? array_filter([
             'data-visibility-source' => $visibilitySource,
             'data-visibility-section-types' => implode(',', $visibilitySectionTypes),
             'data-visibility-layout-types' => implode(',', $visibilityLayoutTypes),
+            'data-visibility-source-is-value' => $visibilitySourceIsValue ? '1' : null,
             'style' => 'display:none;',
-        ]
+        ], fn ($attributeValue): bool => $attributeValue !== null)
         : [];
 
     $customView = $fieldViews->resolve($type);

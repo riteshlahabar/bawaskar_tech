@@ -195,6 +195,12 @@
                 layoutType = selectedOptionAttributes.layout_type;
             }
 
+            // A source select whose own value IS the section type (Homepage
+            // Settings' section_type field) has no per-option attributes.
+            if (block.dataset.visibilitySourceIsValue === '1') {
+                sectionType = selectedValue;
+            }
+
             var allowedSectionTypes = (block.dataset.visibilitySectionTypes || '').split(',').map(function (value) {
                 return value.trim();
             }).filter(Boolean);

@@ -360,8 +360,8 @@ return [
                 ['key' => 'section_type_name', 'label' => 'Section Type'],
                 ['key' => 'layout_type_name', 'label' => 'Layout Type'],
                 ['key' => 'category.name', 'label' => 'Category'],
-                ['key' => 'product_limit', 'label' => 'Item Limit'],
-                ['key' => 'sort_order', 'label' => 'Sort Order'],
+                ['key' => 'product_limit', 'label' => 'Product Limit'],
+                ['key' => 'sort_order', 'label' => 'Display Row Order'],
                 ['key' => 'is_active', 'label' => 'Active', 'type' => 'boolean'],
             ],
             'fields' => [
@@ -399,13 +399,17 @@ return [
                     'blog_slider' => 'Blog Slider',
                     'two_videos' => 'Two Videos',
                     'video_text' => 'Video + Text',
-                ], 'rules' => ['nullable', 'string', 'max:80']],
+                ], 'rules' => ['required', 'string', 'max:80']],
 
-                ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['nullable', 'exists:categories,id'], 'help' => 'Use this only when Section Type is Product Section.'],
+                // Only a Product Section row draws its products from a category,
+                // so the field is hidden for every other section type. The
+                // source select's own VALUE is the section type here, which is
+                // what 'visibility_source_is_value' says.
+                ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['nullable', 'exists:categories,id'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ['product_section'], 'help' => 'The category this row shows products from.'],
 
-                ['name' => 'product_limit', 'label' => 'Item Limit', 'type' => 'number', 'default' => 8, 'rules' => ['nullable', 'integer', 'min:1', 'max:50']],
+                ['name' => 'product_limit', 'label' => 'Product Limit', 'type' => 'number', 'default' => 8, 'rules' => ['required', 'integer', 'min:1', 'max:50']],
 
-                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0']],
+                ['name' => 'sort_order', 'label' => 'Display Row Order', 'type' => 'number', 'default' => 0, 'rules' => ['required', 'integer', 'min:0']],
 
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

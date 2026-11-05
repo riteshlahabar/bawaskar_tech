@@ -18,7 +18,7 @@ final class EloquentStorefrontCatalogRepository implements StorefrontCatalogRepo
             ->with(['translations'])
             ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
             ->where('is_active', true)
-            ->orderBy('sort_order')
+            ->orderBy('name')
             ->limit($limit)
             ->get();
     }

@@ -17,7 +17,10 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
             ->with(['translations'])
             ->withCount(['products' => fn (Builder $query) => $query->visibleFor($audience)])
             ->where('is_active', true)
-            ->orderBy('sort_order')
+            // Alphabetical: Categories no longer carry an admin-editable sort
+            // field, and this list also feeds the navbar Products dropdown and
+            // the mega menu since item 44.
+            ->orderBy('name')
             ->limit(12)
             ->get();
     }

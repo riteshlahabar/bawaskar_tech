@@ -33,7 +33,7 @@ final class EloquentCategoryCatalogRepository implements CategoryCatalogReposito
                 true
             )
             ->orderBy(
-                'sort_order'
+                'name'
             )
             ->orderBy(
                 'id'

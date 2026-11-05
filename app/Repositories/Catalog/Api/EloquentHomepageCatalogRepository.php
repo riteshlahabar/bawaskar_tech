@@ -33,9 +33,9 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
         return Category::query()
             ->with('translations')
             ->where('is_active', true)
-            ->orderByRaw('CASE WHEN show_on_homepage = 1 THEN 0 ELSE 1 END')
-            ->orderBy('homepage_sort_order')
-            ->orderBy('sort_order')
+            // Categories carry no homepage placement or sort field any more,
+            // so every category list is alphabetical.
+            ->orderBy('name')
             ->orderBy('id')
             ->get();
     }

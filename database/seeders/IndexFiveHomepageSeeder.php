@@ -62,22 +62,16 @@ class IndexFiveHomepageSeeder extends Seeder
             'veterinary-medicine' => [
                 'name' => 'Veterinary Medicine',
                 'sort_order' => 7,
-                'homepage_product_limit' => 6,
-                'homepage_sort_order' => 7,
                 'image_path' => self::IMAGE_BASE.'/categories/veterinary-medicine.png',
             ],
             'animal-healthcare' => [
                 'name' => 'Animal Healthcare',
                 'sort_order' => 9,
-                'homepage_product_limit' => 10,
-                'homepage_sort_order' => 9,
                 'image_path' => self::IMAGE_BASE.'/categories/animal-healthcare.png',
             ],
             'seeds' => [
                 'name' => 'Seeds',
                 'sort_order' => 12,
-                'homepage_product_limit' => 8,
-                'homepage_sort_order' => 12,
                 'image_path' => self::IMAGE_BASE.'/categories/seeds.png',
             ],
         ];
@@ -91,11 +85,6 @@ class IndexFiveHomepageSeeder extends Seeder
                     'name' => $definition['name'],
                     'is_active' => true,
                     'sort_order' => $definition['sort_order'],
-                    'show_on_homepage' => true,
-                    'homepage_title' => $definition['name'],
-                    'homepage_layout' => 'slider',
-                    'homepage_product_limit' => $definition['homepage_product_limit'],
-                    'homepage_sort_order' => $definition['homepage_sort_order'],
                     'image_path' => $definition['image_path'],
                 ]
             );

@@ -12,12 +12,10 @@ class Category extends Model
         'name',
         'slug',
         'image_path',
-        'homepage_title',
-        'homepage_layout',
-        'homepage_product_limit',
-        'homepage_sort_order',
-        'show_on_homepage',
         'is_active',
+        // No longer on the Add Category form (there is nothing to limit: a
+        // category holds unlimited products). The column is kept because the
+        // seeder and the product import still write it.
         'sort_order',
     ];
 
@@ -25,9 +23,6 @@ class Category extends Model
     {
         return [
             'is_active' => 'boolean',
-            'show_on_homepage' => 'boolean',
-            'homepage_product_limit' => 'integer',
-            'homepage_sort_order' => 'integer',
             'sort_order' => 'integer',
         ];
     }

@@ -7,7 +7,6 @@ use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductHomepageSectionItem;
 use App\Models\Catalog\ProductRelatedProduct;
-use App\Models\Catalog\ProductType;
 use App\Models\Catalog\ProductVariant;
 use App\Models\Catalog\Unit;
 use App\Models\Communication\AppTranslation;
@@ -142,7 +141,6 @@ return [
         ['label' => 'Products & Inventory', 'id' => 'productInventoryMenu', 'icon' => 'iconoir-box', 'items' => [
             ['key' => 'products', 'label' => 'Products', 'route' => 'admin.products.index', 'icon' => 'iconoir-box-iso'],
             ['key' => 'product-related-products', 'label' => 'Related Products', 'route' => 'admin.product-related-products.index', 'icon' => 'iconoir-link'],
-            ['key' => 'product-types', 'label' => 'Product Types', 'route' => 'admin.product-types.index', 'icon' => 'iconoir-list'],
             ['key' => 'categories', 'label' => 'Category', 'route' => 'admin.categories.index', 'icon' => 'iconoir-list-select'],
             ['key' => 'brands', 'label' => 'Brand', 'route' => 'admin.brands.index', 'icon' => 'iconoir-medal'],
             ['key' => 'units', 'label' => 'Unit', 'route' => 'admin.units.index', 'icon' => 'iconoir-ruler'],
@@ -250,34 +248,23 @@ return [
             'label' => 'Units', 'group' => 'Catalog', 'singular' => 'Unit', 'model' => Unit::class, 'search' => ['name', 'short_name', 'unit_type'], 'status_column' => 'is_active', 'status_options' => $active,
             'columns' => [['key' => 'name', 'label' => 'Unit Name'], ['key' => 'short_name', 'label' => 'Short Name'], ['key' => 'unit_type', 'label' => 'Type'], ['key' => 'decimal_precision', 'label' => 'Decimal'], ['key' => 'products_count', 'label' => 'Products'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
             'with_count' => ['products'], 'fields' => [['name' => 'name', 'label' => 'Unit Name', 'rules' => ['required', 'string', 'max:255', 'unique:units,name,{id}']], ['name' => 'short_name', 'label' => 'Short Name', 'rules' => ['required', 'string', 'max:30', 'unique:units,short_name,{id}'], 'help' => 'Example: kg, ltr, pcs, pkt.'], ['name' => 'unit_type', 'label' => 'Unit Type', 'type' => 'select', 'options' => ['weight' => 'Weight', 'volume' => 'Volume', 'quantity' => 'Quantity', 'length' => 'Length', 'other' => 'Other'], 'rules' => ['required', 'string', 'max:40']], ['name' => 'decimal_precision', 'label' => 'Decimal Precision', 'type' => 'number', 'rules' => ['required', 'integer', 'min:0', 'max:6']], ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']]],
-        ],        'product-types' => [
-            'label' => 'Product Types', 'group' => 'Catalog', 'description' => 'Manage product types used in product master.', 'model' => ProductType::class, 'search' => ['name', 'slug'], 'status_column' => 'is_active', 'status_options' => $active,
-            'columns' => [['key' => 'name', 'label' => 'Product Type'], ['key' => 'slug', 'label' => 'Slug'], ['key' => 'sort_order', 'label' => 'Sort Order'], ['key' => 'is_active', 'label' => 'Status', 'type' => 'boolean']],
-            'fields' => [
-                ['name' => 'name', 'label' => 'Product Type Name', 'rules' => ['required', 'string', 'max:255']],
-
-                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-12', 'rules' => ['nullable', 'string']],
-                ['name' => 'sort_order', 'label' => 'Sort Order', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
-                ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
-            ],
         ],
 
         'products' => [
-            'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'productType', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active, 'form_layout' => 'tabs',
+            'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active, 'form_layout' => 'tabs',
             'filters' => [
                 ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title'],
                 // Lists one category's products so they can be selected and
                 // moved together with the Change Category bulk action.
                 ['name' => 'category_id', 'label' => 'Category', 'column' => 'category_id', 'option_model' => Category::class],
             ],
-            'columns' => [['key' => 'images.0.path', 'label' => 'Image', 'type' => 'image'], ['key' => 'sku', 'label' => 'SKU'], ['key' => 'name', 'label' => 'Product Name'], ['key' => 'productType.name', 'label' => 'Product Type'], ['key' => 'category.name', 'label' => 'Category'], ['key' => 'brand.name', 'label' => 'Brand'], ['key' => 'homepageSection.title', 'label' => 'Section Title'], ['key' => 'unit.short_name', 'label' => 'Unit'], ['key' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'money'], ['key' => 'customer_price', 'label' => 'Customer Price', 'type' => 'money']],
+            'columns' => [['key' => 'images.0.path', 'label' => 'Image', 'type' => 'image'], ['key' => 'sku', 'label' => 'SKU'], ['key' => 'name', 'label' => 'Product Name'], ['key' => 'category.name', 'label' => 'Category'], ['key' => 'brand.name', 'label' => 'Brand'], ['key' => 'homepageSection.title', 'label' => 'Section Title'], ['key' => 'unit.short_name', 'label' => 'Unit'], ['key' => 'dealer_price', 'label' => 'Dealer Price', 'type' => 'money'], ['key' => 'customer_price', 'label' => 'Customer Price', 'type' => 'money']],
             'fields' => [
                 ['type' => 'section_heading', 'label' => '1. Basic Information'],
                 ['name' => 'name', 'label' => 'Product Name', 'rules' => ['required', 'string', 'max:255']],
                 ['name' => 'category_id', 'label' => 'Category', 'type' => 'select', 'option_model' => Category::class, 'rules' => ['required', 'exists:categories,id']],
                 ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Select any Homepage Settings section. Product will display according to selected section type.'],
                 ['name' => 'brand_id', 'label' => 'Brand', 'type' => 'select', 'option_model' => Brand::class, 'rules' => ['nullable', 'exists:brands,id']],
-                ['name' => 'product_type_id', 'label' => 'Product Type', 'type' => 'select', 'option_model' => ProductType::class, 'option_where' => ['is_active' => true], 'rules' => ['nullable', 'exists:product_types,id']],
                 ['name' => 'sort_order', 'label' => 'Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls the overall listing order of this product.'],
                 ['name' => 'short_description', 'label' => 'Short Description', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 2, 'maxlength' => 160, 'character_counter' => true, 'rules' => ['nullable', 'string', 'max:160'], 'help' => 'Maximum 160 characters. Product cards show up to 80 characters.'],
                 ['name' => 'is_visible_to_dealers', 'label' => 'Visible to Dealers', 'type' => 'checkbox', 'default' => 1, 'rules' => ['boolean'], 'help' => 'Makes this product visible in dealer-facing listings and orders.'],

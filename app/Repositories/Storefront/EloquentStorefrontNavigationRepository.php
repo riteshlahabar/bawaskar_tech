@@ -8,7 +8,6 @@ use App\Models\Catalog\Product;
 use App\Models\Storefront\StorefrontTopbarMessage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 final class EloquentStorefrontNavigationRepository implements StorefrontNavigationRepositoryContract
 {
@@ -47,18 +46,6 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
                 collect($grouped->get($category->getKey(), collect()))->take($productLimit)->values()
             );
         });
-    }
-
-    public function productTypeCounts(string $audience): Collection
-    {
-        return Product::query()
-            ->visibleFor($audience)
-            ->whereNotNull('product_type')
-            ->where('product_type', '<>', '')
-            ->select('product_type', DB::raw('count(*) as products_count'))
-            ->groupBy('product_type')
-            ->orderBy('product_type')
-            ->get();
     }
 
     public function featuredProducts(string $audience): Collection

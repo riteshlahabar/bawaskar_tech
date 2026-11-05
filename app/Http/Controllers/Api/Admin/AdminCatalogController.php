@@ -19,7 +19,6 @@ final class AdminCatalogController extends AdminApiController
             'unit_id' => ['nullable', 'integer', 'exists:units,id'],
             'sku' => ['required', 'string', 'max:80', 'unique:products,sku'],
             'name' => ['required', 'string', 'max:255'],
-            'product_type' => ['required', 'string', 'max:40'],
             'hsn_code' => ['nullable', 'string', 'max:40'],
             'gst_percent' => ['nullable', 'numeric'],
             'mrp' => ['required', 'numeric'],

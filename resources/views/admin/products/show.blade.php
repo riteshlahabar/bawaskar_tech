@@ -76,7 +76,6 @@
                         <li><span class="people-info-label">HSN Code</span><span class="people-info-value">{{ $text($record->hsn_code) }}</span></li>
                         <li><span class="people-info-label">Category</span><span class="people-info-value">{{ $text($record->category?->name) }}</span></li>
                         <li><span class="people-info-label">Brand</span><span class="people-info-value">{{ $text($record->brand?->name) }}</span></li>
-                        <li><span class="people-info-label">Product Type</span><span class="people-info-value">{{ $text($record->productType?->name) }}</span></li>
                         <li><span class="people-info-label">Unit</span><span class="people-info-value">{{ $text($record->unit?->name) }}</span></li>
                         <li><span class="people-info-label">Homepage Section</span><span class="people-info-value">{{ $text($record->homepageSection?->title) }}</span></li>
                         <li><span class="people-info-label">Sort Order</span><span class="people-info-value">{{ $record->sort_order ?? 0 }}</span></li>

@@ -11,7 +11,7 @@ final class ImportSampleBuilder implements ImportSampleContract
      * the sample shows people they can use readable names instead of ids.
      */
     private const EXTRA_HEADERS = [
-        'products' => ['product_type', 'category_name', 'brand_name', 'unit_short_name', 'gallery_images'],
+        'products' => ['category_name', 'brand_name', 'unit_short_name', 'gallery_images'],
         'categories' => ['parent_name'],
         'inventory' => ['product_sku', 'warehouse_code'],
         'batches' => ['product_sku', 'warehouse_code'],
@@ -56,7 +56,6 @@ final class ImportSampleBuilder implements ImportSampleContract
             'unit_short_name' => 'ltr',
             'sku' => 'PES001',
             'name' => 'Premium Pesticide',
-            'product_type' => 'fertilizer',
             'hsn_code' => '3808',
             'gst_percent' => '18',
             'mrp' => '500',

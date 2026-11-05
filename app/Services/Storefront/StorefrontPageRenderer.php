@@ -41,9 +41,6 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             $products = $data['products'] ?? (in_array($page, ['shop-left-sidebar', 'search'], true)
                 ? $this->catalog->shopProducts(
                     $audience,
-                    $request->filled('product_type')
-                        ? (string) $request->query('product_type')
-                        : null,
                     $request->filled('search')
                         ? trim((string) $request->query('search'))
                         : null
@@ -78,7 +75,6 @@ final class StorefrontPageRenderer implements StorefrontPageRendererContract
             'storeLanguages' => $storeLanguages,
             'currentStoreLanguage' => $currentStoreLanguage,
             'selectedCategory' => null,
-            'selectedProductType' => $request->query('product_type'),
             'searchQuery' => $request->query('search'),
             'storeProduct' => null,
             'relatedProducts' => collect(),

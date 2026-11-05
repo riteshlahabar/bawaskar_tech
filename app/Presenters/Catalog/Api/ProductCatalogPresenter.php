@@ -25,7 +25,6 @@ final class ProductCatalogPresenter implements ProductCatalogPresenterContract
             'dealer_price' => $product->dealer_price,
             'mrp' => $product->mrp,
             'gst_percent' => $product->gst_percent,
-            'product_type' => $product->product_type,
             'description' => $product->storefront_description,
             'short_description' => $product->short_description,
             'additional_info' => $product->additional_info,

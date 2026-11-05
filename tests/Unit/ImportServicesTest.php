@@ -136,7 +136,7 @@ class ImportServicesTest extends TestCase
             'fields' => [['name' => 'sku'], ['name' => 'name'], ['type' => 'section_heading']],
         ]);
 
-        $this->assertSame('product_type', $headers[0]);
+        $this->assertSame('category_name', $headers[0]);
         $this->assertContains('category_name', $headers);
         $this->assertContains('sku', $headers);
         $this->assertSame(array_unique($headers), $headers);

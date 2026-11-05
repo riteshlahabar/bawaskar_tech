@@ -14,7 +14,6 @@ interface StorefrontCatalogRepositoryContract
 
     public function shopProducts(
         string $audience,
-        ?string $productType,
         ?string $search,
         int $perPage
     ): LengthAwarePaginator;

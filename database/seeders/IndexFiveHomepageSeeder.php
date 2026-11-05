@@ -8,7 +8,6 @@ use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductHomepageSection;
 use App\Models\Catalog\ProductHomepageSectionItem;
 use App\Models\Catalog\ProductImage;
-use App\Models\Catalog\ProductType;
 use App\Models\Catalog\Unit;
 use App\Models\Inventory\InventoryBatch;
 use App\Models\Inventory\Warehouse;
@@ -36,16 +35,6 @@ class IndexFiveHomepageSeeder extends Seeder
             ]
         );
 
-        $productType = ProductType::query()->updateOrCreate(
-            ['slug' => 'agri-inputs'],
-            [
-                'name' => 'Agri Inputs',
-                'description' => 'Homepage demo products for index-5 storefront layout.',
-                'sort_order' => 1,
-                'is_active' => true,
-            ]
-        );
-
         $warehouse = Warehouse::query()->updateOrCreate(
             ['code' => 'WH-PUNE'],
             ['name' => 'Pune Main Warehouse', 'city' => 'Pune', 'is_active' => true]
@@ -54,7 +43,7 @@ class IndexFiveHomepageSeeder extends Seeder
         $categories = $this->seedCategories();
         $sections = $this->seedSections($categories);
 
-        $this->seedProducts($categories, $sections, $brand->id, $unit->id, $productType->id);
+        $this->seedProducts($categories, $sections, $brand->id, $unit->id);
         $this->seedOfferItems($sections['offer']);
         $this->seedStripOfferItem($sections['strip'], $categories['seeds']);
         $this->seedServiceItems($sections['service']);
@@ -262,8 +251,7 @@ class IndexFiveHomepageSeeder extends Seeder
         array $categories,
         array $sections,
         int $brandId,
-        int $unitId,
-        int $productTypeId
+        int $unitId
     ): void {
         $offerStart = Carbon::create(2026, 8, 8, 9, 0, 0);
         $offerEnd = Carbon::create(2026, 8, 15, 23, 59, 59);
@@ -273,7 +261,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'AHC-TS-001',
                 'name' => 'Animal Health Tonic Plus',
                 'category_slug' => 'animal-healthcare',
-                'product_type' => 'veterinary',
                 'hsn_code' => '30049099',
                 'mrp' => 890,
                 'customer_price' => 790,
@@ -292,7 +279,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'AHC-TS-002',
                 'name' => 'Calcium Booster Vet Liquid',
                 'category_slug' => 'animal-healthcare',
-                'product_type' => 'veterinary',
                 'hsn_code' => '30049099',
                 'mrp' => 760,
                 'customer_price' => 680,
@@ -309,7 +295,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'AHC-TS-003',
                 'name' => 'Mineral Mixture Daily Care',
                 'category_slug' => 'animal-healthcare',
-                'product_type' => 'veterinary',
                 'hsn_code' => '23099090',
                 'mrp' => 540,
                 'customer_price' => 485,
@@ -326,7 +311,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'R12-SEED-001',
                 'name' => 'Hybrid Tomato Seeds',
                 'category_slug' => 'seeds',
-                'product_type' => 'seed',
                 'hsn_code' => '12099990',
                 'mrp' => 370,
                 'customer_price' => 330,
@@ -343,7 +327,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'R12-SEED-002',
                 'name' => 'Hybrid Chilli Seeds',
                 'category_slug' => 'seeds',
-                'product_type' => 'seed',
                 'hsn_code' => '12099990',
                 'mrp' => 420,
                 'customer_price' => 370,
@@ -360,7 +343,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'R12-SEED-003',
                 'name' => 'Okra Seeds Premium',
                 'category_slug' => 'seeds',
-                'product_type' => 'seed',
                 'hsn_code' => '12099990',
                 'mrp' => 460,
                 'customer_price' => 410,
@@ -377,7 +359,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'sku' => 'R12-SEED-004',
                 'name' => 'Cucumber Seeds',
                 'category_slug' => 'seeds',
-                'product_type' => 'seed',
                 'hsn_code' => '12099990',
                 'mrp' => 510,
                 'customer_price' => 450,
@@ -400,10 +381,8 @@ class IndexFiveHomepageSeeder extends Seeder
                 [
                     'category_id' => $category->id,
                     'brand_id' => $brandId,
-                    'product_type_id' => $productTypeId,
                     'unit_id' => $unitId,
                     'name' => $definition['name'],
-                    'product_type' => $definition['product_type'],
                     'hsn_code' => $definition['hsn_code'],
                     'gst_percent' => 5,
                     'mrp' => $definition['mrp'],

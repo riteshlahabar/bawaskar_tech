@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         $category = Category::query()->updateOrCreate(['slug' => 'veterinary-medicine'], ['name' => 'Veterinary Medicine', 'is_active' => true, 'sort_order' => 1]);
         $brand = Brand::query()->updateOrCreate(['name' => 'Bawaskar Care'], ['is_active' => true]);
         $product = Product::query()->updateOrCreate(['sku' => 'BVC-001'], [
-            'category_id' => $category->id, 'brand_id' => $brand->id, 'name' => 'Animal Health Tonic', 'product_type' => 'veterinary', 'hsn_code' => '3004', 'gst_percent' => 12, 'mrp' => 600, 'customer_price' => 550, 'dealer_price' => 480, 'description' => 'Demonstration product. Replace with the company catalogue.', 'is_visible_to_customers' => true, 'is_visible_to_dealers' => true, 'is_active' => true,
+            'category_id' => $category->id, 'brand_id' => $brand->id, 'name' => 'Animal Health Tonic', 'hsn_code' => '3004', 'gst_percent' => 12, 'mrp' => 600, 'customer_price' => 550, 'dealer_price' => 480, 'description' => 'Demonstration product. Replace with the company catalogue.', 'is_visible_to_customers' => true, 'is_visible_to_dealers' => true, 'is_active' => true,
         ]);
         $warehouse = Warehouse::query()->updateOrCreate(['code' => 'WH-PUNE'], ['name' => 'Pune Main Warehouse', 'city' => 'Pune', 'is_active' => true]);
         InventoryBatch::query()->updateOrCreate(['warehouse_id' => $warehouse->id, 'product_id' => $product->id, 'batch_no' => 'DEMO-B001'], [

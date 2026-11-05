@@ -12,7 +12,7 @@ interface StorefrontCatalogContract
 {
     public function categories(string $audience): Collection;
 
-    public function shopProducts(string $audience, ?string $productType, ?string $search): LengthAwarePaginator;
+    public function shopProducts(string $audience, ?string $search): LengthAwarePaginator;
 
     public function defaultProducts(string $audience): Collection;
 

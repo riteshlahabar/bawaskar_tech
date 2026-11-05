@@ -1,7 +1,6 @@
 @php
     $navigation = $storefrontNavigation ?? [];
     $navCategories = collect(data_get($navigation, 'categories', collect()));
-    $navProductTypes = collect(data_get($navigation, 'productTypes', collect()));
     $navFeaturedProducts = collect(data_get($navigation, 'featuredProducts', collect()));
     $navHomeSections = collect(data_get($homeContent ?? [], 'productSections', collect()))
         ->map(fn ($entry) => data_get($entry, 'section'))
@@ -67,11 +66,11 @@
         <a class="nav-link dropdown-toggle" href="{{ $shopUrl }}" data-bs-toggle="dropdown">{{ web_t('nav.products', 'Products') }}</a>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{{ $shopUrl }}">{{ web_t('nav.all_products', 'All Products') }}</a></li>
-            @foreach($navProductTypes as $productType)
+            @foreach($navCategories as $category)
                 <li>
-                    <a class="dropdown-item d-flex justify-content-between" href="{{ route('store.page', ['page' => 'shop-left-sidebar', 'product_type' => $productType['slug']]) }}">
-                        <span>{{ storefront_public_t($productType['name'], 'product_type') }}</span>
-                        <small>{{ (int) ($productType['products_count'] ?? 0) }}</small>
+                    <a class="dropdown-item d-flex justify-content-between" href="{{ $category->slug ? route('store.category', ['category' => $category->slug]) : $shopUrl }}">
+                        <span>{{ $category->storefront_name }}</span>
+                        <small>{{ (int) ($category->products_count ?? 0) }}</small>
                     </a>
                 </li>
             @endforeach
@@ -90,12 +89,18 @@
                         <a class="dropdown-item" href="{{ $shopUrl }}">{{ web_t('nav.all_categories', 'All Categories') }}</a>
                     @endforelse
                 </div>
+                {{-- This column held Product Types. The first six categories are
+                     already listed beside it, so it continues the same list
+                     instead of repeating it, and drops out when there are no
+                     more than six categories. --}}
+                @if($navCategories->count() > 6)
                 <div class="dropdown-column col-xl-4">
-                    <h5 class="dropdown-header">Product Types</h5>
-                    @foreach($navProductTypes->take(6) as $productType)
-                        <a class="dropdown-item" href="{{ route('store.page', ['page' => 'shop-left-sidebar', 'product_type' => $productType['slug']]) }}">{{ storefront_public_t($productType['name'], 'product_type') }}</a>
+                    <h5 class="dropdown-header">{{ web_t('nav.more_categories', 'More Categories') }}</h5>
+                    @foreach($navCategories->skip(6)->take(6) as $category)
+                        <a class="dropdown-item" href="{{ $category->slug ? route('store.category', ['category' => $category->slug]) : $shopUrl }}">{{ $category->storefront_name }}</a>
                     @endforeach
                 </div>
+                @endif
                 <div class="dropdown-column col-xl-4">
                     <h5 class="dropdown-header">{{ web_t('nav.featured_products', 'Featured Products') }}</h5>
                     @forelse($navFeaturedProducts->take(6) as $product)

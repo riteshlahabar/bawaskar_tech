@@ -39,7 +39,6 @@ class StorefrontCatalogServiceTest extends TestCase
 
             public function shopProducts(
                 string $audience,
-                ?string $productType,
                 ?string $search,
                 int $perPage
             ): LengthAwarePaginatorContract {

@@ -33,13 +33,11 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'brand_id',
-        'product_type_id',
         'unit_id',
         'sku',
         'batch_no',
         'expiry_date',
         'name',
-        'product_type',
         'storefront_row',
         'hsn_code',
         'gst_percent',
@@ -169,11 +167,6 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
-    }
-
-    public function productType(): BelongsTo
-    {
-        return $this->belongsTo(ProductType::class);
     }
 
     public function unit(): BelongsTo

@@ -1,7 +1,5 @@
 @php
-    $productTypeLabels = data_get($storefrontNavigation ?? [], 'productTypeLabels', []);
-    $productTypeTitle = $selectedProductType ? ($productTypeLabels[$selectedProductType] ?? str($selectedProductType)->replace(['_', '-'], ' ')->headline()->toString()) : null;
-    $pageTitle = storefront_public_t($selectedCategory?->storefront_name ?: ($productTypeTitle ?: ($searchQuery ? 'Search Products' : 'Shop Products')), 'shop');
+    $pageTitle = storefront_public_t($selectedCategory?->storefront_name ?: ($searchQuery ? 'Search Products' : 'Shop Products'), 'shop');
     $shopProducts = collect(method_exists($products, 'items') ? $products->items() : $products);
 @endphp
 

@@ -21,12 +21,9 @@ final class StorefrontCatalogService implements StorefrontCatalogContract
         return $this->catalog->categories($audience, 18);
     }
 
-    public function shopProducts(
-        string $audience,
-        ?string $productType,
-        ?string $search
-    ): LengthAwarePaginator {
-        return $this->catalog->shopProducts($audience, $productType, $search, 24);
+    public function shopProducts(string $audience, ?string $search): LengthAwarePaginator
+    {
+        return $this->catalog->shopProducts($audience, $search, 24);
     }
 
     public function defaultProducts(string $audience): Collection

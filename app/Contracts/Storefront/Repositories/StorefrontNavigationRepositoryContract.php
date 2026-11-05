@@ -10,8 +10,6 @@ interface StorefrontNavigationRepositoryContract
 
     public function categoryMenu(string $audience, int $categoryLimit, int $productLimit): Collection;
 
-    public function productTypeCounts(string $audience): Collection;
-
     public function featuredProducts(string $audience): Collection;
 
     public function fallbackProducts(string $audience): Collection;

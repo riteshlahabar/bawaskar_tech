@@ -25,15 +25,10 @@ final class EloquentStorefrontCatalogRepository implements StorefrontCatalogRepo
 
     public function shopProducts(
         string $audience,
-        ?string $productType,
         ?string $search,
         int $perPage
     ): LengthAwarePaginator {
         $query = $this->productQuery($audience);
-
-        if ($productType !== null) {
-            $query->where('product_type', $productType);
-        }
 
         if ($search !== null) {
             $query->where(function (Builder $subQuery) use ($search): void {

@@ -7,7 +7,6 @@ use App\Contracts\Admin\Imports\ImportRowReaderContract;
 use App\Models\Catalog\Brand;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
-use App\Models\Catalog\ProductType;
 use App\Models\Catalog\Unit;
 use App\Models\Inventory\Warehouse;
 use App\Models\Storefront\StorefrontSection;
@@ -26,7 +25,6 @@ final class ImportRelationResolver implements ImportRelationResolverContract
         if ($module === 'products') {
             $data = $this->set($data, 'brand_id', $this->byName(Brand::class, $this->reader->firstFilled($row, ['brand_name', 'brand'])));
             $data = $this->set($data, 'unit_id', $this->findUnit($row));
-            $data = $this->set($data, 'product_type_id', $this->byName(ProductType::class, $this->reader->firstFilled($row, ['product_type', 'product_type_name'])));
         }
 
         if (in_array($module, ['batches', 'inventory'], true)) {

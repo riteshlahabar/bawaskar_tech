@@ -57,11 +57,16 @@ final class ProductController extends AdminModuleController
         ]);
 
         $category = Category::query()->findOrFail($data['category_id']);
+        $selected = count($data['product_ids']);
         $moved = $this->bulkCategories->move($data['product_ids'], $category);
 
         $this->bumpCacheVersionForModule();
 
-        return back()->with('success', $moved.' product(s) moved to "'.$category->name.'".');
+        // Both numbers are reported: a bare "0 moved" cannot tell apart ids
+        // that never arrived from products that were already in the target.
+        return back()->with('success', $moved === 0
+            ? 'No change: all '.$selected.' selected product(s) were already in "'.$category->name.'".'
+            : 'Moved '.$moved.' of '.$selected.' selected product(s) into "'.$category->name.'".');
     }
 
     protected function rules(array $module, ?Model $record = null, ?string $channel = null): array

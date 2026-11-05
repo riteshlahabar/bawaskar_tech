@@ -19,11 +19,24 @@ final class BulkProductCategoryService implements BulkProductCategoryContract
         // A plain mass update, like HomepageSectionProductsService::transfer():
         // only the category changes, so none of the product's own data
         // (variants, stock, images, homepage copy) is touched and no model
-        // event needs to fire. Products already in the target are excluded so
-        // the reported count is the number that actually moved.
-        return Product::query()
+        // event needs to fire.
+        //
+        // The update is NOT narrowed with `where('category_id', '!=', $to)`:
+        // the column is nullable, and in SQL a NULL never satisfies `!=`, so
+        // a product sitting in no category at all would be skipped forever.
+        // The count of products that actually change is read first instead.
+        $moving = Product::query()
             ->whereKey($ids)
-            ->where('category_id', '!=', $to->getKey())
+            ->where(function ($query) use ($to) {
+                $query->whereNull('category_id')
+                    ->orWhere('category_id', '!=', $to->getKey());
+            })
+            ->count();
+
+        Product::query()
+            ->whereKey($ids)
             ->update(['category_id' => $to->getKey()]);
+
+        return $moving;
     }
 }

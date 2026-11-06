@@ -11,9 +11,13 @@
     $choiceFilters = collect($module['filters'] ?? [])
         ->filter(fn ($filter) => ($filter['name'] ?? '') !== 'type' && ! empty($filterOptions[$filter['name'] ?? '']));
 @endphp
-<div class="admin-table-toolbar mb-3">
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2">
-        <form class="d-flex flex-wrap align-items-end gap-2 flex-grow-1" method="GET">
+{{-- Two deliberate rows: the filter fields with Filter/Reset on the first, the
+     action buttons on the second. They used to share one flex row, so on a
+     module with six filters (products) the buttons wrapped onto a third line
+     and the toolbar read as three ragged rows. --}}
+<div class="admin-table-toolbar admin-table-toolbar-stacked mb-3">
+    <div class="admin-toolbar-row">
+        <form class="admin-toolbar-filters" method="GET">
             @foreach(request()->only(['type','placement','section_key','row_title']) as $hiddenKey => $hiddenValue)
                 @if($hiddenValue !== null && $hiddenValue !== '')
                     <input type="hidden" name="{{ $hiddenKey }}" value="{{ $hiddenValue }}">
@@ -78,8 +82,9 @@
             <button class="btn btn-outline-primary" type="submit" title="Filter"><i class="fa-solid fa-filter"></i><span class="d-none d-md-inline ms-1">Filter</span></button>
             <a href="{{ route($module['route'].'.index', $resetQuery) }}" class="btn btn-outline-secondary" title="Reset"><i class="fa-solid fa-rotate-left"></i><span class="d-none d-md-inline ms-1">Reset</span></a>
         </form>
+    </div>
 
-        <div class="d-flex flex-wrap justify-content-end align-items-end gap-2 admin-toolbar-actions">
+    <div class="admin-toolbar-actions">
             @if(request()->filled('type'))
                 <span class="badge bg-primary-subtle text-primary align-self-center px-3 py-2">{{ str(request('type'))->title() }} View</span>
             @endif
@@ -164,6 +169,5 @@
             @if(($module['can_delete'] ?? true) && $can['delete'])
                 <button class="btn btn-outline-danger" type="submit" form="bulkActionForm" onclick="return confirm('Delete selected records?')" title="Delete Selected" aria-label="Delete Selected"><i class="fa-solid fa-trash-can"></i><span class="d-none d-md-inline ms-1">Delete</span></button>
             @endif
-        </div>
     </div>
 </div>

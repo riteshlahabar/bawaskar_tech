@@ -1851,22 +1851,56 @@ input[type="file"].form-control::file-selector-button {
 }
 
 /* The search box takes the slack; each filter keeps a readable width instead
-   of collapsing to its longest option. */
+   of collapsing to its longest option. Kept deliberately narrow so a module
+   with several filters still fits them on the one row. `admin-toolbar-date`
+   was a third class the markup used that no stylesheet defined. */
 .admin-toolbar-search {
-    flex: 1 1 260px;
-    min-width: 200px;
-    max-width: 340px;
+    flex: 1 1 200px;
+    min-width: 170px;
+    max-width: 240px;
 }
 
 .admin-toolbar-field {
-    flex: 0 1 190px;
-    min-width: 160px;
+    flex: 0 1 150px;
+    min-width: 132px;
+}
+
+/* A date input needs room for dd-mm-yyyy and its picker glyph, and no more. */
+.admin-toolbar-date {
+    flex: 0 1 138px;
+    min-width: 132px;
 }
 
 .admin-table-toolbar .form-control,
 .admin-table-toolbar .form-select,
 .admin-table-toolbar .btn {
     height: 40px;
+}
+
+/* Two deliberate rows. The filter fields and their Filter/Reset pair share the
+   first; every action button sits on the second, separated by a rule. In one
+   flex row a module with six filters (products) pushed the action buttons onto
+   a third line, so the toolbar read as three ragged rows. */
+.admin-table-toolbar-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-toolbar-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.admin-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #e7ecf3;
 }
 
 /* Every toolbar button now carries its own text label, so none of them is a

@@ -71,7 +71,7 @@
                                 <th data-column-index="{{ $index }}">{{ $column['label'] }}</th>
                             @endforeach
                             @if($module['key'] === 'homepage-settings')
-                                <th class="text-end">Content</th>
+                                <th class="text-center">Content</th>
                             @endif
                             <th class="text-end">Actions</th>
                         </tr>
@@ -142,18 +142,16 @@
                                     </td>
                                 @endforeach
                                 @if($module['key'] === 'homepage-settings')
-                                    <td class="text-end">
-                                        {{-- A section can hold several content rows, so Edit Content opens the
-                                             section's View page, where each row already has its own Edit button. --}}
-                                        <div class="d-flex gap-1 justify-content-end">
-                                            {{-- One editor either way: a section owns its content rows, and the
-                                                 page shows only the fields that section type renders. Product and
-                                                 category rows have no content of their own. --}}
+                                    <td class="text-center">
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            {{-- Add Content only. Edit Content lives in the row's Action menu and
+                                                 on the section's View page, where each content row already has its
+                                                 own Edit button - three doors to one editor was two too many.
+                                                 A product or category row has no content of its own. --}}
                                             @if($record->hasContentEditor())
                                                 <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Add Content</a>
-                                                <a class="btn btn-sm btn-outline-primary text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Edit Content</a>
                                             @else
-                                                <span class="text-muted small text-nowrap">Products only</span>
+                                                <span class="badge bg-info-subtle text-info text-nowrap">Products only</span>
                                             @endif
                                         </div>
                                     </td>
@@ -166,7 +164,12 @@
                                         <div class="dropdown-menu dropdown-menu-end admin-row-action-menu">
                                             <a class="dropdown-item" href="{{ route($module['route'].'.show', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-eye"></i><span>View</span></a>
                                             @if(($module['can_edit'] ?? true) && $can['edit'])
-                                                <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
+                                                {{-- On Homepage Settings "Edit" would be ambiguous: the row itself
+                                                     and its content are two different editors, so each is named. --}}
+                                                <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>{{ $module['key'] === 'homepage-settings' ? 'Edit Section' : 'Edit' }}</span></a>
+                                                @if($module['key'] === 'homepage-settings' && $record->hasContentEditor())
+                                                    <a class="dropdown-item" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}"><i class="iconoir-page"></i><span>Edit Content</span></a>
+                                                @endif
                                             @endif
 
                                             @if($module['key'] === 'dealers' && $record->status === 'pending_approval' && $can['edit'])

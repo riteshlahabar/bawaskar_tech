@@ -89,6 +89,20 @@
                 <span class="badge bg-primary-subtle text-primary align-self-center px-3 py-2">{{ str(request('type'))->title() }} View</span>
             @endif
 
+            {{-- Columns comes first: it changes what the table shows, so it
+                 belongs ahead of the actions that take the table elsewhere. --}}
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="fa-solid fa-table-columns"></i><span class="d-none d-md-inline ms-1">Columns</span></button>
+                <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">
+                    @foreach($visibleColumns as $index => $column)
+                        <label class="dropdown-item d-flex align-items-center gap-2 mb-0">
+                            <input class="form-check-input m-0 admin-column-toggle" type="checkbox" data-column-index="{{ $index }}" checked>
+                            <span>{{ $column['label'] }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
             @if($can['create'])
             <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data" class="d-inline admin-import-form">
                 @csrf
@@ -144,17 +158,6 @@
                 </div>
             </div>
             @endif
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="fa-solid fa-table-columns"></i><span class="d-none d-md-inline ms-1">Columns</span></button>
-                <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">
-                    @foreach($visibleColumns as $index => $column)
-                        <label class="dropdown-item d-flex align-items-center gap-2 mb-0">
-                            <input class="form-check-input m-0 admin-column-toggle" type="checkbox" data-column-index="{{ $index }}" checked>
-                            <span>{{ $column['label'] }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
             <a class="btn btn-outline-success" href="{{ route($module['route'].'.export', ['format' => 'excel'] + $exportQuery) }}" title="Export Excel" aria-label="Export Excel">
                 <i class="fa-solid fa-file-excel"></i><span class="d-none d-md-inline ms-1">Excel</span>
             </a>

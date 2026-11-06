@@ -1894,10 +1894,13 @@ input[type="file"].form-control::file-selector-button {
     gap: 8px;
 }
 
+/* The action buttons sit to the RIGHT, as they did before the rows were
+   split - the filter row stays left, so the two rows frame the table. */
 .admin-toolbar-actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
     padding-top: 10px;
     border-top: 1px solid #e7ecf3;

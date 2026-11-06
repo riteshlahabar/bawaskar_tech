@@ -102,6 +102,15 @@ class ProductHomepageSettingController extends AdminModuleController
 
         $rules['sort_order'] = ['required', 'integer', 'min:0', $uniqueSortOrder];
 
+        // The form already lists only the layouts the chosen Section Type can
+        // use; this is the same rule server-side, so a tampered or stale form
+        // cannot pair a video layout with a hero row.
+        $layouts = ProductHomepageSection::layoutsFor(request()->input('section_type'));
+
+        if ($layouts !== []) {
+            $rules['layout_type'] = ['required', 'string', 'max:80', Rule::in($layouts)];
+        }
+
         return $rules;
     }
 

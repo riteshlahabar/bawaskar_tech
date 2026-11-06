@@ -354,7 +354,11 @@ return [
                     'video_section' => 'Video Section',
                 ], 'rules' => ['required', 'string', 'max:80']],
 
-                ['name' => 'layout_type', 'label' => 'Layout Type', 'type' => 'select', 'options' => [
+                // Layout Type lists only the layouts the chosen Section Type
+                // can use (ProductHomepageSection::LAYOUTS_BY_SECTION_TYPE).
+                // The filter is a display one; the pair is validated again in
+                // ProductHomepageSettingController::rules().
+                ['name' => 'layout_type', 'label' => 'Layout Type', 'type' => 'select', 'option_filter_field' => 'section_type', 'option_filter_map' => ProductHomepageSection::LAYOUTS_BY_SECTION_TYPE, 'options' => [
                     'full_width_slider' => 'Full Width Slider',
                     'four_banner_slider' => 'Four Banner Slider',
                     'category_slider' => 'Category Slider',

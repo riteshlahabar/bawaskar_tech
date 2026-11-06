@@ -76,6 +76,45 @@ class ProductHomepageSection extends Model
         'top_selling_section' => 9,
     ];
 
+    /**
+     * Which layouts each section type may use, so Layout Type offers only the
+     * layouts that belong to the chosen Section Type.
+     *
+     * The layout only really changes rendering for two types - `offer_section`
+     * (the banner shape, which also sets its content row count) and
+     * `video_section` (both players, or player + text). Everywhere else it is
+     * a label, so the type gets its one natural layout.
+     *
+     * Two entries carry a second layout purely because a LIVE row already uses
+     * it: Top Selling (21) is `product_grid` and Awards (27) is a
+     * `blog_section` on `product_slider`. Dropping those would make an
+     * existing row impossible to save.
+     */
+    public const LAYOUTS_BY_SECTION_TYPE = [
+        'hero_slider' => ['full_width_slider'],
+        'top_small_banners' => ['four_banner_slider'],
+        'category_section' => ['category_slider'],
+        'product_section' => ['product_slider', 'product_grid'],
+        'coupon_section' => ['coupon_slider'],
+        'top_selling_section' => ['products_with_offer', 'product_grid'],
+        'offer_section' => ['two_column_banner', 'big_small_banner', 'full_width_banner'],
+        'strip_offer_banner' => ['text_strip'],
+        'service_section' => ['service_icons'],
+        'blog_section' => ['blog_slider', 'product_slider'],
+        'video_section' => ['two_videos', 'video_text'],
+    ];
+
+    /**
+     * The layouts a section type may use, or every layout when the type is
+     * unknown - a blank Section Type must not leave the dropdown empty.
+     *
+     * @return array<int, string>
+     */
+    public static function layoutsFor(?string $sectionType): array
+    {
+        return self::LAYOUTS_BY_SECTION_TYPE[(string) $sectionType] ?? [];
+    }
+
     /** `category_section` is deliberately in neither type list. */
     protected $fillable = [
         'section_key', 'title', 'subtitle', 'section_type', 'layout_type', 'source_type', 'category_id',

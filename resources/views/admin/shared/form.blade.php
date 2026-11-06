@@ -246,8 +246,66 @@
             sync();
         });
     }
+    // Narrows one select's options by another field's value: Layout Type shows
+    // only the layouts the chosen Section Type can use. An option with no
+    // owners list is always offered, so a select without a filter map is
+    // untouched.
+    function syncFilteredOptions(form) {
+        form.querySelectorAll('select[data-option-filter-source]').forEach(function (select) {
+            var source = form.elements.namedItem(select.dataset.optionFilterSource);
+            if (!source) {
+                return;
+            }
+
+            var sourceValue = source.value || '';
+            var allowed = [];
+
+            Array.from(select.options).forEach(function (option) {
+                if (!option.value) {
+                    return;
+                }
+
+                var owners = (option.dataset.optionFor || '').split(',').filter(function (owner) {
+                    return owner !== '';
+                });
+                // No Section Type chosen yet: keep every option listed rather
+                // than showing an empty dropdown.
+                var show = !sourceValue || !owners.length || owners.indexOf(sourceValue) !== -1;
+
+                option.hidden = !show;
+                option.disabled = !show;
+
+                if (show) {
+                    allowed.push(option);
+                }
+            });
+
+            var selected = select.options[select.selectedIndex] || null;
+
+            if (selected && selected.value && selected.disabled) {
+                select.value = '';
+            }
+
+            // One valid layout means there is nothing to choose, so choose it.
+            if (!select.value && allowed.length === 1 && sourceValue) {
+                select.value = allowed[0].value;
+            }
+        });
+    }
+
     function initConditionalAdminFields() {
         document.querySelectorAll('.admin-form-card form').forEach(function (form) {
+            form.querySelectorAll('select[data-option-filter-source]').forEach(function (select) {
+                var source = form.elements.namedItem(select.dataset.optionFilterSource);
+                if (source) {
+                    source.addEventListener('change', function () {
+                        syncFilteredOptions(form);
+                    });
+                }
+            });
+
+            syncFilteredOptions(form);
+
             var conditionalBlocks = form.querySelectorAll('.admin-conditional-field[data-visibility-source]');
             if (!conditionalBlocks.length) {
                 return;

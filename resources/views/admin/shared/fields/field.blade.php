@@ -98,11 +98,31 @@
                 </label>
 
                 @if($type === 'select')
-                    <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" id="{{ $name }}" data-option-attributes='@json($optionAttributes[$name] ?? [])' @required($isRequired)>
+                    @php
+                        // Narrows this select's own options by another field's
+                        // value: Layout Type shows only the layouts the chosen
+                        // Section Type can use. Each option carries the list of
+                        // source values it belongs to and the JS hides the rest.
+                        $optionFilterField = $field['option_filter_field'] ?? null;
+                        $optionFilterMap = (array) ($field['option_filter_map'] ?? []);
+                        $optionFilterFor = function ($optionKey) use ($optionFilterMap): string {
+                            $owners = [];
+
+                            foreach ($optionFilterMap as $sourceValue => $allowed) {
+                                if (in_array((string) $optionKey, array_map('strval', (array) $allowed), true)) {
+                                    $owners[] = $sourceValue;
+                                }
+                            }
+
+                            return implode(',', $owners);
+                        };
+                    @endphp
+                    <select class="form-select @error($name)is-invalid @enderror" name="{{ $name }}" id="{{ $name }}" data-option-attributes='@json($optionAttributes[$name] ?? [])' @if($optionFilterField) data-option-filter-source="{{ $optionFilterField }}" @endif @required($isRequired)>
                         <option value="">Select {{ $field['label'] }}</option>
                         @foreach($options[$name] ?? [] as $key => $label)
                             @php($attrs = $optionAttributes[$name][$key] ?? [])
                             <option value="{{ $key }}" @selected((string) $value === (string) $key)
+                                @if($optionFilterField) data-option-for="{{ $optionFilterFor($key) }}" @endif
                                 @foreach($attrs as $attrName => $attrValue)
                                     @if($attrValue !== null && $attrValue !== '')
                                         data-{{ \Illuminate\Support\Str::kebab($attrName) }}="{{ $attrValue }}"

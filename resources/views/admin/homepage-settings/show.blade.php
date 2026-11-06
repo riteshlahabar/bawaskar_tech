@@ -2,42 +2,80 @@
 @section('title', $pageTitle)
 @section('content')
 <div class="row g-3">
-    <div class="col-12 col-xl-4">
-        <div class="card">
+    {{-- Details first, as a table, with Section Content as a second table
+         below it - the two read as one page instead of two columns of
+         different shapes. --}}
+    <div class="col-12">
+        <div class="card card-table">
             <div class="card-body">
-                <h5 class="mb-3">{{ $record->title }}</h5>
-                <p class="mb-1"><strong>Type:</strong> {{ str($record->section_type)->replace('_', ' ')->title() }}</p>
-                <p class="mb-1"><strong>Layout:</strong> {{ $record->layout_type ?: '-' }}</p>
-<p class="mb-1"><strong>Category:</strong> {{ $record->category?->name ?: '-' }}</p>
-                <p class="mb-1"><strong>Product Limit:</strong> {{ $record->product_limit }}</p>
-                <p class="mb-1"><strong>Item Limit:</strong> {{ $record->item_limit ?: '-' }}</p>
-                <p class="mb-1"><strong>Image Note:</strong> {{ $record->image_size_note ?: '-' }}</p>
-                <p class="mb-1"><strong>Sort Order:</strong> {{ $record->sort_order }}</p>
-                <p class="mb-0"><strong>Status:</strong> {{ $record->is_active ? 'Active' : 'Inactive' }}</p>
+                <div class="title-header option-title">
+                    <h5 class="mb-0">{{ $record->title }}</h5>
+                    <div class="right-options">
+                        <ul>
+                            <li><a class="btn btn-solid" href="{{ route('admin.homepage-settings.edit', $record->id) }}">Edit Section</a></li>
+                            <li><a class="btn btn-outline-secondary" href="{{ route('admin.homepage-settings.index') }}">Back</a></li>
+                        </ul>
+                    </div>
+                </div>
 
-                @if($record->usesContentRowProducts())
-                    <p class="mb-0 mt-2"><strong>Offer Timer:</strong>
-                        {{ $record->deal_timer_active ? 'On' : 'Off' }}
-                        @if($record->deal_ends_at)
-                            &middot; ends {{ $record->deal_ends_at->format('d M Y, g:i A') }}
-                        @endif
-                    </p>
-                @endif
-
-                <p class="mb-0 mt-2"><strong>Products On This Row:</strong> {{ $record->products->count() }}</p>
-
-                <div class="d-flex gap-2 mt-4">
-                    <a class="btn btn-primary" href="{{ route('admin.homepage-settings.edit', $record->id) }}">Edit Section</a>
-                    <a class="btn btn-outline-secondary" href="{{ route('admin.homepage-settings.index') }}">Back</a>
+                <div class="table-responsive">
+                    <table class="table theme-table align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th style="width:220px;">Section Type</th>
+                                <td>{{ str($record->section_type)->replace('_', ' ')->title() }}</td>
+                                <th style="width:220px;">Layout Type</th>
+                                <td>{{ $record->layout_type ? str($record->layout_type)->replace('_', ' ')->title() : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>{{ $record->category?->name ?: '-' }}</td>
+                                <th>Product Limit</th>
+                                <td>{{ $record->product_limit }}</td>
+                            </tr>
+                            <tr>
+                                <th>Item Limit</th>
+                                <td>{{ $record->item_limit ?: '-' }}</td>
+                                <th>Display Row Order</th>
+                                <td>{{ $record->sort_order }}</td>
+                            </tr>
+                            <tr>
+                                <th>Image Note</th>
+                                <td>{{ $record->image_size_note ?: '-' }}</td>
+                                <th>Status</th>
+                                <td>
+                                    <span class="badge {{ $record->is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
+                                        {{ $record->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @if($record->usesContentRowProducts())
+                                <tr>
+                                    <th>Offer Timer</th>
+                                    <td colspan="3">
+                                        <span class="badge {{ $record->dealTimerRunning() ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }}">
+                                            {{ $record->dealTimerRunning() ? 'Running' : 'Off' }}
+                                        </span>
+                                        @if($record->deal_starts_at)
+                                            <span class="ms-2 text-muted small">from {{ $record->deal_starts_at->format('d M Y, g:i A') }}</span>
+                                        @endif
+                                        @if($record->deal_ends_at)
+                                            <span class="ms-2 text-muted small">until {{ $record->deal_ends_at->format('d M Y, g:i A') }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-xl-8">
-        <div class="card">
+    <div class="col-12">
+        <div class="card card-table">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="title-header option-title">
                     <div>
                         <h5 class="mb-1">Section Content</h5>
                         @if($record->usesContentRowProducts())
@@ -49,9 +87,11 @@
                         @endif
                     </div>
                     @if($record->hasContentEditor())
-                        <a class="btn btn-success" href="{{ route('admin.homepage-settings.content', $record->id) }}">
-                            Add / Edit Content
-                        </a>
+                        <div class="right-options">
+                            <ul>
+                                <li><a class="btn btn-solid" href="{{ route('admin.homepage-settings.content', $record->id) }}">Add / Edit Content</a></li>
+                            </ul>
+                        </div>
                     @endif
                 </div>
 
@@ -62,7 +102,7 @@
                             This row shows active products from selected category/source.
                         @elseif($record->section_type === 'top_selling_section')
                             <strong>Pick the products below, in display order.</strong>
-                            The first row is the Special Offer card; the countdown over it is set on this row under Edit Section.
+                            The first row is the Special Offer card, and the countdown over it is set in that same first row of the content editor.
                         @else
                             <strong>No duplicate product adding required.</strong>
                             This row uses active categories.
@@ -71,7 +111,7 @@
                 @endif
 
                 <div class="table-responsive">
-                    <table class="table table-sm align-middle">
+                    <table class="table theme-table align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>Image/Icon</th>
@@ -113,26 +153,22 @@
         </div>
     </div>
 
-    {{-- This row cannot be deleted while products are placed on it, so the
-         products and the one-click transfer live on the same page as the
-         delete, instead of leaving the admin to edit each product by hand. --}}
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="mb-1">Products On This Row</h5>
-                <small class="text-muted">Assigned from Product Add/Edit using Homepage Section Title.</small>
-
-                @if($record->products->isEmpty())
-                    <div class="alert alert-success mt-3 mb-0">
-                        No products are placed on this row, so it can be deleted.
-                    </div>
-                @else
-                    <div class="alert alert-warning mt-3">
+    {{-- The "Products On This Row" card is gone: on every row but a Product
+         Section it could only ever say "no products", and the count is not
+         what this page is for. What CANNOT go is the transfer form - a row
+         refuses to delete while products sit on it and the error points here
+         for the fix - so it is kept, and only when there is something to fix.
+         (HomepageSectionProductsContract, item 40.) --}}
+    @if($record->products->isNotEmpty())
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert alert-warning mb-3">
                         <strong>{{ $record->products->count() }} product(s) are placed on this row, so it cannot be deleted yet.</strong>
-                        Move them to another homepage section below, or delete them from Products, and then delete this row.
+                        Move them to another homepage product row below, or delete them from Products, and then delete this row.
                     </div>
 
-                    <form method="POST" action="{{ route('admin.homepage-settings.transfer-products', $record->id) }}" class="row g-2 align-items-end mb-3">
+                    <form method="POST" action="{{ route('admin.homepage-settings.transfer-products', $record->id) }}" class="row g-2 align-items-end">
                         @csrf
                         <div class="col-md-6">
                             <label class="form-label" for="target_section_id">Transfer all {{ $record->products->count() }} product(s) to</label>
@@ -150,36 +186,9 @@
                             <button type="submit" class="btn btn-primary">Transfer Products</button>
                         </div>
                     </form>
-
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle">
-                            <thead>
-                                <tr>
-                                    <th>SKU</th>
-                                    <th>Product Name</th>
-                                    <th>Category</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($record->products as $product)
-                                    <tr>
-                                        <td>{{ $product->sku ?: '-' }}</td>
-                                        <td>{{ $product->name }}</td>
-                                        <td>{{ $product->category?->name ?: '-' }}</td>
-                                        <td>{{ $product->is_active ? 'Active' : 'Inactive' }}</td>
-                                        <td class="text-end">
-                                            <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.products.edit', $product->id) }}">Edit</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 </div>
 @endsection

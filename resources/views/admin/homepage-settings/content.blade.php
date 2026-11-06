@@ -37,7 +37,7 @@
             Fields marked <span class="text-danger">*</span> are compulsory.
             @if($record->usesContentRowProducts())
                 The first row is the Special Offer card beside the stack; the rest fill the stack in this order. Leave a row empty to show fewer products.
-                The countdown over the Special Offer card is set on the section itself, under Edit Section.
+                The countdown over the Special Offer card is set in that first row.
             @elseif($has('product_id'))
                 The button appears on the homepage only when a product is selected, and reads &ldquo;Shop Now&rdquo; unless you change Button Text.
             @endif

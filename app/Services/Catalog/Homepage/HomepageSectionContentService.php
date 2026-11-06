@@ -112,6 +112,12 @@ final class HomepageSectionContentService implements HomepageSectionContentContr
             $messages["rows.$index.product_id.exists"] = $row.': that product no longer exists.';
         }
 
+        if ($section->usesContentRowProducts()) {
+            $messages['deal.starts_at.date'] = 'Enter a valid Offer Start Date & Time.';
+            $messages['deal.ends_at.date'] = 'Enter a valid Offer End Date & Time.';
+            $messages['deal.ends_at.after_or_equal'] = 'The Offer End Date & Time must be on or after the start date.';
+        }
+
         return $messages;
     }
 
@@ -169,6 +175,33 @@ final class HomepageSectionContentService implements HomepageSectionContentContr
                 $product->id => trim($product->name.' ('.$product->sku.')'),
             ])
             ->all();
+    }
+
+    public function timerRules(ProductHomepageSection $section): array
+    {
+        if (! $section->usesContentRowProducts()) {
+            return [];
+        }
+
+        return [
+            'deal' => ['array'],
+            'deal.starts_at' => ['nullable', 'date'],
+            'deal.ends_at' => ['nullable', 'date', 'after_or_equal:deal.starts_at'],
+            'deal.timer_active' => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function saveTimer(ProductHomepageSection $section, array $timer): void
+    {
+        if (! $section->usesContentRowProducts()) {
+            return;
+        }
+
+        $section->deal_starts_at = filled($timer['starts_at'] ?? null) ? $timer['starts_at'] : null;
+        $section->deal_ends_at = filled($timer['ends_at'] ?? null) ? $timer['ends_at'] : null;
+        // An unticked switch posts nothing, so absence means off.
+        $section->deal_timer_active = (bool) ($timer['timer_active'] ?? false);
+        $section->save();
     }
 
     /**

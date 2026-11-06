@@ -63,11 +63,17 @@ final class HomepageSectionContentController extends AdminModuleController
         }
 
         $request->validate(
-            $this->sectionContent->rules($section, $rows, $files),
+            array_merge(
+                $this->sectionContent->rules($section, $rows, $files),
+                $this->sectionContent->timerRules($section),
+            ),
             $this->sectionContent->validationMessages($section, $rows),
         );
 
         $result = $this->sectionContent->save($section, $rows, $files);
+        // Row 1 of Top Selling carries the Special Offer countdown, which is
+        // stored on the section itself.
+        $this->sectionContent->saveTimer($section, (array) $request->input('deal', []));
         $this->bumpCacheVersionForModule();
 
         return back()->with('success', $result['saved'].' row(s) saved'

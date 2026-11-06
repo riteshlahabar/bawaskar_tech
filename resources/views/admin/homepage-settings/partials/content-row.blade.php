@@ -125,4 +125,10 @@
             </div>
         @endif
     </div>
+
+    {{-- Row 1 of Top Selling is the Special Offer card, so its countdown is
+         edited right here instead of on the section form. --}}
+    @if($rowNumber === 1 && $section->usesContentRowProducts())
+        @include('admin.homepage-settings.partials.content-deal-timer', ['section' => $section])
+    @endif
 </div>

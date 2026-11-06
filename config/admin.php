@@ -382,13 +382,10 @@ return [
 
                 ['name' => 'sort_order', 'label' => 'Display Row Order', 'type' => 'number', 'default' => 0, 'rules' => ['required', 'integer', 'min:0']],
 
-                // The countdown over Top Selling's Special Offer card. It used
-                // to live on the product (Deal Timer tab) and is now a property
-                // of the row, because the row decides which product is the deal
-                // card - its first content row.
-                ['name' => 'deal_starts_at', 'label' => 'Offer Start Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'Leave empty to start the countdown immediately.'],
-                ['name' => 'deal_ends_at', 'label' => 'Offer End Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date', 'after_or_equal:deal_starts_at'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'The countdown needs this date. Without it the card shows with no timer.'],
-                ['name' => 'deal_timer_active', 'label' => 'Offer Timer Active', 'type' => 'checkbox', 'rules' => ['boolean'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'Shows the countdown over the Special Offer card until the end date passes.'],
+                // The countdown over Top Selling's Special Offer card is NOT
+                // here: it is edited in row 1 of the section's Content editor,
+                // which IS the deal card. See HomepageSectionContentContract's
+                // timerRules()/saveTimer() and the content-deal-timer partial.
 
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

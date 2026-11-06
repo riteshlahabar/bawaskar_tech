@@ -64,4 +64,22 @@ interface HomepageSectionContentContract
      * @return array<int, string>
      */
     public function productOptions(): array;
+
+    /**
+     * Rules for the Special Offer countdown, which is posted as `deal[...]`
+     * beside row 1 of a Top Selling editor. Empty for every other section, so
+     * the timer can never be set on a row that has no deal card.
+     *
+     * @return array<string, mixed>
+     */
+    public function timerRules(ProductHomepageSection $section): array;
+
+    /**
+     * Stores the countdown on the SECTION (`deal_starts_at` / `deal_ends_at` /
+     * `deal_timer_active`), even though it is edited inside row 1 - the timer
+     * belongs to the row as a whole, not to one content item.
+     *
+     * @param  array<string, mixed>  $timer
+     */
+    public function saveTimer(ProductHomepageSection $section, array $timer): void;
 }

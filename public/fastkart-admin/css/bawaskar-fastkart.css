@@ -1854,8 +1854,11 @@ input[type="file"].form-control::file-selector-button {
    of collapsing to its longest option. Kept deliberately narrow so a module
    with several filters still fits them on the one row. `admin-toolbar-date`
    was a third class the markup used that no stylesheet defined. */
+/* Fixed rather than growing: a search box that stretched into the free space
+   would leave nothing for the row to pack against, so the right alignment
+   above would have no effect. */
 .admin-toolbar-search {
-    flex: 1 1 200px;
+    flex: 0 1 240px;
     min-width: 170px;
     max-width: 240px;
 }
@@ -1887,10 +1890,13 @@ input[type="file"].form-control::file-selector-button {
     gap: 10px;
 }
 
+/* Both rows pack to the RIGHT, so the filter row and the action row line up
+   on the same edge instead of starting from opposite sides. */
 .admin-toolbar-filters {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
+    justify-content: flex-end;
     gap: 8px;
 }
 

@@ -17,11 +17,10 @@
         $currentPerPage = 10;
     }
 
-    // The left half of the Fastkart listing header. The template puts the page
-    // title here, but our pages already carry one in admin/partials/page-title,
-    // so this says how many rows the listing holds instead of repeating it.
+    // The left half of the Fastkart listing header: the name of what is listed
+    // with its count in brackets after it, e.g. "Products (53)".
     $totalRecords = $records->total();
-    $recordNoun = \Illuminate\Support\Str::plural(strtolower($submenuSingular), $totalRecords);
+    $recordNoun = \Illuminate\Support\Str::plural($submenuSingular, $totalRecords);
 @endphp
 <div class="card card-table admin-table-card" data-table-key="{{ $module['key'] }}">
     <div class="card-body">
@@ -29,7 +28,7 @@
              right inside `right-options`, exactly as back-end/products.html
              lays it out. --}}
         <div class="title-header option-title">
-            <h5 class="mb-0">{{ number_format($totalRecords) }} {{ $recordNoun }}</h5>
+            <h5 class="mb-0">{{ $recordNoun }} ({{ number_format($totalRecords) }})</h5>
             <div class="right-options">
                 <ul>
                     @if($module['key'] === 'salary' && $can['edit'])

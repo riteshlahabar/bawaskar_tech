@@ -41,30 +41,10 @@
     $groupIcons = ['peopleMenu'=>'users','salesMenu'=>'shopping-cart','productInventoryMenu'=>'package','financeMenu'=>'credit-card','companyExpenseMenu'=>'clipboard','storefrontMenu'=>'globe','reportsMenu'=>'bar-chart-2','translationMenu'=>'globe','systemMenu'=>'settings'];
 @endphp
 
-<style>
-    .sidebar-wrapper .sidebar-link,
-    .sidebar-wrapper .admin-sidebar-submenu-link,
-    .sidebar-wrapper .submenu-title,
-    .sidebar-wrapper .sidebar-main-title h6 {
-        font-weight: 600 !important;
-    }
-
-    .sidebar-wrapper .sidebar-link span,
-    .sidebar-wrapper .admin-sidebar-submenu-link span,
-    .sidebar-wrapper .submenu-title span {
-        font-weight: 600 !important;
-    }
-
-    .sidebar-wrapper .sidebar-link svg,
-    .sidebar-wrapper .admin-sidebar-submenu-link svg,
-    .sidebar-wrapper .submenu-title svg,
-    .sidebar-wrapper .admin-sidebar-submenu-icon,
-    .sidebar-wrapper .fa-angle-right,
-    .sidebar-wrapper .sub-arrow {
-        stroke-width: 2px !important;
-        font-weight: 600 !important;
-    }
-</style>
+{{-- Sidebar typography and the caret live in bawaskar-fastkart.css. This file
+     used to carry an inline <style> block that forced font-weight:600 on every
+     label, heading and icon alike, which is why a seventy-item menu read as one
+     flat wall with no hierarchy. --}}
 
 <div class="sidebar-wrapper">
     <div id="sidebarEffect"></div>
@@ -108,7 +88,7 @@
                                     @php $open = collect($item['children'])->contains(fn($child)=>$isItemActive($child)); @endphp
                                     <li class="sidebar-list">
                                         <a class="sidebar-link sidebar-title {{ $open?'active':'' }}" href="javascript:void(0)">
-                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;"><i class="fa fa-angle-right"></i></span>
+                                            <i data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i><span>{{ $item['label'] }}</span><span class="admin-sidebar-caret"><i class="fa-solid fa-angle-right"></i></span>
                                         </a>
                                         <ul class="sidebar-submenu" style="display:{{ $open?'block':'none' }}">
                                             @foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
@@ -124,7 +104,7 @@
                         @else
                             <li class="sidebar-list">
                                 <a class="sidebar-link sidebar-title {{ $groupOpen?'active':'' }}" href="javascript:void(0)">
-                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span style="margin-left:auto;color:#fff;font-size:18px;line-height:1;"><i class="fa fa-angle-right"></i></span>
+                                    <i data-feather="{{ $groupIcons[$group['id']] ?? 'folder' }}"></i><span>{{ $group['label'] }}</span><span class="admin-sidebar-caret"><i class="fa-solid fa-angle-right"></i></span>
                                 </a>
                                 <ul class="sidebar-submenu" style="display:{{ $groupOpen?'block':'none' }}">
                                     @foreach($group['items'] as $item)
@@ -133,7 +113,7 @@
                                             <li><a class="submenu-title admin-sidebar-submenu-link {{ $open?'active':'' }}" href="javascript:void(0)">@if(!str_starts_with($item['key'] ?? '', 'sf-row-'))
     @if(($group['id'] ?? '') !== 'storefrontMenu')<i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$item['key']] ?? 'circle' }}"></i>@endif
 @endif
-<span>{{ $item['label'] }}</span><span class="sub-arrow"><i class="fa fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
+<span>{{ $item['label'] }}</span><span class="sub-arrow admin-sidebar-caret"><i class="fa-solid fa-angle-right"></i></span></a><ul class="nav-sub-childmenu submenu-content" style="display:{{ $open?'block':'none' }}">@foreach($item['children'] as $child)<li><a class="admin-sidebar-submenu-link {{ $isItemActive($child)?'active':'' }}" @if($isItemActive($child)) data-admin-active @endif href="{{ $itemUrl($child) }}">@if(!str_starts_with($child['key'] ?? '', 'sf-row-'))
     <i class="admin-sidebar-submenu-icon" data-feather="{{ $icons[$child['key']] ?? ($child['feather'] ?? 'circle') }}"></i>
 @endif
 <span>{{ $child['label'] }}</span></a></li>@endforeach</ul></li>

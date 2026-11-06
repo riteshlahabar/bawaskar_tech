@@ -79,8 +79,12 @@
             {{-- Every toolbar button carries its own label from md up, with a
                  purpose-specific Font Awesome icon rather than a bare glyph:
                  a funnel filters, an anticlockwise arrow resets. --}}
-            <button class="btn btn-outline-primary" type="submit" title="Filter"><i class="fa-solid fa-filter"></i><span class="d-none d-md-inline ms-1">Filter</span></button>
-            <a href="{{ route($module['route'].'.index', $resetQuery) }}" class="btn btn-outline-secondary" title="Reset"><i class="fa-solid fa-rotate-left"></i><span class="d-none d-md-inline ms-1">Reset</span></a>
+            {{-- The pair is one block, so Reset can never wrap away from Filter
+                 and sit alone on a line of its own. --}}
+            <div class="admin-toolbar-buttons">
+                <button class="btn btn-outline-primary" type="submit" title="Filter"><i class="fa-solid fa-filter"></i><span class="d-none d-md-inline ms-1">Filter</span></button>
+                <a href="{{ route($module['route'].'.index', $resetQuery) }}" class="btn btn-outline-secondary" title="Reset"><i class="fa-solid fa-rotate-left"></i><span class="d-none d-md-inline ms-1">Reset</span></a>
+            </div>
         </form>
     </div>
 

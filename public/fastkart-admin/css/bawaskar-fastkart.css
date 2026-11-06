@@ -1856,22 +1856,33 @@ input[type="file"].form-control::file-selector-button {
    was a third class the markup used that no stylesheet defined. */
 /* Fixed rather than growing: a search box that stretched into the free space
    would leave nothing for the row to pack against, so the right alignment
-   above would have no effect. */
+   above would have no effect. Widths are deliberately tight - Products puts
+   five controls plus the Filter/Reset pair on this row, which has to survive
+   a 1366px screen once the sidebar has taken its share. */
 .admin-toolbar-search {
-    flex: 0 1 240px;
-    min-width: 170px;
-    max-width: 240px;
+    flex: 0 1 180px;
+    min-width: 160px;
+    max-width: 180px;
 }
 
 .admin-toolbar-field {
-    flex: 0 1 150px;
-    min-width: 132px;
+    flex: 0 1 132px;
+    min-width: 120px;
 }
 
 /* A date input needs room for dd-mm-yyyy and its picker glyph, and no more. */
 .admin-toolbar-date {
-    flex: 0 1 138px;
-    min-width: 132px;
+    flex: 0 1 124px;
+    min-width: 118px;
+}
+
+/* Filter and Reset travel together, so neither is ever stranded on its own
+   line when the row runs out of width. */
+.admin-toolbar-buttons {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
 }
 
 .admin-table-toolbar .form-control,
@@ -1984,4 +1995,97 @@ input[type="file"].form-control::file-selector-button {
 .title-header a.btn.btn-outline-primary:hover,
 .title-header a.btn.btn-outline-primary:focus {
     color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   Sidebar typography and the open/closed caret.
+
+   startbar.blade.php used to carry an inline <style> block that set
+   font-weight:600 on EVERY label, group heading and icon with !important. With
+   ten groups and about seventy leaves that read as one flat wall - no weight
+   difference between a section heading, a parent row and a leaf, so nothing
+   told the eye where it was. Weight now carries the hierarchy, and only the
+   row you are on is bold.
+   --------------------------------------------------------------------------- */
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-main-title h6 {
+    font-weight: 700 !important;
+}
+
+/* Top level: medium. Readable on the dark panel without shouting. */
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link,
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link span {
+    font-weight: 500 !important;
+}
+
+/* A leaf is one step lighter again, and slightly dimmed until hovered, so a
+   long submenu does not compete with the section it sits under. */
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a span {
+    font-weight: 400 !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a {
+    color: rgba(255, 255, 255, .78) !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a:hover {
+    color: #ffffff !important;
+}
+
+/* The one row you are on is the only bold row anywhere in the menu. */
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link.active,
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link.active span,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a.active,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a.active span {
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+/* A parent that holds the open branch is named without being as loud as the
+   leaf you actually chose. */
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a.submenu-title.active,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a.submenu-title.active span {
+    font-weight: 500 !important;
+}
+
+/* Feather strokes: the inline block hard-set 2px everywhere. A hair lighter
+   reads cleaner at 17px, and the active row keeps the heavier stroke. */
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link svg {
+    stroke-width: 1.9px !important;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link.active svg {
+    stroke-width: 2.2px !important;
+}
+
+/* The caret. It was an inline span at 18px solid white on every parent row -
+   as loud as the label beside it, and it never moved, so nothing showed
+   whether a branch was open. The template's JS puts `.active` on the parent
+   link while its submenu is open, which is what turns it. */
+.admin-sidebar-caret {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    color: rgba(255, 255, 255, .55);
+    transition: transform .18s ease, color .18s ease;
+}
+
+.admin-sidebar-caret i {
+    font-size: 11px;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links a:hover > .admin-sidebar-caret {
+    color: #ffffff;
+}
+
+.sidebar-wrapper .sidebar-main .sidebar-links a.active > .admin-sidebar-caret {
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+/* The "keep sidebar icons white" rule above carries !important and would make
+   the caret as loud as the label again, so let it inherit from its span. */
+.sidebar-wrapper .sidebar-main .sidebar-links a > .admin-sidebar-caret i {
+    color: inherit !important;
 }

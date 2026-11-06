@@ -9,6 +9,13 @@
     <link rel="icon" href="{{ asset('logo/logo.png') }}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/ratio.css') }}">
+    {{-- The template's other icon stylesheets are deliberately NOT loaded:
+         remixicon.css and vendors/themify.css would pull ~2.7MB of fonts that
+         nothing in this admin uses, vendors/feather-icon.css is only
+         normalize.css under an icon name, and vendors/font-awesome.css is
+         Font Awesome 5, which would fight the CDN's Font Awesome 6 above over
+         the same .fa-* classes. Every admin icon is Font Awesome 6 or a
+         feather SVG drawn by feather.min.js. --}}
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/vendors/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('fastkart-admin/css/vendors/bootstrap.css') }}">

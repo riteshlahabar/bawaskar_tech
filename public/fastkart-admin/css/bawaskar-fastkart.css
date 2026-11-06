@@ -1825,3 +1825,76 @@ input[type="file"].form-control::file-selector-button {
 .sidebar-wrapper .sidebar-main .simplebar-scrollbar.simplebar-visible:before {
     opacity: .6 !important;
 }
+
+/* ---------------------------------------------------------------------------
+   Listing toolbar (admin/shared/table-toolbar.blade.php).
+
+   The markup has always carried .admin-table-toolbar, .admin-toolbar-search,
+   .admin-toolbar-field and .admin-toolbar-icon, and NOTHING anywhere defined
+   them - so the filter row and the eight icon-only buttons rendered at
+   Bootstrap's bare defaults: a 1em glyph in a box sized only by its padding.
+   That is why the icons above the table read as tiny and unlabelled.
+   --------------------------------------------------------------------------- */
+.admin-table-toolbar {
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e7ecf3;
+    border-radius: 10px;
+}
+
+.admin-table-toolbar .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+/* The search box takes the slack; each filter keeps a readable width instead
+   of collapsing to its longest option. */
+.admin-toolbar-search {
+    flex: 1 1 260px;
+    min-width: 200px;
+    max-width: 340px;
+}
+
+.admin-toolbar-field {
+    flex: 0 1 190px;
+    min-width: 160px;
+}
+
+.admin-table-toolbar .form-control,
+.admin-table-toolbar .form-select,
+.admin-table-toolbar .btn {
+    height: 40px;
+}
+
+/* A square button whose icon is actually legible, with the glyph centred
+   rather than sitting on the text baseline. */
+.admin-toolbar-icon {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.admin-toolbar-icon i,
+.admin-table-toolbar .btn i {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* The Columns button carries a caret as well, so it cannot be square. */
+.admin-toolbar-icon.dropdown-toggle {
+    width: auto;
+    min-width: 0;
+    padding: 0 12px;
+}
+
+/* Paper plane - the one icon the Font Awesome mapping above never covered, so
+   it was still falling through to the generic dot. */
+.iconoir-send::before {
+    content: "\f1d8" !important;
+}

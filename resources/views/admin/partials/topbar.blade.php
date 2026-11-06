@@ -18,7 +18,7 @@
                         <div class="profile-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
                         <div class="user-name-hide media-body">
                             <span>{{ auth()->user()->name }}</span>
-                            <p class="mb-0 font-roboto">{{ auth()->user()->adminRole?->name ?? 'Admin' }}<i class="middle ri-arrow-down-s-line"></i></p>
+                            <p class="mb-0 font-roboto">{{ auth()->user()->adminRole?->name ?? 'Admin' }}<i class="middle fa-solid fa-angle-down ms-1"></i></p>
                         </div>
                     </div>
                     <ul class="profile-dropdown onhover-show-div">

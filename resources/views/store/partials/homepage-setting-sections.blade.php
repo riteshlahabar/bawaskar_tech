@@ -22,7 +22,7 @@
 
     $entrySubtitle = function ($entry) use ($isProduct) {
         if ($isProduct($entry)) {
-            return storefront_public_t($entry->homepage_subtitle ?: $entry->sale_badge_text, 'homepage_entry');
+            return storefront_public_t($entry->homepage_subtitle, 'homepage_entry');
         }
 
         return storefront_public_t($entry->subtitle, 'homepage_entry');
@@ -247,19 +247,7 @@
             @break
 
         @case('product_section')
-            @if($section->source_type === 'top_selling_products')
-                @php($assignedDealProduct = $products->first(fn($product) => (int) ($product->homepage_section_id ?? 0) === (int) $section->id))
-                @php($dealProduct = $assignedDealProduct ?: $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct'))
-                @php($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->take(8)->values())
-                @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
-                @include('store.partials.top-selling-section', [
-                    'sectionKey' => $section->section_key,
-                    'sectionTitle' => storefront_public_t($section->title ?: 'Top Selling Items', 'homepage_section'),
-                    'products' => $normalProducts,
-                    'dealProduct' => $dealProduct,
-                    'showDealTimer' => $showDealTimer,
-                ])
-            @elseif($products->isNotEmpty())
+            @if($products->isNotEmpty())
                 <section class="product-section-3" id="home-section-{{ $section->section_key }}">
                     <div class="container-fluid-lg">
                         <div class="title">
@@ -320,16 +308,18 @@
             @break
 
         @case('top_selling_section')
-            @php($assignedDealProduct = $products->first(fn($product) => (int) ($product->homepage_section_id ?? 0) === (int) $section->id))
-            @php($dealProduct = $assignedDealProduct ?: $products->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct'))
-            @php($normalProducts = $products->filter(fn($p) => ! $dealProduct || $p->id !== $dealProduct->id)->take(8)->values())
-            @php($showDealTimer = $dealProduct && $dealProduct->is_offer_active && $dealProduct->offer_end_at && $dealProduct->offer_end_at->isFuture())
+            {{-- The row's own content rows, in order: row 1 is the Special
+                 Offer card, the rest are the stack beside it. The countdown
+                 is set on the section, not on the product. --}}
+            @php($dealProduct = $products->first())
+            @php($normalProducts = $products->slice(1)->take(8)->values())
             @include('store.partials.top-selling-section', [
                 'sectionKey' => $section->section_key,
                 'sectionTitle' => storefront_public_t($section->title ?: 'Top Selling Items', 'homepage_section'),
                 'products' => $normalProducts,
                 'dealProduct' => $dealProduct,
-                'showDealTimer' => $showDealTimer,
+                'showDealTimer' => $section->dealTimerRunning(),
+                'dealEndsAt' => $section->deal_ends_at,
             ])
             @break
 

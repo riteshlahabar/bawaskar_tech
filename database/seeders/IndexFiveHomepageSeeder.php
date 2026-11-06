@@ -112,6 +112,11 @@ class IndexFiveHomepageSeeder extends Seeder
                 'product_limit' => 10,
                 'item_limit' => 0,
                 'sort_order' => 5,
+                // The Special Offer countdown belongs to the row, not to a
+                // product: the row's first content row IS the deal card.
+                'deal_starts_at' => Carbon::create(2026, 8, 8, 9, 0, 0),
+                'deal_ends_at' => Carbon::create(2026, 8, 15, 23, 59, 59),
+                'deal_timer_active' => true,
                 'is_active' => true,
             ]
         );
@@ -242,9 +247,6 @@ class IndexFiveHomepageSeeder extends Seeder
         int $brandId,
         int $unitId
     ): void {
-        $offerStart = Carbon::create(2026, 8, 8, 9, 0, 0);
-        $offerEnd = Carbon::create(2026, 8, 15, 23, 59, 59);
-
         $definitions = [
             [
                 'sku' => 'AHC-TS-001',
@@ -258,10 +260,7 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 1,
                 'is_top_selling' => true,
                 'is_deal_timer_product' => true,
-                'is_offer_active' => true,
-                'offer_start_at' => $offerStart,
-                'offer_end_at' => $offerEnd,
-                'homepage_section_id' => $sections['top_selling']->id,
+                'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/animal-health-tonic-plus.png',
             ],
             [
@@ -276,7 +275,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 2,
                 'is_top_selling' => true,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/calcium-booster-vet-liquid.png',
             ],
@@ -292,7 +290,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 3,
                 'is_top_selling' => true,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/mineral-mixture-daily-care.png',
             ],
@@ -308,7 +305,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 4,
                 'is_top_selling' => true,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/hybrid-tomato-seeds.png',
             ],
@@ -324,7 +320,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 5,
                 'is_top_selling' => true,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/hybrid-chilli-seeds.png',
             ],
@@ -340,7 +335,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 6,
                 'is_top_selling' => false,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/okra-seeds-premium.png',
             ],
@@ -356,7 +350,6 @@ class IndexFiveHomepageSeeder extends Seeder
                 'homepage_sort_order' => 7,
                 'is_top_selling' => false,
                 'is_deal_timer_product' => false,
-                'is_offer_active' => false,
                 'homepage_section_id' => null,
                 'image_path' => self::IMAGE_BASE.'/products/cucumber-seeds.png',
             ],
@@ -388,19 +381,8 @@ class IndexFiveHomepageSeeder extends Seeder
                     'seller_name' => 'Bawaskar Technology',
                     'seller_address' => 'Pune, Maharashtra',
                     'seller_contact' => '9000000001',
-                    'sale_badge_text' => $definition['is_top_selling'] ? 'Best Seller' : null,
-                    'low_stock_text' => 'Limited stock available',
-                    'is_offer_active' => $definition['is_offer_active'],
-                    'offer_start_at' => $definition['offer_start_at'] ?? null,
-                    'offer_end_at' => $definition['offer_end_at'] ?? null,
                     'is_visible_to_customers' => true,
                     'is_visible_to_dealers' => true,
-                    'is_featured' => $definition['is_top_selling'],
-                    'is_top_selling' => $definition['is_top_selling'],
-                    'is_trending' => $definition['is_top_selling'],
-                    'is_new_arrival' => false,
-                    'is_deal_timer_product' => $definition['is_deal_timer_product'],
-                    'is_offer_product' => $definition['is_offer_active'],
                     'show_on_homepage' => true,
                     'homepage_section_id' => $definition['homepage_section_id'],
                     'homepage_title' => $definition['name'],
@@ -417,6 +399,52 @@ class IndexFiveHomepageSeeder extends Seeder
             ProductImage::query()->updateOrCreate(
                 ['product_id' => $product->id, 'path' => $definition['image_path']],
                 ['is_primary' => true, 'sort_order' => 1]
+            );
+        }
+
+        $this->seedTopSellingRows($sections['top_selling'], $definitions);
+    }
+
+    /**
+     * Top Selling takes its products from its own content rows, one product per
+     * row, with row 1 as the Special Offer card - the same editor every other
+     * homepage row uses.
+     *
+     * @param  array<int, array<string, mixed>>  $definitions
+     */
+    private function seedTopSellingRows(ProductHomepageSection $section, array $definitions): void
+    {
+        $skus = collect($definitions)
+            ->filter(fn (array $definition): bool => (bool) $definition['is_top_selling'])
+            // The deal card first, then the stack in its own order.
+            ->sortBy(fn (array $definition): string => ($definition['is_deal_timer_product'] ? '0' : '1')
+                .str_pad((string) $definition['homepage_sort_order'], 4, '0', STR_PAD_LEFT))
+            ->pluck('sku')
+            ->values();
+
+        $products = Product::query()
+            ->whereIn('sku', $skus->all())
+            ->get(['id', 'sku'])
+            ->keyBy('sku');
+
+        $position = 0;
+
+        foreach ($skus as $sku) {
+            $product = $products->get($sku);
+
+            if (! $product) {
+                continue;
+            }
+
+            $position++;
+
+            ProductHomepageSectionItem::query()->updateOrCreate(
+                ['section_id' => $section->id, 'product_id' => $product->id],
+                [
+                    'slot' => $position === 1 ? 'deal' : 'product-'.($position - 1),
+                    'sort_order' => $position,
+                    'is_active' => true,
+                ]
             );
         }
     }

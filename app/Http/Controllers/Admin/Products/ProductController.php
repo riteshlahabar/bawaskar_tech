@@ -85,10 +85,17 @@ final class ProductController extends AdminModuleController
         $data = $request->validate([
             'product_ids' => ['required', 'array', 'min:1'],
             'product_ids.*' => ['integer', Rule::exists('products', 'id')],
-            'section_id' => ['nullable', 'integer', Rule::exists('product_homepage_sections', 'id')],
+            // Only a row that actually reads a product's placement: a content
+            // row or Top Selling picks its own products (item 48). An empty
+            // value stays valid - it takes the products off the homepage.
+            'section_id' => [
+                'nullable', 'integer',
+                Rule::exists('product_homepage_sections', 'id')
+                    ->whereIn('section_type', ProductHomepageSection::ASSIGNABLE_SECTION_TYPES),
+            ],
         ], [
             'product_ids.required' => 'Select at least one product first.',
-            'section_id.exists' => 'That homepage section no longer exists.',
+            'section_id.exists' => 'Products can only be moved onto a Product Section row.',
         ]);
 
         $section = filled($data['section_id'] ?? null)

@@ -54,26 +54,8 @@ final class EloquentStorefrontNavigationRepository implements StorefrontNavigati
     public function featuredProducts(string $audience): Collection
     {
         return $this->productQuery($audience)
-            ->where('is_featured', true)
             ->storefrontOrder()
             ->limit(6)
-            ->get();
-    }
-
-    public function fallbackProducts(string $audience): Collection
-    {
-        return $this->productQuery($audience)
-            ->storefrontOrder()
-            ->limit(6)
-            ->get();
-    }
-
-    public function dealProducts(string $audience, int $limit): Collection
-    {
-        return $this->productQuery($audience)
-            ->where('is_deal_timer_product', true)
-            ->storefrontOrder()
-            ->limit($limit)
             ->get();
     }
 

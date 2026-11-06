@@ -63,7 +63,7 @@ final class ImportSampleBuilder implements ImportSampleContract
             'customer_price' => '480',
             'primary_image' => 'calcium-main.jpg',
             'gallery_images' => 'calcium-1.jpg|calcium-2.jpg|calcium-3.jpg',
-            'is_featured' => '1',
+            'show_on_homepage' => '1',
             'is_visible_to_dealers' => '1',
             'is_visible_to_customers' => '1',
 

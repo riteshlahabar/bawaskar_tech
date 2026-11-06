@@ -83,7 +83,7 @@
             @if($isOutOfStock)
                 <div class="label-tag mt-2"><span>{{ web_t('product.out_of_stock', 'Out of Stock') }}</span></div>
             @elseif($isLowStock)
-                <div class="label-tag mt-2"><span>{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</span></div>
+                <div class="label-tag mt-2"><span>{{ web_t('product.low_stock', 'Low Stock') }}</span></div>
             @elseif($discount > 0)
                 <div class="label-tag mt-2"><span>{{ $discount }}% off</span></div>
             @endif

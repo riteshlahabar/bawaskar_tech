@@ -68,11 +68,19 @@ class ProductHomepageSettingController extends AdminModuleController
         $section = $this->findRecord($id);
 
         $data = $request->validate([
-            'target_section_id' => ['required', 'integer', Rule::exists('product_homepage_sections', 'id'), Rule::notIn([$section->getKey()])],
+            // The target must be a row that actually reads a product's
+            // placement: a content row or Top Selling picks its own products,
+            // so moving products there would lose them (item 48).
+            'target_section_id' => [
+                'required', 'integer',
+                Rule::exists('product_homepage_sections', 'id')
+                    ->whereIn('section_type', ProductHomepageSection::ASSIGNABLE_SECTION_TYPES),
+                Rule::notIn([$section->getKey()]),
+            ],
         ], [
             'target_section_id.required' => 'Choose the homepage section to move these products into.',
             'target_section_id.not_in' => 'Choose a different homepage section.',
-            'target_section_id.exists' => 'That homepage section no longer exists.',
+            'target_section_id.exists' => 'Products can only be moved onto a Product Section row.',
         ]);
 
         $target = ProductHomepageSection::query()->findOrFail($data['target_section_id']);

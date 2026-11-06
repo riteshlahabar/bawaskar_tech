@@ -15,6 +15,15 @@
                 <p class="mb-1"><strong>Sort Order:</strong> {{ $record->sort_order }}</p>
                 <p class="mb-0"><strong>Status:</strong> {{ $record->is_active ? 'Active' : 'Inactive' }}</p>
 
+                @if($record->usesContentRowProducts())
+                    <p class="mb-0 mt-2"><strong>Offer Timer:</strong>
+                        {{ $record->deal_timer_active ? 'On' : 'Off' }}
+                        @if($record->deal_ends_at)
+                            &middot; ends {{ $record->deal_ends_at->format('d M Y, g:i A') }}
+                        @endif
+                    </p>
+                @endif
+
                 <p class="mb-0 mt-2"><strong>Products On This Row:</strong> {{ $record->products->count() }}</p>
 
                 <div class="d-flex gap-2 mt-4">
@@ -31,13 +40,15 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h5 class="mb-1">Section Content</h5>
-                        @if($record->isProductSection() || $record->section_type === 'category_section')
+                        @if($record->usesContentRowProducts())
+                            <small class="text-muted">The products on this row are picked here &mdash; row 1 is the Special Offer card, the rest are the stack beside it.</small>
+                        @elseif($record->isProductSection() || $record->section_type === 'category_section')
                             <small class="text-muted">Products are assigned from Product Add/Edit using Homepage Section Title. This page only defines homepage row/design.</small>
                         @else
                             <small class="text-muted">Banner, offer, coupon, service, blog and video content is added here &mdash; not from the Products form.</small>
                         @endif
                     </div>
-                    @if($record->isContentSection())
+                    @if($record->hasContentEditor())
                         <a class="btn btn-success" href="{{ route('admin.homepage-settings.content', $record->id) }}">
                             Add / Edit Content
                         </a>
@@ -46,12 +57,14 @@
 
                 @if(in_array($record->section_type, ['product_section', 'category_section', 'top_selling_section'], true))
                     <div class="alert alert-info">
-                        <strong>No duplicate product adding required.</strong>
                         @if($record->section_type === 'product_section')
+                            <strong>No duplicate product adding required.</strong>
                             This row shows active products from selected category/source.
                         @elseif($record->section_type === 'top_selling_section')
-                            This row uses products where <strong>Top Selling Product</strong> is enabled. Timer card uses product where <strong>Deal Timer Product</strong> is enabled.
+                            <strong>Pick the products below, in display order.</strong>
+                            The first row is the Special Offer card; the countdown over it is set on this row under Edit Section.
                         @else
+                            <strong>No duplicate product adding required.</strong>
                             This row uses active categories.
                         @endif
                     </div>
@@ -87,7 +100,7 @@
                                     <td>{{ $item->sort_order }}</td>
                                     <td>{{ $item->is_active ? 'Active' : 'Inactive' }}</td>
                                     <td class="text-end">
-                                        <a class="btn btn-sm btn-outline-primary" href="{{ $record->isContentSection() ? route('admin.homepage-settings.content', $record->id) : route('admin.homepage-setting-items.edit', $item->id) }}">Edit</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ $record->hasContentEditor() ? route('admin.homepage-settings.content', $record->id) : route('admin.homepage-setting-items.edit', $item->id) }}">Edit</a>
                                     </td>
                                 </tr>
                             @empty

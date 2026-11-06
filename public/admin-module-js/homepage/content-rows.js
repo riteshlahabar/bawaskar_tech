@@ -10,13 +10,23 @@
     var rowsWrapper = form.querySelector('[data-content-rows]');
     var template = form.querySelector('[data-content-row-template]');
 
+    // Mirrors HomepageSectionContentFields::rowLabel() so a row keeps the same
+    // name after a client-side add or remove as it had server-rendered.
+    function rowLabel(position) {
+        if (rowsWrapper.dataset.contentRowLabels !== 'product') {
+            return 'Row ' + (position + 1);
+        }
+
+        return position === 0 ? 'Special Offer (deal card)' : 'Product ' + position;
+    }
+
     function renumber() {
         var rows = rowsWrapper.querySelectorAll('[data-content-row]');
 
         rows.forEach(function (row, position) {
             var label = row.querySelector('[data-content-row-label]');
             if (label) {
-                label.textContent = 'Row ' + (position + 1);
+                label.textContent = rowLabel(position);
             }
         });
     }

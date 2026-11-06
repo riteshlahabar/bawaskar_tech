@@ -26,4 +26,10 @@ interface StorefrontHomepageRepositoryContract
     public function topSellingProducts(string $audience): Collection;
 
     public function dealTimerProduct(string $audience): ?Product;
+
+    /**
+     * One deal product per Top Selling row - its first content row - for the
+     * header "Deal Today" popup.
+     */
+    public function dealProducts(string $audience, int $limit): Collection;
 }

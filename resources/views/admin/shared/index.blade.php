@@ -130,7 +130,7 @@
                                             {{-- One editor either way: a section owns its content rows, and the
                                                  page shows only the fields that section type renders. Product and
                                                  category rows have no content of their own. --}}
-                                            @if($record->isContentSection())
+                                            @if($record->hasContentEditor())
                                                 <a class="btn btn-sm btn-success text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Add Content</a>
                                                 <a class="btn btn-sm btn-outline-primary text-nowrap" href="{{ route('admin.homepage-settings.content', $record->getKey()) }}">Edit Content</a>
                                             @else
@@ -148,14 +148,6 @@
                                             <a class="dropdown-item" href="{{ route($module['route'].'.show', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-eye"></i><span>View</span></a>
                                             @if(($module['can_edit'] ?? true) && $can['edit'])
                                                 <a class="dropdown-item" href="{{ route($module['route'].'.edit', array_merge([$record->getKey()], request()->only(['type','placement','section_key','row_title']))) }}"><i class="iconoir-edit-pencil"></i><span>Edit</span></a>
-                                            @endif
-
-                                            @if($module['key'] === 'products')
-                                                <div class="dropdown-divider"></div>
-                                                @foreach(['is_top_selling' => 'Top Selling', 'is_deal_timer_product' => 'Timer Deal', 'is_active' => 'Status'] as $flagKey => $flagLabel)
-                                                    @php($flagValue = (bool) data_get($record, $flagKey))
-                                                    <span class="dropdown-item-text admin-row-action-flag"><span>{{ $flagLabel }}</span><span class="badge {{ $flagValue ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">{{ $flagValue ? 'Active' : 'Inactive' }}</span></span>
-                                                @endforeach
                                             @endif
 
                                             @if($module['key'] === 'dealers' && $record->status === 'pending_approval' && $can['edit'])

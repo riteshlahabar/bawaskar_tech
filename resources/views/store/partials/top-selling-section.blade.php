@@ -6,12 +6,12 @@
     $dealProduct = $dealProduct ?? null;
     $audience = $storeAudience ?? 'customer';
 
-    if (! isset($showDealTimer)) {
-        $showDealTimer = $dealProduct
-            && $dealProduct->is_offer_active
-            && $dealProduct->offer_end_at
-            && $dealProduct->offer_end_at->isFuture();
-    }
+    // The countdown belongs to the homepage row, not to the product: the row
+    // decides which product is the deal card (its first content row) and
+    // carries the offer dates. Callers pass both, so a caller without a row
+    // simply shows the card with no timer.
+    $dealEndsAt = $dealEndsAt ?? null;
+    $showDealTimer = ($showDealTimer ?? false) && $dealProduct && $dealEndsAt;
 
     $dealInWishlist = $dealProduct ? in_array($dealProduct->id, array_map('intval', $storeWishlistProductIds ?? []), true) : false;
 
@@ -113,7 +113,7 @@
                                                 <span class="ms-auto text-content">{{ web_t('offer.hurry_up_offer_end_in', 'Hurry up offer end in') }}</span></h5>
 
                                             @if($showDealTimer)
-                                                <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="{{ $dealProduct->offer_end_at->toIso8601String() }}">
+                                                <div class="timer timer-2 ms-0 my-4 homepage-deal-timer" data-end-at="{{ $dealEndsAt->toIso8601String() }}">
                                                     <ul class="d-flex justify-content-center">
                                                         <li><div class="counter"><div class="days"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>
                                                         <li><div class="counter"><div class="hours"><h6 class="fs-4 fw-semibold">0</h6></div></div></li>

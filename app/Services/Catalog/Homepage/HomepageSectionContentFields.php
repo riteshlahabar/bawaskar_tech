@@ -33,6 +33,10 @@ final class HomepageSectionContentFields
         'coupon_section' => ['logo_image_path', 'title', 'coupon_code', 'discount_text', 'validity_text'],
         'strip_offer_banner' => ['image_path'],
         'video_section' => ['video_source', 'video_url', 'video_file_path'],
+        // Top Selling is a product row whose products are picked here instead
+        // of on the Products form: row 1 is the Special Offer deal card, rows
+        // 2-9 are the stack beside it. The countdown lives on the section.
+        'top_selling_section' => ['product_id'],
     ];
 
     /**
@@ -83,6 +87,21 @@ final class HomepageSectionContentFields
             $this->for($section),
             fn (string $field): bool => $field !== 'video_source'
         ));
+    }
+
+    /**
+     * What one row is called in the editor. Top Selling's first row is the
+     * Special Offer card, so it must not read "Row 1" like the rest.
+     */
+    public function rowLabel(ProductHomepageSection $section, ?int $rowNumber): string
+    {
+        if (! $section->usesContentRowProducts()) {
+            return 'Row '.($rowNumber ?? '');
+        }
+
+        return $rowNumber === 1
+            ? 'Special Offer (deal card)'
+            : 'Product '.(($rowNumber ?? 1) - 1);
     }
 
     /** Human label for one row input. */

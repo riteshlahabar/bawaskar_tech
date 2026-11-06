@@ -47,6 +47,13 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
         int $limit,
         string $audience
     ): Collection {
+        // Top Selling picks its products one per content row, so row order is
+        // the display order and row 1 is the Special Offer card. Same rule as
+        // the website, so the apps never show a different Top Selling row.
+        if ($section->usesContentRowProducts()) {
+            return $this->rowProducts($section, $audience);
+        }
+
         $assigned = $this->productQuery($audience)
             ->where('show_on_homepage', true)
             ->where('homepage_section_id', $section->id)
@@ -56,19 +63,6 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
             ->limit($limit)
             ->get();
 
-        if ($section->source_type === 'top_selling_products' || $section->section_type === 'top_selling_section') {
-            $topSelling = $this->productQuery($audience)
-                ->where('show_on_homepage', true)
-                ->where('is_top_selling', true)
-                ->orderBy('homepage_sort_order')
-                ->orderBy('sort_order')
-                ->latest('id')
-                ->limit($limit)
-                ->get();
-
-            return $assigned->concat($topSelling)->unique('id')->values();
-        }
-
         if ($assigned->isNotEmpty()) {
             return $assigned;
         }
@@ -77,14 +71,8 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
 
         if ($section->source_type === 'category_products' && $section->category_id) {
             $query->where('category_id', $section->category_id);
-        } elseif ($section->source_type === 'featured_products') {
-            $query->where('is_featured', true);
         } elseif ($section->source_type === 'latest_products') {
             $query->latest('id');
-        } elseif ($section->source_type === 'offer_products') {
-            $query->where('is_offer_product', true);
-        } elseif ($section->source_type === 'deal_timer_product') {
-            $query->where('is_deal_timer_product', true);
         } else {
             return collect();
         }
@@ -95,6 +83,37 @@ final class EloquentHomepageCatalogRepository implements HomepageCatalogReposito
             ->latest('id')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * The products a row carries on its own content rows, in row order.
+     *
+     * @return Collection<int, Product>
+     */
+    private function rowProducts(ProductHomepageSection $section, string $audience): Collection
+    {
+        $ids = $section->items
+            ->where('is_active', true)
+            ->sortBy('sort_order')
+            ->pluck('product_id')
+            ->filter()
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        $products = $this->productQuery($audience)
+            ->whereIn('id', $ids->all())
+            ->get()
+            ->keyBy('id');
+
+        return $ids
+            ->map(fn (int $id): ?Product => $products->get($id))
+            ->filter()
+            ->values();
     }
 
     public function fallbackBanners(ProductHomepageSection $section): Collection

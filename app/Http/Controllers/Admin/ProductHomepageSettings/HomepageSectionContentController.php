@@ -75,8 +75,9 @@ final class HomepageSectionContentController extends AdminModuleController
     }
 
     /**
-     * Only a content section has rows to edit; a product row or the category
-     * slider has none, so the editor does not exist for them.
+     * Only a row with content has rows to edit: every content section, plus
+     * Top Selling, whose products are picked here. A plain product row or the
+     * category slider has none, so the editor does not exist for them.
      */
     private function editableSection(int|string $id): ProductHomepageSection
     {
@@ -84,7 +85,7 @@ final class HomepageSectionContentController extends AdminModuleController
         abort_unless(($module['can_edit'] ?? true), 403);
 
         $section = $this->findRecord($id);
-        abort_unless($section->isContentSection(), 404);
+        abort_unless($section->hasContentEditor(), 404);
 
         return $section;
     }

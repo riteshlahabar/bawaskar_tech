@@ -76,7 +76,7 @@
                                 @endif
 
                                 @if($isLowStock)
-                                    <h6 class="theme-color mt-2">{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</h6>
+                                    <h6 class="theme-color mt-2">{{ web_t('product.low_stock', 'Low Stock') }}</h6>
                                 @endif
                             </div>
                         </div>

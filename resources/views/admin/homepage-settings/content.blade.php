@@ -21,6 +21,8 @@
                     &middot;
                     @if($unlimited)
                         add as many rows as you need
+                    @elseif($record->usesContentRowProducts())
+                        the deal card plus {{ $rowLimit - 1 }} products
                     @else
                         this layout renders {{ $rowLimit }} row(s)
                     @endif
@@ -33,7 +35,10 @@
 
         <p class="admin-form-required-legend text-muted small mb-3">
             Fields marked <span class="text-danger">*</span> are compulsory.
-            @if($has('product_id'))
+            @if($record->usesContentRowProducts())
+                The first row is the Special Offer card beside the stack; the rest fill the stack in this order. Leave a row empty to show fewer products.
+                The countdown over the Special Offer card is set on the section itself, under Edit Section.
+            @elseif($has('product_id'))
                 The button appears on the homepage only when a product is selected, and reads &ldquo;Shop Now&rdquo; unless you change Button Text.
             @endif
         </p>
@@ -41,11 +46,12 @@
         <form method="POST" action="{{ route('admin.homepage-settings.save-content', $record->id) }}" enctype="multipart/form-data" data-homepage-content-form>
             @csrf
 
-            <div data-content-rows>
+            <div data-content-rows @if($record->usesContentRowProducts()) data-content-row-labels="product" @endif>
                 @foreach($rows as $index => $row)
                     @include('admin.homepage-settings.partials.content-row', [
                         'row' => $row,
                         'index' => $index,
+                        'section' => $record,
                         'has' => $has,
                         'unlimited' => $unlimited,
                         'fieldHelper' => $fieldHelper,
@@ -59,6 +65,7 @@
                     @include('admin.homepage-settings.partials.content-row', [
                         'row' => new \App\Models\Catalog\ProductHomepageSectionItem,
                         'index' => '__INDEX__',
+                        'section' => $record,
                         'has' => $has,
                         'unlimited' => $unlimited,
                         'fieldHelper' => $fieldHelper,

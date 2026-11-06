@@ -60,23 +60,6 @@
     $personalCareBanners = $cmsBanners->get('footer_promo', collect())->filter(fn ($banner) => filled(data_get($banner, 'image_path')))->values();
     $bottomBlogSection = $cmsSections->get('row_16_blog');
     $footerLinks = collect(data_get($homeContent ?? [], 'footerLinks', collect()));
-    $fallbackTopSellingRow = $homeProductSections->first(fn ($entry) => data_get($entry, 'section.section_type') === 'top_selling_section');
-    $fallbackTopSellingSection = data_get($fallbackTopSellingRow, 'section');
-    $fallbackTopSellingAllProducts = collect(data_get($fallbackTopSellingRow, 'products', collect()));
-    if ($fallbackTopSellingAllProducts->isEmpty()) {
-        $fallbackTopSellingAllProducts = collect($products ?? collect())
-            ->filter(fn ($product) => (bool) ($product->is_top_selling ?? false))
-            ->values();
-    }
-    $fallbackDealProduct = $fallbackTopSellingAllProducts->firstWhere('is_deal_timer_product', true) ?: data_get($homeContent ?? [], 'dealTimerProduct');
-    $fallbackTopSellingProducts = $fallbackTopSellingAllProducts
-        ->filter(fn ($product) => ! $fallbackDealProduct || $product->id !== $fallbackDealProduct->id)
-        ->take(8)
-        ->values();
-    $fallbackTopSellingShowTimer = $fallbackDealProduct
-        && $fallbackDealProduct->is_offer_active
-        && $fallbackDealProduct->offer_end_at
-        && $fallbackDealProduct->offer_end_at->isFuture();
 @endphp
 
     <!-- Loader Start -->

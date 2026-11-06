@@ -10,7 +10,7 @@
 
 <div class="border rounded p-3 mb-3" data-content-row>
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <strong class="text-dark" data-content-row-label>Row {{ $rowNumber ?? '' }}</strong>
+        <strong class="text-dark" data-content-row-label>{{ $fieldHelper->rowLabel($section, $rowNumber) }}</strong>
         @if($unlimited)
             <button type="button" class="btn btn-sm btn-outline-danger" data-remove-content-row title="Remove this row">
                 <i class="fa-solid fa-trash-can"></i>
@@ -49,7 +49,7 @@
             <div class="col-md-6">
                 <label class="form-label">{{ $fieldHelper->label('product_id') }}</label>
                 <select name="{{ $name('product_id') }}" class="form-select @error($errorKey('product_id')) is-invalid @enderror" data-product-select>
-                    <option value="">No product (no button)</option>
+                    <option value="">{{ $section->usesContentRowProducts() ? 'Empty - show nothing here' : 'No product (no button)' }}</option>
                     @foreach($productOptions as $productId => $productLabel)
                         <option value="{{ $productId }}" @selected((string) $old('product_id', $row->product_id) === (string) $productId)>{{ $productLabel }}</option>
                     @endforeach

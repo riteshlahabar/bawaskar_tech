@@ -287,6 +287,9 @@ final class HomepageSectionContentService implements HomepageSectionContentContr
         return match ((string) $section->section_type) {
             'offer_section' => $position === 1 ? 'left' : 'right',
             'service_section' => 'service-'.$position,
+            // Top Selling's first row is the Special Offer card beside the
+            // product stack, so the slot records which one it is.
+            'top_selling_section' => $position === 1 ? 'deal' : 'product-'.($position - 1),
             default => null,
         };
     }

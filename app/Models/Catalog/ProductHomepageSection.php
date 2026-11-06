@@ -26,10 +26,32 @@ class ProductHomepageSection extends Model
         'video_section',
     ];
 
-    /** Section types fed by products assigned on the Products form. */
+    /** Section types that render product cards rather than content rows. */
     public const PRODUCT_SECTION_TYPES = [
         'product_section',
         'top_selling_section',
+    ];
+
+    /**
+     * Product sections whose products are PICKED IN THE CONTENT EDITOR, one
+     * product per row, exactly like a banner row points at a product.
+     *
+     * Top Selling used to be built from the `products.is_top_selling` flag on
+     * the Products form, with the deal card chosen by a second flag. Both flags
+     * are gone: row 1 of the content editor is the Special Offer deal card and
+     * rows 2-9 are the product stack, and the countdown now lives on the
+     * section itself (`deal_starts_at` / `deal_ends_at` / `deal_timer_active`).
+     */
+    public const ROW_PRODUCT_SECTION_TYPES = [
+        'top_selling_section',
+    ];
+
+    /**
+     * The only section types the Products form's Homepage Section Title
+     * dropdown may offer - a product can be placed on these and nothing else.
+     */
+    public const ASSIGNABLE_SECTION_TYPES = [
+        'product_section',
     ];
 
     /**
@@ -50,12 +72,15 @@ class ProductHomepageSection extends Model
         'video_section' => 2,
         'service_section' => 5,
         'strip_offer_banner' => 1,
+        // 1 deal card + the 8-product stack the Fastkart layout renders.
+        'top_selling_section' => 9,
     ];
 
     /** `category_section` is deliberately in neither type list. */
     protected $fillable = [
         'section_key', 'title', 'subtitle', 'section_type', 'layout_type', 'source_type', 'category_id',
         'product_limit', 'item_limit', 'image_size_note', 'sort_order', 'start_at', 'end_at', 'settings', 'is_active',
+        'deal_starts_at', 'deal_ends_at', 'deal_timer_active',
     ];
 
     protected function casts(): array
@@ -68,6 +93,9 @@ class ProductHomepageSection extends Model
             'start_at' => 'datetime',
             'end_at' => 'datetime',
             'is_active' => 'boolean',
+            'deal_starts_at' => 'datetime',
+            'deal_ends_at' => 'datetime',
+            'deal_timer_active' => 'boolean',
         ];
     }
 
@@ -100,6 +128,44 @@ class ProductHomepageSection extends Model
     public function isProductSection(): bool
     {
         return in_array((string) $this->section_type, self::PRODUCT_SECTION_TYPES, true);
+    }
+
+    /** Does this row take its products from its own content rows? */
+    public function usesContentRowProducts(): bool
+    {
+        return in_array((string) $this->section_type, self::ROW_PRODUCT_SECTION_TYPES, true);
+    }
+
+    /**
+     * Rows whose content is edited from Add / Edit Content: every content
+     * section, plus a product row that picks its products there.
+     */
+    public function hasContentEditor(): bool
+    {
+        return $this->isContentSection() || $this->usesContentRowProducts();
+    }
+
+    /** May a product be placed on this row from the Products form? */
+    public function isAssignableFromProductForm(): bool
+    {
+        return in_array((string) $this->section_type, self::ASSIGNABLE_SECTION_TYPES, true);
+    }
+
+    /**
+     * Is the Special Offer countdown live? The deal card is still shown
+     * without it - only the timer block is conditional.
+     */
+    public function dealTimerRunning(): bool
+    {
+        if (! $this->deal_timer_active || ! $this->deal_ends_at) {
+            return false;
+        }
+
+        if ($this->deal_starts_at && $this->deal_starts_at->isFuture()) {
+            return false;
+        }
+
+        return $this->deal_ends_at->isFuture();
     }
 
     /**

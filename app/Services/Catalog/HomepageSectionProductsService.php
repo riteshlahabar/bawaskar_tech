@@ -14,10 +14,17 @@ final class HomepageSectionProductsService implements HomepageSectionProductsCon
         return $section->products()->count();
     }
 
+    /**
+     * Only rows a product can really be placed on. Transferring onto a content
+     * row or onto Top Selling would set `homepage_section_id` on a row that
+     * never reads it, so the products would silently disappear instead of
+     * moving (item 48).
+     */
     public function transferTargets(ProductHomepageSection $section): Collection
     {
         return ProductHomepageSection::query()
             ->whereKeyNot($section->getKey())
+            ->whereIn('section_type', ProductHomepageSection::ASSIGNABLE_SECTION_TYPES)
             ->orderBy('title')
             ->get(['id', 'title', 'section_type']);
     }

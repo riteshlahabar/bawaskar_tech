@@ -90,12 +90,6 @@
                         <li><span class="people-info-label">Visible to Dealers</span><span class="people-info-value">{{ $yesNo($record->is_visible_to_dealers) }}</span></li>
                         <li><span class="people-info-label">Visible to Customers</span><span class="people-info-value">{{ $yesNo($record->is_visible_to_customers) }}</span></li>
                         <li><span class="people-info-label">Show on Homepage</span><span class="people-info-value">{{ $yesNo($record->show_on_homepage) }}</span></li>
-                        <li><span class="people-info-label">Sale Badge Text</span><span class="people-info-value">{{ $text($record->sale_badge_text) }}</span></li>
-                        <li><span class="people-info-label">Sold / Total Quantity</span><span class="people-info-value">{{ $record->sold_quantity ?? 0 }} / {{ $record->total_quantity ?? 0 }}</span></li>
-                        <li><span class="people-info-label">Low Stock Text</span><span class="people-info-value">{{ $text($record->low_stock_text) }}</span></li>
-                        <li><span class="people-info-label">Offer Timer</span><span class="people-info-value">{{ $record->is_offer_active ? 'On' : 'Off' }}</span></li>
-                        <li><span class="people-info-label">Offer Starts</span><span class="people-info-value">{{ $record->offer_start_at?->format('d M Y, g:i A') ?? '-' }}</span></li>
-                        <li><span class="people-info-label">Offer Ends</span><span class="people-info-value">{{ $record->offer_end_at?->format('d M Y, g:i A') ?? '-' }}</span></li>
                         <li><span class="people-info-label">Last Updated</span><span class="people-info-value">{{ $record->updated_at?->format('d M Y, g:i A') ?? '-' }}</span></li>
                     </ul>
                 </div>

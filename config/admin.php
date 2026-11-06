@@ -246,7 +246,10 @@ return [
         'products' => [
             'label' => 'Products', 'group' => 'Catalog', 'description' => 'Add product, required size/pack variants, stock, gallery and videos from this single form.', 'model' => Product::class, 'with' => ['category', 'brand', 'homepageSection', 'unit', 'images', 'media', 'translations', 'variants.inventoryBatches', 'variants.unit', 'relatedProductLinks.relatedProduct'], 'search' => ['name', 'sku', 'hsn_code'], 'status_column' => 'is_active', 'status_options' => $active, 'form_layout' => 'tabs',
             'filters' => [
-                ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title'],
+                // Also feeds item 43's bulk "Change Section Title" modal, so it
+                // must offer only rows a product can actually be placed on -
+                // Top Selling and every content row pick their own content.
+                ['name' => 'homepage_section_id', 'label' => 'Section Title', 'column' => 'homepage_section_id', 'option_model' => ProductHomepageSection::class, 'option_label' => 'title', 'option_where' => ['section_type' => ProductHomepageSection::ASSIGNABLE_SECTION_TYPES]],
                 // Lists one category's products so they can be selected and
                 // moved together with the Change Category bulk action.
                 ['name' => 'category_id', 'label' => 'Category', 'column' => 'category_id', 'option_model' => Category::class],
@@ -259,7 +262,8 @@ return [
                 // Only product rows are offered: a banner is never built from a
                 // product any more, it points at one from Homepage Settings ->
                 // Add Content (item 47).
-                ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true, 'section_type' => ProductHomepageSection::PRODUCT_SECTION_TYPES], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Only homepage product rows are listed. Banner, offer, coupon, service, blog and video content is added from Homepage Settings - Add Content.'],
+                ['name' => 'homepage_section_id', 'label' => 'Homepage Section Title', 'type' => 'select', 'option_model' => ProductHomepageSection::class, 'option_where' => ['is_active' => true, 'section_type' => ProductHomepageSection::ASSIGNABLE_SECTION_TYPES], 'option_label' => 'title', 'option_attributes' => ['section_type' => 'section_type', 'layout_type' => 'layout_type'], 'rules' => ['nullable', 'exists:product_homepage_sections,id'], 'help' => 'Only homepage product rows are listed. Banner, offer, coupon, service, blog, video and Top Selling content is added from Homepage Settings - Add Content.'],
+                ['name' => 'homepage_sort_order', 'label' => 'Homepage Section Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls only this product position inside the selected homepage section. It does not change the normal catalog listing order.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ProductHomepageSection::ASSIGNABLE_SECTION_TYPES],
                 ['name' => 'brand_id', 'label' => 'Brand', 'type' => 'select', 'option_model' => Brand::class, 'rules' => ['nullable', 'exists:brands,id']],
                 ['name' => 'sort_order', 'label' => 'Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls the overall listing order of this product.'],
                 ['name' => 'short_description', 'label' => 'Short Description', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 2, 'maxlength' => 160, 'character_counter' => true, 'rules' => ['nullable', 'string', 'max:160'], 'help' => 'Maximum 160 characters. Product cards show up to 80 characters.'],
@@ -278,14 +282,21 @@ return [
                 ['type' => 'section_heading', 'label' => '4. Product Videos'],
                 ['name' => 'media', 'label' => 'Gallery Videos', 'type' => 'product_media_repeater', 'col' => 'col-12', 'rules' => ['nullable', 'array'], 'help' => 'Add multiple uploaded MP4/WebM videos or YouTube URLs. Videos appear in the same product gallery.'],
 
-                ['type' => 'section_heading', 'label' => '5. Deal Timer / Stock Display'],
-                ['name' => 'sale_badge_text', 'label' => 'Sale Badge Text', 'rules' => ['nullable', 'string', 'max:80']],
-                ['name' => 'sold_quantity', 'label' => 'Sold Quantity', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
-                ['name' => 'total_quantity', 'label' => 'Total Quantity', 'type' => 'number', 'rules' => ['nullable', 'integer', 'min:0']],
-                ['name' => 'low_stock_text', 'label' => 'Low Stock Text', 'rules' => ['nullable', 'string', 'max:255']],
-                ['name' => 'offer_start_at', 'label' => 'Offer Start Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date']],
-                ['name' => 'offer_end_at', 'label' => 'Offer End Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date', 'after_or_equal:offer_start_at']],
-                ['name' => 'is_offer_active', 'label' => 'Offer Timer Active', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Turns the countdown offer timer on for this product.'],
+                ['type' => 'section_heading', 'label' => '5. Bottom Details'],
+                ['type' => 'product_bottom_details', 'label' => 'Bottom Details', 'groups' => [
+                    'description' => 'Description',
+                    'additional_information' => 'Additional Information',
+                    'care_instructions' => 'Care Instructions',
+                ]],
+                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'benefits', 'label' => 'Benefits', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'usage_instructions', 'label' => 'Usage Instructions', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'crop_information', 'label' => 'Crop Information', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'detail_banner_image', 'label' => 'Detail Page Description Banner - 1199 x 97 px', 'type' => 'image', 'upload_dir' => 'uploads/products/detail-banners', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'detail_banner_url', 'label' => 'Detail Page Description Banner Link', 'rules' => ['nullable', 'string', 'max:255'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'detail_banner_position', 'label' => 'Description Banner Position', 'type' => 'radio', 'col' => 'col-12', 'options' => ['before' => 'Start of description', 'middle' => 'Middle of description', 'after' => 'End of description'], 'rules' => ['required', 'in:before,middle,after'], 'default' => 'after', 'help' => 'Decides where the banner appears inside the Description tab on the product detail page.', 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
+                ['name' => 'additional_info', 'label' => 'Additional Information', 'type' => 'product_additional_information_repeater', 'rules' => ['nullable', 'array'], 'render_inside' => 'product_bottom_details', 'render_group' => 'additional_information'],
+                ['name' => 'care_instructions', 'label' => 'Care Instructions', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 3, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'care_instructions'],
 
                 ['type' => 'section_heading', 'label' => '6. Product Language Translations'],
                 ['type' => 'product_translation_tools', 'label' => 'Auto Translate from Product Name & Description'],
@@ -303,40 +314,13 @@ return [
                 ['type' => 'section_heading', 'label' => '7. SEO', 'display_only' => true],                ['name' => 'meta_title', 'label' => 'Meta Title', 'rules' => ['nullable', 'string', 'max:255'], 'display_only' => true],
                 ['name' => 'meta_description', 'label' => 'Meta Description', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 3, 'rules' => ['nullable', 'string'], 'display_only' => true],
                 ['name' => 'meta_keywords', 'label' => 'Meta Keywords', 'rules' => ['nullable', 'string', 'max:255'], 'display_only' => true],
-
-                ['type' => 'section_heading', 'label' => '8. Bottom Details'],
-                ['type' => 'product_bottom_details', 'label' => 'Bottom Details', 'groups' => [
-                    'description' => 'Description',
-                    'additional_information' => 'Additional Information',
-                    'care_instructions' => 'Care Instructions',
-                ]],
-                ['name' => 'description', 'label' => 'Description', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'benefits', 'label' => 'Benefits', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'usage_instructions', 'label' => 'Usage Instructions', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'crop_information', 'label' => 'Crop Information', 'type' => 'textarea', 'col' => 'col-md-6', 'rows' => 7, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'detail_banner_image', 'label' => 'Detail Page Description Banner - 1199 x 97 px', 'type' => 'image', 'upload_dir' => 'uploads/products/detail-banners', 'rules' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'detail_banner_url', 'label' => 'Detail Page Description Banner Link', 'rules' => ['nullable', 'string', 'max:255'], 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'detail_banner_position', 'label' => 'Description Banner Position', 'type' => 'radio', 'col' => 'col-12', 'options' => ['before' => 'Start of description', 'middle' => 'Middle of description', 'after' => 'End of description'], 'rules' => ['required', 'in:before,middle,after'], 'default' => 'after', 'help' => 'Decides where the banner appears inside the Description tab on the product detail page.', 'render_inside' => 'product_bottom_details', 'render_group' => 'description'],
-                ['name' => 'additional_info', 'label' => 'Additional Information', 'type' => 'product_additional_information_repeater', 'rules' => ['nullable', 'array'], 'render_inside' => 'product_bottom_details', 'render_group' => 'additional_information'],
-                ['name' => 'care_instructions', 'label' => 'Care Instructions', 'type' => 'textarea', 'col' => 'col-12', 'rows' => 3, 'rules' => ['nullable', 'string'], 'render_inside' => 'product_bottom_details', 'render_group' => 'care_instructions'],
-
-                ['type' => 'section_heading', 'label' => '10. Homepage / Display Flags'],
-                // The banner fields that used to sit above this heading moved to
-                // Homepage Settings -> Add Content (item 47). Only the ordering
-                // of a product INSIDE a product row stays here.
-                ['name' => 'homepage_sort_order', 'label' => 'Homepage Section Product Sort Order', 'type' => 'number', 'default' => 0, 'rules' => ['nullable', 'integer', 'min:0'], 'help' => 'Controls only this product position inside the selected homepage section. It does not change the normal catalog listing order.', 'visibility_field' => 'homepage_section_id', 'show_for_section_types' => ProductHomepageSection::PRODUCT_SECTION_TYPES],
-                ['name' => 'is_featured', 'label' => 'Featured Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Marks this product as featured for highlighted listings.'],
-                ['name' => 'is_top_selling', 'label' => 'Top Selling Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Uses this product in top-selling product collections.'],
-                ['name' => 'is_trending', 'label' => 'Trending Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Marks this product for trending product sections.'],
-                ['name' => 'is_new_arrival', 'label' => 'New Arrival Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Shows this product in new-arrival selections.'],
-                ['name' => 'is_offer_product', 'label' => 'Offer Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Includes this product in offer-based product groups.'],
-                ['name' => 'is_deal_timer_product', 'label' => 'Deal Timer Product', 'type' => 'checkbox', 'rules' => ['boolean'], 'help' => 'Uses this product as the special offer card in Top Selling Items.'],
             ],
-        ],        'homepage-settings' => [
+        ],
+        'homepage-settings' => [
             'label' => 'Homepage Settings',
             'sort' => ['sort_order', 'asc'],
             'group' => 'Catalog',
-            'description' => 'Create homepage rows/design only. Actual product/banner/text/offer content is managed from Products.',
+            'description' => 'Create homepage rows/design only. Banner, offer, coupon, service, blog, video and Top Selling content is managed from Add / Edit Content.',
             'model' => ProductHomepageSection::class,
             'with' => ['category'],
             'search' => ['title', 'section_type', 'layout_type'],
@@ -397,6 +381,14 @@ return [
                 ['name' => 'product_limit', 'label' => 'Product Limit', 'type' => 'number', 'default' => 8, 'rules' => ['required', 'integer', 'min:1', 'max:50']],
 
                 ['name' => 'sort_order', 'label' => 'Display Row Order', 'type' => 'number', 'default' => 0, 'rules' => ['required', 'integer', 'min:0']],
+
+                // The countdown over Top Selling's Special Offer card. It used
+                // to live on the product (Deal Timer tab) and is now a property
+                // of the row, because the row decides which product is the deal
+                // card - its first content row.
+                ['name' => 'deal_starts_at', 'label' => 'Offer Start Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'Leave empty to start the countdown immediately.'],
+                ['name' => 'deal_ends_at', 'label' => 'Offer End Date & Time', 'type' => 'datetime-local', 'rules' => ['nullable', 'date', 'after_or_equal:deal_starts_at'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'The countdown needs this date. Without it the card shows with no timer.'],
+                ['name' => 'deal_timer_active', 'label' => 'Offer Timer Active', 'type' => 'checkbox', 'rules' => ['boolean'], 'visibility_field' => 'section_type', 'visibility_source_is_value' => true, 'show_for_section_types' => ProductHomepageSection::ROW_PRODUCT_SECTION_TYPES, 'help' => 'Shows the countdown over the Special Offer card until the end date passes.'],
 
                 ['name' => 'is_active', 'label' => 'Active', 'type' => 'checkbox', 'rules' => ['boolean']],
             ],

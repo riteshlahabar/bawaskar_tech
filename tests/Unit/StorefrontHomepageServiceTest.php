@@ -83,6 +83,11 @@ class StorefrontHomepageServiceTest extends TestCase
             {
                 return $this->product;
             }
+
+            public function dealProducts(string $audience, int $limit): Collection
+            {
+                return collect([$this->product]);
+            }
         };
 
         $result = (new StorefrontHomepageService($repository))->content('customer');

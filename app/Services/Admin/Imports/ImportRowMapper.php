@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 final class ImportRowMapper implements ImportRowMapperContract
 {
-    private const BOOLEAN_FIELDS = ['is_active', 'is_featured', 'is_visible_to_customers', 'is_visible_to_dealers'];
+    private const BOOLEAN_FIELDS = ['is_active', 'is_visible_to_customers', 'is_visible_to_dealers', 'show_on_homepage'];
 
     private const INTEGER_FIELDS = ['sort_order', 'decimal_precision', 'product_limit'];
 

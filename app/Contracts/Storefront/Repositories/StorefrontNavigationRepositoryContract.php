@@ -10,12 +10,12 @@ interface StorefrontNavigationRepositoryContract
 
     public function categoryMenu(string $audience, int $categoryLimit, int $productLimit): Collection;
 
+    /**
+     * The navbar's featured strip. Products carry no "Featured" flag any more
+     * (that whole tab left the Products form), so this is simply the catalog's
+     * own display order.
+     */
     public function featuredProducts(string $audience): Collection;
-
-    public function fallbackProducts(string $audience): Collection;
-
-    /** Products ticked "Deal Timer Product", for the header "Deal Today" popup. */
-    public function dealProducts(string $audience, int $limit): Collection;
 
     /** Active header top-bar messages in sort order. */
     public function topbarMessages(): Collection;

@@ -50,7 +50,7 @@
                 @if($isOutOfStock)
                     <h6 class="theme-color">{{ web_t('product.out_of_stock', 'Out of Stock') }}</h6>
                 @elseif($isLowStock)
-                    <h6 class="theme-color">{{ storefront_public_t($product->low_stock_text ?: web_t('product.low_stock', 'Low Stock'), 'product') }}</h6>
+                    <h6 class="theme-color">{{ web_t('product.low_stock', 'Low Stock') }}</h6>
                 @elseif($discount > 0)
                     <h6 class="theme-color">{{ $discount }}% off</h6>
                 @endif

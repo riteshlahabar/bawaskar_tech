@@ -26,6 +26,7 @@ interface StorefrontCatalogRepositoryContract
 
     public function fallbackRelatedProducts(Product $product, string $audience, int $limit): Collection;
 
+    /** Best sellers from the same category, for the detail page's trending block. */
     public function trendingProducts(Product $product, string $audience, int $limit): Collection;
 
     public function companySetting(): ?CompanySetting;

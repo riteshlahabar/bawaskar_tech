@@ -37,11 +37,6 @@ final class ProductCatalogPresenter implements ProductCatalogPresenterContract
             'homepage_image_url' => $this->assetUrl($product->homepage_image_path),
             'homepage_mobile_image_url' => $this->assetUrl($product->homepage_mobile_image_path),
             'image_version' => $product->updated_at?->timestamp ?: $product->id,
-            'is_featured' => $product->is_featured,
-            'is_trending' => $product->is_trending,
-            'is_top_selling' => $product->is_top_selling,
-            'is_new_arrival' => $product->is_new_arrival,
-            'is_offer_product' => $product->is_offer_product,
             'main_variant_id' => $mainVariant?->id,
             'variants' => $product->variants
                 ->where('is_active', true)

@@ -16,22 +16,36 @@
     if (! in_array($currentPerPage, $perPageOptions, true)) {
         $currentPerPage = 10;
     }
+
+    // The left half of the Fastkart listing header. The template puts the page
+    // title here, but our pages already carry one in admin/partials/page-title,
+    // so this says how many rows the listing holds instead of repeating it.
+    $totalRecords = $records->total();
+    $recordNoun = \Illuminate\Support\Str::plural(strtolower($submenuSingular), $totalRecords);
 @endphp
-<div class="card admin-table-card" data-table-key="{{ $module['key'] }}">
-    <div class="card-body pt-3">
-        <div class="d-flex justify-content-end gap-2 mb-3">
-            @if($module['key'] === 'salary' && $can['edit'])
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#salaryModal"><i class="iconoir-dollar-circle me-1"></i>Generate Salary</button>
-            @endif
-            @if($module['key'] === 'translations' && $can['edit'])
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#appTranslateModal"><i class="iconoir-translate me-1"></i>Translate</button>
-            @endif
-            @if($module['key'] === 'backups' && $can['create'])
-                <form method="POST" action="{{ route('admin.backups.run') }}">@csrf<button class="btn btn-success"><i class="iconoir-database-backup me-1"></i>Take Backup Now</button></form>
-            @endif
-            @if(($module['can_create'] ?? true) && $can['create'])
-                <a href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}" class="btn btn-primary"><i class="iconoir-plus-circle me-1"></i>Add {{ $submenuSingular }}</a>
-            @endif
+<div class="card card-table admin-table-card" data-table-key="{{ $module['key'] }}">
+    <div class="card-body">
+        {{-- The template's listing header: count on the left, actions on the
+             right inside `right-options`, exactly as back-end/products.html
+             lays it out. --}}
+        <div class="title-header option-title">
+            <h5 class="mb-0">{{ number_format($totalRecords) }} {{ $recordNoun }}</h5>
+            <div class="right-options">
+                <ul>
+                    @if($module['key'] === 'salary' && $can['edit'])
+                        <li><button class="btn btn-solid" data-bs-toggle="modal" data-bs-target="#salaryModal"><i class="iconoir-dollar-circle me-1"></i>Generate Salary</button></li>
+                    @endif
+                    @if($module['key'] === 'translations' && $can['edit'])
+                        <li><button class="btn btn-solid" data-bs-toggle="modal" data-bs-target="#appTranslateModal"><i class="iconoir-translate me-1"></i>Translate</button></li>
+                    @endif
+                    @if($module['key'] === 'backups' && $can['create'])
+                        <li><form method="POST" action="{{ route('admin.backups.run') }}">@csrf<button class="btn btn-solid"><i class="iconoir-database-backup me-1"></i>Take Backup Now</button></form></li>
+                    @endif
+                    @if(($module['can_create'] ?? true) && $can['create'])
+                        <li><a class="btn btn-solid" href="{{ route($module['route'].'.create', request()->only(['type','placement','section_key','row_title'])) }}"><i class="iconoir-plus-circle me-1"></i>Add {{ $submenuSingular }}</a></li>
+                    @endif
+                </ul>
+            </div>
         </div>
         @include('admin.shared.table-toolbar')
 
@@ -44,8 +58,13 @@
             @endforeach
 
             <div class="table-responsive admin-table-responsive">
-                <table class="table table-hover align-middle mb-0 admin-data-table">
-                    <thead class="table-light">
+                {{-- `theme-table` is the template's own table skin: a grey rounded
+                     header, zebra rows and no cell borders. `all-package` is
+                     deliberately NOT used - it forces every cell to centre and
+                     each column to a 170px minimum, which wrecks a listing with
+                     eight columns of left-aligned text. --}}
+                <table class="table theme-table table-hover align-middle mb-0 admin-data-table">
+                    <thead>
                         <tr>
                             <th class="bulk-select-col">@if($can['delete'])<input class="form-check-input admin-select-all" type="checkbox" title="Select all">@endif</th>
                             @foreach($visibleColumns as $index => $column)

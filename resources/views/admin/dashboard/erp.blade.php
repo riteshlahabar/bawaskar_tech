@@ -2,30 +2,35 @@
 @section('title', 'Dashboard ERP')
 @section('content')
 @php
-    $dashboardCardIcons = [
-        'iconoir-shop' => 'shopping-bag',
-        'iconoir-user' => 'user',
-        'iconoir-box-iso' => 'box',
-        'iconoir-cart' => 'shopping-cart',
-        'iconoir-community' => 'users',
-        'iconoir-check-circle' => 'check-circle',
-        'iconoir-calendar-minus' => 'calendar',
-        'iconoir-receive-dollars' => 'dollar-sign',
+    // The second strip of figures, given the same tile treatment as $stats so
+    // the top of the dashboard reads as one band rather than two.
+    $secondaryTiles = [
+        ['label' => 'Today Sales', 'value' => 'Rs. '.number_format((float) $todaySales, 2), 'icon' => 'iconoir-receive-dollars', 'color' => 'success', 'trend' => 'Booked today'],
+        ['label' => 'Month Sales', 'value' => 'Rs. '.number_format((float) $monthSales, 2), 'icon' => 'iconoir-wallet', 'color' => 'primary', 'trend' => 'This month'],
+        ['label' => 'Pending Dealers', 'value' => number_format($pendingDealers->count()), 'icon' => 'iconoir-shop', 'color' => 'warning', 'trend' => 'Awaiting approval'],
+        ['label' => 'Low Stock Alerts', 'value' => number_format($lowStock->count()), 'icon' => 'iconoir-box', 'color' => 'danger', 'trend' => 'At or below alert level'],
     ];
 @endphp
+
+{{-- The Fastkart dashboard tile (back-end/index.html): `main-tiles` on a
+     `custome-N-bg` body, the figure beside a tinted icon box. The icon must be
+     a FONT icon, not a feather SVG - `custome-N-bg .static-top-widget svg` is
+     painted white by the template for the badge, which would have turned an
+     SVG tile icon invisible against its own 10% tint. --}}
 <div class="row">
-    @foreach($stats as $stat)
-        <div class="col-md-6 col-xl-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-{{ $stat['color'] }}-subtle text-{{ $stat['color'] }} thumb-xl rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="admin-dashboard-card-icon" data-feather="{{ $dashboardCardIcons[$stat['icon']] ?? 'circle' }}"></i>
+    @foreach($stats as $index => $stat)
+        <div class="col-sm-6 col-xxl-3 col-lg-6">
+            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                <div class="custome-{{ ($index % 4) + 1 }}-bg b-r-4 card-body">
+                    <div class="media align-items-center static-top-widget">
+                        <div class="media-body p-0">
+                            <span class="m-0">{{ $stat['label'] }}</span>
+                            <h4 class="mb-0">{{ number_format((float) $stat['value']) }}
+                                <span class="badge badge-light-{{ $stat['color'] }} grow">{{ $stat['trend'] }}</span>
+                            </h4>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1">{{ $stat['label'] }}</p>
-                            <h3 class="mb-1">{{ number_format((float) $stat['value']) }}</h3>
-                            <small class="text-muted">{{ $stat['trend'] }}</small>
+                        <div class="align-self-center text-center">
+                            <i class="{{ $stat['icon'] }}"></i>
                         </div>
                     </div>
                 </div>
@@ -35,10 +40,25 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Today Sales</p><h4 class="mb-0">Rs. {{ number_format((float) $todaySales, 2) }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Month Sales</p><h4 class="mb-0">Rs. {{ number_format((float) $monthSales, 2) }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Pending Dealers</p><h4 class="mb-0">{{ $pendingDealers->count() }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Low Stock Alerts</p><h4 class="mb-0">{{ $lowStock->count() }}</h4></div></div></div>
+    @foreach($secondaryTiles as $index => $tile)
+        <div class="col-sm-6 col-xxl-3 col-lg-6">
+            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                <div class="custome-{{ ($index % 4) + 1 }}-bg b-r-4 card-body">
+                    <div class="media align-items-center static-top-widget">
+                        <div class="media-body p-0">
+                            <span class="m-0">{{ $tile['label'] }}</span>
+                            <h4 class="mb-0">{{ $tile['value'] }}
+                                <span class="badge badge-light-{{ $tile['color'] }} grow">{{ $tile['trend'] }}</span>
+                            </h4>
+                        </div>
+                        <div class="align-self-center text-center">
+                            <i class="{{ $tile['icon'] }}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 </div>
 
 <div class="row">
@@ -52,8 +72,8 @@
             </div>
             <div class="card-body pt-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light"><tr><th>Order</th><th>Channel</th><th>Party</th><th>Total</th><th>Status</th></tr></thead>
+                    <table class="table theme-table table-borderless table-hover align-middle mb-0 admin-detail-table">
+                        <thead><tr><th>Order</th><th>Channel</th><th>Party</th><th>Total</th><th>Status</th></tr></thead>
                         <tbody>
                             @forelse($recentOrders as $order)
                                 <tr>
@@ -83,8 +103,8 @@
                     </div>
                     <div class="card-body pt-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light"><tr><th>Order</th><th>Dealer</th><th>Total</th><th>Status</th></tr></thead>
+                            <table class="table theme-table table-borderless table-hover align-middle mb-0 admin-detail-table">
+                                <thead><tr><th>Order</th><th>Dealer</th><th>Total</th><th>Status</th></tr></thead>
                                 <tbody>
                                     @forelse($pendingDealerOrders as $order)
                                         <tr>
@@ -112,8 +132,8 @@
                     </div>
                     <div class="card-body pt-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light"><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+                            <table class="table theme-table table-borderless table-hover align-middle mb-0 admin-detail-table">
+                                <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
                                 <tbody>
                                     @forelse($pendingCustomerOrders as $order)
                                         <tr>

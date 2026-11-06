@@ -2,30 +2,32 @@
 @section('title', 'Dashboard HRMS')
 @section('content')
 @php
-    $dashboardCardIcons = [
-        'iconoir-shop' => 'shopping-bag',
-        'iconoir-user' => 'user',
-        'iconoir-box-iso' => 'box',
-        'iconoir-cart' => 'shopping-cart',
-        'iconoir-community' => 'users',
-        'iconoir-check-circle' => 'check-circle',
-        'iconoir-calendar-minus' => 'calendar',
-        'iconoir-receive-dollars' => 'dollar-sign',
+    // Same tile treatment as the ERP dashboard, so the two match.
+    $secondaryTiles = [
+        ['label' => 'Issued Assets', 'value' => number_format((float) $issuedAssets), 'icon' => 'iconoir-box', 'color' => 'primary', 'trend' => 'With the field team'],
+        ['label' => 'Month Payroll', 'value' => 'Rs. '.number_format((float) $monthlyPayroll, 2), 'icon' => 'iconoir-wallet', 'color' => 'success', 'trend' => 'This month'],
+        ['label' => 'Target', 'value' => 'Rs. '.number_format((float) $targetTotal, 2), 'icon' => 'iconoir-route', 'color' => 'warning', 'trend' => 'Set for the month'],
+        ['label' => 'Achieved', 'value' => 'Rs. '.number_format((float) $achievedTotal, 2), 'icon' => 'iconoir-check-circle', 'color' => 'info', 'trend' => 'Against target'],
     ];
 @endphp
+
+{{-- Fastkart's dashboard tile. A FONT icon, not a feather SVG: the template
+     paints `custome-N-bg .static-top-widget svg` white, which would hide an
+     SVG tile icon against its own 10% tint. --}}
 <div class="row">
-    @foreach($stats as $stat)
-        <div class="col-md-6 col-xl-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-{{ $stat['color'] }}-subtle text-{{ $stat['color'] }} thumb-xl rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="admin-dashboard-card-icon" data-feather="{{ $dashboardCardIcons[$stat['icon']] ?? 'circle' }}"></i>
+    @foreach($stats as $index => $stat)
+        <div class="col-sm-6 col-xxl-3 col-lg-6">
+            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                <div class="custome-{{ ($index % 4) + 1 }}-bg b-r-4 card-body">
+                    <div class="media align-items-center static-top-widget">
+                        <div class="media-body p-0">
+                            <span class="m-0">{{ $stat['label'] }}</span>
+                            <h4 class="mb-0">{{ number_format((float) $stat['value']) }}
+                                <span class="badge badge-light-{{ $stat['color'] }} grow">{{ $stat['trend'] }}</span>
+                            </h4>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1">{{ $stat['label'] }}</p>
-                            <h3 class="mb-1">{{ number_format((float) $stat['value']) }}</h3>
-                            <small class="text-muted">{{ $stat['trend'] }}</small>
+                        <div class="align-self-center text-center">
+                            <i class="{{ $stat['icon'] }}"></i>
                         </div>
                     </div>
                 </div>
@@ -35,10 +37,25 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Issued Assets</p><h4 class="mb-0">{{ number_format((float) $issuedAssets) }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Month Payroll</p><h4 class="mb-0">Rs. {{ number_format((float) $monthlyPayroll, 2) }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Target</p><h4 class="mb-0">Rs. {{ number_format((float) $targetTotal, 2) }}</h4></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card"><div class="card-body"><p class="text-muted mb-1">Achieved</p><h4 class="mb-0">Rs. {{ number_format((float) $achievedTotal, 2) }}</h4></div></div></div>
+    @foreach($secondaryTiles as $index => $tile)
+        <div class="col-sm-6 col-xxl-3 col-lg-6">
+            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                <div class="custome-{{ ($index % 4) + 1 }}-bg b-r-4 card-body">
+                    <div class="media align-items-center static-top-widget">
+                        <div class="media-body p-0">
+                            <span class="m-0">{{ $tile['label'] }}</span>
+                            <h4 class="mb-0">{{ $tile['value'] }}
+                                <span class="badge badge-light-{{ $tile['color'] }} grow">{{ $tile['trend'] }}</span>
+                            </h4>
+                        </div>
+                        <div class="align-self-center text-center">
+                            <i class="{{ $tile['icon'] }}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 </div>
 
 <div class="row">
@@ -52,8 +69,8 @@
             </div>
             <div class="card-body pt-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light"><tr><th>Salesman</th><th>Check In</th><th>Check Out</th><th>Working Minutes</th><th>Status</th></tr></thead>
+                    <table class="table theme-table table-borderless table-hover align-middle mb-0 admin-detail-table">
+                        <thead><tr><th>Salesman</th><th>Check In</th><th>Check Out</th><th>Working Minutes</th><th>Status</th></tr></thead>
                         <tbody>
                             @forelse($todayAttendance as $attendance)
                                 <tr>

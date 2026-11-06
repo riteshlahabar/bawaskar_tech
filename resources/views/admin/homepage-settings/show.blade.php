@@ -9,7 +9,9 @@
         <div class="card card-table">
             <div class="card-body">
                 <div class="title-header option-title">
-                    <h5 class="mb-0">{{ $record->title }}</h5>
+                    {{-- `fs-6` on purpose: the template's .title-header h5 is 22px
+                         bold, which dwarfs a 14px details table. --}}
+                    <h5 class="mb-0 fs-6">{{ $record->title }}</h5>
                     <div class="right-options">
                         <ul>
                             <li><a class="btn btn-solid" href="{{ route('admin.homepage-settings.edit', $record->id) }}">Edit Section</a></li>
@@ -19,7 +21,10 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table theme-table align-middle mb-0">
+                    {{-- `table-borderless` kills Bootstrap's per-cell bottom border,
+                         which was drawing an underline under every value. The
+                         zebra rows from `theme-table` separate them instead. --}}
+                    <table class="table theme-table table-borderless align-middle mb-0 admin-detail-table">
                         <tbody>
                             <tr>
                                 <th style="width:220px;">Section Type</th>
@@ -34,14 +39,8 @@
                                 <td>{{ $record->product_limit }}</td>
                             </tr>
                             <tr>
-                                <th>Item Limit</th>
-                                <td>{{ $record->item_limit ?: '-' }}</td>
                                 <th>Display Row Order</th>
                                 <td>{{ $record->sort_order }}</td>
-                            </tr>
-                            <tr>
-                                <th>Image Note</th>
-                                <td>{{ $record->image_size_note ?: '-' }}</td>
                                 <th>Status</th>
                                 <td>
                                     <span class="badge {{ $record->is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
@@ -77,7 +76,7 @@
             <div class="card-body">
                 <div class="title-header option-title">
                     <div>
-                        <h5 class="mb-1">Section Content</h5>
+                        <h5 class="mb-1 fs-6">Section Content</h5>
                         @if($record->usesContentRowProducts())
                             <small class="text-muted">The products on this row are picked here &mdash; row 1 is the Special Offer card, the rest are the stack beside it.</small>
                         @elseif($record->isProductSection() || $record->section_type === 'category_section')
@@ -111,7 +110,7 @@
                 @endif
 
                 <div class="table-responsive">
-                    <table class="table theme-table align-middle mb-0">
+                    <table class="table theme-table table-borderless align-middle mb-0 admin-detail-table">
                         <thead>
                             <tr>
                                 <th>Image/Icon</th>

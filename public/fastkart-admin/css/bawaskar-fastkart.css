@@ -1898,3 +1898,36 @@ input[type="file"].form-control::file-selector-button {
 .iconoir-send::before {
     content: "\f1d8" !important;
 }
+
+/* ---------------------------------------------------------------------------
+   View-page tables (label/value details and the content list).
+
+   Same compact density as the listings, but borderless on purpose: a
+   label/value table with a line under every value reads as a form full of
+   empty inputs rather than as a record. The zebra rows that `theme-table`
+   provides are the separation.
+   --------------------------------------------------------------------------- */
+.admin-detail-table {
+    font-size: 13px;
+    color: #344054;
+}
+
+.admin-detail-table > tbody > tr > th {
+    color: #667085;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-detail-table > thead > tr > th {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #667085;
+}
+
+.admin-detail-table > tbody > tr > th,
+.admin-detail-table > tbody > tr > td {
+    padding: 9px 12px;
+    vertical-align: middle;
+}

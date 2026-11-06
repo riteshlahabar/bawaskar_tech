@@ -1829,11 +1829,12 @@ input[type="file"].form-control::file-selector-button {
 /* ---------------------------------------------------------------------------
    Listing toolbar (admin/shared/table-toolbar.blade.php).
 
-   The markup has always carried .admin-table-toolbar, .admin-toolbar-search,
-   .admin-toolbar-field and .admin-toolbar-icon, and NOTHING anywhere defined
-   them - so the filter row and the eight icon-only buttons rendered at
-   Bootstrap's bare defaults: a 1em glyph in a box sized only by its padding.
-   That is why the icons above the table read as tiny and unlabelled.
+   The markup carried .admin-table-toolbar, .admin-toolbar-search and
+   .admin-toolbar-field for a long time with NOTHING anywhere defining them -
+   so the filter row and the eight icon-only buttons rendered at Bootstrap's
+   bare defaults: a 1em glyph in a box sized only by its padding. That is why
+   the icons above the table read as tiny and unlabelled. Those buttons now
+   carry their own text labels, so none of them is a fixed square any more.
    --------------------------------------------------------------------------- */
 .admin-table-toolbar {
     padding: 12px 14px;
@@ -1868,29 +1869,18 @@ input[type="file"].form-control::file-selector-button {
     height: 40px;
 }
 
-/* A square button whose icon is actually legible, with the glyph centred
-   rather than sitting on the text baseline. */
-.admin-toolbar-icon {
-    width: 40px;
-    min-width: 40px;
-    padding: 0;
+/* Every toolbar button now carries its own text label, so none of them is a
+   fixed square any more - they only need a legible glyph beside the words. */
+.admin-table-toolbar .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
 }
 
-.admin-toolbar-icon i,
 .admin-table-toolbar .btn i {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1;
-}
-
-/* The Columns button carries a caret as well, so it cannot be square. */
-.admin-toolbar-icon.dropdown-toggle {
-    width: auto;
-    min-width: 0;
-    padding: 0 12px;
 }
 
 /* Paper plane - the one icon the Font Awesome mapping above never covered, so

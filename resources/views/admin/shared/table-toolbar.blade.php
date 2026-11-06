@@ -72,8 +72,11 @@
                 <input class="form-control" type="date" name="date_to" value="{{ request('date_to') }}">
             </div>
 
-            <button class="btn btn-outline-primary" type="submit" title="Filter"><i class="iconoir-search"></i><span class="d-none d-lg-inline ms-1">Filter</span></button>
-            <a href="{{ route($module['route'].'.index', $resetQuery) }}" class="btn btn-outline-secondary" title="Reset"><i class="iconoir-refresh"></i><span class="d-none d-lg-inline ms-1">Reset</span></a>
+            {{-- Every toolbar button carries its own label from md up, with a
+                 purpose-specific Font Awesome icon rather than a bare glyph:
+                 a funnel filters, an anticlockwise arrow resets. --}}
+            <button class="btn btn-outline-primary" type="submit" title="Filter"><i class="fa-solid fa-filter"></i><span class="d-none d-md-inline ms-1">Filter</span></button>
+            <a href="{{ route($module['route'].'.index', $resetQuery) }}" class="btn btn-outline-secondary" title="Reset"><i class="fa-solid fa-rotate-left"></i><span class="d-none d-md-inline ms-1">Reset</span></a>
         </form>
 
         <div class="d-flex flex-wrap justify-content-end align-items-end gap-2 admin-toolbar-actions">
@@ -85,8 +88,8 @@
             <form method="POST" action="{{ route('admin.common-import.store', ['module' => $module['key']]) }}" enctype="multipart/form-data" class="d-inline admin-import-form">
                 @csrf
 </form>
-            <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#importModal{{ $module['key'] }}" title="Import Excel/CSV" aria-label="Import Excel/CSV">
-                <i class="fa-solid fa-file-import"></i><span class="d-none d-xl-inline ms-1">Import</span>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#importModal{{ $module['key'] }}" title="Import Excel/CSV" aria-label="Import Excel/CSV">
+                <i class="fa-solid fa-file-import"></i><span class="d-none d-md-inline ms-1">Import</span>
             </button>
 
             <div class="modal fade" id="importModal{{ $module['key'] }}" tabindex="-1" aria-hidden="true">
@@ -137,7 +140,7 @@
             </div>
             @endif
             <div class="dropdown">
-                <button class="btn btn-outline-secondary admin-toolbar-icon dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="iconoir-view-grid"></i></button>
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Columns" aria-label="Columns"><i class="fa-solid fa-table-columns"></i><span class="d-none d-md-inline ms-1">Columns</span></button>
                 <div class="dropdown-menu dropdown-menu-end p-2 admin-column-menu">
                     @foreach($visibleColumns as $index => $column)
                         <label class="dropdown-item d-flex align-items-center gap-2 mb-0">
@@ -147,28 +150,19 @@
                     @endforeach
                 </div>
             </div>
-            <a class="btn btn-outline-success admin-toolbar-icon" href="{{ route($module['route'].'.export', ['format' => 'excel'] + $exportQuery) }}" title="Export Excel" aria-label="Export Excel">
-                <svg width="18" height="18" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
-                    <path fill="#185C37" d="M30 4h12c1.1 0 2 .9 2 2v36c0 1.1-.9 2-2 2H30V4Z"/>
-                    <path fill="#21A366" d="M30 4H16c-1.1 0-2 .9-2 2v7l16 9V4Z"/>
-                    <path fill="#107C41" d="M14 13h16v10H14V13Z"/>
-                    <path fill="#33C481" d="M14 23h16v10H14V23Z"/>
-                    <path fill="#107C41" d="M14 33v9c0 1.1.9 2 2 2h14V33H14Z"/>
-                    <path fill="#0B6A3A" d="M4 11.8 20 9v30L4 36.2c-1-.2-1.8-1-1.8-2V13.8c0-1 .8-1.8 1.8-2Z"/>
-                    <path fill="#FFFFFF" d="m8.7 18 3.2 5.8L15.4 18h3.2l-4.9 7.8 5.1 8.2h-3.3L12 27.8 8.4 34H5.2l5.1-8.1L5.5 18h3.2Z"/>
-                    <path fill="#FFFFFF" opacity=".6" d="M31.8 10H40v4h-8.2v-4Zm0 7H40v4h-8.2v-4Zm0 7H40v4h-8.2v-4Zm0 7H40v4h-8.2v-4Z"/>
-                </svg>
+            <a class="btn btn-outline-success" href="{{ route($module['route'].'.export', ['format' => 'excel'] + $exportQuery) }}" title="Export Excel" aria-label="Export Excel">
+                <i class="fa-solid fa-file-excel"></i><span class="d-none d-md-inline ms-1">Excel</span>
             </a>
-            <a class="btn btn-outline-danger admin-toolbar-icon" href="{{ route($module['route'].'.export', ['format' => 'pdf'] + $exportQuery) }}" title="Export PDF" aria-label="Export PDF"><i class="fa-solid fa-file-pdf"></i></a>
-            <button class="btn btn-outline-secondary admin-toolbar-icon" type="button" onclick="window.print()" title="Print" aria-label="Print"><i class="fa-solid fa-print"></i></button>
+            <a class="btn btn-outline-danger" href="{{ route($module['route'].'.export', ['format' => 'pdf'] + $exportQuery) }}" title="Export PDF" aria-label="Export PDF"><i class="fa-solid fa-file-pdf"></i><span class="d-none d-md-inline ms-1">PDF</span></a>
+            <button class="btn btn-outline-secondary" type="button" onclick="window.print()" title="Print" aria-label="Print"><i class="fa-solid fa-print"></i><span class="d-none d-md-inline ms-1">Print</span></button>
 
             @if($module['key'] === 'products' && $can['edit'])
-                <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#bulkCategoryModal" title="Change Category Of Selected" aria-label="Change Category Of Selected"><i class="fa-solid fa-folder"></i></button>
-                <button class="btn btn-outline-primary admin-toolbar-icon" type="button" data-bs-toggle="modal" data-bs-target="#bulkSectionModal" title="Change Section Title Of Selected" aria-label="Change Section Title Of Selected"><i class="fa-solid fa-table-cells-large"></i></button>
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#bulkCategoryModal" title="Change Category Of Selected" aria-label="Change Category Of Selected"><i class="fa-solid fa-folder-tree"></i><span class="d-none d-md-inline ms-1">Category</span></button>
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#bulkSectionModal" title="Change Section Title Of Selected" aria-label="Change Section Title Of Selected"><i class="fa-solid fa-table-cells-large"></i><span class="d-none d-md-inline ms-1">Section</span></button>
             @endif
 
             @if(($module['can_delete'] ?? true) && $can['delete'])
-                <button class="btn btn-outline-danger admin-toolbar-icon" type="submit" form="bulkActionForm" onclick="return confirm('Delete selected records?')" title="Delete Selected" aria-label="Delete Selected"><i class="fa-solid fa-trash-can"></i></button>
+                <button class="btn btn-outline-danger" type="submit" form="bulkActionForm" onclick="return confirm('Delete selected records?')" title="Delete Selected" aria-label="Delete Selected"><i class="fa-solid fa-trash-can"></i><span class="d-none d-md-inline ms-1">Delete</span></button>
             @endif
         </div>
     </div>
